@@ -67,7 +67,7 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 			fmt.Printf("Done with PUT '%s' to etcd\n", k)
 		case "zk":
 			fmt.Printf("PUT '%s' to zookeeper\n", k)
-			conn := mustCreateConnsZk(1)
+			conn := mustCreateConnsZk(3)
 			_, err := conn[0].Create(k, v, zkCreateFlags, zkCreateAcl)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
