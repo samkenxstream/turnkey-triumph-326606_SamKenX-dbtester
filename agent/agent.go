@@ -370,18 +370,18 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		if t.cmd == nil {
 			return nil, fmt.Errorf("nil command")
 		}
-		log.Printf("Stopping %s\n", t.req.Database)
+		log.Printf("Stopping %s [PID: %d]\n", t.req.Database, t.pid)
 		if err := syscall.Kill(t.pid, syscall.SIGTERM); err != nil {
-			return nil, err
+			log.Printf("%v\n", err)
 		}
 		time.Sleep(2 * time.Second)
 		if err := syscall.Kill(t.pid, syscall.SIGKILL); err != nil {
-			return nil, err
+			log.Printf("%v\n", err)
 		}
 		if t.logfile != nil {
 			t.logfile.Close()
 		}
-		log.Printf("Stopped: %s [PID: %d]", t.cmd.Path, t.pid)
+		log.Printf("Stopped: %s [PID: %d\n]", t.cmd.Path, t.pid)
 		processPID = t.pid
 
 	default:
