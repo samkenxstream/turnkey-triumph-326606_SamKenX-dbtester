@@ -34,10 +34,10 @@ var (
 )
 
 func mustCreateConnsZk(total uint) []*zk.Conn {
-	endpoint := endpoints[dialTotal%len(endpoints)]
-	dialTotal++
 	zks := make([]*zk.Conn, total)
 	for i := range zks {
+		endpoint := endpoints[dialTotal%len(endpoints)]
+		dialTotal++
 		conn, _, err := zk.Connect([]string{endpoint}, time.Second)
 		if err != nil {
 			log.Fatal(err)
