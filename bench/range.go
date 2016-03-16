@@ -53,7 +53,7 @@ func init() {
 func rangeFunc(cmd *cobra.Command, args []string) {
 	var k string
 	if singleKey { // write 'foo'
-		k = "/" + string(randBytes(keySize))
+		k = string(randBytes(keySize))
 		v := randBytes(valSize)
 		switch database {
 		case "etcd":
@@ -66,6 +66,7 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 			}
 			fmt.Printf("Done with PUT '%s' to etcd\n", k)
 		case "zk":
+			k = "/" + k
 			fmt.Printf("PUT '%s' to zookeeper\n", k)
 			conns := mustCreateConnsZk(totalConns)
 			_, err := conns[0].Create(k, v, zkCreateFlags, zkCreateAcl)

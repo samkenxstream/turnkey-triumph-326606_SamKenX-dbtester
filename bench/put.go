@@ -138,7 +138,7 @@ func putFunc(cmd *cobra.Command, args []string) {
 			case "etcd":
 				requests <- request{etcdOp: v3.OpPut(string(k), v)}
 			case "zk":
-				requests <- request{zkOp: zkOp{key: string(k), value: []byte(v)}}
+				requests <- request{zkOp: zkOp{key: "/" + string(k), value: []byte(v)}}
 			}
 		}
 		close(requests)
