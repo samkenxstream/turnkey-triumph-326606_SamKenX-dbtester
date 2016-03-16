@@ -49,6 +49,8 @@ var (
 	keySpaceSize int
 	seqKeys      bool
 	uniqueKeys   bool
+
+	etcdCompactionCycle int64
 )
 
 func init() {
@@ -59,6 +61,7 @@ func init() {
 	putCmd.Flags().IntVar(&keySpaceSize, "key-space-size", 1, "Maximum possible keys")
 	putCmd.Flags().BoolVar(&seqKeys, "sequential-keys", false, "Use sequential keys")
 	putCmd.Flags().BoolVarP(&uniqueKeys, "unique-keys", "u", false, "Use unique keys (do not duplicate with sequential-keys)")
+	putCmd.Flags().Int64Var(&etcdCompactionCycle, "etcd-compaction-cycle", 0, "Compact every X number of put requests. 0 means no compaction.")
 }
 
 type request struct {
@@ -87,16 +90,17 @@ func putFunc(cmd *cobra.Command, args []string) {
 	bar.Format("Bom !")
 	bar.Start()
 
+	var etcdClients []*v3.Client
 	switch database {
 	case "etcd":
-		clients := mustCreateClients(totalClients, totalConns)
-		for i := range clients {
+		etcdClients = mustCreateClients(totalClients, totalConns)
+		for i := range etcdClients {
 			wg.Add(1)
-			go doPut(context.Background(), clients[i], requests)
+			go doPut(context.Background(), etcdClients[i], requests)
 		}
 		defer func() {
-			for i := range clients {
-				clients[i].Close()
+			for i := range etcdClients {
+				etcdClients[i].Close()
 			}
 		}()
 	case "zk":
@@ -118,6 +122,12 @@ func putFunc(cmd *cobra.Command, args []string) {
 
 	go func() {
 		for i := 0; i < putTotal; i++ {
+			if database == "etcd" && etcdCompactionCycle > 0 && int64(i)%etcdCompactionCycle == 0 {
+				log.Printf("etcd starting compaction at %d put request", i)
+				go func() {
+					compactKV(etcdClients)
+				}()
+			}
 			if seqKeys {
 				binary.PutVarint(k, int64(i%keySpaceSize))
 			} else if uniqueKeys {
@@ -174,6 +184,30 @@ func doPutZk(ctx context.Context, conn *zk.Conn, requests <-chan request) {
 		}
 		results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
 		bar.Increment()
+	}
+}
+
+func compactKV(clients []*v3.Client) {
+	var curRev int64
+	for _, c := range clients {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		resp, err := c.KV.Get(ctx, "foo")
+		cancel()
+		if err != nil {
+			panic(err)
+		}
+		curRev = resp.Header.Revision
+		break
+	}
+	revToCompact := max(0, curRev-1000)
+	for _, c := range clients {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		err := c.KV.Compact(ctx, revToCompact)
+		cancel()
+		if err != nil {
+			panic(err)
+		}
+		break
 	}
 }
 
