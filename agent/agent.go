@@ -151,6 +151,9 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 	RegisterTransporterServer(grpcServer, sender)
 
 	log.Printf("gRPC is now serving at %s\n", globalFlags.GRPCPort)
+	if globalFlags.Monitor {
+		log.Printf("monitor flag set 'true' -- as soon as database started, it will start monitoring every %v\n", globalFlags.MonitorInterval)
+	}
 	if err := grpcServer.Serve(ln); err != nil {
 		log.Println(err)
 		os.Exit(-1)
