@@ -53,8 +53,8 @@ func init() {
 func rangeFunc(cmd *cobra.Command, args []string) {
 	var k string
 	if singleKey { // write 'foo'
-		k = string(mustRandBytes(keySize))
-		v := mustRandBytes(valSize)
+		k = string(randBytes(keySize))
+		v := randBytes(valSize)
 		switch database {
 		case "etcd":
 			fmt.Printf("PUT '%s' to etcd\n", k)
