@@ -233,12 +233,12 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			cmd.Stdin = nil
 			cmd.Stdout = f
 			cmd.Stderr = f
-			t.cmd = cmd
-			t.pid = cmd.Process.Pid
 			log.Printf("Starting: %s %s\n", cmd.Path, flagString)
 			if err := cmd.Start(); err != nil {
 				return nil, err
 			}
+			t.cmd = cmd
+			t.pid = cmd.Process.Pid
 			log.Printf("Started: %s [PID: %d]", cmd.Path, t.pid)
 			processPID = t.pid
 			go func() {
@@ -308,12 +308,12 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			cmd.Stdin = nil
 			cmd.Stdout = f
 			cmd.Stderr = f
-			t.cmd = cmd
-			t.pid = cmd.Process.Pid
 			log.Printf("Starting: %s %s\n", cmd.Path, strings.Join(args[1:], " "))
 			if err := cmd.Start(); err != nil {
 				return nil, err
 			}
+			t.cmd = cmd
+			t.pid = cmd.Process.Pid
 			log.Printf("Started: %s [PID: %d]", cmd.Path, t.pid)
 			processPID = t.pid
 			go func() {
@@ -350,12 +350,12 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		cmd.Stdin = nil
 		cmd.Stdout = f
 		cmd.Stderr = f
-		t.cmd = cmd
-		t.pid = cmd.Process.Pid
 		log.Printf("Restarting: %s\n", strings.Join(t.cmd.Args, " "))
 		if err := cmd.Start(); err != nil {
 			return nil, err
 		}
+		t.cmd = cmd
+		t.pid = cmd.Process.Pid
 		log.Printf("Restarted: %s [PID: %d]", cmd.Path, t.pid)
 		processPID = t.pid
 		go func() {
