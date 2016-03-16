@@ -51,37 +51,37 @@ func init() {
 }
 
 func rangeFunc(cmd *cobra.Command, args []string) {
+	var k string
 	if singleKey { // write 'foo'
+		k = string(mustRandBytes(keySize))
 		v := mustRandBytes(valSize)
 		switch database {
 		case "etcd":
-			fmt.Println("PUT 'foo' to etcd")
+			fmt.Printf("PUT '%s' to etcd\n", k)
 			clients := mustCreateClients(1, 1)
-			_, err := clients[0].Do(context.Background(), v3.OpPut("foo", string(v)))
+			_, err := clients[0].Do(context.Background(), v3.OpPut(k, string(v)))
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
 			}
-			fmt.Println("Done with PUT 'foo' to etcd")
+			fmt.Printf("Done with PUT '%s' to etcd\n", k)
 		case "zk":
-			fmt.Println("PUT 'foo' to zookeeper")
+			fmt.Printf("PUT '%s' to zookeeper\n", k)
 			conn := mustCreateConnsZk(1)
-			_, err := conn[0].Create("foo", v, zkCreateFlags, zkCreateAcl)
+			_, err := conn[0].Create(k, v, zkCreateFlags, zkCreateAcl)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
 			}
-			fmt.Println("Done with PUT 'foo' to zookeeper")
+			fmt.Printf("Done with PUT '%s' to zookeeper\n", k)
 		}
 	} else if len(args) == 0 || len(args) > 2 {
 		fmt.Fprintln(os.Stderr, cmd.Usage())
 		os.Exit(1)
 	}
 
-	var k, end string
-	if singleKey {
-		k = string(mustRandBytes(keySize))
-	} else {
+	var end string
+	if !singleKey {
 		k = args[0]
 		if len(args) == 2 {
 			end = args[1]
