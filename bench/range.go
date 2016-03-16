@@ -46,6 +46,7 @@ func init() {
 	rangeCmd.Flags().IntVar(&rangeTotal, "total", 10000, "Total number of range requests")
 	rangeCmd.Flags().StringVar(&rangeConsistency, "consistency", "l", "Linearizable(l) or Serializable(s)")
 	rangeCmd.Flags().BoolVar(&singleKey, "single-key", false, "'true' to get only one single key (automatic put before test)")
+	rangeCmd.Flags().IntVar(&keySize, "key-size", 64, "key size")
 	rangeCmd.Flags().IntVar(&valSize, "val-size", 128, "value size")
 }
 
@@ -79,7 +80,7 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 
 	var k, end string
 	if singleKey {
-		k = "foo"
+		k = string(mustRandBytes(keySize))
 	} else {
 		k = args[0]
 		if len(args) == 2 {
