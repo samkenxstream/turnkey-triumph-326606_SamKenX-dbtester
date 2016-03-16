@@ -46,15 +46,17 @@ func init() {
 	rangeCmd.Flags().IntVar(&rangeTotal, "total", 10000, "Total number of range requests")
 	rangeCmd.Flags().StringVar(&rangeConsistency, "consistency", "l", "Linearizable(l) or Serializable(s)")
 	rangeCmd.Flags().BoolVar(&singleKey, "single-key", false, "'true' to get only one single key (automatic put before test)")
+	rangeCmd.Flags().IntVar(&valSize, "val-size", 128, "value size")
 }
 
 func rangeFunc(cmd *cobra.Command, args []string) {
 	if singleKey { // write 'foo'
+		v := mustRandBytes(valSize)
 		switch database {
 		case "etcd":
 			fmt.Println("PUT 'foo' to etcd")
 			clients := mustCreateClients(1, 1)
-			_, err := clients[0].Do(context.Background(), v3.OpPut("foo", "bar"))
+			_, err := clients[0].Do(context.Background(), v3.OpPut("foo", string(v)))
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
@@ -63,7 +65,7 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 		case "zk":
 			fmt.Println("PUT 'foo' to zookeeper")
 			conn := mustCreateConnsZk(1)
-			_, err := conn[0].Create("foo", []byte("bar"), zkCreateFlags, zkCreateAcl)
+			_, err := conn[0].Create("foo", v, zkCreateFlags, zkCreateAcl)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
