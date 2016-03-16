@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package bench
+package main
 
 import (
+	"fmt"
+	"os"
 	"sync"
 
 	"github.com/coreos/etcd/Godeps/_workspace/src/github.com/cheggaaa/pb"
@@ -40,9 +42,20 @@ var (
 )
 
 func init() {
+	cobra.EnablePrefixMatching = true
+}
+
+func init() {
 	Command.PersistentFlags().StringVarP(&database, "database", "d", "etcd", "'etcd', 'zk'(zookeeper)")
 	Command.PersistentFlags().StringSliceVar(&endpoints, "endpoints", []string{"10.240.0.9:2181", "10.240.0.10:2181", "10.240.0.14:2181"}, "gRPC endpoints")
 	Command.PersistentFlags().UintVar(&totalConns, "conns", 1, "Total number of gRPC connections or Zookeeper connections")
 	Command.PersistentFlags().UintVar(&totalClients, "clients", 1, "Total number of gRPC clients (only for etcd)")
 	Command.PersistentFlags().BoolVar(&sample, "sample", false, "'true' to sample requests for every second")
+}
+
+func main() {
+	if err := Command.Execute(); err != nil {
+		fmt.Fprintln(os.Stdout, err)
+		os.Exit(1)
+	}
 }
