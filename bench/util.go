@@ -58,7 +58,6 @@ func mustCreateConn() *clientv3.Client {
 }
 
 func mustCreateClients(totalClients, totalConns uint) []*clientv3.Client {
-	fmt.Println("mustCreateClients")
 	conns := make([]*clientv3.Client, totalConns)
 	for i := range conns {
 		conns[i] = mustCreateConn()

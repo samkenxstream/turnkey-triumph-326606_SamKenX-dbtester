@@ -119,7 +119,6 @@ func putFunc(cmd *cobra.Command, args []string) {
 	}
 
 	pdoneC := printReport(results)
-
 	go func() {
 		for i := 0; i < putTotal; i++ {
 			if database == "etcd" && etcdCompactionCycle > 0 && int64(i)%etcdCompactionCycle == 0 {
