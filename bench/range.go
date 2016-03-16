@@ -89,13 +89,17 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	if rangeConsistency == "l" {
-		fmt.Println("bench with linearizable range")
-	} else if rangeConsistency == "s" {
-		fmt.Println("bench with serializable range")
+	if database == "etcd" {
+		if rangeConsistency == "l" {
+			fmt.Println("bench with linearizable range")
+		} else if rangeConsistency == "s" {
+			fmt.Println("bench with serializable range")
+		} else {
+			fmt.Fprintln(os.Stderr, cmd.Usage())
+			os.Exit(1)
+		}
 	} else {
-		fmt.Fprintln(os.Stderr, cmd.Usage())
-		os.Exit(1)
+		fmt.Println("bench with serializable range")
 	}
 
 	results = make(chan result)

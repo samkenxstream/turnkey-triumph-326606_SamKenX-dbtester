@@ -175,6 +175,8 @@ func doPutZk(ctx context.Context, conn *zk.Conn, requests <-chan request) {
 	for req := range requests {
 		op := req.zkOp
 		st := time.Now()
+
+		fmt.Println("creating", op.key)
 		_, err := conn.Create(op.key, op.value, zkCreateFlags, zkCreateAcl)
 
 		var errStr string
