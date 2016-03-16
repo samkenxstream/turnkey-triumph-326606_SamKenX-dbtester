@@ -18,7 +18,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"log"
-	"math/rand"
 	"os"
 	"time"
 
@@ -48,7 +47,6 @@ var (
 
 	keySpaceSize int
 	seqKeys      bool
-	uniqueKeys   bool
 
 	etcdCompactionCycle int64
 )
@@ -60,7 +58,6 @@ func init() {
 	putCmd.Flags().IntVar(&putTotal, "total", 10000, "Total number of put requests")
 	putCmd.Flags().IntVar(&keySpaceSize, "key-space-size", 1, "Maximum possible keys")
 	putCmd.Flags().BoolVar(&seqKeys, "sequential-keys", false, "Use sequential keys")
-	putCmd.Flags().BoolVarP(&uniqueKeys, "unique-keys", "u", false, "Use unique keys (do not duplicate with sequential-keys)")
 	putCmd.Flags().Int64Var(&etcdCompactionCycle, "etcd-compaction-cycle", 0, "Compact every X number of put requests. 0 means no compaction.")
 }
 
@@ -129,10 +126,8 @@ func putFunc(cmd *cobra.Command, args []string) {
 			}
 			if seqKeys {
 				binary.PutVarint(k, int64(i%keySpaceSize))
-			} else if uniqueKeys {
-				k = keys[i]
 			} else {
-				binary.PutVarint(k, int64(rand.Intn(keySpaceSize)))
+				k = keys[i]
 			}
 			switch database {
 			case "etcd":
@@ -176,7 +171,6 @@ func doPutZk(ctx context.Context, conn *zk.Conn, requests <-chan request) {
 		op := req.zkOp
 		st := time.Now()
 
-		fmt.Println("creating", op.key)
 		_, err := conn.Create(op.key, op.value, zkCreateFlags, zkCreateAcl)
 
 		var errStr string
