@@ -1,0 +1,46 @@
+syntax = "proto3";
+package agent;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+
+service Transporter {
+	rpc Transfer(Request) returns (Response) {}
+}
+
+message Request {
+	enum Operation {
+		Start   = 0;
+		Stop    = 1;
+		Restart = 2;
+	}
+	enum Database {
+		etcd      = 0;
+		ZooKeeper = 1;
+	}
+
+	Operation operation   = 1;
+	Database database     = 2;
+	string peerIPs        = 3;
+
+	// EtcdServerIndex is the index in peerIPs.
+	uint32 etcdServerIndex = 4;
+	uint32 zookeeperMyID   = 5;
+
+	// ZookeeperPreAllocSize avoid seeks ZooKeeper allocates space
+	// in the transaction log file in blocks of PreAllocSize kilobytes.
+	// Default value is 65536 * 1024.
+	int64 zookeeperPreAllocSize = 6;
+
+	// ZookeeperMaxClientCnxns limits the number of concurrent connections
+	// (at the socket level) that a single client, identified by IP address.
+	int64 zookeeperMaxClientCnxns = 7;
+}
+
+message Response {
+	bool success  = 1;
+}
