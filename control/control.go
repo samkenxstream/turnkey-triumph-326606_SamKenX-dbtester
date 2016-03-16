@@ -62,7 +62,7 @@ func init() {
 	RestartCommand.PersistentFlags().StringSliceVarP(&globalFlags.AgentEndpoints, "agent-endpoints", "e", []string{""}, "Endpoints to send client requests to. Then the agent automatically configures the database.")
 
 	StartCommand.PersistentFlags().Int64Var(&globalFlags.ZookeeperPreAllocSize, "zk-pre-alloc-size", 65536*1024, "Disk pre-allocation size in bytes.")
-	StartCommand.PersistentFlags().Int64Var(&globalFlags.ZookeeperMaxClientCnxns, "zk-max-client-conns", 1000, "Maximum number of concurrent zookeeper connection.")
+	StartCommand.PersistentFlags().Int64Var(&globalFlags.ZookeeperMaxClientCnxns, "zk-max-client-conns", 5000, "Maximum number of concurrent zookeeper connection.")
 }
 
 func CommandFunc(cmd *cobra.Command, args []string) {
