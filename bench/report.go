@@ -105,22 +105,26 @@ func (r *report) finalize() {
 }
 
 func (r *report) print() {
-	sort.Float64s(r.lats)
 
 	if len(r.lats) > 0 {
-		r.fastest = r.lats[0]
-		r.slowest = r.lats[len(r.lats)-1]
-		fmt.Printf("\nSummary:\n")
-		fmt.Printf("  Total:\t%4.4f secs.\n", r.total.Seconds())
-		fmt.Printf("  Slowest:\t%4.4f secs.\n", r.slowest)
-		fmt.Printf("  Fastest:\t%4.4f secs.\n", r.fastest)
-		fmt.Printf("  Average:\t%4.4f secs.\n", r.average)
-		fmt.Printf("  Stddev:\t%4.4f secs.\n", r.stddev)
-		fmt.Printf("  Requests/sec:\t%4.4f\n", r.rps)
-		r.printHistogram()
-		r.printLatencies()
-		if sample {
+		if sample && noHistogram {
 			r.printSecondSample()
+		} else {
+			sort.Float64s(r.lats)
+			r.fastest = r.lats[0]
+			r.slowest = r.lats[len(r.lats)-1]
+			fmt.Printf("\nSummary:\n")
+			fmt.Printf("  Total:\t%4.4f secs.\n", r.total.Seconds())
+			fmt.Printf("  Slowest:\t%4.4f secs.\n", r.slowest)
+			fmt.Printf("  Fastest:\t%4.4f secs.\n", r.fastest)
+			fmt.Printf("  Average:\t%4.4f secs.\n", r.average)
+			fmt.Printf("  Stddev:\t%4.4f secs.\n", r.stddev)
+			fmt.Printf("  Requests/sec:\t%4.4f\n", r.rps)
+			r.printHistogram()
+			r.printLatencies()
+			if sample {
+				r.printSecondSample()
+			}
 		}
 	}
 

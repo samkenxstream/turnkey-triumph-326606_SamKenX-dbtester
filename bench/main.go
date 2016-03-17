@@ -37,6 +37,7 @@ var (
 	totalConns   uint
 	totalClients uint
 	sample       bool
+	noHistogram  bool
 
 	bar     *pb.ProgressBar
 	results chan result
@@ -52,7 +53,8 @@ func init() {
 	Command.PersistentFlags().StringSliceVar(&endpoints, "endpoints", []string{"10.240.0.9:2181", "10.240.0.10:2181", "10.240.0.14:2181"}, "gRPC endpoints")
 	Command.PersistentFlags().UintVar(&totalConns, "conns", 1, "Total number of gRPC connections or Zookeeper connections")
 	Command.PersistentFlags().UintVar(&totalClients, "clients", 1, "Total number of gRPC clients (only for etcd)")
-	Command.PersistentFlags().BoolVar(&sample, "sample", false, "'true' to sample requests for every second")
+	Command.PersistentFlags().BoolVar(&sample, "sample", false, "'true' to sample requests for every second.")
+	Command.PersistentFlags().BoolVar(&noHistogram, "no-histogram", false, "'true' to not show results in histogram.")
 }
 
 func main() {
