@@ -371,13 +371,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			return nil, fmt.Errorf("nil command")
 		}
 		log.Printf("Stopping %s [PID: %d]\n", t.req.Database, t.pid)
-		if err := syscall.Kill(t.pid, syscall.SIGTERM); err != nil {
-			log.Printf("%v\n", err)
-		}
-		time.Sleep(2 * time.Second)
-		if err := syscall.Kill(t.pid, syscall.SIGKILL); err != nil {
-			log.Printf("%v\n", err)
-		}
+		ps.Kill(os.Stdout, false, ps.Status{Pid: t.pid})
 		if t.logfile != nil {
 			t.logfile.Close()
 		}
@@ -388,14 +382,13 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		return nil, fmt.Errorf("Not implemented %v", r.Operation)
 	}
 
-	firstCSV := true
 	if globalFlags.Monitor && r.Operation == Request_Start {
 		go func(processPID int) {
 			notifier := make(chan os.Signal, 1)
 			signal.Notify(notifier, syscall.SIGINT, syscall.SIGTERM)
 
 			rFunc := func() error {
-				pss, err := ps.ListStatus(&ps.Status{Pid: processPID})
+				pss, err := ps.List(&ps.Status{Pid: processPID})
 				if err != nil {
 					return err
 				}
@@ -409,14 +402,10 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				}
 				defer f.Close()
 
-				if err := ps.WriteToCSV(firstCSV, f, pss...); err != nil {
-					return err
-				}
-				firstCSV = false
-				return nil
+				return ps.WriteToCSV(f, pss...)
 			}
 
-			log.Printf("Monitoring %v (file saved at %v)\n", r.Database, globalFlags.WorkingDir)
+			log.Printf("Monitoring %v (file saved at %v)\n", r.Database, globalFlags.MonitorFilePath)
 			var err error
 			if err = rFunc(); err != nil {
 				log.Println("error:", err)
@@ -428,6 +417,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				select {
 				case <-time.After(globalFlags.MonitorInterval):
 					if err = rFunc(); err != nil {
+						log.Printf("Monitoring error %v\n", err)
 						break escape
 					}
 				case sig := <-notifier:
