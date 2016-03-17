@@ -412,8 +412,12 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			}
 
 		escape:
+			cnt := 0
 			for {
-				log.Printf("Monitoring %v at %v\n", r.Database, time.Now())
+				if cnt%100 == 0 {
+					log.Printf("Monitoring %v at %v\n", r.Database, time.Now())
+				}
+				cnt++
 				select {
 				case <-time.After(globalFlags.MonitorInterval):
 					if err = rFunc(); err != nil {
