@@ -411,8 +411,8 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				log.Println("error:", err)
 			}
 
-		escape:
 			cnt := 0
+		escape:
 			for {
 				if cnt%100 == 0 {
 					log.Printf("Monitoring %v at %v\n", r.Database, time.Now())
