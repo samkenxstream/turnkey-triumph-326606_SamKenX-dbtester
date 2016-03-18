@@ -70,6 +70,7 @@ func (sp *secondPoints) getTimeSeries() TimeSeries {
 
 	tslice := make(TimeSeries, len(sp.tm))
 	i := 0
+	log.Printf("getTimeSeries has started on %d results\n", len(sp.tm))
 	for k, v := range sp.tm {
 		tslice[i] = timeSeries{
 			timestamp:  k,
@@ -77,7 +78,7 @@ func (sp *secondPoints) getTimeSeries() TimeSeries {
 			throughPut: v.count,
 		}
 		i++
-		if i%100 == 100 {
+		if i%100 == 0 {
 			log.Printf("processing timeseries at %d / %d", i, len(sp.tm))
 		}
 	}
