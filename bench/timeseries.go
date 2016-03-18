@@ -77,6 +77,9 @@ func (sp *secondPoints) getTimeSeries() TimeSeries {
 			throughPut: v.count,
 		}
 		i++
+		if i%100 == 100 {
+			log.Printf("processing timeseries at %d / %d", i, len(sp.tm))
+		}
 	}
 	sort.Sort(tslice)
 	return tslice
