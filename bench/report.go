@@ -16,6 +16,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"math"
 	"sort"
 	"strings"
@@ -83,8 +84,14 @@ func wrapReport(f func()) <-chan struct{} {
 }
 
 func (r *report) finalize() {
+	log.Println("finalize has started")
 	st := time.Now()
+	i := 0
 	for res := range r.results {
+		if i%100 == 0 {
+			log.Printf("processing finalize at %d", i)
+		}
+		i++
 		if res.errStr != "" {
 			r.errorDist[res.errStr]++
 		} else {
