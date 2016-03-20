@@ -167,6 +167,8 @@ type transporterServer struct { // satisfy TransporterServer
 	pid     int
 }
 
+var databaseStopped = make(chan struct{})
+
 func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response, error) {
 	log.Printf("Received message for peer %q", r.PeerIPs)
 	peerIPs := strings.Split(r.PeerIPs, "___")
@@ -377,6 +379,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		}
 		log.Printf("Stopped: %s [PID: %d\n]", t.cmd.Path, t.pid)
 		processPID = t.pid
+		databaseStopped <- struct{}{}
 
 	default:
 		return nil, fmt.Errorf("Not implemented %v", r.Operation)
@@ -426,6 +429,9 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					}
 				case sig := <-notifier:
 					log.Printf("Received %v\n", sig)
+					return
+				case <-databaseStopped:
+					log.Println("Monitoring stopped")
 					return
 				}
 			}
