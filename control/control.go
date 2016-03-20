@@ -107,7 +107,7 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 		nreq.ZookeeperMyID = uint32(i + 1)
 		ep := globalFlags.AgentEndpoints[nreq.EtcdServerIndex]
 
-		log.Printf("Sending request to %s [%s]\n", ep, req.Database)
+		log.Printf("Request to %s [%s]\n", ep, req.Database)
 		conn, err := grpc.Dial(ep, grpc.WithInsecure())
 		if err != nil {
 			log.Printf("error %v when connecting to %s\n", err, ep)
@@ -123,7 +123,7 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 			log.Printf("error %v when transferring to %s\n", err, ep)
 			return
 		}
-		log.Printf("client.Transfer received %+v from %s\n", resp, ep)
+		log.Printf("Response from %s (%+v)\n", ep, resp)
 	}
 }
 
