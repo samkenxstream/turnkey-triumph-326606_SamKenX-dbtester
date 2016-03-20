@@ -89,14 +89,14 @@ func (sp *secondPoints) getTimeSeries() TimeSeries {
 func (ts TimeSeries) String() string {
 	buf := new(bytes.Buffer)
 	wr := csv.NewWriter(buf)
-	if err := wr.Write([]string{"unix_ts", "avg_latency", "throughput"}); err != nil {
+	if err := wr.Write([]string{"unix_ts", "avg_latency_ms", "throughput"}); err != nil {
 		log.Fatal(err)
 	}
 	rows := [][]string{}
 	for i := range ts {
 		row := []string{
 			fmt.Sprintf("%d", ts[i].timestamp),
-			fmt.Sprintf("%s", ts[i].avgLatency),
+			fmt.Sprintf("%f", toMillisecond(ts[i].avgLatency)),
 			fmt.Sprintf("%d", ts[i].throughPut),
 		}
 		rows = append(rows, row)
@@ -108,5 +108,11 @@ func (ts TimeSeries) String() string {
 	if err := wr.Error(); err != nil {
 		log.Fatal(err)
 	}
-	return fmt.Sprintf("\nSample in one second (unix latency throughput):\n%s", buf.String())
+	txt := buf.String()
+	if err := toFile(txt, "time_series.csv"); err != nil {
+		log.Println(err)
+	} else {
+		log.Println("time series saved")
+	}
+	return fmt.Sprintf("\nSample in one second (unix latency throughput):\n%s", txt)
 }

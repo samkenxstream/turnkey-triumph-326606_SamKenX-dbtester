@@ -117,3 +117,22 @@ func multiRandBytes(bytesN, sliceN int) [][]byte {
 	}
 	return rs
 }
+
+func toFile(txt, fpath string) error {
+	f, err := os.OpenFile(fpath, os.O_RDWR|os.O_TRUNC, 0777)
+	if err != nil {
+		f, err = os.Create(fpath)
+		if err != nil {
+			return err
+		}
+	}
+	defer f.Close()
+	if _, err := f.WriteString(txt); err != nil {
+		return err
+	}
+	return nil
+}
+
+func toMillisecond(d time.Duration) float64 {
+	return d.Seconds() * 1000
+}
