@@ -36,11 +36,14 @@ import (
 
 type (
 	Flags struct {
-		GRPCPort        string
-		WorkingDir      string
-		Monitor         bool
-		MonitorInterval time.Duration
-		MonitorFilePath string
+		GRPCPort   string
+		WorkingDir string
+
+		DatabaseLogPath string
+
+		Monitor           bool
+		MonitorInterval   time.Duration
+		MonitorResultPath string
 	}
 
 	// ZookeeperConfig is zookeeper configuration.
@@ -67,7 +70,6 @@ var (
 	etcdBinaryPath = filepath.Join(os.Getenv("GOPATH"), "bin/etcd")
 	etcdToken      = "etcd_token"
 
-	dataLogPath  = "data.log"
 	etcdDataDir  = "data.etcd"
 	zkWorkingDir = "zookeeper"
 	zkDataDir    = "zookeeper/data.zk"
@@ -109,23 +111,38 @@ func init() {
 		shell = "sh"
 	}
 	Command.PersistentFlags().StringVarP(&globalFlags.GRPCPort, "agent-port", "p", ":3500", "Port to server agent gRPC server.")
-	Command.PersistentFlags().StringVarP(&globalFlags.WorkingDir, "working-dir", "d", homeDir(), "Working directory to store data.")
+	Command.PersistentFlags().StringVarP(&globalFlags.WorkingDir, "working-directory", "d", homeDir(), "Working directory to store data.")
+
+	Command.PersistentFlags().StringVar(&globalFlags.DatabaseLogPath, "database-log-path", "database.log", "Path to save database log.")
+
 	Command.PersistentFlags().BoolVar(&globalFlags.Monitor, "monitor", false, "Periodically records resource usage.")
 	Command.PersistentFlags().DurationVar(&globalFlags.MonitorInterval, "monitor-interval", time.Second, "Resource monitor interval.")
-	Command.PersistentFlags().StringVar(&globalFlags.MonitorFilePath, "monitor-path", "monitor.csv", "File path to store monitor results.")
+	Command.PersistentFlags().StringVar(&globalFlags.MonitorResultPath, "monitor-result-path", "monitor.csv", "File path to store monitor results.")
 }
 
 func CommandFunc(cmd *cobra.Command, args []string) {
-	dataLogPath = filepath.Join(globalFlags.WorkingDir, dataLogPath)
-	etcdDataDir = filepath.Join(globalFlags.WorkingDir, etcdDataDir)
-	zkWorkingDir = filepath.Join(globalFlags.WorkingDir, zkWorkingDir)
-	zkDataDir = filepath.Join(globalFlags.WorkingDir, zkDataDir)
+	if !filepath.HasPrefix(globalFlags.DatabaseLogPath, globalFlags.WorkingDir) {
+		globalFlags.DatabaseLogPath = filepath.Join(globalFlags.WorkingDir, globalFlags.DatabaseLogPath)
+	}
+	if !filepath.HasPrefix(etcdDataDir, globalFlags.WorkingDir) {
+		etcdDataDir = filepath.Join(globalFlags.WorkingDir, etcdDataDir)
+	}
+	if !filepath.HasPrefix(zkWorkingDir, globalFlags.WorkingDir) {
+		zkWorkingDir = filepath.Join(globalFlags.WorkingDir, zkWorkingDir)
+	}
+	if !filepath.HasPrefix(zkDataDir, globalFlags.WorkingDir) {
+		zkDataDir = filepath.Join(globalFlags.WorkingDir, zkDataDir)
+	}
+	if !filepath.HasPrefix(globalFlags.MonitorResultPath, globalFlags.WorkingDir) {
+		globalFlags.MonitorResultPath = filepath.Join(globalFlags.WorkingDir, globalFlags.MonitorResultPath)
+	}
 
 	log.Printf("gRPC has started serving at  %s\n", globalFlags.GRPCPort)
-	log.Printf("data log path:               %s\n", dataLogPath)
+	log.Printf("Database log path:           %s\n", globalFlags.DatabaseLogPath)
 	log.Printf("etcd data directory:         %s\n", etcdDataDir)
 	log.Printf("Zookeeper working directory: %s\n", zkWorkingDir)
 	log.Printf("Zookeeper data directory:    %s\n", zkDataDir)
+	log.Printf("Monitor result path:         %s\n", globalFlags.MonitorResultPath)
 
 	var (
 		grpcServer = grpc.NewServer()
@@ -176,7 +193,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				return nil, err
 			}
 
-			f, err := openToAppend(dataLogPath)
+			f, err := openToAppend(globalFlags.DatabaseLogPath)
 			if err != nil {
 				return nil, err
 			}
@@ -281,7 +298,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				return nil, err
 			}
 
-			f, err := openToAppend(dataLogPath)
+			f, err := openToAppend(globalFlags.DatabaseLogPath)
 			if err != nil {
 				return nil, err
 			}
@@ -327,7 +344,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			}
 		}
 
-		f, err := openToAppend(dataLogPath)
+		f, err := openToAppend(globalFlags.DatabaseLogPath)
 		if err != nil {
 			return nil, err
 		}
@@ -381,10 +398,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					return err
 				}
 
-				if !strings.HasPrefix(globalFlags.MonitorFilePath, globalFlags.WorkingDir) {
-					globalFlags.MonitorFilePath = filepath.Join(globalFlags.WorkingDir, globalFlags.MonitorFilePath)
-				}
-				f, err := openToAppend(globalFlags.MonitorFilePath)
+				f, err := openToAppend(globalFlags.MonitorResultPath)
 				if err != nil {
 					return err
 				}
@@ -393,19 +407,14 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				return ps.WriteToCSV(f, pss...)
 			}
 
-			log.Printf("Monitoring %v (file saved at %v)\n", r.Database, globalFlags.MonitorFilePath)
+			log.Printf("%s monitor saved at %s\n", r.Database, globalFlags.MonitorResultPath)
 			var err error
 			if err = rFunc(); err != nil {
 				log.Println("error:", err)
 			}
 
-			cnt := 0
 		escape:
 			for {
-				if cnt%100 == 0 {
-					log.Printf("Monitoring %v at %v\n", r.Database, time.Now())
-				}
-				cnt++
 				select {
 				case <-time.After(globalFlags.MonitorInterval):
 					if err = rFunc(); err != nil {

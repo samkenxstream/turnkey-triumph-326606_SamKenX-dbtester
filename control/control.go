@@ -89,7 +89,7 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 	case "zookeeper":
 		req.Database = agent.Request_ZooKeeper
 	default:
-		log.Printf("Database '%s' is not supported!\n", globalFlags.Database)
+		log.Printf("'%s' is not supported!\n", globalFlags.Database)
 		os.Exit(-1)
 	}
 	peerIPs := extractIPs(globalFlags.AgentEndpoints)
@@ -107,7 +107,7 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 		nreq.ZookeeperMyID = uint32(i + 1)
 		ep := globalFlags.AgentEndpoints[nreq.EtcdServerIndex]
 
-		log.Printf("Request to %s [%s]\n", ep, req.Database)
+		log.Printf("%s to %s\n", req.Database, ep)
 		conn, err := grpc.Dial(ep, grpc.WithInsecure())
 		if err != nil {
 			log.Printf("error %v when connecting to %s\n", err, ep)

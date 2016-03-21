@@ -109,7 +109,7 @@ func (ts TimeSeries) String() string {
 		log.Fatal(err)
 	}
 	txt := buf.String()
-	if err := toFile(txt, "timeseries.csv"); err != nil {
+	if err := toFile(txt, csvResultPath); err != nil {
 		log.Println(err)
 	} else {
 		log.Println("time series saved")

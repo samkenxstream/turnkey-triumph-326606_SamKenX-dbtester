@@ -39,6 +39,8 @@ var (
 	sample       bool
 	noHistogram  bool
 
+	csvResultPath string
+
 	bar     *pb.ProgressBar
 	results chan result
 	wg      sync.WaitGroup
@@ -55,6 +57,7 @@ func init() {
 	Command.PersistentFlags().UintVar(&totalClients, "clients", 1, "Total number of gRPC clients (only for etcd)")
 	Command.PersistentFlags().BoolVar(&sample, "sample", false, "'true' to sample requests for every second.")
 	Command.PersistentFlags().BoolVar(&noHistogram, "no-histogram", false, "'true' to not show results in histogram.")
+	Command.PersistentFlags().StringVar(&csvResultPath, "csv-result-path", "timeseries.csv", "path to store csv results.")
 }
 
 func main() {
