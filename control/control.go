@@ -89,8 +89,10 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 	case "zookeeper":
 		req.Database = agent.Request_ZooKeeper
 	default:
-		log.Printf("'%s' is not supported!\n", globalFlags.Database)
-		os.Exit(-1)
+		if req.Operation != agent.Request_Stop {
+			log.Printf("'%s' is not supported!\n", globalFlags.Database)
+			os.Exit(-1)
+		}
 	}
 	peerIPs := extractIPs(globalFlags.AgentEndpoints)
 	req.PeerIPs = strings.Join(peerIPs, "___") // because protoc mixes the order of 'repeated' type data
