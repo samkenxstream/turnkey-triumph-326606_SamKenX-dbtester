@@ -40,7 +40,8 @@ import (
 
 type (
 	Flags struct {
-		GRPCPort string
+		GRPCPort         string
+		WorkingDirectory string
 	}
 
 	// ZookeeperConfig is zookeeper configuration.
@@ -64,7 +65,7 @@ type (
 var (
 	shell = os.Getenv("SHELL")
 
-	agentLogPath = filepath.Join(homeDir(), "agent.log")
+	agentLogPath = "agent.log"
 
 	etcdBinaryPath = filepath.Join(os.Getenv("GOPATH"), "bin/etcd")
 	etcdToken      = "etcd_token"
@@ -113,9 +114,17 @@ func init() {
 		shell = "sh"
 	}
 	Command.PersistentFlags().StringVar(&globalFlags.GRPCPort, "agent-port", ":3500", "Port to server agent gRPC server.")
+	Command.PersistentFlags().StringVar(&globalFlags.WorkingDirectory, "working-directory", homeDir(), "Working directory.")
 }
 
 func CommandFunc(cmd *cobra.Command, args []string) {
+	if !exist(globalFlags.WorkingDirectory) {
+		log.Fatalf("%s does not exist", globalFlags.WorkingDirectory)
+	}
+	if !filepath.HasPrefix(agentLogPath, globalFlags.WorkingDirectory) {
+		agentLogPath = filepath.Join(globalFlags.WorkingDirectory, agentLogPath)
+	}
+
 	f, err := openToAppend(agentLogPath)
 	if err != nil {
 		log.Println(err)
@@ -157,20 +166,14 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 	peerIPs := strings.Split(r.PeerIPs, "___")
 
 	if r.Operation == Request_Start || r.Operation == Request_Restart {
-		if r.WorkingDirectory == "" {
-			r.WorkingDirectory = homeDir()
+		if !filepath.HasPrefix(etcdDataDir, globalFlags.WorkingDirectory) {
+			etcdDataDir = filepath.Join(globalFlags.WorkingDirectory, etcdDataDir)
 		}
-		if !exist(r.WorkingDirectory) {
-			return nil, fmt.Errorf("%s does not exist", r.WorkingDirectory)
+		if !filepath.HasPrefix(zkWorkingDir, globalFlags.WorkingDirectory) {
+			zkWorkingDir = filepath.Join(globalFlags.WorkingDirectory, zkWorkingDir)
 		}
-		if !filepath.HasPrefix(etcdDataDir, r.WorkingDirectory) {
-			etcdDataDir = filepath.Join(r.WorkingDirectory, etcdDataDir)
-		}
-		if !filepath.HasPrefix(zkWorkingDir, r.WorkingDirectory) {
-			zkWorkingDir = filepath.Join(r.WorkingDirectory, zkWorkingDir)
-		}
-		if !filepath.HasPrefix(zkDataDir, r.WorkingDirectory) {
-			zkDataDir = filepath.Join(r.WorkingDirectory, zkDataDir)
+		if !filepath.HasPrefix(zkDataDir, globalFlags.WorkingDirectory) {
+			zkDataDir = filepath.Join(globalFlags.WorkingDirectory, zkDataDir)
 		}
 		if r.LogPrefix != "" {
 			if !strings.HasPrefix(filepath.Base(r.DatabaseLogPath), r.LogPrefix) {
@@ -180,14 +183,14 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				r.MonitorResultPath = filepath.Join(filepath.Dir(r.MonitorResultPath), r.LogPrefix+"_"+filepath.Base(r.MonitorResultPath))
 			}
 		} else {
-			if !filepath.HasPrefix(r.DatabaseLogPath, r.WorkingDirectory) {
-				r.DatabaseLogPath = filepath.Join(r.WorkingDirectory, r.DatabaseLogPath)
+			if !filepath.HasPrefix(r.DatabaseLogPath, globalFlags.WorkingDirectory) {
+				r.DatabaseLogPath = filepath.Join(globalFlags.WorkingDirectory, r.DatabaseLogPath)
 			}
-			if !filepath.HasPrefix(r.MonitorResultPath, r.WorkingDirectory) {
-				r.MonitorResultPath = filepath.Join(r.WorkingDirectory, r.MonitorResultPath)
+			if !filepath.HasPrefix(r.MonitorResultPath, globalFlags.WorkingDirectory) {
+				r.MonitorResultPath = filepath.Join(globalFlags.WorkingDirectory, r.MonitorResultPath)
 			}
 		}
-		log.Printf("Working directory: %s", r.WorkingDirectory)
+		log.Printf("Working directory: %s", globalFlags.WorkingDirectory)
 		log.Printf("etcd data directory: %s", etcdDataDir)
 		log.Printf("Zookeeper working directory: %s", zkWorkingDir)
 		log.Printf("Zookeeper data directory: %s", zkDataDir)

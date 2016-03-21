@@ -34,7 +34,6 @@ type (
 		ZookeeperPreAllocSize   int64
 		ZookeeperMaxClientCnxns int64
 
-		WorkingDirectory              string
 		LogPrefix                     string
 		DatabaseLogPath               string
 		MonitorResultPath             string
@@ -69,7 +68,6 @@ func init() {
 	StartCommand.PersistentFlags().Int64Var(&globalFlags.ZookeeperPreAllocSize, "zk-pre-alloc-size", 65536*1024, "Disk pre-allocation size in bytes.")
 	StartCommand.PersistentFlags().Int64Var(&globalFlags.ZookeeperMaxClientCnxns, "zk-max-client-conns", 5000, "Maximum number of concurrent Zookeeper connection.")
 
-	StartCommand.PersistentFlags().StringVar(&globalFlags.WorkingDirectory, "working-directory", "", "Working directory of the remote machine. If empty, it will use its home directory.")
 	StartCommand.PersistentFlags().StringVar(&globalFlags.LogPrefix, "log-prefix", "", "Prefix to all logs to be generated in agents.")
 	StartCommand.PersistentFlags().StringVar(&globalFlags.DatabaseLogPath, "database-log-path", "database.log", "Path of database log.")
 	StartCommand.PersistentFlags().StringVar(&globalFlags.MonitorResultPath, "monitor-result-path", "monitor.csv", "CSV file path of monitoring results.")
@@ -118,7 +116,6 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 		req.ZookeeperPreAllocSize = globalFlags.ZookeeperPreAllocSize
 		req.ZookeeperMaxClientCnxns = globalFlags.ZookeeperMaxClientCnxns
 
-		req.WorkingDirectory = globalFlags.WorkingDirectory
 		req.LogPrefix = globalFlags.LogPrefix
 		req.DatabaseLogPath = globalFlags.DatabaseLogPath
 		req.MonitorResultPath = globalFlags.MonitorResultPath
