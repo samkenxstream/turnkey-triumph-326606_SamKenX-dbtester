@@ -14,7 +14,10 @@
 
 package agent
 
-import "os"
+import (
+	"os"
+	"runtime"
+)
 
 func openToAppend(fpath string) (*os.File, error) {
 	f, err := os.OpenFile(fpath, os.O_RDWR|os.O_APPEND, 0777)
@@ -40,4 +43,15 @@ func toFile(txt, fpath string) error {
 		return err
 	}
 	return nil
+}
+
+func homeDir() string {
+	if runtime.GOOS == "windows" {
+		home := os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
+		if home == "" {
+			home = os.Getenv("USERPROFILE")
+		}
+		return home
+	}
+	return os.Getenv("HOME")
 }

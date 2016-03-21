@@ -23,7 +23,6 @@ import (
 	"os/exec"
 	"os/signal"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"syscall"
 	"text/template"
@@ -104,17 +103,6 @@ maxClientCnxns={{.MaxClientCnxns}}
 	}
 	globalFlags = Flags{}
 )
-
-func homeDir() string {
-	if runtime.GOOS == "windows" {
-		home := os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
-		if home == "" {
-			home = os.Getenv("USERPROFILE")
-		}
-		return home
-	}
-	return os.Getenv("HOME")
-}
 
 func init() {
 	if len(shell) == 0 {
@@ -227,9 +215,6 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				"--experimental-gRPC-addr", grpcURLs[r.EtcdServerIndex],
 			}
 			flagString := strings.Join(flags, " ")
-
-			// args := []string{shell, "-c", etcdBinaryPath + " " + flagString}
-			// cmd := exec.Command(args[0], args[1:]...)
 
 			cmd := exec.Command(etcdBinaryPath, flags...)
 			cmd.Stdin = nil
