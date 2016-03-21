@@ -222,13 +222,11 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			// generate flags from etcd server name
 			clusterN := len(peerIPs)
 			names := make([]string, clusterN)
-			grpcURLs := make([]string, clusterN)
 			clientURLs := make([]string, clusterN)
 			peerURLs := make([]string, clusterN)
 			members := make([]string, clusterN)
 			for i, u := range peerIPs {
 				names[i] = fmt.Sprintf("etcd-%d", i)
-				grpcURLs[i] = fmt.Sprintf("%s:2378", u)
 				clientURLs[i] = fmt.Sprintf("http://%s:2379", u)
 				peerURLs[i] = fmt.Sprintf("http://%s:2380", u)
 				members[i] = fmt.Sprintf("%s=%s", names[i], peerURLs[i])
@@ -249,7 +247,6 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				"--initial-cluster-state", "new",
 
 				"--experimental-v3demo",
-				"--experimental-gRPC-addr", grpcURLs[r.EtcdServerIndex],
 			}
 			flagString := strings.Join(flags, " ")
 
