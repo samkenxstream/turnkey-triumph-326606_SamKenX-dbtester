@@ -19,6 +19,14 @@ import (
 	"runtime"
 )
 
+func openToRead(fpath string) (*os.File, error) {
+	f, err := os.OpenFile(fpath, os.O_RDONLY, 0444)
+	if err != nil {
+		return f, err
+	}
+	return f, nil
+}
+
 func openToAppend(fpath string) (*os.File, error) {
 	f, err := os.OpenFile(fpath, os.O_RDWR|os.O_APPEND, 0777)
 	if err != nil {
@@ -54,4 +62,23 @@ func homeDir() string {
 		return home
 	}
 	return os.Getenv("HOME")
+}
+
+// exist returns true if the file or directory exists.
+func exist(fpath string) bool {
+	st, err := os.Stat(fpath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return false
+		}
+	}
+	if st.IsDir() {
+		return true
+	}
+	if _, err := os.Stat(fpath); err != nil {
+		if os.IsNotExist(err) {
+			return false
+		}
+	}
+	return true
 }
