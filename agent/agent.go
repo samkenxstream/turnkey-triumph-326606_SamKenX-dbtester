@@ -44,6 +44,8 @@ type (
 		Monitor           bool
 		MonitorInterval   time.Duration
 		MonitorResultPath string
+
+		StorageSecretKeyPath string
 	}
 
 	// ZookeeperConfig is zookeeper configuration.
@@ -110,14 +112,16 @@ func init() {
 	if len(shell) == 0 {
 		shell = "sh"
 	}
-	Command.PersistentFlags().StringVarP(&globalFlags.GRPCPort, "agent-port", "p", ":3500", "Port to server agent gRPC server.")
-	Command.PersistentFlags().StringVarP(&globalFlags.WorkingDir, "working-directory", "d", homeDir(), "Working directory to store data.")
+	Command.PersistentFlags().StringVar(&globalFlags.GRPCPort, "agent-port", ":3500", "Port to server agent gRPC server.")
+	Command.PersistentFlags().StringVar(&globalFlags.WorkingDir, "working-directory", homeDir(), "Working directory to store data.")
 
 	Command.PersistentFlags().StringVar(&globalFlags.DatabaseLogPath, "database-log-path", "database.log", "Path to save database log.")
 
 	Command.PersistentFlags().BoolVar(&globalFlags.Monitor, "monitor", false, "Periodically records resource usage.")
 	Command.PersistentFlags().DurationVar(&globalFlags.MonitorInterval, "monitor-interval", time.Second, "Resource monitor interval.")
 	Command.PersistentFlags().StringVar(&globalFlags.MonitorResultPath, "monitor-result-path", "monitor.csv", "File path to store monitor results.")
+
+	Command.PersistentFlags().StringVar(&globalFlags.StorageSecretKeyPath, "storage-secret-key-path", "", "Key to use for uploading logs and data.")
 }
 
 func CommandFunc(cmd *cobra.Command, args []string) {
@@ -136,6 +140,9 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 	if !filepath.HasPrefix(globalFlags.MonitorResultPath, globalFlags.WorkingDir) {
 		globalFlags.MonitorResultPath = filepath.Join(globalFlags.WorkingDir, globalFlags.MonitorResultPath)
 	}
+	if !filepath.HasPrefix(globalFlags.StorageSecretKeyPath, globalFlags.WorkingDir) {
+		globalFlags.StorageSecretKeyPath = filepath.Join(globalFlags.WorkingDir, globalFlags.StorageSecretKeyPath)
+	}
 
 	log.Printf("gRPC has started serving at  %s\n", globalFlags.GRPCPort)
 	log.Printf("Database log path:           %s\n", globalFlags.DatabaseLogPath)
@@ -143,6 +150,7 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 	log.Printf("Zookeeper working directory: %s\n", zkWorkingDir)
 	log.Printf("Zookeeper data directory:    %s\n", zkDataDir)
 	log.Printf("Monitor result path:         %s\n", globalFlags.MonitorResultPath)
+	log.Printf("Storage key secret path:     %s\n", globalFlags.StorageSecretKeyPath) // TODO: use this to upload to Google cloud storage
 
 	var (
 		grpcServer = grpc.NewServer()
