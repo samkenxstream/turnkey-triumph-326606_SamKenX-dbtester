@@ -28,7 +28,7 @@ import (
 // This represents the base command when called without any subcommands
 var Command = &cobra.Command{
 	Use:   "bench",
-	Short: "Low-level benchmark tool for etcd, Zookeeper.",
+	Short: "Low-level benchmark tool for etcd, Zookeeper, etcd2, consul.",
 }
 
 var (

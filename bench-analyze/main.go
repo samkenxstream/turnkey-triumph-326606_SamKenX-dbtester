@@ -1,3 +1,17 @@
+// Copyright 2016 CoreOS, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package main
 
 import (
@@ -35,6 +49,10 @@ func main() {
 	tableToMemoryIdx := make(map[int]int)
 	maxSize := 0
 
+	var compareColumns = map[string]int{
+		"second": 0,
+	}
+	initSize := len(compareColumns)
 	for i, prefix := range prefixes {
 		tb, err := combine(prefix)
 		if err != nil {
@@ -59,19 +77,13 @@ func main() {
 		if maxSize < len(tb.Rows) {
 			maxSize = len(tb.Rows)
 		}
-	}
 
-	// second, avg_latency_ms, throughput, avg_cpu, avg_memory_mb
-	var compareColumns = map[string]int{
-		"second": 0,
-	}
-	initSize := len(compareColumns)
-	for i := range tbs {
 		compareColumns["avg_latency_ms_"+tableToSuffix[i]] = 4*i + initSize
 		compareColumns["throughput_"+tableToSuffix[i]] = 4*i + initSize + 1
 		compareColumns["avg_cpu_"+tableToSuffix[i]] = 4*i + initSize + 2
 		compareColumns["avg_memory_mb_"+tableToSuffix[i]] = 4*i + initSize + 3
 	}
+
 	columnSlice := make([]string, len(compareColumns))
 	for k, v := range compareColumns {
 		columnSlice[v] = k
@@ -99,6 +111,10 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Printf("Successfully saved compared.csv")
+
+	// TODO:
+	// add etcd2, consul
+	// add plotting
 }
 
 func combine(prefix string) (ps.Table, error) {
