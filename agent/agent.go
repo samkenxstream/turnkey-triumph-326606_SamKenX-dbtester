@@ -123,8 +123,8 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 	}
 	defer f.Close()
 	log.SetOutput(f)
-	log.Printf("gRPC serving: %s\n", globalFlags.GRPCPort)
 
+	log.Printf("gRPC serving: %s", globalFlags.GRPCPort)
 	var (
 		grpcServer = grpc.NewServer()
 		sender     = NewTransporterServer()
@@ -187,12 +187,12 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				r.MonitorResultPath = filepath.Join(r.WorkingDirectory, r.MonitorResultPath)
 			}
 		}
-		log.Printf("Working directory:           %s\n", r.WorkingDirectory)
-		log.Printf("etcd data directory:         %s\n", etcdDataDir)
-		log.Printf("Zookeeper working directory: %s\n", zkWorkingDir)
-		log.Printf("Zookeeper data directory:    %s\n", zkDataDir)
-		log.Printf("Database log path:           %s\n", r.DatabaseLogPath)
-		log.Printf("Monitor result path:         %s\n", r.MonitorResultPath)
+		log.Printf("Working directory: %s", r.WorkingDirectory)
+		log.Printf("etcd data directory: %s", etcdDataDir)
+		log.Printf("Zookeeper working directory: %s", zkWorkingDir)
+		log.Printf("Zookeeper data directory: %s", zkDataDir)
+		log.Printf("Database log path: %s", r.DatabaseLogPath)
+		log.Printf("Monitor result path: %s", r.MonitorResultPath)
 	}
 	t.req = *r
 
@@ -253,7 +253,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			cmd := exec.Command(etcdBinaryPath, flags...)
 			cmd.Stdout = f
 			cmd.Stderr = f
-			log.Printf("Starting: %s %s\n", cmd.Path, flagString)
+			log.Printf("Starting: %s %s", cmd.Path, flagString)
 			if err := cmd.Start(); err != nil {
 				return nil, err
 			}
@@ -263,10 +263,10 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			processPID = t.pid
 			go func() {
 				if err := cmd.Wait(); err != nil {
-					log.Printf("Start(%s) cmd.Wait returned %v\n", cmd.Path, err)
+					log.Printf("Start(%s) cmd.Wait returned %v", cmd.Path, err)
 					return
 				}
-				log.Printf("Exiting %s\n", cmd.Path)
+				log.Printf("Exiting %s", cmd.Path)
 			}()
 
 		case Request_ZooKeeper:
@@ -275,18 +275,18 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				return nil, err
 			}
 
-			log.Printf("os.Chdir: %s\n", zkWorkingDir)
+			log.Printf("os.Chdir: %s", zkWorkingDir)
 			if err := os.Chdir(zkWorkingDir); err != nil {
 				return nil, err
 			}
 
-			log.Printf("os.MkdirAll: %s\n", zkDataDir)
+			log.Printf("os.MkdirAll: %s", zkDataDir)
 			if err := os.MkdirAll(zkDataDir, 0777); err != nil {
 				return nil, err
 			}
 
 			idFilePath := filepath.Join(zkDataDir, "myid")
-			log.Printf("Writing %d to %s\n", r.ZookeeperMyID, idFilePath)
+			log.Printf("Writing %d to %s", r.ZookeeperMyID, idFilePath)
 			if err := toFile(fmt.Sprintf("%d", r.ZookeeperMyID), idFilePath); err != nil {
 				return nil, err
 			}
@@ -309,7 +309,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			zc := buf.String()
 
 			configFilePath := filepath.Join(zkWorkingDir, "zookeeper.config")
-			log.Printf("Writing %q to %s\n", zc, configFilePath)
+			log.Printf("Writing %q to %s", zc, configFilePath)
 			if err := toFile(zc, configFilePath); err != nil {
 				return nil, err
 			}
@@ -327,7 +327,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			cmd := exec.Command(args[0], args[1:]...)
 			cmd.Stdout = f
 			cmd.Stderr = f
-			log.Printf("Starting: %s %s\n", cmd.Path, strings.Join(args[1:], " "))
+			log.Printf("Starting: %s %s", cmd.Path, strings.Join(args[1:], " "))
 			if err := cmd.Start(); err != nil {
 				return nil, err
 			}
@@ -337,10 +337,10 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			processPID = t.pid
 			go func() {
 				if err := cmd.Wait(); err != nil {
-					log.Printf("Start(%s) cmd.Wait returned %v\n", cmd.Path, err)
+					log.Printf("Start(%s) cmd.Wait returned %v", cmd.Path, err)
 					return
 				}
-				log.Printf("Exiting %s\n", cmd.Path)
+				log.Printf("Exiting %s", cmd.Path)
 			}()
 
 		default:
@@ -352,7 +352,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			return nil, fmt.Errorf("nil command")
 		}
 
-		log.Printf("Restarting %s\n", t.req.Database)
+		log.Printf("Restarting %s", t.req.Database)
 		if r.Database == Request_ZooKeeper {
 			if err := os.Chdir(zkWorkingDir); err != nil {
 				return nil, err
@@ -368,7 +368,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		cmd := exec.Command(t.cmd.Path, t.cmd.Args[1:]...)
 		cmd.Stdout = f
 		cmd.Stderr = f
-		log.Printf("Restarting: %s\n", strings.Join(t.cmd.Args, " "))
+		log.Printf("Restarting: %s", strings.Join(t.cmd.Args, " "))
 		if err := cmd.Start(); err != nil {
 			return nil, err
 		}
@@ -378,22 +378,22 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		processPID = t.pid
 		go func() {
 			if err := cmd.Wait(); err != nil {
-				log.Printf("Restart(%s) cmd.Wait returned %v\n", cmd.Path, err)
+				log.Printf("Restart(%s) cmd.Wait returned %v", cmd.Path, err)
 				return
 			}
-			log.Printf("Exiting %s\n", cmd.Path)
+			log.Printf("Exiting %s", cmd.Path)
 		}()
 
 	case Request_Stop:
 		if t.cmd == nil {
 			return nil, fmt.Errorf("nil command")
 		}
-		log.Printf("Stopping %s [PID: %d]\n", t.req.Database, t.pid)
+		log.Printf("Stopping %s [PID: %d]", t.req.Database, t.pid)
 		ps.Kill(os.Stdout, false, ps.Process{Stat: ps.Stat{Pid: int64(t.pid)}})
 		if t.logfile != nil {
 			t.logfile.Close()
 		}
-		log.Printf("Stopped: %s [PID: %d\n]", t.cmd.Path, t.pid)
+		log.Printf("Stopped: %s [PID: %d]", t.cmd.Path, t.pid)
 		processPID = t.pid
 		databaseStopped <- struct{}{}
 
@@ -421,7 +421,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				return ps.WriteToCSV(f, pss...)
 			}
 
-			log.Printf("%s monitor saved at %s\n", r.Database, r.MonitorResultPath)
+			log.Printf("%s monitor saved at %s", r.Database, r.MonitorResultPath)
 			var err error
 			if err = rFunc(); err != nil {
 				log.Warningln("error:", err)
@@ -433,11 +433,11 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				select {
 				case <-time.After(time.Second):
 					if err = rFunc(); err != nil {
-						log.Warnf("Monitoring error %v\n", err)
+						log.Warnf("Monitoring error %v", err)
 						break escape
 					}
 				case sig := <-notifier:
-					log.Printf("Received %v\n", sig)
+					log.Printf("Received %v", sig)
 					return
 				case <-databaseStopped:
 					log.Println("Monitoring stopped. Uploading data to cloud storage...")
@@ -448,26 +448,26 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 						storage.ScopeFullControl,
 					)
 					if err != nil {
-						log.Warnf("error (%v) with\n\n%q\n\n", err, r.GoogleCloudStorageJSONKey)
+						log.Warnf("error (%v) with %q", err, r.GoogleCloudStorageJSONKey)
 						return
 					}
 					ctx := context.Background()
 					aclient, err := storage.NewAdminClient(ctx, r.GoogleCloudProjectName, cloud.WithTokenSource(conf.TokenSource(ctx)))
 					if err != nil {
-						log.Warnf("error (%v) with %q\n", err, r.GoogleCloudProjectName)
+						log.Warnf("error (%v) with %q", err, r.GoogleCloudProjectName)
 					}
 					defer aclient.Close()
 
 					if err := aclient.CreateBucket(context.Background(), r.GoogleCloudStorageBucketName, nil); err != nil {
 						if !strings.Contains(err.Error(), "You already own this bucket. Please select another name") {
-							log.Warnf("error (%v) with %q\n", err, r.GoogleCloudStorageBucketName)
+							log.Warnf("error (%v) with %q", err, r.GoogleCloudStorageBucketName)
 						}
 					}
 
 					sctx := context.Background()
 					sclient, err := storage.NewClient(sctx, cloud.WithTokenSource(conf.TokenSource(sctx)))
 					if err != nil {
-						log.Warnf("error (%v)\n", err)
+						log.Warnf("error (%v)", err)
 						return
 					}
 					defer sclient.Close()
@@ -491,54 +491,54 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 						dstAgentLogPath = r.LogPrefix + fmt.Sprintf("_%d_", r.EtcdServerIndex) + filepath.Base(agentLogPath)
 					}
 
-					log.Printf("Uploading %s\n", srcDatabaseLogPath)
+					log.Printf("Uploading %s", srcDatabaseLogPath)
 					wc1 := sclient.Bucket(r.GoogleCloudStorageBucketName).Object(dstDatabaseLogPath).NewWriter(context.Background())
 					wc1.ContentType = "text/plain"
 					bts1, err := ioutil.ReadFile(srcDatabaseLogPath)
 					if err != nil {
-						log.Warnf("error (%v)\n", err)
+						log.Warnf("error (%v)", err)
 						return
 					}
 					if _, err := wc1.Write(bts1); err != nil {
-						log.Warnf("error (%v)\n", err)
+						log.Warnf("error (%v)", err)
 						return
 					}
 					if err := wc1.Close(); err != nil {
-						log.Warnf("error (%v)\n", err)
+						log.Warnf("error (%v)", err)
 						return
 					}
 
-					log.Printf("Uploading %s\n", srcMonitorResultPath)
+					log.Printf("Uploading %s", srcMonitorResultPath)
 					wc2 := sclient.Bucket(r.GoogleCloudStorageBucketName).Object(dstMonitorResultPath).NewWriter(context.Background())
 					wc2.ContentType = "text/plain"
 					bts2, err := ioutil.ReadFile(srcMonitorResultPath)
 					if err != nil {
-						log.Warnf("error (%v)\n", err)
+						log.Warnf("error (%v)", err)
 						return
 					}
 					if _, err := wc2.Write(bts2); err != nil {
-						log.Warnf("error (%v)\n", err)
+						log.Warnf("error (%v)", err)
 						return
 					}
 					if err := wc2.Close(); err != nil {
-						log.Warnf("error (%v)\n", err)
+						log.Warnf("error (%v)", err)
 						return
 					}
 
-					log.Printf("Uploading %s\n", srcAgentLogPath)
+					log.Printf("Uploading %s", srcAgentLogPath)
 					wc3 := sclient.Bucket(r.GoogleCloudStorageBucketName).Object(dstAgentLogPath).NewWriter(context.Background())
 					wc3.ContentType = "text/plain"
 					bts3, err := ioutil.ReadFile(srcAgentLogPath)
 					if err != nil {
-						log.Warnf("error (%v)\n", err)
+						log.Warnf("error (%v)", err)
 						return
 					}
 					if _, err := wc3.Write(bts3); err != nil {
-						log.Warnf("error (%v)\n", err)
+						log.Warnf("error (%v)", err)
 						return
 					}
 					if err := wc3.Close(); err != nil {
-						log.Warnf("error (%v)\n", err)
+						log.Warnf("error (%v)", err)
 						return
 					}
 					return

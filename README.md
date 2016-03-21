@@ -10,15 +10,15 @@ Run [`install.sh`](install.sh):
 go get github.com/coreos/dbtester
 
 # For each machine
-dbtester agent --working-directory $WORKING_DIR --monitor
-dbtester agent --working-directory $WORKING_DIR --monitor
-dbtester agent --working-directory $WORKING_DIR --monitor
-dbtester agent --working-directory $WORKING_DIR --monitor
-dbtester agent --working-directory $WORKING_DIR --monitor
+dbtester agent
+dbtester agent
+dbtester agent
+dbtester agent
+dbtester agent
 
 # Client machine
-dbtester start --database="etcd" --agent-endpoints="$(echo $ETCD_RPC_ENDPOINTS)"
-dbtester start --database="zk" --zk-max-client-conns=5000 --agent-endpoints="$(echo $ZK_RPC_ENDPOINTS)"
+dbtester start --agent-endpoints="$(echo $ETCD_RPC_ENDPOINTS)" --database="etcd" 
+dbtester start --agent-endpoints="$(echo $ZK_RPC_ENDPOINTS)"   --database="zk" --zk-max-client-conns=5000
 ```
 
 [cistat]: https://travis-ci.org/coreos/dbtester
