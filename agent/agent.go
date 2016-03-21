@@ -28,8 +28,8 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/coreos/etcd/Godeps/_workspace/src/github.com/spf13/cobra"
 	"github.com/gyuho/psn/ps"
+	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
