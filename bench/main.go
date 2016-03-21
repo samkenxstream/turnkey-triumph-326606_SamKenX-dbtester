@@ -39,10 +39,7 @@ var (
 	sample       bool
 	noHistogram  bool
 
-	csvResultPath                 string
-	googleCloudProjectName        string
-	googleCloudStorageJSONKeyPath string
-	googleCloudStorageBucketName  string
+	csvResultPath string
 
 	bar     *pb.ProgressBar
 	results chan result
@@ -61,9 +58,6 @@ func init() {
 	Command.PersistentFlags().BoolVar(&sample, "sample", false, "'true' to sample requests for every second.")
 	Command.PersistentFlags().BoolVar(&noHistogram, "no-histogram", false, "'true' to not show results in histogram.")
 	Command.PersistentFlags().StringVar(&csvResultPath, "csv-result-path", "timeseries.csv", "path to store csv results.")
-	Command.PersistentFlags().StringVar(&googleCloudProjectName, "google-cloud-project-name", "", "Google cloud project name.")
-	Command.PersistentFlags().StringVar(&googleCloudStorageJSONKeyPath, "google-cloud-storage-json-key-path", "", "Path of JSON key file.")
-	Command.PersistentFlags().StringVar(&googleCloudStorageBucketName, "google-cloud-storage-bucket-name", "", "Google cloud storage bucket name.")
 }
 
 func main() {
