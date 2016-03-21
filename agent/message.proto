@@ -39,6 +39,30 @@ message Request {
 	// ZookeeperMaxClientCnxns limits the number of concurrent connections
 	// (at the socket level) that a single client, identified by IP address.
 	int64 zookeeperMaxClientCnxns = 7;
+
+	// WorkingDirectory is the working directory of the remote machine.
+	// If empty, it will use its home directory.
+	string workingDirectory = 8;
+
+	// LogPrefix prefixes all logs to be generated in agent.
+	string logPrefix = 9;
+
+	// DatabaseLogPath is the file path to store the database logs.
+	string databaseLogPath = 10;
+
+	// MonitorResultPath is the file path to store monitoring results.
+	string monitorResultPath = 11;
+
+	// GoogleCloudProjectName is the project name to use
+	// to upload logs.
+	string googleCloudProjectName = 12;
+
+	// GoogleCloudStorageJSONKey is the key to be used to upload
+	// data and logs to Google Cloud Storage.
+	string googleCloudStorageJSONKey = 13;
+
+	// GoogleCloudStorageBucketName is the bucket name to store all data and logs.
+	string googleCloudStorageBucketName = 14;
 }
 
 message Response {

@@ -58,18 +58,17 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 		switch database {
 		case "etcd":
 			fmt.Printf("PUT '%s' to etcd\n", k)
-
-			var cerr error
+			var err error
 			for i := 0; i < 5; i++ {
 				clients := mustCreateClients(1, 1)
-				_, cerr = clients[0].Do(context.Background(), v3.OpPut(k, string(v)))
-				if cerr != nil {
+				_, err = clients[0].Do(context.Background(), v3.OpPut(k, string(v)))
+				if err != nil {
 					continue
 				}
 				fmt.Printf("Done with PUT '%s' to etcd\n", k)
 				break
 			}
-			if cerr != nil {
+			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
 			}
@@ -77,18 +76,17 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 		case "zk":
 			k = "/" + k
 			fmt.Printf("PUT '%s' to Zookeeper\n", k)
-
-			var cerr error
+			var err error
 			for i := 0; i < 5; i++ {
 				conns := mustCreateConnsZk(totalConns)
-				_, cerr = conns[0].Create(k, v, zkCreateFlags, zkCreateAcl)
-				if cerr != nil {
+				_, err = conns[0].Create(k, v, zkCreateFlags, zkCreateAcl)
+				if err != nil {
 					continue
 				}
 				fmt.Printf("Done with PUT '%s' to Zookeeper\n", k)
 				break
 			}
-			if cerr != nil {
+			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
 			}

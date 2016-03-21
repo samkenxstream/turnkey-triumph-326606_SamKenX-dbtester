@@ -18,10 +18,17 @@ import (
 	"bytes"
 	"encoding/csv"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"sort"
+	"strings"
 	"sync"
 	"time"
+
+	"golang.org/x/net/context"
+	"golang.org/x/oauth2/google"
+	"google.golang.org/cloud"
+	"google.golang.org/cloud/storage"
 )
 
 type timeSeries struct {
@@ -112,7 +119,47 @@ func (ts TimeSeries) String() string {
 	if err := toFile(txt, csvResultPath); err != nil {
 		log.Println(err)
 	} else {
-		log.Println("time series saved")
+		log.Println("time series saved... uploading to Google cloud storage...")
+		kbts, err := ioutil.ReadFile(googleCloudStorageJSONKeyPath)
+		if err != nil {
+			log.Fatal(err)
+		}
+		conf, err := google.JWTConfigFromJSON(
+			kbts,
+			storage.ScopeFullControl,
+		)
+		if err != nil {
+			log.Fatal(err)
+		}
+		ctx := context.Background()
+		aclient, err := storage.NewAdminClient(ctx, googleCloudProjectName, cloud.WithTokenSource(conf.TokenSource(ctx)))
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer aclient.Close()
+
+		if err := aclient.CreateBucket(context.Background(), googleCloudStorageBucketName, nil); err != nil {
+			if !strings.Contains(err.Error(), "You already own this bucket. Please select another name") {
+				log.Fatal(err)
+			}
+		}
+
+		sctx := context.Background()
+		sclient, err := storage.NewClient(sctx, cloud.WithTokenSource(conf.TokenSource(sctx)))
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer sclient.Close()
+
+		log.Printf("Uploading %s\n", csvResultPath)
+		wc := sclient.Bucket(googleCloudStorageBucketName).Object(csvResultPath).NewWriter(context.Background())
+		wc.ContentType = "text/plain"
+		if _, err := wc.Write([]byte(txt)); err != nil {
+			log.Fatal(err)
+		}
+		if err := wc.Close(); err != nil {
+			log.Fatal(err)
+		}
 	}
 	return fmt.Sprintf("\nSample in one second (unix latency throughput):\n%s", txt)
 }

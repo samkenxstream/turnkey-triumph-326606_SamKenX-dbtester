@@ -15,6 +15,7 @@
 package control
 
 import (
+	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -32,6 +33,14 @@ type (
 		AgentEndpoints          []string
 		ZookeeperPreAllocSize   int64
 		ZookeeperMaxClientCnxns int64
+
+		WorkingDirectory              string
+		LogPrefix                     string
+		DatabaseLogPath               string
+		MonitorResultPath             string
+		GoogleCloudProjectName        string
+		GoogleCloudStorageJSONKeyPath string
+		GoogleCloudStorageBucketName  string
 	}
 )
 
@@ -59,6 +68,14 @@ func init() {
 	StartCommand.PersistentFlags().StringSliceVar(&globalFlags.AgentEndpoints, "agent-endpoints", []string{""}, "Endpoints to send client requests to, then it automatically configures.")
 	StartCommand.PersistentFlags().Int64Var(&globalFlags.ZookeeperPreAllocSize, "zk-pre-alloc-size", 65536*1024, "Disk pre-allocation size in bytes.")
 	StartCommand.PersistentFlags().Int64Var(&globalFlags.ZookeeperMaxClientCnxns, "zk-max-client-conns", 5000, "Maximum number of concurrent Zookeeper connection.")
+
+	StartCommand.PersistentFlags().StringVar(&globalFlags.WorkingDirectory, "working-directory", "", "Working directory of the remote machine. If empty, it will use its home directory.")
+	StartCommand.PersistentFlags().StringVar(&globalFlags.LogPrefix, "log-prefix", "", "Prefix to all logs to be generated in agents.")
+	StartCommand.PersistentFlags().StringVar(&globalFlags.DatabaseLogPath, "database-log-path", "database.log", "Path of database log.")
+	StartCommand.PersistentFlags().StringVar(&globalFlags.MonitorResultPath, "monitor-result-path", "monitor.csv", "CSV file path of monitoring results.")
+	StartCommand.PersistentFlags().StringVar(&globalFlags.GoogleCloudProjectName, "google-cloud-project-name", "", "Google cloud project name.")
+	StartCommand.PersistentFlags().StringVar(&globalFlags.GoogleCloudStorageJSONKeyPath, "google-cloud-storage-json-key-path", "", "Path of JSON key file.")
+	StartCommand.PersistentFlags().StringVar(&globalFlags.GoogleCloudStorageBucketName, "google-cloud-storage-bucket-name", "", "Google cloud storage bucket name.")
 
 	StopCommand.PersistentFlags().StringSliceVar(&globalFlags.AgentEndpoints, "agent-endpoints", []string{""}, "Endpoints to send client requests to, then it automatically configures.")
 
@@ -100,6 +117,19 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 	if cmd.Use == "start" {
 		req.ZookeeperPreAllocSize = globalFlags.ZookeeperPreAllocSize
 		req.ZookeeperMaxClientCnxns = globalFlags.ZookeeperMaxClientCnxns
+
+		req.WorkingDirectory = globalFlags.WorkingDirectory
+		req.LogPrefix = globalFlags.LogPrefix
+		req.DatabaseLogPath = globalFlags.DatabaseLogPath
+		req.MonitorResultPath = globalFlags.MonitorResultPath
+		req.GoogleCloudProjectName = globalFlags.GoogleCloudProjectName
+		bts, err := ioutil.ReadFile(globalFlags.GoogleCloudStorageJSONKeyPath)
+		if err != nil {
+			log.Println(err)
+			os.Exit(-1)
+		}
+		req.GoogleCloudStorageJSONKey = string(bts)
+		req.GoogleCloudStorageBucketName = globalFlags.GoogleCloudStorageBucketName
 	}
 
 	for i := range peerIPs {

@@ -17,7 +17,7 @@ package agent
 import (
 	"bytes"
 	"fmt"
-	"log"
+	"io/ioutil"
 	"net"
 	"os"
 	"os/exec"
@@ -28,24 +28,19 @@ import (
 	"text/template"
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/gyuho/psn/ps"
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
+	"golang.org/x/oauth2/google"
+	"google.golang.org/cloud"
+	"google.golang.org/cloud/storage"
 	"google.golang.org/grpc"
 )
 
 type (
 	Flags struct {
-		GRPCPort   string
-		WorkingDir string
-
-		DatabaseLogPath string
-
-		Monitor           bool
-		MonitorInterval   time.Duration
-		MonitorResultPath string
-
-		StorageSecretKeyPath string
+		GRPCPort string
 	}
 
 	// ZookeeperConfig is zookeeper configuration.
@@ -68,6 +63,8 @@ type (
 
 var (
 	shell = os.Getenv("SHELL")
+
+	agentLogPath = filepath.Join(homeDir(), "agent.log")
 
 	etcdBinaryPath = filepath.Join(os.Getenv("GOPATH"), "bin/etcd")
 	etcdToken      = "etcd_token"
@@ -109,48 +106,24 @@ maxClientCnxns={{.MaxClientCnxns}}
 )
 
 func init() {
+	log.SetFormatter(&log.JSONFormatter{})
+	log.SetLevel(log.InfoLevel)
+
 	if len(shell) == 0 {
 		shell = "sh"
 	}
 	Command.PersistentFlags().StringVar(&globalFlags.GRPCPort, "agent-port", ":3500", "Port to server agent gRPC server.")
-	Command.PersistentFlags().StringVar(&globalFlags.WorkingDir, "working-directory", homeDir(), "Working directory to store data.")
-
-	Command.PersistentFlags().StringVar(&globalFlags.DatabaseLogPath, "database-log-path", "database.log", "Path to save database log.")
-
-	Command.PersistentFlags().BoolVar(&globalFlags.Monitor, "monitor", false, "Periodically records resource usage.")
-	Command.PersistentFlags().DurationVar(&globalFlags.MonitorInterval, "monitor-interval", time.Second, "Resource monitor interval.")
-	Command.PersistentFlags().StringVar(&globalFlags.MonitorResultPath, "monitor-result-path", "monitor.csv", "File path to store monitor results.")
-
-	Command.PersistentFlags().StringVar(&globalFlags.StorageSecretKeyPath, "storage-secret-key-path", "", "Key to use for uploading logs and data.")
 }
 
 func CommandFunc(cmd *cobra.Command, args []string) {
-	if !filepath.HasPrefix(globalFlags.DatabaseLogPath, globalFlags.WorkingDir) {
-		globalFlags.DatabaseLogPath = filepath.Join(globalFlags.WorkingDir, globalFlags.DatabaseLogPath)
+	f, err := openToAppend(agentLogPath)
+	if err != nil {
+		log.Println(err)
+		os.Exit(-1)
 	}
-	if !filepath.HasPrefix(etcdDataDir, globalFlags.WorkingDir) {
-		etcdDataDir = filepath.Join(globalFlags.WorkingDir, etcdDataDir)
-	}
-	if !filepath.HasPrefix(zkWorkingDir, globalFlags.WorkingDir) {
-		zkWorkingDir = filepath.Join(globalFlags.WorkingDir, zkWorkingDir)
-	}
-	if !filepath.HasPrefix(zkDataDir, globalFlags.WorkingDir) {
-		zkDataDir = filepath.Join(globalFlags.WorkingDir, zkDataDir)
-	}
-	if !filepath.HasPrefix(globalFlags.MonitorResultPath, globalFlags.WorkingDir) {
-		globalFlags.MonitorResultPath = filepath.Join(globalFlags.WorkingDir, globalFlags.MonitorResultPath)
-	}
-	if !filepath.HasPrefix(globalFlags.StorageSecretKeyPath, globalFlags.WorkingDir) {
-		globalFlags.StorageSecretKeyPath = filepath.Join(globalFlags.WorkingDir, globalFlags.StorageSecretKeyPath)
-	}
-
-	log.Printf("gRPC has started serving at  %s\n", globalFlags.GRPCPort)
-	log.Printf("Database log path:           %s\n", globalFlags.DatabaseLogPath)
-	log.Printf("etcd data directory:         %s\n", etcdDataDir)
-	log.Printf("Zookeeper working directory: %s\n", zkWorkingDir)
-	log.Printf("Zookeeper data directory:    %s\n", zkDataDir)
-	log.Printf("Monitor result path:         %s\n", globalFlags.MonitorResultPath)
-	log.Printf("Storage key secret path:     %s\n", globalFlags.StorageSecretKeyPath) // TODO: use this to upload to Google cloud storage
+	defer f.Close()
+	log.SetOutput(f)
+	log.Printf("gRPC serving: %s\n", globalFlags.GRPCPort)
 
 	var (
 		grpcServer = grpc.NewServer()
@@ -161,12 +134,9 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 		log.Println(err)
 		os.Exit(-1)
 	}
+
 	RegisterTransporterServer(grpcServer, sender)
 
-	log.Printf("gRPC is now serving at %s\n", globalFlags.GRPCPort)
-	if globalFlags.Monitor {
-		log.Printf("As soon as database started, it will monitor every %v...\n", globalFlags.MonitorInterval)
-	}
 	if err := grpcServer.Serve(ln); err != nil {
 		log.Println(err)
 		os.Exit(-1)
@@ -183,8 +153,47 @@ type transporterServer struct { // satisfy TransporterServer
 var databaseStopped = make(chan struct{})
 
 func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response, error) {
-	log.Printf("Received message for peer %q", r.PeerIPs)
+	log.Printf("Message from %q", r.PeerIPs)
 	peerIPs := strings.Split(r.PeerIPs, "___")
+
+	if r.Operation == Request_Start || r.Operation == Request_Restart {
+		if r.WorkingDirectory == "" {
+			r.WorkingDirectory = homeDir()
+		}
+		if !exist(r.WorkingDirectory) {
+			return nil, fmt.Errorf("%s does not exist", r.WorkingDirectory)
+		}
+		if !filepath.HasPrefix(etcdDataDir, r.WorkingDirectory) {
+			etcdDataDir = filepath.Join(r.WorkingDirectory, etcdDataDir)
+		}
+		if !filepath.HasPrefix(zkWorkingDir, r.WorkingDirectory) {
+			zkWorkingDir = filepath.Join(r.WorkingDirectory, zkWorkingDir)
+		}
+		if !filepath.HasPrefix(zkDataDir, r.WorkingDirectory) {
+			zkDataDir = filepath.Join(r.WorkingDirectory, zkDataDir)
+		}
+		if r.LogPrefix != "" {
+			if !strings.HasPrefix(filepath.Base(r.DatabaseLogPath), r.LogPrefix) {
+				r.DatabaseLogPath = filepath.Join(filepath.Dir(r.DatabaseLogPath), r.LogPrefix+"_"+filepath.Base(r.DatabaseLogPath))
+			}
+			if !strings.HasPrefix(filepath.Base(r.MonitorResultPath), r.LogPrefix) {
+				r.MonitorResultPath = filepath.Join(filepath.Dir(r.MonitorResultPath), r.LogPrefix+"_"+filepath.Base(r.MonitorResultPath))
+			}
+		} else {
+			if !filepath.HasPrefix(r.DatabaseLogPath, r.WorkingDirectory) {
+				r.DatabaseLogPath = filepath.Join(r.WorkingDirectory, r.DatabaseLogPath)
+			}
+			if !filepath.HasPrefix(r.MonitorResultPath, r.WorkingDirectory) {
+				r.MonitorResultPath = filepath.Join(r.WorkingDirectory, r.MonitorResultPath)
+			}
+		}
+		log.Printf("Working directory:           %s\n", r.WorkingDirectory)
+		log.Printf("etcd data directory:         %s\n", etcdDataDir)
+		log.Printf("Zookeeper working directory: %s\n", zkWorkingDir)
+		log.Printf("Zookeeper data directory:    %s\n", zkDataDir)
+		log.Printf("Database log path:           %s\n", r.DatabaseLogPath)
+		log.Printf("Monitor result path:         %s\n", r.MonitorResultPath)
+	}
 	t.req = *r
 
 	var processPID int
@@ -201,7 +210,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				return nil, err
 			}
 
-			f, err := openToAppend(globalFlags.DatabaseLogPath)
+			f, err := openToAppend(r.DatabaseLogPath)
 			if err != nil {
 				return nil, err
 			}
@@ -242,7 +251,6 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			flagString := strings.Join(flags, " ")
 
 			cmd := exec.Command(etcdBinaryPath, flags...)
-			cmd.Stdin = nil
 			cmd.Stdout = f
 			cmd.Stderr = f
 			log.Printf("Starting: %s %s\n", cmd.Path, flagString)
@@ -306,7 +314,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				return nil, err
 			}
 
-			f, err := openToAppend(globalFlags.DatabaseLogPath)
+			f, err := openToAppend(r.DatabaseLogPath)
 			if err != nil {
 				return nil, err
 			}
@@ -317,7 +325,6 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			args := []string{shell, "-c", "/usr/bin/java " + flagString + " " + configFilePath}
 
 			cmd := exec.Command(args[0], args[1:]...)
-			cmd.Stdin = nil
 			cmd.Stdout = f
 			cmd.Stderr = f
 			log.Printf("Starting: %s %s\n", cmd.Path, strings.Join(args[1:], " "))
@@ -352,14 +359,13 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			}
 		}
 
-		f, err := openToAppend(globalFlags.DatabaseLogPath)
+		f, err := openToAppend(r.DatabaseLogPath)
 		if err != nil {
 			return nil, err
 		}
 		t.logfile = f
 
 		cmd := exec.Command(t.cmd.Path, t.cmd.Args[1:]...)
-		cmd.Stdin = nil
 		cmd.Stdout = f
 		cmd.Stderr = f
 		log.Printf("Restarting: %s\n", strings.Join(t.cmd.Args, " "))
@@ -395,7 +401,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		return nil, fmt.Errorf("Not implemented %v", r.Operation)
 	}
 
-	if globalFlags.Monitor && r.Operation == Request_Start {
+	if r.Operation == Request_Start || r.Operation == Request_Restart {
 		go func(processPID int) {
 			notifier := make(chan os.Signal, 1)
 			signal.Notify(notifier, syscall.SIGINT, syscall.SIGTERM)
@@ -406,7 +412,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					return err
 				}
 
-				f, err := openToAppend(globalFlags.MonitorResultPath)
+				f, err := openToAppend(r.MonitorResultPath)
 				if err != nil {
 					return err
 				}
@@ -415,25 +421,126 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				return ps.WriteToCSV(f, pss...)
 			}
 
-			log.Printf("%s monitor saved at %s\n", r.Database, globalFlags.MonitorResultPath)
+			log.Printf("%s monitor saved at %s\n", r.Database, r.MonitorResultPath)
 			var err error
 			if err = rFunc(); err != nil {
-				log.Println("error:", err)
+				log.Warningln("error:", err)
+				return
 			}
 
 		escape:
 			for {
 				select {
-				case <-time.After(globalFlags.MonitorInterval):
+				case <-time.After(time.Second):
 					if err = rFunc(); err != nil {
-						log.Printf("Monitoring error %v\n", err)
+						log.Warnf("Monitoring error %v\n", err)
 						break escape
 					}
 				case sig := <-notifier:
 					log.Printf("Received %v\n", sig)
 					return
 				case <-databaseStopped:
-					log.Println("Monitoring stopped")
+					log.Println("Monitoring stopped. Uploading data to cloud storage...")
+
+					// initialize auth
+					conf, err := google.JWTConfigFromJSON(
+						[]byte(r.GoogleCloudStorageJSONKey),
+						storage.ScopeFullControl,
+					)
+					if err != nil {
+						log.Warnf("error (%v) with\n\n%q\n\n", err, r.GoogleCloudStorageJSONKey)
+						return
+					}
+					ctx := context.Background()
+					aclient, err := storage.NewAdminClient(ctx, r.GoogleCloudProjectName, cloud.WithTokenSource(conf.TokenSource(ctx)))
+					if err != nil {
+						log.Warnf("error (%v) with %q\n", err, r.GoogleCloudProjectName)
+					}
+					defer aclient.Close()
+
+					if err := aclient.CreateBucket(context.Background(), r.GoogleCloudStorageBucketName, nil); err != nil {
+						if !strings.Contains(err.Error(), "You already own this bucket. Please select another name") {
+							log.Warnf("error (%v) with %q\n", err, r.GoogleCloudStorageBucketName)
+						}
+					}
+
+					sctx := context.Background()
+					sclient, err := storage.NewClient(sctx, cloud.WithTokenSource(conf.TokenSource(sctx)))
+					if err != nil {
+						log.Warnf("error (%v)\n", err)
+						return
+					}
+					defer sclient.Close()
+
+					// set up file names
+					srcDatabaseLogPath := r.DatabaseLogPath
+					dstDatabaseLogPath := filepath.Base(r.DatabaseLogPath)
+					if !strings.HasPrefix(filepath.Base(r.DatabaseLogPath), r.LogPrefix) {
+						dstDatabaseLogPath = r.LogPrefix + fmt.Sprintf("_%d_", r.EtcdServerIndex) + filepath.Base(r.DatabaseLogPath)
+					}
+
+					srcMonitorResultPath := r.MonitorResultPath
+					dstMonitorResultPath := filepath.Base(r.MonitorResultPath)
+					if !strings.HasPrefix(filepath.Base(r.MonitorResultPath), r.LogPrefix) {
+						dstMonitorResultPath = r.LogPrefix + fmt.Sprintf("_%d_", r.EtcdServerIndex) + filepath.Base(r.MonitorResultPath)
+					}
+
+					srcAgentLogPath := agentLogPath
+					dstAgentLogPath := filepath.Base(agentLogPath)
+					if !strings.HasPrefix(filepath.Base(agentLogPath), r.LogPrefix) {
+						dstAgentLogPath = r.LogPrefix + fmt.Sprintf("_%d_", r.EtcdServerIndex) + filepath.Base(agentLogPath)
+					}
+
+					log.Printf("Uploading %s\n", srcDatabaseLogPath)
+					wc1 := sclient.Bucket(r.GoogleCloudStorageBucketName).Object(dstDatabaseLogPath).NewWriter(context.Background())
+					wc1.ContentType = "text/plain"
+					bts1, err := ioutil.ReadFile(srcDatabaseLogPath)
+					if err != nil {
+						log.Warnf("error (%v)\n", err)
+						return
+					}
+					if _, err := wc1.Write(bts1); err != nil {
+						log.Warnf("error (%v)\n", err)
+						return
+					}
+					if err := wc1.Close(); err != nil {
+						log.Warnf("error (%v)\n", err)
+						return
+					}
+
+					log.Printf("Uploading %s\n", srcMonitorResultPath)
+					wc2 := sclient.Bucket(r.GoogleCloudStorageBucketName).Object(dstMonitorResultPath).NewWriter(context.Background())
+					wc2.ContentType = "text/plain"
+					bts2, err := ioutil.ReadFile(srcMonitorResultPath)
+					if err != nil {
+						log.Warnf("error (%v)\n", err)
+						return
+					}
+					if _, err := wc2.Write(bts2); err != nil {
+						log.Warnf("error (%v)\n", err)
+						return
+					}
+					if err := wc2.Close(); err != nil {
+						log.Warnf("error (%v)\n", err)
+						return
+					}
+
+					log.Printf("Uploading %s\n", srcAgentLogPath)
+					wc3 := sclient.Bucket(r.GoogleCloudStorageBucketName).Object(dstAgentLogPath).NewWriter(context.Background())
+					wc3.ContentType = "text/plain"
+					bts3, err := ioutil.ReadFile(srcAgentLogPath)
+					if err != nil {
+						log.Warnf("error (%v)\n", err)
+						return
+					}
+					if _, err := wc3.Write(bts3); err != nil {
+						log.Warnf("error (%v)\n", err)
+						return
+					}
+					if err := wc3.Close(); err != nil {
+						log.Warnf("error (%v)\n", err)
+						return
+					}
 					return
 				}
 			}
