@@ -10,11 +10,11 @@ Run [`install.sh`](install.sh):
 go get github.com/coreos/dbtester
 
 # For each machine
-dbtester agent --working-dir $WORKING_DIR --monitor
-dbtester agent --working-dir $WORKING_DIR --monitor
-dbtester agent --working-dir $WORKING_DIR --monitor
-dbtester agent --working-dir $WORKING_DIR --monitor
-dbtester agent --working-dir $WORKING_DIR --monitor
+dbtester agent --working-directory $WORKING_DIR --monitor
+dbtester agent --working-directory $WORKING_DIR --monitor
+dbtester agent --working-directory $WORKING_DIR --monitor
+dbtester agent --working-directory $WORKING_DIR --monitor
+dbtester agent --working-directory $WORKING_DIR --monitor
 
 # Client machine
 dbtester start --database="etcd" --agent-endpoints="$(echo $ETCD_RPC_ENDPOINTS)"
