@@ -20,7 +20,8 @@ message Request {
 	}
 	enum Database {
 		etcd      = 0;
-		ZooKeeper = 1;
+		etcd2     = 1;
+		ZooKeeper = 2;
 	}
 
 	Operation operation   = 1;

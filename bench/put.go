@@ -22,7 +22,8 @@ import (
 	"time"
 
 	"github.com/cheggaaa/pb"
-	v3 "github.com/coreos/etcd/clientv3"
+	clientv2 "github.com/coreos/etcd/client"
+	"github.com/coreos/etcd/clientv3"
 	"github.com/samuel/go-zookeeper/zk"
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
@@ -62,8 +63,14 @@ func init() {
 }
 
 type request struct {
-	etcdOp v3.Op
-	zkOp   zkOp
+	etcdOp  clientv3.Op
+	etcd2Op etcd2Op
+	zkOp    zkOp
+}
+
+type etcd2Op struct {
+	key   string
+	value string
 }
 
 type zkOp struct {
@@ -87,7 +94,7 @@ func putFunc(cmd *cobra.Command, args []string) {
 	bar.Format("Bom !")
 	bar.Start()
 
-	var etcdClients []*v3.Client
+	var etcdClients []*clientv3.Client
 	switch database {
 	case "etcd":
 		etcdClients = mustCreateClients(totalClients, totalConns)
@@ -100,6 +107,14 @@ func putFunc(cmd *cobra.Command, args []string) {
 				etcdClients[i].Close()
 			}
 		}()
+
+	case "etcd2":
+		conns := mustCreateClientsEtcd2(totalConns)
+		for i := range conns {
+			wg.Add(1)
+			go doPutEtcd2(context.Background(), conns[i], requests)
+		}
+
 	case "zk":
 		conns := mustCreateConnsZk(totalConns)
 		defer func() {
@@ -111,6 +126,7 @@ func putFunc(cmd *cobra.Command, args []string) {
 			wg.Add(1)
 			go doPutZk(context.Background(), conns[i], requests)
 		}
+
 	default:
 		log.Fatalf("unknown database %s", database)
 	}
@@ -131,7 +147,7 @@ func putFunc(cmd *cobra.Command, args []string) {
 			}
 			switch database {
 			case "etcd":
-				requests <- request{etcdOp: v3.OpPut(string(k), v)}
+				requests <- request{etcdOp: clientv3.OpPut(string(k), v)}
 			case "zk":
 				requests <- request{zkOp: zkOp{key: "/" + string(k), value: []byte(v)}}
 			}
@@ -147,13 +163,31 @@ func putFunc(cmd *cobra.Command, args []string) {
 	<-pdoneC
 }
 
-func doPut(ctx context.Context, client v3.KV, requests <-chan request) {
+func doPut(ctx context.Context, client clientv3.KV, requests <-chan request) {
 	defer wg.Done()
 
 	for req := range requests {
 		op := req.etcdOp
 		st := time.Now()
 		_, err := client.Do(ctx, op)
+
+		var errStr string
+		if err != nil {
+			errStr = err.Error()
+		}
+		results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
+		bar.Increment()
+	}
+}
+
+func doPutEtcd2(ctx context.Context, conn clientv2.KeysAPI, requests <-chan request) {
+	defer wg.Done()
+
+	for req := range requests {
+		op := req.etcd2Op
+		st := time.Now()
+
+		_, err := conn.Set(context.Background(), op.key, op.value, nil)
 
 		var errStr string
 		if err != nil {
@@ -182,7 +216,7 @@ func doPutZk(ctx context.Context, conn *zk.Conn, requests <-chan request) {
 	}
 }
 
-func compactKV(clients []*v3.Client) {
+func compactKV(clients []*clientv3.Client) {
 	var curRev int64
 	for _, c := range clients {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

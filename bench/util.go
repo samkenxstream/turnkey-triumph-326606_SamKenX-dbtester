@@ -23,6 +23,7 @@ import (
 
 	mrand "math/rand"
 
+	clientv2 "github.com/coreos/etcd/client"
 	"github.com/coreos/etcd/clientv3"
 	"github.com/samuel/go-zookeeper/zk"
 )
@@ -32,20 +33,6 @@ var (
 	// connections can be handed out in round-robin order
 	dialTotal int
 )
-
-func mustCreateConnsZk(total uint) []*zk.Conn {
-	zks := make([]*zk.Conn, total)
-	for i := range zks {
-		endpoint := endpoints[dialTotal%len(endpoints)]
-		dialTotal++
-		conn, _, err := zk.Connect([]string{endpoint}, time.Second)
-		if err != nil {
-			log.Fatal(err)
-		}
-		zks[i] = conn
-	}
-	return zks
-}
 
 func mustCreateConn() *clientv3.Client {
 	endpoint := endpoints[dialTotal%len(endpoints)]
@@ -70,6 +57,42 @@ func mustCreateClients(totalClients, totalConns uint) []*clientv3.Client {
 		clients[i] = conns[i%int(totalConns)]
 	}
 	return clients
+}
+
+func mustCreateClientsEtcd2(total uint) []clientv2.KeysAPI {
+	cks := make([]clientv2.KeysAPI, total)
+	for i := range cks {
+		endpoint := endpoints[dialTotal%len(endpoints)]
+		dialTotal++
+
+		cfg := clientv2.Config{
+			Endpoints:               []string{endpoint},
+			Transport:               clientv2.DefaultTransport,
+			HeaderTimeoutPerRequest: time.Second,
+		}
+		c, err := clientv2.New(cfg)
+		if err != nil {
+			log.Fatal(err)
+		}
+		kapi := clientv2.NewKeysAPI(c)
+
+		cks[i] = kapi
+	}
+	return cks
+}
+
+func mustCreateConnsZk(total uint) []*zk.Conn {
+	zks := make([]*zk.Conn, total)
+	for i := range zks {
+		endpoint := endpoints[dialTotal%len(endpoints)]
+		dialTotal++
+		conn, _, err := zk.Connect([]string{endpoint}, time.Second)
+		if err != nil {
+			log.Fatal(err)
+		}
+		zks[i] = conn
+	}
+	return zks
 }
 
 func mustRandBytes(n int) []byte {

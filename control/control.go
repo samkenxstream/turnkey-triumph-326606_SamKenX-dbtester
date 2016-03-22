@@ -63,7 +63,7 @@ var (
 )
 
 func init() {
-	StartCommand.PersistentFlags().StringVar(&globalFlags.Database, "database", "", "etcd, zookeeper, zk, etcd2, consul.")
+	StartCommand.PersistentFlags().StringVar(&globalFlags.Database, "database", "", "etcd, etcd2, zookeeper, zk, consul.")
 	StartCommand.PersistentFlags().StringSliceVar(&globalFlags.AgentEndpoints, "agent-endpoints", []string{""}, "Endpoints to send client requests to, then it automatically configures.")
 	StartCommand.PersistentFlags().Int64Var(&globalFlags.ZookeeperPreAllocSize, "zk-pre-alloc-size", 65536*1024, "Disk pre-allocation size in bytes.")
 	StartCommand.PersistentFlags().Int64Var(&globalFlags.ZookeeperMaxClientCnxns, "zk-max-client-conns", 5000, "Maximum number of concurrent Zookeeper connection.")
@@ -101,6 +101,8 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 	switch globalFlags.Database {
 	case "etcd":
 		req.Database = agent.Request_etcd
+	case "etcd2":
+		req.Database = agent.Request_etcd2
 	case "zookeeper":
 		req.Database = agent.Request_ZooKeeper
 	default:
