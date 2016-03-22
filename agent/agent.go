@@ -159,9 +159,7 @@ type transporterServer struct { // satisfy TransporterServer
 var databaseStopped = make(chan struct{})
 
 func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response, error) {
-	log.Printf("Message from %q", r.PeerIPs)
 	peerIPs := strings.Split(r.PeerIPs, "___")
-
 	if r.Operation == Request_Start || r.Operation == Request_Restart {
 		if !filepath.HasPrefix(etcdDataDir, globalFlags.WorkingDirectory) {
 			etcdDataDir = filepath.Join(globalFlags.WorkingDirectory, etcdDataDir)
