@@ -130,7 +130,7 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 	defer f.Close()
 	log.SetOutput(f)
 
-	log.Printf("gRPC serving: %s", globalFlags.GRPCPort)
+	log.Printf("gRPC serving %s", globalFlags.GRPCPort)
 	var (
 		grpcServer = grpc.NewServer()
 		sender     = NewTransporterServer()
@@ -179,20 +179,20 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			if !strings.HasPrefix(filepath.Base(r.MonitorResultPath), r.LogPrefix) {
 				r.MonitorResultPath = filepath.Join(filepath.Dir(r.MonitorResultPath), r.LogPrefix+"_"+filepath.Base(r.MonitorResultPath))
 			}
-		} else {
-			if !filepath.HasPrefix(r.DatabaseLogPath, globalFlags.WorkingDirectory) {
-				r.DatabaseLogPath = filepath.Join(globalFlags.WorkingDirectory, r.DatabaseLogPath)
-			}
-			if !filepath.HasPrefix(r.MonitorResultPath, globalFlags.WorkingDirectory) {
-				r.MonitorResultPath = filepath.Join(globalFlags.WorkingDirectory, r.MonitorResultPath)
-			}
 		}
-		log.Printf("Working directory: %s", globalFlags.WorkingDirectory)
+		if !filepath.HasPrefix(r.DatabaseLogPath, globalFlags.WorkingDirectory) {
+			r.DatabaseLogPath = filepath.Join(globalFlags.WorkingDirectory, r.DatabaseLogPath)
+		}
+		if !filepath.HasPrefix(r.MonitorResultPath, globalFlags.WorkingDirectory) {
+			r.MonitorResultPath = filepath.Join(globalFlags.WorkingDirectory, r.MonitorResultPath)
+		}
+
+		log.Printf("working directory: %s", globalFlags.WorkingDirectory)
 		log.Printf("etcd data directory: %s", etcdDataDir)
-		log.Printf("Zookeeper working directory: %s", zkWorkingDir)
-		log.Printf("Zookeeper data directory: %s", zkDataDir)
-		log.Printf("Database log path: %s", r.DatabaseLogPath)
-		log.Printf("Monitor result path: %s", r.MonitorResultPath)
+		log.Printf("zookeeper working directory: %s", zkWorkingDir)
+		log.Printf("zookeeper data directory: %s", zkDataDir)
+		log.Printf("database log path: %s", r.DatabaseLogPath)
+		log.Printf("monitor result path: %s", r.MonitorResultPath)
 	}
 	t.req = *r
 
