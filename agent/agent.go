@@ -226,7 +226,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			}
 			clusterStr := strings.Join(members, ",")
 			flags := []string{
-				"--name", fmt.Sprintf("etcd-%d", t.req.EtcdServerIndex),
+				"--name", fmt.Sprintf("etcd-%d", t.req.EtcdServerIndex+1),
 				"--data-dir", etcdDataDir,
 
 				"--listen-client-urls", clientURLs[t.req.EtcdServerIndex],
