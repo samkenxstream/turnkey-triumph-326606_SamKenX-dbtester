@@ -21,8 +21,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/coreos/etcd/Godeps/_workspace/src/github.com/cheggaaa/pb"
-	"github.com/coreos/etcd/Godeps/_workspace/src/github.com/spf13/cobra"
+	"github.com/cheggaaa/pb"
+	"github.com/spf13/cobra"
 )
 
 // This represents the base command when called without any subcommands
@@ -57,6 +57,7 @@ func init() {
 	Command.PersistentFlags().UintVar(&totalClients, "clients", 1, "Total number of gRPC clients (only for etcd)")
 	Command.PersistentFlags().BoolVar(&sample, "sample", false, "'true' to sample requests for every second.")
 	Command.PersistentFlags().BoolVar(&noHistogram, "no-histogram", false, "'true' to not show results in histogram.")
+
 	Command.PersistentFlags().StringVar(&csvResultPath, "csv-result-path", "timeseries.csv", "path to store csv results.")
 }
 

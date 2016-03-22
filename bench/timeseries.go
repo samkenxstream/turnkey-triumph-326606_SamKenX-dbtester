@@ -110,7 +110,7 @@ func (ts TimeSeries) String() string {
 	}
 	txt := buf.String()
 	if err := toFile(txt, csvResultPath); err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	} else {
 		log.Println("time series saved... Please upload to Google cloud storage...")
 	}

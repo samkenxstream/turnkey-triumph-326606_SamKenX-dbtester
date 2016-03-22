@@ -21,11 +21,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/coreos/etcd/Godeps/_workspace/src/github.com/cheggaaa/pb"
-	"github.com/coreos/etcd/Godeps/_workspace/src/github.com/spf13/cobra"
-	"github.com/coreos/etcd/Godeps/_workspace/src/golang.org/x/net/context"
+	"github.com/cheggaaa/pb"
 	v3 "github.com/coreos/etcd/clientv3"
 	"github.com/samuel/go-zookeeper/zk"
+	"github.com/spf13/cobra"
+	"golang.org/x/net/context"
 )
 
 // putCmd represents the put command
