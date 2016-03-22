@@ -21,7 +21,8 @@ import (
 	"time"
 
 	"github.com/cheggaaa/pb"
-	v3 "github.com/coreos/etcd/clientv3"
+	clientv2 "github.com/coreos/etcd/client"
+	"github.com/coreos/etcd/clientv3"
 	"github.com/samuel/go-zookeeper/zk"
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
@@ -61,11 +62,28 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 			var err error
 			for i := 0; i < 5; i++ {
 				clients := mustCreateClients(1, 1)
-				_, err = clients[0].Do(context.Background(), v3.OpPut(k, string(v)))
+				_, err = clients[0].Do(context.Background(), clientv3.OpPut(k, string(v)))
 				if err != nil {
 					continue
 				}
 				fmt.Printf("Done with PUT '%s' to etcd\n", k)
+				break
+			}
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+
+		case "etcd2":
+			fmt.Printf("PUT '%s' to etcd2\n", k)
+			var err error
+			for i := 0; i < 5; i++ {
+				clients := mustCreateClientsEtcd2(totalConns)
+				_, err = clients[0].Set(context.Background(), k, string(v), nil)
+				if err != nil {
+					continue
+				}
+				fmt.Printf("Done with PUT '%s' to etcd2\n", k)
 				break
 			}
 			if err != nil {
@@ -105,7 +123,7 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	if database == "etcd" {
+	if database == "etcd" { // etcd2 quorum false by default
 		if rangeConsistency == "l" {
 			fmt.Println("bench with linearizable range")
 		} else if rangeConsistency == "s" {
@@ -137,6 +155,14 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 				clients[i].Close()
 			}
 		}()
+
+	case "etcd2":
+		conns := mustCreateClientsEtcd2(totalConns)
+		for i := range conns {
+			wg.Add(1)
+			go doRangeEtcd2(conns[i], requests)
+		}
+
 	case "zk":
 		conns := mustCreateConnsZk(totalConns)
 		defer func() {
@@ -148,6 +174,7 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 			wg.Add(1)
 			go doRangeZk(conns[i], requests)
 		}
+
 	default:
 		log.Fatalf("unknown database %s", database)
 	}
@@ -157,11 +184,15 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 		for i := 0; i < rangeTotal; i++ {
 			switch database {
 			case "etcd":
-				opts := []v3.OpOption{v3.WithRange(end)}
+				opts := []clientv3.OpOption{clientv3.WithRange(end)}
 				if rangeConsistency == "s" {
-					opts = append(opts, v3.WithSerializable())
+					opts = append(opts, clientv3.WithSerializable())
 				}
-				requests <- request{etcdOp: v3.OpGet(k, opts...)}
+				requests <- request{etcdOp: clientv3.OpGet(k, opts...)}
+
+			case "etcd2":
+				requests <- request{etcd2Op: etcd2Op{key: k}}
+
 			case "zk":
 				requests <- request{zkOp: zkOp{key: k}}
 			}
@@ -177,13 +208,32 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 	<-pdoneC
 }
 
-func doRange(client v3.KV, requests <-chan request) {
+func doRange(client clientv3.KV, requests <-chan request) {
 	defer wg.Done()
 
 	for req := range requests {
 		op := req.etcdOp
+
 		st := time.Now()
 		_, err := client.Do(context.Background(), op)
+
+		var errStr string
+		if err != nil {
+			errStr = err.Error()
+		}
+		results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
+		bar.Increment()
+	}
+}
+
+func doRangeEtcd2(conn clientv2.KeysAPI, requests <-chan request) {
+	defer wg.Done()
+
+	for req := range requests {
+		op := req.etcd2Op
+
+		st := time.Now()
+		_, err := conn.Get(context.Background(), op.key, nil)
 
 		var errStr string
 		if err != nil {
@@ -199,6 +249,7 @@ func doRangeZk(conn *zk.Conn, requests <-chan request) {
 
 	for req := range requests {
 		op := req.zkOp
+
 		st := time.Now()
 		_, _, err := conn.Get(op.key)
 

@@ -203,11 +203,9 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			if err != nil {
 				return nil, err
 			}
-
 			if err := os.RemoveAll(etcdDataDir); err != nil {
 				return nil, err
 			}
-
 			f, err := openToAppend(t.req.DatabaseLogPath)
 			if err != nil {
 				return nil, err
@@ -221,14 +219,14 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			peerURLs := make([]string, clusterN)
 			members := make([]string, clusterN)
 			for i, u := range peerIPs {
-				names[i] = fmt.Sprintf("etcd-%d", i)
+				names[i] = fmt.Sprintf("etcd-%d", i+1)
 				clientURLs[i] = fmt.Sprintf("http://%s:2379", u)
 				peerURLs[i] = fmt.Sprintf("http://%s:2380", u)
 				members[i] = fmt.Sprintf("%s=%s", names[i], peerURLs[i])
 			}
 			clusterStr := strings.Join(members, ",")
 			flags := []string{
-				"--name", fmt.Sprintf("etcd-%d", t.req.EtcdServerIndex),
+				"--name", fmt.Sprintf("etcd-%d", t.req.EtcdServerIndex+1),
 				"--data-dir", etcdDataDir,
 
 				"--listen-client-urls", clientURLs[t.req.EtcdServerIndex],
@@ -242,6 +240,68 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				"--initial-cluster-state", "new",
 
 				"--experimental-v3demo",
+			}
+			flagString := strings.Join(flags, " ")
+
+			cmd := exec.Command(etcdBinaryPath, flags...)
+			cmd.Stdout = f
+			cmd.Stderr = f
+			log.Printf("Starting: %s %s", cmd.Path, flagString)
+			if err := cmd.Start(); err != nil {
+				return nil, err
+			}
+			t.cmd = cmd
+			t.pid = cmd.Process.Pid
+			log.Printf("Started: %s [PID: %d]", cmd.Path, t.pid)
+			processPID = t.pid
+			go func() {
+				if err := cmd.Wait(); err != nil {
+					log.Printf("Start(%s) cmd.Wait returned %v", cmd.Path, err)
+					return
+				}
+				log.Printf("Exiting %s", cmd.Path)
+			}()
+
+		case Request_etcd2:
+			_, err := os.Stat(etcdBinaryPath)
+			if err != nil {
+				return nil, err
+			}
+			if err := os.RemoveAll(etcdDataDir); err != nil {
+				return nil, err
+			}
+			f, err := openToAppend(t.req.DatabaseLogPath)
+			if err != nil {
+				return nil, err
+			}
+			t.logfile = f
+
+			// generate flags from etcd server name
+			clusterN := len(peerIPs)
+			names := make([]string, clusterN)
+			clientURLs := make([]string, clusterN)
+			peerURLs := make([]string, clusterN)
+			members := make([]string, clusterN)
+			for i, u := range peerIPs {
+				names[i] = fmt.Sprintf("etcd-%d", i+1)
+				clientURLs[i] = fmt.Sprintf("http://%s:2379", u)
+				peerURLs[i] = fmt.Sprintf("http://%s:2380", u)
+				members[i] = fmt.Sprintf("%s=%s", names[i], peerURLs[i])
+			}
+			clusterStr := strings.Join(members, ",")
+			flags := []string{
+				"--name", fmt.Sprintf("etcd-%d", t.req.EtcdServerIndex+1),
+				"--data-dir", etcdDataDir,
+
+				"--listen-client-urls", clientURLs[t.req.EtcdServerIndex],
+				"--advertise-client-urls", clientURLs[t.req.EtcdServerIndex],
+
+				"--listen-peer-urls", peerURLs[t.req.EtcdServerIndex],
+				"--initial-advertise-peer-urls", peerURLs[t.req.EtcdServerIndex],
+
+				"--initial-cluster-token", etcdToken,
+				"--initial-cluster", clusterStr,
+				"--initial-cluster-state", "new",
 			}
 			flagString := strings.Join(flags, " ")
 
