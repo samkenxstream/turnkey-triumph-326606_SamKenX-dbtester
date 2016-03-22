@@ -384,7 +384,9 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			return nil, fmt.Errorf("nil command")
 		}
 		log.Printf("Stopping %s [PID: %d]", t.req.Database, t.pid)
-		ps.Kill(os.Stdout, false, ps.Process{Stat: ps.Stat{Pid: int64(t.pid)}})
+		if err := syscall.Kill(t.pid, syscall.SIGTERM); err != nil {
+			return nil, err
+		}
 		if t.logfile != nil {
 			t.logfile.Close()
 		}
