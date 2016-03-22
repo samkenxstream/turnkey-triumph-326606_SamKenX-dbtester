@@ -17,7 +17,6 @@ package agent
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"os/exec"
@@ -29,12 +28,10 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/coreos/dbtester/remotestorage"
 	"github.com/gyuho/psn/ps"
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
-	"golang.org/x/oauth2/google"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/storage"
 	"google.golang.org/grpc"
 )
 
@@ -442,35 +439,15 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				case <-databaseStopped:
 					log.Println("Monitoring stopped. Uploading data to cloud storage...")
 
-					// initialize auth
-					conf, err := google.JWTConfigFromJSON(
-						[]byte(r.GoogleCloudStorageJSONKey),
-						storage.ScopeFullControl,
-					)
-					if err != nil {
-						log.Warnf("error (%v) with %q", err, r.GoogleCloudStorageJSONKey)
+					if err := toFile(r.GoogleCloudStorageJSONKey, filepath.Join(globalFlags.WorkingDirectory, "key.json")); err != nil {
+						log.Warnf("error (%v)", err)
 						return
 					}
-					ctx := context.Background()
-					aclient, err := storage.NewAdminClient(ctx, r.GoogleCloudProjectName, cloud.WithTokenSource(conf.TokenSource(ctx)))
-					if err != nil {
-						log.Warnf("error (%v) with %q", err, r.GoogleCloudProjectName)
-					}
-					defer aclient.Close()
-
-					if err := aclient.CreateBucket(context.Background(), r.GoogleCloudStorageBucketName, nil); err != nil {
-						if !strings.Contains(err.Error(), "You already own this bucket. Please select another name") {
-							log.Warnf("error (%v) with %q", err, r.GoogleCloudStorageBucketName)
-						}
-					}
-
-					sctx := context.Background()
-					sclient, err := storage.NewClient(sctx, cloud.WithTokenSource(conf.TokenSource(sctx)))
+					u, err := remotestorage.NewGoogleCloudStorage([]byte(r.GoogleCloudStorageJSONKey), r.GoogleCloudProjectName)
 					if err != nil {
 						log.Warnf("error (%v)", err)
 						return
 					}
-					defer sclient.Close()
 
 					// set up file names
 					srcDatabaseLogPath := r.DatabaseLogPath
@@ -492,55 +469,20 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					}
 
 					log.Printf("Uploading %s", srcDatabaseLogPath)
-					wc1 := sclient.Bucket(r.GoogleCloudStorageBucketName).Object(dstDatabaseLogPath).NewWriter(context.Background())
-					wc1.ContentType = "text/plain"
-					bts1, err := ioutil.ReadFile(srcDatabaseLogPath)
-					if err != nil {
-						log.Warnf("error (%v)", err)
-						return
-					}
-					if _, err := wc1.Write(bts1); err != nil {
-						log.Warnf("error (%v)", err)
-						return
-					}
-					if err := wc1.Close(); err != nil {
-						log.Warnf("error (%v)", err)
-						return
+					if err := u.UploadFile(r.GoogleCloudStorageBucketName, srcDatabaseLogPath, dstDatabaseLogPath); err != nil {
+						log.Fatal(err)
 					}
 
 					log.Printf("Uploading %s", srcMonitorResultPath)
-					wc2 := sclient.Bucket(r.GoogleCloudStorageBucketName).Object(dstMonitorResultPath).NewWriter(context.Background())
-					wc2.ContentType = "text/plain"
-					bts2, err := ioutil.ReadFile(srcMonitorResultPath)
-					if err != nil {
-						log.Warnf("error (%v)", err)
-						return
-					}
-					if _, err := wc2.Write(bts2); err != nil {
-						log.Warnf("error (%v)", err)
-						return
-					}
-					if err := wc2.Close(); err != nil {
-						log.Warnf("error (%v)", err)
-						return
+					if err := u.UploadFile(r.GoogleCloudStorageBucketName, srcMonitorResultPath, dstMonitorResultPath); err != nil {
+						log.Fatal(err)
 					}
 
 					log.Printf("Uploading %s", srcAgentLogPath)
-					wc3 := sclient.Bucket(r.GoogleCloudStorageBucketName).Object(dstAgentLogPath).NewWriter(context.Background())
-					wc3.ContentType = "text/plain"
-					bts3, err := ioutil.ReadFile(srcAgentLogPath)
-					if err != nil {
-						log.Warnf("error (%v)", err)
-						return
+					if err := u.UploadFile(r.GoogleCloudStorageBucketName, srcAgentLogPath, dstAgentLogPath); err != nil {
+						log.Fatal(err)
 					}
-					if _, err := wc3.Write(bts3); err != nil {
-						log.Warnf("error (%v)", err)
-						return
-					}
-					if err := wc3.Close(); err != nil {
-						log.Warnf("error (%v)", err)
-						return
-					}
+
 					return
 				}
 			}
