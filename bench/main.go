@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// bench does benchmark.
+// bench does benchmark, mostly copied from https://github.com/coreos/etcd/tree/master/tools/benchmark.
 package main
 
 import (
