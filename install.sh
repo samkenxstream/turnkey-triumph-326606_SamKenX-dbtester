@@ -50,7 +50,6 @@ psn ps-kill --force --program etcd
 psn ps-kill --force --program dbtester
 psn ps-kill --force --program java
 psn ss-kill --local-port 2181
-psn ss-kill --local-port 2378
 psn ss-kill --local-port 2379
 psn ss-kill --local-port 2380
 psn ss-kill --local-port 2888
@@ -60,7 +59,6 @@ rm -rf $WORKING_DIR/*.etcd
 rm -rf $WORKING_DIR/*.log
 rm -rf $WORKING_DIR/failure_archive
 go get -v -u -f github.com/coreos/etcd
-go get -v -u -f github.com/coreos/dbtester/bench
 go get -v -u -f github.com/coreos/dbtester
 
 if [ -n "$3" ]; then
