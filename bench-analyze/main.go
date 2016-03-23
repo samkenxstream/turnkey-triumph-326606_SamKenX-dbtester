@@ -107,6 +107,9 @@ func main() {
 			}
 			crows[j] = append(crows[j], row[latencyIdx], row[throughputIdx], row[cpuIdx], row[memoryIdx])
 		}
+		for k := len(tb.Rows); k < maxSize; k++ {
+			crows[k] = append(crows[k], "", "", "", "")
+		}
 	}
 	cTable.Rows = crows
 
