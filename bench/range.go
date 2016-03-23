@@ -215,11 +215,16 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 				}
 				requests <- request{etcdOp: clientv3.OpGet(k, opts...)}
 
+				// TODO: all below, serializable read by default
+				// make it configurable
 			case "etcd2":
 				requests <- request{etcd2Op: etcd2Op{key: k}}
 
 			case "zk":
 				requests <- request{zkOp: zkOp{key: k}}
+
+			case "consul":
+				requests <- request{consulOp: consulOp{key: k}}
 			}
 		}
 		close(requests)
