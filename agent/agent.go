@@ -60,16 +60,17 @@ type (
 	}
 
 	ConsulConfig struct {
-		Bootstrap     bool     `json:"bootstrap"`
-		Server        bool     `json:"server,omitempty"`
-		AdvertiseAddr string   `json:"advertise_addr,omitempty"`
-		DataCenter    string   `json:"datacenter,omitempty"`
-		DataDir       string   `json:"data_dir,omitempty"`
-		Encrypt       string   `json:"encrypt,omitempty"`
-		LogLevel      string   `json:"log_level,omitempty"`
-		EnableSyslog  bool     `json:"enable_syslog,omitempty"`
-		StartJoin     []string `json:"start_join,omitempty"`
-		RetryJoin     []string `json:"retry_join,omitempty"`
+		Bootstrap     bool          `json:"bootstrap"`
+		Server        bool          `json:"server,omitempty"`
+		AdvertiseAddr string        `json:"advertise_addr,omitempty"`
+		DataCenter    string        `json:"datacenter,omitempty"`
+		DataDir       string        `json:"data_dir,omitempty"`
+		Encrypt       string        `json:"encrypt,omitempty"`
+		LogLevel      string        `json:"log_level,omitempty"`
+		EnableSyslog  bool          `json:"enable_syslog,omitempty"`
+		StartJoin     []string      `json:"start_join,omitempty"`
+		RetryJoin     []string      `json:"retry_join,omitempty"`
+		RetryInterval time.Duration `json:"retry_interval,omitempty"`
 	}
 )
 
@@ -99,6 +100,7 @@ var (
 		EnableSyslog:  true,
 		StartJoin:     []string{},
 		RetryJoin:     []string{},
+		RetryInterval: 5 * time.Second,
 	}
 
 	zkWorkingDir = "zookeeper"
@@ -461,6 +463,9 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			consulCfg := consulConfigDefault
 			if t.req.ServerIndex == 0 { // leader
 				consulCfg.Bootstrap = true
+
+				// wait for other servers start
+				time.Sleep(10 * time.Second)
 			}
 			consulCfg.AdvertiseAddr = peerIPs[t.req.ServerIndex]
 			consulCfg.DataDir = consulDataDir
