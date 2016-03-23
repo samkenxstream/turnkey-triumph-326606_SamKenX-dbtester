@@ -446,8 +446,8 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					"-server",
 					"-data-dir", consulDataDir,
 					"-advertise", peerIPs[t.req.ServerIndex],
-					// "-join", strings.Join(joins, ","),
-					// "-retry-join", strings.Join(joins, ","),
+					"-join", strings.Join(joins, ","),
+					"-retry-join", strings.Join(joins, ","),
 					"-encrypt", consulToken,
 				}
 			}
