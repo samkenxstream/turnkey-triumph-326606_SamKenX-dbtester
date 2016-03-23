@@ -15,9 +15,9 @@
 package control
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 	"strings"
 	"time"
 
@@ -47,17 +47,17 @@ var (
 	StartCommand = &cobra.Command{
 		Use:   "start",
 		Short: "Starts database through RPC calls.",
-		Run:   CommandFunc,
+		RunE:  CommandFunc,
 	}
 	StopCommand = &cobra.Command{
 		Use:   "stop",
 		Short: "Stops database through RPC calls.",
-		Run:   CommandFunc,
+		RunE:  CommandFunc,
 	}
 	RestartCommand = &cobra.Command{
 		Use:   "restart",
 		Short: "Restarts database through RPC calls.",
-		Run:   CommandFunc,
+		RunE:  CommandFunc,
 	}
 	globalFlags = Flags{}
 )
@@ -80,7 +80,7 @@ func init() {
 	RestartCommand.PersistentFlags().StringSliceVar(&globalFlags.AgentEndpoints, "agent-endpoints", []string{""}, "Endpoints to send client requests to, then it automatically configures.")
 }
 
-func CommandFunc(cmd *cobra.Command, args []string) {
+func CommandFunc(cmd *cobra.Command, args []string) error {
 	if globalFlags.Database == "zk" {
 		globalFlags.Database = "zookeeper"
 	}
@@ -94,8 +94,7 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 	case "restart":
 		req.Operation = agent.Request_Restart
 	default:
-		log.Printf("Operation '%s' is not supported!\n", cmd.Use)
-		os.Exit(-1)
+		return fmt.Errorf("Operation '%s' is not supported!\n", cmd.Use)
 	}
 
 	switch globalFlags.Database {
@@ -109,8 +108,7 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 		req.Database = agent.Request_Consul
 	default:
 		if req.Operation != agent.Request_Stop {
-			log.Printf("'%s' is not supported!\n", globalFlags.Database)
-			os.Exit(-1)
+			return fmt.Errorf("'%s' is not supported!\n", globalFlags.Database)
 		}
 	}
 	peerIPs := extractIPs(globalFlags.AgentEndpoints)
@@ -126,38 +124,52 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 		req.GoogleCloudProjectName = globalFlags.GoogleCloudProjectName
 		bts, err := ioutil.ReadFile(globalFlags.GoogleCloudStorageJSONKeyPath)
 		if err != nil {
-			log.Println(err)
-			os.Exit(-1)
+			return err
 		}
 		req.GoogleCloudStorageJSONKey = string(bts)
 		req.GoogleCloudStorageBucketName = globalFlags.GoogleCloudStorageBucketName
 	}
 
+	donec, errc := make(chan struct{}), make(chan error)
 	for i := range peerIPs {
-		nreq := req
+		go func(i int) {
+			nreq := req
 
-		nreq.ServerIndex = uint32(i)
-		nreq.ZookeeperMyID = uint32(i + 1)
-		ep := globalFlags.AgentEndpoints[nreq.ServerIndex]
+			nreq.ServerIndex = uint32(i)
+			nreq.ZookeeperMyID = uint32(i + 1)
+			ep := globalFlags.AgentEndpoints[nreq.ServerIndex]
 
-		log.Printf("[%s] %s at %s\n", req.Operation, req.Database, ep)
-		conn, err := grpc.Dial(ep, grpc.WithInsecure())
-		if err != nil {
-			log.Printf("error %v when connecting to %s\n", err, ep)
-			os.Exit(-1)
-		}
-		defer conn.Close()
+			log.Printf("[%d] %s %s at %s\n", i, req.Operation, req.Database, ep)
+			conn, err := grpc.Dial(ep, grpc.WithInsecure())
+			if err != nil {
+				log.Printf("[%d] error %v when connecting to %s\n", i, err, ep)
+				errc <- err
+				return
+			}
+			defer conn.Close()
 
-		cli := agent.NewTransporterClient(conn)
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		resp, err := cli.Transfer(ctx, &nreq)
-		cancel()
-		if err != nil {
-			log.Printf("error %v when transferring to %s\n", err, ep)
-			return
-		}
-		log.Printf("Response from %s (%+v)\n", ep, resp)
+			cli := agent.NewTransporterClient(conn)
+			ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second) // Consul takes longer
+			resp, err := cli.Transfer(ctx, &nreq)
+			cancel()
+			if err != nil {
+				log.Printf("[%d] error %v when transferring to %s\n", i, err, ep)
+				errc <- err
+				return
+			}
+			log.Printf("[%d] Response from %s (%+v)\n", i, ep, resp)
+			donec <- struct{}{}
+		}(i)
 	}
+	cnt := 0
+	for cnt != len(peerIPs) {
+		select {
+		case <-donec:
+		case err := <-errc:
+			return err
+		}
+	}
+	return nil
 }
 
 func extractIPs(es []string) []string {
