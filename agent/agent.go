@@ -60,17 +60,17 @@ type (
 	}
 
 	ConsulConfig struct {
-		Bootstrap     bool          `json:"bootstrap"`
-		Server        bool          `json:"server,omitempty"`
-		AdvertiseAddr string        `json:"advertise_addr,omitempty"`
-		DataCenter    string        `json:"datacenter,omitempty"`
-		DataDir       string        `json:"data_dir,omitempty"`
-		Encrypt       string        `json:"encrypt,omitempty"`
-		LogLevel      string        `json:"log_level,omitempty"`
-		EnableSyslog  bool          `json:"enable_syslog,omitempty"`
-		StartJoin     []string      `json:"start_join,omitempty"`
-		RetryJoin     []string      `json:"retry_join,omitempty"`
-		RetryInterval time.Duration `json:"retry_interval,omitempty"`
+		Bootstrap     bool     `json:"bootstrap"`
+		Server        bool     `json:"server,omitempty"`
+		AdvertiseAddr string   `json:"advertise_addr,omitempty"`
+		DataCenter    string   `json:"datacenter,omitempty"`
+		DataDir       string   `json:"data_dir,omitempty"`
+		Encrypt       string   `json:"encrypt,omitempty"`
+		LogLevel      string   `json:"log_level,omitempty"`
+		EnableSyslog  bool     `json:"enable_syslog,omitempty"`
+		StartJoin     []string `json:"start_join,omitempty"`
+		RetryJoin     []string `json:"retry_join,omitempty"`
+		RetryInterval string   `json:"retry_interval,omitempty"`
 	}
 )
 
@@ -100,7 +100,7 @@ var (
 		EnableSyslog:  true,
 		StartJoin:     []string{},
 		RetryJoin:     []string{},
-		RetryInterval: 5 * time.Second,
+		RetryInterval: "5s",
 	}
 
 	zkWorkingDir = "zookeeper"
