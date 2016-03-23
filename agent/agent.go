@@ -215,9 +215,6 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		if err := os.MkdirAll(consulConfigDir, 0777); err != nil {
 			return nil, err
 		}
-		if err := os.MkdirAll(filepath.Join(consulConfigDir, "bootstrap"), 0777); err != nil {
-			return nil, err
-		}
 		if !filepath.HasPrefix(consulConfigPath, consulConfigDir) {
 			consulConfigPath = filepath.Join(consulConfigDir, consulConfigPath)
 		}
@@ -465,6 +462,9 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			if err := os.RemoveAll(consulDataDir); err != nil {
 				return nil, err
 			}
+			if err := os.RemoveAll(consulConfigDir); err != nil {
+				return nil, err
+			}
 			f, err := openToAppend(t.req.DatabaseLogPath)
 			if err != nil {
 				return nil, err
@@ -485,6 +485,10 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			consulCfg.RetryJoin = joins
 
 			if t.req.ServerIndex == 0 { // leader
+				if err := os.MkdirAll(filepath.Join(consulConfigDir, "bootstrap"), 0777); err != nil {
+					return nil, err
+				}
+
 				bcfg := consulCfg
 				bcfg.Bootstrap = true
 				bcfg.StartJoin = nil
