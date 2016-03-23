@@ -461,16 +461,20 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				}
 			}
 			consulCfg := consulConfigDefault
-			if t.req.ServerIndex == 0 { // leader
-				consulCfg.Bootstrap = true
-
-				// wait for other servers start
-				time.Sleep(10 * time.Second)
-			}
 			consulCfg.AdvertiseAddr = peerIPs[t.req.ServerIndex]
 			consulCfg.DataDir = consulDataDir
 			consulCfg.StartJoin = joins
 			consulCfg.RetryJoin = joins
+			if t.req.ServerIndex == 0 { // leader
+				consulCfg.Bootstrap = true
+				consulCfg.StartJoin = nil
+				consulCfg.RetryJoin = nil
+				consulCfg.RetryInterval = ""
+
+				// wait for other servers start
+				log.Printf("Consul is sleeping to wait...")
+				time.Sleep(10 * time.Second)
+			}
 
 			buf := new(bytes.Buffer)
 			if err := json.NewEncoder(buf).Encode(consulCfg); err != nil {
