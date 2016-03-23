@@ -16,6 +16,7 @@ package agent
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"net"
 	"os"
@@ -57,6 +58,19 @@ type (
 		MyID int
 		IP   string
 	}
+
+	ConsulConfig struct {
+		Bootstrap     bool     `json:"bootstrap,omitempty"`
+		Server        bool     `json:"server,omitempty"`
+		AdvertiseAddr string   `json:"advertise_addr,omitempty"`
+		DataCenter    string   `json:"datacenter,omitempty"`
+		DataDir       string   `json:"data_dir,omitempty"`
+		Encrypt       string   `json:"encrypt,omitempty"`
+		LogLevel      string   `json:"log_level,omitempty"`
+		EnableSyslog  bool     `json:"enable_syslog,omitempty"`
+		StartJoin     []string `json:"start_join,omitempty"`
+		RetryJoin     []string `json:"retry_join,omitempty"`
+	}
 )
 
 var (
@@ -71,13 +85,26 @@ var (
 	etcdToken   = "etcd_token"
 	etcdDataDir = "data.etcd"
 
-	consulToken   = "2HL2voYgqnsFdoilH2G2/g==" // consul keygen
-	consulDataDir = "data.consul"
+	consulToken         = "gqYeGerkZGQHBiV4Zd5BMw==" // consul keygen
+	consulDataDir       = "data.consul"
+	consulConfigPath    = "consul.json"
+	consulConfigDefault = ConsulConfig{
+		Bootstrap:     false,
+		Server:        true,
+		AdvertiseAddr: "",
+		DataCenter:    "consul",
+		DataDir:       consulDataDir,
+		Encrypt:       consulToken,
+		LogLevel:      "INFO",
+		EnableSyslog:  true,
+		StartJoin:     []string{},
+		RetryJoin:     []string{},
+	}
 
 	zkWorkingDir = "zookeeper"
 	zkDataDir    = "zookeeper/data.zk"
-
-	zkTemplate = `tickTime={{.TickTime}}
+	zkConfigPath = "zookeeper.config"
+	zkTemplate   = `tickTime={{.TickTime}}
 dataDir={{.DataDir}}
 clientPort={{.ClientPort}}
 initLimit={{.InitLimit}}
@@ -87,7 +114,7 @@ maxClientCnxns={{.MaxClientCnxns}}
 {{range .Peers}}server.{{.MyID}}={{.IP}}:2888:3888
 {{end}}
 `
-	zkConfig = ZookeeperConfig{
+	zkConfigDefault = ZookeeperConfig{
 		TickTime:       2000,
 		ClientPort:     "2181",
 		InitLimit:      5,
@@ -173,6 +200,9 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		}
 		if !filepath.HasPrefix(consulDataDir, globalFlags.WorkingDirectory) {
 			consulDataDir = filepath.Join(globalFlags.WorkingDirectory, consulDataDir)
+		}
+		if !filepath.HasPrefix(consulConfigPath, globalFlags.WorkingDirectory) {
+			consulConfigPath = filepath.Join(globalFlags.WorkingDirectory, consulConfigPath)
 		}
 		if !filepath.HasPrefix(zkWorkingDir, globalFlags.WorkingDirectory) {
 			zkWorkingDir = filepath.Join(globalFlags.WorkingDirectory, zkWorkingDir)
@@ -356,7 +386,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			}
 
 			// generate zookeeper config
-			zkCfg := zkConfig
+			zkCfg := zkConfigDefault
 			zkCfg.DataDir = zkDataDir
 			peers := []ZookeeperPeer{}
 			for i := range peerIPs {
@@ -372,7 +402,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			}
 			zc := buf.String()
 
-			configFilePath := filepath.Join(zkWorkingDir, "zookeeper.config")
+			configFilePath := filepath.Join(zkWorkingDir, zkConfigPath)
 			log.Printf("Writing %q to %s", zc, configFilePath)
 			if err := toFile(zc, configFilePath); err != nil {
 				return nil, err
@@ -428,30 +458,29 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					joins = append(joins, peerIPs[i])
 				}
 			}
-			var flags []string
+			consulCfg := consulConfigDefault
 			if t.req.ServerIndex == 0 { // leader
-				flags = []string{
-					"agent",
-					"-server",
-					"-bootstrap",
-					"-data-dir", consulDataDir,
-					"-advertise", peerIPs[t.req.ServerIndex],
-					"-join", strings.Join(joins, ","),
-					"-retry-join", strings.Join(joins, ","),
-					"-encrypt", consulToken,
-				}
-			} else {
-				flags = []string{
-					"agent",
-					"-server",
-					"-data-dir", consulDataDir,
-					"-advertise", peerIPs[t.req.ServerIndex],
-					"-join", strings.Join(joins, ","),
-					"-retry-join", strings.Join(joins, ","),
-					"-encrypt", consulToken,
-				}
+				consulCfg.Bootstrap = true
 			}
+			consulCfg.AdvertiseAddr = peerIPs[t.req.ServerIndex]
+			consulCfg.DataDir = consulDataDir
+			consulCfg.StartJoin = joins
+			consulCfg.RetryJoin = joins
 
+			buf := new(bytes.Buffer)
+			if err := json.NewEncoder(buf).Encode(consulCfg); err != nil {
+				return nil, err
+			}
+			cc := buf.String()
+
+			log.Printf("Writing %q to %s", cc, consulConfigPath)
+			if err := toFile(cc, consulConfigPath); err != nil {
+				return nil, err
+			}
+			flags := []string{
+				"agent",
+				"-config-file", consulConfigPath,
+			}
 			flagString := strings.Join(flags, " ")
 
 			cmd := exec.Command(consulBinaryPath, flags...)
