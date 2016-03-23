@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	mrand "math/rand"
@@ -66,6 +67,9 @@ func mustCreateClientsEtcd2(total uint) []clientv2.KeysAPI {
 		endpoint := endpoints[dialTotal%len(endpoints)]
 		dialTotal++
 
+		if !strings.HasPrefix(endpoint, "http://") {
+			endpoint = "http://" + endpoint
+		}
 		cfg := clientv2.Config{
 			Endpoints:               []string{endpoint},
 			Transport:               clientv2.DefaultTransport,
