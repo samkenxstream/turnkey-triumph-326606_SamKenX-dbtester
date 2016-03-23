@@ -16,7 +16,6 @@ package agent
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"net"
 	"os"
@@ -83,29 +82,9 @@ var (
 	consulBinaryPath = filepath.Join(os.Getenv("GOPATH"), "bin/consul")
 	javaBinaryPath   = "/usr/bin/java"
 
-	etcdToken   = "etcd_token"
-	etcdDataDir = "data.etcd"
-
-	consulToken               = "gqYeGerkZGQHBiV4Zd5BMw==" // consul keygen
-	consulDataDir             = "data.consul"
-	consulConfigDir           = "consul.d"
-	consulConfigPath          = "server/config.json"
-	consulConfigPathBootstrap = "bootstrap/config.json"
-	consulLogPathBootstrap    = "database_bootstrap.log"
-
-	consulConfigDefault = ConsulConfig{
-		Bootstrap:     false,
-		Server:        true,
-		AdvertiseAddr: "",
-		DataCenter:    "consul",
-		DataDir:       consulDataDir,
-		Encrypt:       consulToken,
-		LogLevel:      "INFO",
-		EnableSyslog:  true,
-		StartJoin:     []string{},
-		RetryJoin:     []string{},
-		RetryInterval: "5s",
-	}
+	etcdToken     = "etcd_token"
+	etcdDataDir   = "data.etcd"
+	consulDataDir = "data.consul"
 
 	zkWorkingDir = "zookeeper"
 	zkDataDir    = "zookeeper/data.zk"
@@ -206,21 +185,6 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		}
 		if !filepath.HasPrefix(consulDataDir, globalFlags.WorkingDirectory) {
 			consulDataDir = filepath.Join(globalFlags.WorkingDirectory, consulDataDir)
-		}
-		if !filepath.HasPrefix(consulConfigDir, globalFlags.WorkingDirectory) {
-			consulConfigDir = filepath.Join(globalFlags.WorkingDirectory, consulConfigDir)
-		}
-		if err := os.MkdirAll(consulConfigDir, 0777); err != nil {
-			return nil, err
-		}
-		if !filepath.HasPrefix(consulConfigPath, consulConfigDir) {
-			consulConfigPath = filepath.Join(consulConfigDir, consulConfigPath)
-		}
-		if !filepath.HasPrefix(consulConfigPathBootstrap, consulConfigDir) {
-			consulConfigPathBootstrap = filepath.Join(consulConfigDir, consulConfigPathBootstrap)
-		}
-		if !filepath.HasPrefix(consulLogPathBootstrap, globalFlags.WorkingDirectory) {
-			consulLogPathBootstrap = filepath.Join(globalFlags.WorkingDirectory, consulLogPathBootstrap)
 		}
 		if !filepath.HasPrefix(zkWorkingDir, globalFlags.WorkingDirectory) {
 			zkWorkingDir = filepath.Join(globalFlags.WorkingDirectory, zkWorkingDir)
@@ -463,90 +427,31 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			if err := os.RemoveAll(consulDataDir); err != nil {
 				return nil, err
 			}
-			if err := os.RemoveAll(consulConfigDir); err != nil {
-				return nil, err
-			}
 			f, err := openToAppend(t.req.DatabaseLogPath)
 			if err != nil {
 				return nil, err
 			}
 			t.logfile = f
 
-			// clusterN := len(peerIPs)
-			var joins []string
-			for i := range peerIPs {
-				if i != int(t.req.ServerIndex) { // only add other addresses
-					joins = append(joins, peerIPs[i])
-				}
-			}
-			consulCfg := consulConfigDefault
-			consulCfg.AdvertiseAddr = peerIPs[t.req.ServerIndex]
-			consulCfg.DataDir = consulDataDir
-			consulCfg.StartJoin = joins
-			consulCfg.RetryJoin = joins
-
+			var flags []string
 			if t.req.ServerIndex == 0 { // leader
-				bcfg := consulCfg
-				bcfg.Bootstrap = true
-				bcfg.StartJoin = nil
-				bcfg.RetryJoin = nil
-				bcfg.RetryInterval = ""
-				buf := new(bytes.Buffer)
-				if err := json.NewEncoder(buf).Encode(bcfg); err != nil {
-					return nil, err
-				}
-				cc := buf.String()
-
-				log.Printf("Writing %q to %s", cc, consulConfigPathBootstrap)
-				if err := os.MkdirAll(filepath.Join(consulConfigDir, "bootstrap"), 0777); err != nil {
-					return nil, err
-				}
-				if err := toFile(cc, consulConfigPathBootstrap); err != nil {
-					return nil, err
-				}
-
-				flags := []string{
+				flags = []string{
 					"agent",
-					"-config-dir", filepath.Join(consulConfigDir, "bootstrap"),
+					"-server",
+					"-data-dir", consulDataDir,
+					"-bind", peerIPs[t.req.ServerIndex],
+					"-client", peerIPs[t.req.ServerIndex],
+					"-bootstrap-expect", "3",
 				}
-				flagString := strings.Join(flags, " ")
-				bf, err := openToAppend(consulLogPathBootstrap)
-				if err != nil {
-					return nil, err
+			} else {
+				flags = []string{
+					"agent",
+					"-server",
+					"-data-dir", consulDataDir,
+					"-bind", peerIPs[t.req.ServerIndex],
+					"-client", peerIPs[t.req.ServerIndex],
+					"-join", peerIPs[0],
 				}
-				cmd := exec.Command(consulBinaryPath, flags...)
-				cmd.Stdout = bf
-				cmd.Stderr = bf
-
-				log.Printf("Starting: %s %s", cmd.Path, flagString)
-				if err := cmd.Start(); err != nil {
-					return nil, err
-				}
-				go func() {
-					if err := cmd.Wait(); err != nil {
-						log.Printf("%s %s cmd.Wait returned %v", cmd.Path, flagString, err)
-						return
-					}
-					log.Printf("Exiting %s", cmd.Path)
-				}()
-			}
-
-			buf := new(bytes.Buffer)
-			if err := json.NewEncoder(buf).Encode(consulCfg); err != nil {
-				return nil, err
-			}
-			cc := buf.String()
-
-			log.Printf("Writing %q to %s", cc, consulConfigPath)
-			if err := os.MkdirAll(filepath.Join(consulConfigDir, "server"), 0777); err != nil {
-				return nil, err
-			}
-			if err := toFile(cc, consulConfigPath); err != nil {
-				return nil, err
-			}
-			flags := []string{
-				"agent",
-				"-config-dir", filepath.Join(consulConfigDir, "server"),
 			}
 			flagString := strings.Join(flags, " ")
 
