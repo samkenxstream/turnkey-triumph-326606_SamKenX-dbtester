@@ -89,7 +89,7 @@ var (
 	consulToken               = "gqYeGerkZGQHBiV4Zd5BMw==" // consul keygen
 	consulDataDir             = "data.consul"
 	consulConfigDir           = "consul.d"
-	consulConfigPath          = "server"
+	consulConfigPath          = "server.json"
 	consulConfigPathBootstrap = "bootstrap/config.json"
 
 	// consulBootstrapDataDir    = "data_bootstrap.consul"
