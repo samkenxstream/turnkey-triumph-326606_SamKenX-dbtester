@@ -35,10 +35,12 @@ var (
 func main() {
 	var (
 		prefixes = []string{
-			"testdata/test-01-etcd-",
-			"testdata/test-01-zk-",
+			"testdata/bench-01-consul-",
+			"testdata/bench-01-etcd-",
+			"testdata/bench-01-etcd2-",
+			"testdata/bench-01-zk-",
 		}
-		comparedPath = "testdata/test-01-compared.csv"
+		comparedPath = "testdata/bench-01-compared.csv"
 	)
 
 	tbs := []ps.Table{}
@@ -55,7 +57,7 @@ func main() {
 	}
 	initSize := len(compareColumns)
 	for i, prefix := range prefixes {
-		tb, err := combine(prefix)
+		tb, err := aggregate(prefix)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -114,11 +116,10 @@ func main() {
 	log.Printf("Successfully saved compared.csv")
 
 	// TODO:
-	// add etcd2, consul
 	// add plotting
 }
 
-func combine(prefix string) (ps.Table, error) {
+func aggregate(prefix string) (ps.Table, error) {
 	var (
 		dbtesterBenchColumns = map[string]int{
 			"unix_ts":        0,
@@ -127,13 +128,13 @@ func combine(prefix string) (ps.Table, error) {
 		}
 		benchmarkResultPath = fmt.Sprintf("%stimeseries.csv", prefix)
 		testPaths           = []string{
-			fmt.Sprintf("%sserver-1.csv", prefix),
-			fmt.Sprintf("%sserver-2.csv", prefix),
-			fmt.Sprintf("%sserver-3.csv", prefix),
+			fmt.Sprintf("%s1-monitor.csv", prefix),
+			fmt.Sprintf("%s2-monitor.csv", prefix),
+			fmt.Sprintf("%s3-monitor.csv", prefix),
 		}
 		finalPath = fmt.Sprintf("%sfinal.csv", prefix)
 	)
-	log.Printf("Combine %q\n", testPaths)
+	log.Printf("Aggregating %q\n", testPaths)
 
 	tbResultCombined, err := ps.ReadCSVs(ps.ColumnsPS, testPaths...)
 	if err != nil {
