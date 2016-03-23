@@ -105,6 +105,8 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 		req.Database = agent.Request_etcd2
 	case "zookeeper":
 		req.Database = agent.Request_ZooKeeper
+	case "consul":
+		req.Database = agent.Request_Consul
 	default:
 		if req.Operation != agent.Request_Stop {
 			log.Printf("'%s' is not supported!\n", globalFlags.Database)
