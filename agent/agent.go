@@ -441,7 +441,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			}
 			flagString := strings.Join(flags, " ")
 
-			cmd := exec.Command(etcdBinaryPath, flags...)
+			cmd := exec.Command(consulBinaryPath, flags...)
 			cmd.Stdout = f
 			cmd.Stderr = f
 			log.Printf("Starting: %s %s", cmd.Path, flagString)
