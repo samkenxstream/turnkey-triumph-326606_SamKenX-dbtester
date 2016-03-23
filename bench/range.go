@@ -23,6 +23,7 @@ import (
 	"github.com/cheggaaa/pb"
 	clientv2 "github.com/coreos/etcd/client"
 	"github.com/coreos/etcd/clientv3"
+	consulapi "github.com/hashicorp/consul/api"
 	"github.com/samuel/go-zookeeper/zk"
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
@@ -56,13 +57,14 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 	if singleKey { // write 'foo'
 		k = string(randBytes(keySize))
 		v := randBytes(valSize)
+		vs := string(v)
 		switch database {
 		case "etcd":
 			fmt.Printf("PUT '%s' to etcd\n", k)
 			var err error
 			for i := 0; i < 5; i++ {
 				clients := mustCreateClients(1, 1)
-				_, err = clients[0].Do(context.Background(), clientv3.OpPut(k, string(v)))
+				_, err = clients[0].Do(context.Background(), clientv3.OpPut(k, vs))
 				if err != nil {
 					continue
 				}
@@ -79,7 +81,7 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 			var err error
 			for i := 0; i < 5; i++ {
 				clients := mustCreateClientsEtcd2(totalConns)
-				_, err = clients[0].Set(context.Background(), k, string(v), nil)
+				_, err = clients[0].Set(context.Background(), k, vs, nil)
 				if err != nil {
 					continue
 				}
@@ -109,6 +111,22 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 				os.Exit(1)
 			}
 
+		case "consul":
+			fmt.Printf("PUT '%s' to Consul\n", k)
+			var err error
+			for i := 0; i < 5; i++ {
+				clients := mustCreateConnsConsul(totalConns)
+				_, err = clients[0].Put(&consulapi.KVPair{Key: k, Value: v}, nil)
+				if err != nil {
+					continue
+				}
+				fmt.Printf("Done with PUT '%s' to Consul\n", k)
+				break
+			}
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
 		}
 	} else if len(args) == 0 || len(args) > 2 {
 		fmt.Fprintln(os.Stderr, cmd.Usage())
@@ -173,6 +191,13 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 		for i := range conns {
 			wg.Add(1)
 			go doRangeZk(conns[i], requests)
+		}
+
+	case "consul":
+		conns := mustCreateConnsConsul(totalConns)
+		for i := range conns {
+			wg.Add(1)
+			go doRangeConsul(conns[i], requests)
 		}
 
 	default:
@@ -252,6 +277,24 @@ func doRangeZk(conn *zk.Conn, requests <-chan request) {
 
 		st := time.Now()
 		_, _, err := conn.Get(op.key)
+
+		var errStr string
+		if err != nil {
+			errStr = err.Error()
+		}
+		results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
+		bar.Increment()
+	}
+}
+
+func doRangeConsul(conn *consulapi.KV, requests <-chan request) {
+	defer wg.Done()
+
+	for req := range requests {
+		op := req.consulOp
+
+		st := time.Now()
+		_, _, err := conn.Get(op.key, nil)
 
 		var errStr string
 		if err != nil {

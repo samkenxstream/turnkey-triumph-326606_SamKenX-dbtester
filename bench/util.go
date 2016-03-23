@@ -25,6 +25,7 @@ import (
 
 	clientv2 "github.com/coreos/etcd/client"
 	"github.com/coreos/etcd/clientv3"
+	consulapi "github.com/hashicorp/consul/api"
 	"github.com/samuel/go-zookeeper/zk"
 )
 
@@ -93,6 +94,24 @@ func mustCreateConnsZk(total uint) []*zk.Conn {
 		zks[i] = conn
 	}
 	return zks
+}
+
+func mustCreateConnsConsul(total uint) []*consulapi.KV {
+	css := make([]*consulapi.KV, total)
+	for i := range css {
+		endpoint := endpoints[dialTotal%len(endpoints)]
+		dialTotal++
+
+		dcfg := consulapi.DefaultConfig()
+		dcfg.Address = endpoint // x.x.x.x:8500
+		cli, err := consulapi.NewClient(dcfg)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		css[i] = cli.KV()
+	}
+	return css
 }
 
 func mustRandBytes(n int) []byte {

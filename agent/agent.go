@@ -64,10 +64,16 @@ var (
 
 	agentLogPath = "agent.log"
 
-	etcdBinaryPath = filepath.Join(os.Getenv("GOPATH"), "bin/etcd")
-	etcdToken      = "etcd_token"
+	etcdBinaryPath   = filepath.Join(os.Getenv("GOPATH"), "bin/etcd")
+	consulBinaryPath = filepath.Join(os.Getenv("GOPATH"), "bin/consul")
+	javaBinaryPath   = "/usr/bin/java"
 
-	etcdDataDir  = "data.etcd"
+	etcdToken   = "etcd_token"
+	etcdDataDir = "data.etcd"
+
+	consulToken   = "2HL2voYgqnsFdoilH2G2/g==" // consul keygen
+	consulDataDir = "data.consul"
+
 	zkWorkingDir = "zookeeper"
 	zkDataDir    = "zookeeper/data.zk"
 
@@ -100,6 +106,7 @@ maxClientCnxns={{.MaxClientCnxns}}
 		Short: "Database agent in remote servers.",
 		Run:   CommandFunc,
 	}
+
 	globalFlags = Flags{}
 )
 
@@ -164,6 +171,9 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		if !filepath.HasPrefix(etcdDataDir, globalFlags.WorkingDirectory) {
 			etcdDataDir = filepath.Join(globalFlags.WorkingDirectory, etcdDataDir)
 		}
+		if !filepath.HasPrefix(consulDataDir, globalFlags.WorkingDirectory) {
+			consulDataDir = filepath.Join(globalFlags.WorkingDirectory, consulDataDir)
+		}
 		if !filepath.HasPrefix(zkWorkingDir, globalFlags.WorkingDirectory) {
 			zkWorkingDir = filepath.Join(globalFlags.WorkingDirectory, zkWorkingDir)
 		}
@@ -177,12 +187,13 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			r.MonitorResultPath = filepath.Join(globalFlags.WorkingDirectory, r.MonitorResultPath)
 		}
 
-		log.Printf("working directory: %s", globalFlags.WorkingDirectory)
+		log.Printf("Working directory: %s", globalFlags.WorkingDirectory)
 		log.Printf("etcd data directory: %s", etcdDataDir)
-		log.Printf("zookeeper working directory: %s", zkWorkingDir)
-		log.Printf("zookeeper data directory: %s", zkDataDir)
-		log.Printf("database log path: %s", r.DatabaseLogPath)
-		log.Printf("monitor result path: %s", r.MonitorResultPath)
+		log.Printf("Consul data directory: %s", consulDataDir)
+		log.Printf("Zookeeper working directory: %s", zkWorkingDir)
+		log.Printf("Zookeeper data directory: %s", zkDataDir)
+		log.Printf("Database log path: %s", r.DatabaseLogPath)
+		log.Printf("Monitor result path: %s", r.MonitorResultPath)
 	}
 	if r.Operation == Request_Start {
 		t.req = *r
@@ -212,7 +223,6 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			}
 			t.logfile = f
 
-			// generate flags from etcd server name
 			clusterN := len(peerIPs)
 			names := make([]string, clusterN)
 			clientURLs := make([]string, clusterN)
@@ -226,14 +236,14 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			}
 			clusterStr := strings.Join(members, ",")
 			flags := []string{
-				"--name", fmt.Sprintf("etcd-%d", t.req.EtcdServerIndex+1),
+				"--name", names[t.req.ServerIndex],
 				"--data-dir", etcdDataDir,
 
-				"--listen-client-urls", clientURLs[t.req.EtcdServerIndex],
-				"--advertise-client-urls", clientURLs[t.req.EtcdServerIndex],
+				"--listen-client-urls", clientURLs[t.req.ServerIndex],
+				"--advertise-client-urls", clientURLs[t.req.ServerIndex],
 
-				"--listen-peer-urls", peerURLs[t.req.EtcdServerIndex],
-				"--initial-advertise-peer-urls", peerURLs[t.req.EtcdServerIndex],
+				"--listen-peer-urls", peerURLs[t.req.ServerIndex],
+				"--initial-advertise-peer-urls", peerURLs[t.req.ServerIndex],
 
 				"--initial-cluster-token", etcdToken,
 				"--initial-cluster", clusterStr,
@@ -276,7 +286,6 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			}
 			t.logfile = f
 
-			// generate flags from etcd server name
 			clusterN := len(peerIPs)
 			names := make([]string, clusterN)
 			clientURLs := make([]string, clusterN)
@@ -290,14 +299,14 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			}
 			clusterStr := strings.Join(members, ",")
 			flags := []string{
-				"--name", fmt.Sprintf("etcd-%d", t.req.EtcdServerIndex+1),
+				"--name", names[t.req.ServerIndex],
 				"--data-dir", etcdDataDir,
 
-				"--listen-client-urls", clientURLs[t.req.EtcdServerIndex],
-				"--advertise-client-urls", clientURLs[t.req.EtcdServerIndex],
+				"--listen-client-urls", clientURLs[t.req.ServerIndex],
+				"--advertise-client-urls", clientURLs[t.req.ServerIndex],
 
-				"--listen-peer-urls", peerURLs[t.req.EtcdServerIndex],
-				"--initial-advertise-peer-urls", peerURLs[t.req.EtcdServerIndex],
+				"--listen-peer-urls", peerURLs[t.req.ServerIndex],
+				"--initial-advertise-peer-urls", peerURLs[t.req.ServerIndex],
 
 				"--initial-cluster-token", etcdToken,
 				"--initial-cluster", clusterStr,
@@ -325,7 +334,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			}()
 
 		case Request_ZooKeeper:
-			_, err := os.Stat("/usr/bin/java")
+			_, err := os.Stat(javaBinaryPath)
 			if err != nil {
 				return nil, err
 			}
@@ -377,12 +386,65 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 
 			// this changes for different releases
 			flagString := `-cp zookeeper-3.4.8.jar:lib/slf4j-api-1.6.1.jar:lib/slf4j-log4j12-1.6.1.jar:lib/log4j-1.2.16.jar:conf org.apache.zookeeper.server.quorum.QuorumPeerMain`
-			args := []string{shell, "-c", "/usr/bin/java " + flagString + " " + configFilePath}
+			args := []string{shell, "-c", javaBinaryPath + " " + flagString + " " + configFilePath}
 
 			cmd := exec.Command(args[0], args[1:]...)
 			cmd.Stdout = f
 			cmd.Stderr = f
 			log.Printf("Starting: %s %s", cmd.Path, strings.Join(args[1:], " "))
+			if err := cmd.Start(); err != nil {
+				return nil, err
+			}
+			t.cmd = cmd
+			t.pid = cmd.Process.Pid
+			log.Printf("Started: %s [PID: %d]", cmd.Path, t.pid)
+			processPID = t.pid
+			go func() {
+				if err := cmd.Wait(); err != nil {
+					log.Printf("Start(%s) cmd.Wait returned %v", cmd.Path, err)
+					return
+				}
+				log.Printf("Exiting %s", cmd.Path)
+			}()
+
+		case Request_Consul:
+			_, err := os.Stat(consulBinaryPath)
+			if err != nil {
+				return nil, err
+			}
+			if err := os.RemoveAll(consulDataDir); err != nil {
+				return nil, err
+			}
+			f, err := openToAppend(t.req.DatabaseLogPath)
+			if err != nil {
+				return nil, err
+			}
+			t.logfile = f
+
+			clusterN := len(peerIPs)
+			names := make([]string, clusterN)
+			var joins []string
+			for i := range peerIPs {
+				names[i] = fmt.Sprintf("consul-%d", i+1)
+				if i != int(t.req.ServerIndex) { // only add other addresses
+					joins = append(joins, peerIPs[i])
+				}
+			}
+			flags := []string{
+				"-server",
+				"-node", names[t.req.ServerIndex],
+				"-data-dir", consulDataDir,
+				"-advertise", peerIPs[t.req.ServerIndex],
+				"-join", strings.Join(joins, ","),
+				"-retry-join", strings.Join(joins, ","),
+				"-encrypt", consulToken,
+			}
+			flagString := strings.Join(flags, " ")
+
+			cmd := exec.Command(etcdBinaryPath, flags...)
+			cmd.Stdout = f
+			cmd.Stderr = f
+			log.Printf("Starting: %s %s", cmd.Path, flagString)
 			if err := cmd.Start(); err != nil {
 				return nil, err
 			}
@@ -508,19 +570,19 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					srcDatabaseLogPath := t.req.DatabaseLogPath
 					dstDatabaseLogPath := filepath.Base(t.req.DatabaseLogPath)
 					if !strings.HasPrefix(filepath.Base(t.req.DatabaseLogPath), t.req.LogPrefix) {
-						dstDatabaseLogPath = fmt.Sprintf("%s-%d-%s", t.req.LogPrefix, t.req.EtcdServerIndex+1, filepath.Base(t.req.DatabaseLogPath))
+						dstDatabaseLogPath = fmt.Sprintf("%s-%d-%s", t.req.LogPrefix, t.req.ServerIndex+1, filepath.Base(t.req.DatabaseLogPath))
 					}
 
 					srcMonitorResultPath := t.req.MonitorResultPath
 					dstMonitorResultPath := filepath.Base(t.req.MonitorResultPath)
 					if !strings.HasPrefix(filepath.Base(t.req.MonitorResultPath), t.req.LogPrefix) {
-						dstMonitorResultPath = fmt.Sprintf("%s-%d-%s", t.req.LogPrefix, t.req.EtcdServerIndex+1, filepath.Base(t.req.MonitorResultPath))
+						dstMonitorResultPath = fmt.Sprintf("%s-%d-%s", t.req.LogPrefix, t.req.ServerIndex+1, filepath.Base(t.req.MonitorResultPath))
 					}
 
 					srcAgentLogPath := agentLogPath
 					dstAgentLogPath := filepath.Base(agentLogPath)
 					if !strings.HasPrefix(filepath.Base(agentLogPath), t.req.LogPrefix) {
-						dstAgentLogPath = fmt.Sprintf("%s-%d-%s", t.req.LogPrefix, t.req.EtcdServerIndex+1, filepath.Base(agentLogPath))
+						dstAgentLogPath = fmt.Sprintf("%s-%d-%s", t.req.LogPrefix, t.req.ServerIndex+1, filepath.Base(agentLogPath))
 					}
 
 					log.Printf("Uploading %s to %s", srcDatabaseLogPath, dstDatabaseLogPath)

@@ -22,44 +22,48 @@ message Request {
 		etcd      = 0;
 		etcd2     = 1;
 		ZooKeeper = 2;
+		Consul    = 3;
 	}
 
 	Operation operation   = 1;
 	Database database     = 2;
 	string peerIPs        = 3;
 
-	// EtcdServerIndex is the index in peerIPs.
-	uint32 etcdServerIndex = 4;
-	uint32 zookeeperMyID   = 5;
+	// ServerIPIndex is the index in peerIPs that points to the
+	// corresponding remote IP.
+	uint32 serverIndex = 4;
+
+	// LogPrefix prefixes all logs to be generated in agent.
+	string logPrefix = 5;
+
+	// DatabaseLogPath is the file path to store the database logs.
+	string databaseLogPath = 6;
+
+	// MonitorResultPath is the file path to store monitoring results.
+	string monitorResultPath = 7;
+
+	// GoogleCloudProjectName is the project name to use
+	// to upload logs.
+	string googleCloudProjectName = 8;
+
+	// GoogleCloudStorageJSONKey is the key to be used to upload
+	// data and logs to Google Cloud Storage.
+	string googleCloudStorageJSONKey = 9;
+
+	// GoogleCloudStorageBucketName is the bucket name to store all data and logs.
+	string googleCloudStorageBucketName = 10;
+
+	// ZookeeperMyID is myid that needs to be stored as a file in the remote machine.
+	uint32 zookeeperMyID   = 11;
 
 	// ZookeeperPreAllocSize avoid seeks ZooKeeper allocates space
 	// in the transaction log file in blocks of PreAllocSize kilobytes.
 	// Default value is 65536 * 1024.
-	int64 zookeeperPreAllocSize = 6;
+	int64 zookeeperPreAllocSize = 12;
 
 	// ZookeeperMaxClientCnxns limits the number of concurrent connections
 	// (at the socket level) that a single client, identified by IP address.
-	int64 zookeeperMaxClientCnxns = 7;
-
-	// LogPrefix prefixes all logs to be generated in agent.
-	string logPrefix = 8;
-
-	// DatabaseLogPath is the file path to store the database logs.
-	string databaseLogPath = 9;
-
-	// MonitorResultPath is the file path to store monitoring results.
-	string monitorResultPath = 10;
-
-	// GoogleCloudProjectName is the project name to use
-	// to upload logs.
-	string googleCloudProjectName = 11;
-
-	// GoogleCloudStorageJSONKey is the key to be used to upload
-	// data and logs to Google Cloud Storage.
-	string googleCloudStorageJSONKey = 12;
-
-	// GoogleCloudStorageBucketName is the bucket name to store all data and logs.
-	string googleCloudStorageBucketName = 13;
+	int64 zookeeperMaxClientCnxns = 13;
 }
 
 message Response {

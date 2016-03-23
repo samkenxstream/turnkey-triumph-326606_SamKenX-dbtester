@@ -24,6 +24,7 @@ import (
 	"github.com/cheggaaa/pb"
 	clientv2 "github.com/coreos/etcd/client"
 	"github.com/coreos/etcd/clientv3"
+	consulapi "github.com/hashicorp/consul/api"
 	"github.com/samuel/go-zookeeper/zk"
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
@@ -63,9 +64,10 @@ func init() {
 }
 
 type request struct {
-	etcdOp  clientv3.Op
-	etcd2Op etcd2Op
-	zkOp    zkOp
+	etcdOp   clientv3.Op
+	etcd2Op  etcd2Op
+	zkOp     zkOp
+	consulOp consulOp
 }
 
 type etcd2Op struct {
@@ -74,6 +76,11 @@ type etcd2Op struct {
 }
 
 type zkOp struct {
+	key   string
+	value []byte
+}
+
+type consulOp struct {
 	key   string
 	value []byte
 }
@@ -124,7 +131,14 @@ func putFunc(cmd *cobra.Command, args []string) {
 		}()
 		for i := range conns {
 			wg.Add(1)
-			go doPutZk(context.Background(), conns[i], requests)
+			go doPutZk(conns[i], requests)
+		}
+
+	case "consul":
+		conns := mustCreateConnsConsul(totalConns)
+		for i := range conns {
+			wg.Add(1)
+			go doPutConsul(conns[i], requests)
 		}
 
 	default:
@@ -198,7 +212,7 @@ func doPutEtcd2(ctx context.Context, conn clientv2.KeysAPI, requests <-chan requ
 	}
 }
 
-func doPutZk(ctx context.Context, conn *zk.Conn, requests <-chan request) {
+func doPutZk(conn *zk.Conn, requests <-chan request) {
 	defer wg.Done()
 
 	for req := range requests {
@@ -216,6 +230,23 @@ func doPutZk(ctx context.Context, conn *zk.Conn, requests <-chan request) {
 	}
 }
 
+func doPutConsul(conn *consulapi.KV, requests <-chan request) {
+	defer wg.Done()
+
+	for req := range requests {
+		op := req.consulOp
+		st := time.Now()
+
+		_, err := conn.Put(&consulapi.KVPair{Key: op.key, Value: op.value}, nil)
+
+		var errStr string
+		if err != nil {
+			errStr = err.Error()
+		}
+		results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
+		bar.Increment()
+	}
+}
 func compactKV(clients []*clientv3.Client) {
 	var curRev int64
 	for _, c := range clients {

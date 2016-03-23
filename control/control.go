@@ -134,9 +134,9 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 	for i := range peerIPs {
 		nreq := req
 
-		nreq.EtcdServerIndex = uint32(i)
+		nreq.ServerIndex = uint32(i)
 		nreq.ZookeeperMyID = uint32(i + 1)
-		ep := globalFlags.AgentEndpoints[nreq.EtcdServerIndex]
+		ep := globalFlags.AgentEndpoints[nreq.ServerIndex]
 
 		log.Printf("[%s] %s at %s\n", req.Operation, req.Database, ep)
 		conn, err := grpc.Dial(ep, grpc.WithInsecure())
