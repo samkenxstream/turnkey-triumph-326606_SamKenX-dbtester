@@ -168,6 +168,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		case err := <-errc:
 			return err
 		}
+		cnt++
 	}
 	return nil
 }
