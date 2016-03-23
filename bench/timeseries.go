@@ -12,16 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package bench
 
 import (
 	"bytes"
 	"encoding/csv"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"path/filepath"
 	"sort"
 	"sync"
 	"time"
+
+	"github.com/coreos/dbtester/remotestorage"
 )
 
 type timeSeries struct {
@@ -112,7 +116,29 @@ func (ts TimeSeries) String() string {
 	if err := toFile(txt, csvResultPath); err != nil {
 		log.Fatal(err)
 	} else {
-		log.Println("time series saved... Please upload to Google cloud storage...")
+		log.Println("time series saved... Uploading to Google cloud storage...")
+		kbts, err := ioutil.ReadFile(googleCloudStorageJSONKeyPath)
+		if err != nil {
+			log.Fatal(err)
+		}
+		u, err := remotestorage.NewGoogleCloudStorage(kbts, googleCloudProjectName)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// set up file names
+		srcCSVResultPath := csvResultPath
+		dstCSVResultPath := filepath.Base(csvResultPath)
+		log.Printf("Uploading %s to %s", srcCSVResultPath, dstCSVResultPath)
+		var uerr error
+		for k := 0; k < 5; k++ {
+			if uerr = u.UploadFile(googleCloudStorageBucketName, srcCSVResultPath, dstCSVResultPath); uerr != nil {
+				log.Println(uerr)
+				continue
+			} else {
+				break
+			}
+		}
 	}
 	return fmt.Sprintf("\nSample in one second (unix latency throughput):\n%s", txt)
 }

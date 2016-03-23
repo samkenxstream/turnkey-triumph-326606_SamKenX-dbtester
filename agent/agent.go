@@ -586,19 +586,6 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					if !strings.HasPrefix(filepath.Base(t.req.DatabaseLogPath), t.req.LogPrefix) {
 						dstDatabaseLogPath = fmt.Sprintf("%s-%d-%s", t.req.LogPrefix, t.req.ServerIndex+1, filepath.Base(t.req.DatabaseLogPath))
 					}
-
-					srcMonitorResultPath := t.req.MonitorResultPath
-					dstMonitorResultPath := filepath.Base(t.req.MonitorResultPath)
-					if !strings.HasPrefix(filepath.Base(t.req.MonitorResultPath), t.req.LogPrefix) {
-						dstMonitorResultPath = fmt.Sprintf("%s-%d-%s", t.req.LogPrefix, t.req.ServerIndex+1, filepath.Base(t.req.MonitorResultPath))
-					}
-
-					srcAgentLogPath := agentLogPath
-					dstAgentLogPath := filepath.Base(agentLogPath)
-					if !strings.HasPrefix(filepath.Base(agentLogPath), t.req.LogPrefix) {
-						dstAgentLogPath = fmt.Sprintf("%s-%d-%s", t.req.LogPrefix, t.req.ServerIndex+1, filepath.Base(agentLogPath))
-					}
-
 					log.Printf("Uploading %s to %s", srcDatabaseLogPath, dstDatabaseLogPath)
 					var uerr error
 					for k := 0; k < 5; k++ {
@@ -610,6 +597,11 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 						}
 					}
 
+					srcMonitorResultPath := t.req.MonitorResultPath
+					dstMonitorResultPath := filepath.Base(t.req.MonitorResultPath)
+					if !strings.HasPrefix(filepath.Base(t.req.MonitorResultPath), t.req.LogPrefix) {
+						dstMonitorResultPath = fmt.Sprintf("%s-%d-%s", t.req.LogPrefix, t.req.ServerIndex+1, filepath.Base(t.req.MonitorResultPath))
+					}
 					log.Printf("Uploading %s to %s", srcMonitorResultPath, dstMonitorResultPath)
 					for k := 0; k < 5; k++ {
 						if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcMonitorResultPath, dstMonitorResultPath); uerr != nil {
@@ -620,6 +612,11 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 						}
 					}
 
+					srcAgentLogPath := agentLogPath
+					dstAgentLogPath := filepath.Base(agentLogPath)
+					if !strings.HasPrefix(filepath.Base(agentLogPath), t.req.LogPrefix) {
+						dstAgentLogPath = fmt.Sprintf("%s-%d-%s", t.req.LogPrefix, t.req.ServerIndex+1, filepath.Base(agentLogPath))
+					}
 					log.Printf("Uploading %s to %s", srcAgentLogPath, dstAgentLogPath)
 					for k := 0; k < 5; k++ {
 						if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcAgentLogPath, dstAgentLogPath); uerr != nil {
