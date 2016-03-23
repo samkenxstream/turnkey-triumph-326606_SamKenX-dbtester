@@ -162,8 +162,12 @@ func putFunc(cmd *cobra.Command, args []string) {
 			switch database {
 			case "etcd":
 				requests <- request{etcdOp: clientv3.OpPut(string(k), v)}
+			case "etcd2":
+				requests <- request{etcd2Op: etcd2Op{key: string(k), value: v}}
 			case "zk":
 				requests <- request{zkOp: zkOp{key: "/" + string(k), value: []byte(v)}}
+			case "consul":
+				requests <- request{consulOp: consulOp{key: string(k), value: []byte(v)}}
 			}
 		}
 		close(requests)
