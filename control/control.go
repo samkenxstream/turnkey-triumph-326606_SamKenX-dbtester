@@ -160,6 +160,8 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 			log.Printf("[%d] Response from %s (%+v)\n", i, ep, resp)
 			donec <- struct{}{}
 		}(i)
+
+		time.Sleep(time.Second)
 	}
 	cnt := 0
 	for cnt != len(peerIPs) {
