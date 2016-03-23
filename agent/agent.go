@@ -86,9 +86,12 @@ var (
 	etcdToken   = "etcd_token"
 	etcdDataDir = "data.etcd"
 
-	consulToken         = "gqYeGerkZGQHBiV4Zd5BMw==" // consul keygen
-	consulDataDir       = "data.consul"
-	consulConfigPath    = "consul.json"
+	consulToken               = "gqYeGerkZGQHBiV4Zd5BMw==" // consul keygen
+	consulDataDir             = "data.consul"
+	consulBootstrapDataDir    = "data_bootstrap.consul"
+	consulConfigPath          = "consul.json"
+	consulBootstrapConfigPath = "consul_bootstrap.json"
+
 	consulConfigDefault = ConsulConfig{
 		Bootstrap:     false,
 		Server:        true,
@@ -203,8 +206,14 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		if !filepath.HasPrefix(consulDataDir, globalFlags.WorkingDirectory) {
 			consulDataDir = filepath.Join(globalFlags.WorkingDirectory, consulDataDir)
 		}
+		if !filepath.HasPrefix(consulBootstrapDataDir, globalFlags.WorkingDirectory) {
+			consulBootstrapDataDir = filepath.Join(globalFlags.WorkingDirectory, consulBootstrapDataDir)
+		}
 		if !filepath.HasPrefix(consulConfigPath, globalFlags.WorkingDirectory) {
 			consulConfigPath = filepath.Join(globalFlags.WorkingDirectory, consulConfigPath)
+		}
+		if !filepath.HasPrefix(consulBootstrapConfigPath, globalFlags.WorkingDirectory) {
+			consulBootstrapConfigPath = filepath.Join(globalFlags.WorkingDirectory, consulBootstrapConfigPath)
 		}
 		if !filepath.HasPrefix(zkWorkingDir, globalFlags.WorkingDirectory) {
 			zkWorkingDir = filepath.Join(globalFlags.WorkingDirectory, zkWorkingDir)
@@ -465,15 +474,47 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			consulCfg.DataDir = consulDataDir
 			consulCfg.StartJoin = joins
 			consulCfg.RetryJoin = joins
-			if t.req.ServerIndex == 0 { // leader
-				consulCfg.Bootstrap = true
-				consulCfg.StartJoin = nil
-				consulCfg.RetryJoin = nil
-				consulCfg.RetryInterval = ""
 
-				// wait for other servers start
-				log.Printf("Consul is sleeping to wait...")
-				time.Sleep(10 * time.Second)
+			if t.req.ServerIndex == 0 { // leader
+
+				// start bootstrap
+				bcfg := consulCfg
+				bcfg.Bootstrap = true
+				bcfg.AdvertiseAddr = ""
+				bcfg.DataDir = consulBootstrapDataDir
+				bcfg.StartJoin = nil
+				bcfg.RetryJoin = nil
+				bcfg.RetryInterval = ""
+				buf := new(bytes.Buffer)
+				if err := json.NewEncoder(buf).Encode(bcfg); err != nil {
+					return nil, err
+				}
+				cc := buf.String()
+
+				log.Printf("Writing %q to %s", cc, consulBootstrapConfigPath)
+				if err := toFile(cc, consulBootstrapConfigPath); err != nil {
+					return nil, err
+				}
+				flags := []string{
+					"agent",
+					"-config-file", consulConfigPath,
+				}
+				flagString := strings.Join(flags, " ")
+				cmd := exec.Command(consulBinaryPath, flags...)
+				cmd.Stdout = f
+				cmd.Stderr = f
+				log.Printf("Starting: %s %s", cmd.Path, flagString)
+				if err := cmd.Start(); err != nil {
+					return nil, err
+				}
+				log.Printf("Starting: %s %s", cmd.Path, flagString)
+				go func() {
+					if err := cmd.Wait(); err != nil {
+						log.Printf("%s %s cmd.Wait returned %v", cmd.Path, flagString, err)
+						return
+					}
+					log.Printf("Exiting %s", cmd.Path)
+				}()
 			}
 
 			buf := new(bytes.Buffer)
