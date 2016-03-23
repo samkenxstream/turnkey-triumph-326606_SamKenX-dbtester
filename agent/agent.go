@@ -266,7 +266,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			processPID = t.pid
 			go func() {
 				if err := cmd.Wait(); err != nil {
-					log.Printf("Start(%s) cmd.Wait returned %v", cmd.Path, err)
+					log.Printf("%s cmd.Wait returned %v", cmd.Path, err)
 					return
 				}
 				log.Printf("Exiting %s", cmd.Path)
@@ -327,7 +327,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			processPID = t.pid
 			go func() {
 				if err := cmd.Wait(); err != nil {
-					log.Printf("Start(%s) cmd.Wait returned %v", cmd.Path, err)
+					log.Printf("%s cmd.Wait returned %v", cmd.Path, err)
 					return
 				}
 				log.Printf("Exiting %s", cmd.Path)
@@ -401,7 +401,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			processPID = t.pid
 			go func() {
 				if err := cmd.Wait(); err != nil {
-					log.Printf("Start(%s) cmd.Wait returned %v", cmd.Path, err)
+					log.Printf("%s cmd.Wait returned %v", cmd.Path, err)
 					return
 				}
 				log.Printf("Exiting %s", cmd.Path)
@@ -431,6 +431,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				}
 			}
 			flags := []string{
+				"agent",
 				"-server",
 				"-node", names[t.req.ServerIndex],
 				"-data-dir", consulDataDir,
@@ -454,7 +455,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			processPID = t.pid
 			go func() {
 				if err := cmd.Wait(); err != nil {
-					log.Printf("Start(%s) cmd.Wait returned %v", cmd.Path, err)
+					log.Printf("%s cmd.Wait returned %v", cmd.Path, err)
 					return
 				}
 				log.Printf("Exiting %s", cmd.Path)
@@ -495,7 +496,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		processPID = t.pid
 		go func() {
 			if err := cmd.Wait(); err != nil {
-				log.Printf("Restart(%s) cmd.Wait returned %v", cmd.Path, err)
+				log.Printf("%s cmd.Wait returned %v", cmd.Path, err)
 				return
 			}
 			log.Printf("Exiting %s", cmd.Path)
