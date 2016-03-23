@@ -60,7 +60,7 @@ type (
 	}
 
 	ConsulConfig struct {
-		Bootstrap     bool     `json:"bootstrap,omitempty"`
+		Bootstrap     bool     `json:"bootstrap"`
 		Server        bool     `json:"server,omitempty"`
 		AdvertiseAddr string   `json:"advertise_addr,omitempty"`
 		DataCenter    string   `json:"datacenter,omitempty"`
