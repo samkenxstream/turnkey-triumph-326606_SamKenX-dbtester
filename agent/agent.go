@@ -421,25 +421,37 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			}
 			t.logfile = f
 
-			clusterN := len(peerIPs)
-			names := make([]string, clusterN)
+			// clusterN := len(peerIPs)
 			var joins []string
 			for i := range peerIPs {
-				names[i] = fmt.Sprintf("consul-%d", i+1)
 				if i != int(t.req.ServerIndex) { // only add other addresses
 					joins = append(joins, peerIPs[i])
 				}
 			}
-			flags := []string{
-				"agent",
-				"-server",
-				"-node", names[t.req.ServerIndex],
-				"-data-dir", consulDataDir,
-				"-advertise", peerIPs[t.req.ServerIndex],
-				"-join", strings.Join(joins, ","),
-				"-retry-join", strings.Join(joins, ","),
-				"-encrypt", consulToken,
+			var flags []string
+			if t.req.ServerIndex == 0 { // leader
+				flags = []string{
+					"agent",
+					"-server",
+					"-bootstrap",
+					"-data-dir", consulDataDir,
+					"-advertise", peerIPs[t.req.ServerIndex],
+					"-join", strings.Join(joins, ","),
+					"-retry-join", strings.Join(joins, ","),
+					"-encrypt", consulToken,
+				}
+			} else {
+				flags = []string{
+					"agent",
+					"-server",
+					"-data-dir", consulDataDir,
+					"-advertise", peerIPs[t.req.ServerIndex],
+					// "-join", strings.Join(joins, ","),
+					// "-retry-join", strings.Join(joins, ","),
+					"-encrypt", consulToken,
+				}
 			}
+
 			flagString := strings.Join(flags, " ")
 
 			cmd := exec.Command(consulBinaryPath, flags...)
