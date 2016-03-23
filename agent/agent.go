@@ -480,7 +480,6 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			consulCfg.RetryJoin = joins
 
 			if t.req.ServerIndex == 0 { // leader
-
 				// start bootstrap
 				bcfg := consulCfg
 				bcfg.Bootstrap = true
@@ -500,7 +499,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				}
 				flags := []string{
 					"agent",
-					"-config-file", consulConfigPath,
+					"-config-file", consulBootstrapConfigPath,
 				}
 				flagString := strings.Join(flags, " ")
 
