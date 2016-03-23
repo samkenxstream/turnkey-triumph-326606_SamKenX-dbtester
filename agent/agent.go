@@ -466,9 +466,6 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			if err := os.RemoveAll(consulConfigDir); err != nil {
 				return nil, err
 			}
-			if err := os.MkdirAll(filepath.Join(consulConfigDir, "server"), 0777); err != nil {
-				return nil, err
-			}
 			f, err := openToAppend(t.req.DatabaseLogPath)
 			if err != nil {
 				return nil, err
@@ -489,10 +486,6 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			consulCfg.RetryJoin = joins
 
 			if t.req.ServerIndex == 0 { // leader
-				if err := os.MkdirAll(filepath.Join(consulConfigDir, "bootstrap"), 0777); err != nil {
-					return nil, err
-				}
-
 				bcfg := consulCfg
 				bcfg.Bootstrap = true
 				bcfg.StartJoin = nil
@@ -503,7 +496,11 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					return nil, err
 				}
 				cc := buf.String()
+
 				log.Printf("Writing %q to %s", cc, consulConfigPathBootstrap)
+				if err := os.MkdirAll(filepath.Join(consulConfigDir, "bootstrap"), 0777); err != nil {
+					return nil, err
+				}
 				if err := toFile(cc, consulConfigPathBootstrap); err != nil {
 					return nil, err
 				}
@@ -520,11 +517,11 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				cmd := exec.Command(consulBinaryPath, flags...)
 				cmd.Stdout = bf
 				cmd.Stderr = bf
+
 				log.Printf("Starting: %s %s", cmd.Path, flagString)
 				if err := cmd.Start(); err != nil {
 					return nil, err
 				}
-				log.Printf("Starting: %s %s", cmd.Path, flagString)
 				go func() {
 					if err := cmd.Wait(); err != nil {
 						log.Printf("%s %s cmd.Wait returned %v", cmd.Path, flagString, err)
@@ -541,6 +538,9 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			cc := buf.String()
 
 			log.Printf("Writing %q to %s", cc, consulConfigPath)
+			if err := os.MkdirAll(filepath.Join(consulConfigDir, "server"), 0777); err != nil {
+				return nil, err
+			}
 			if err := toFile(cc, consulConfigPath); err != nil {
 				return nil, err
 			}
