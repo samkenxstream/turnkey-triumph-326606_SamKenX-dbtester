@@ -294,7 +294,7 @@ func doRangeConsul(conn *consulapi.KV, requests <-chan request) {
 		op := req.consulOp
 
 		st := time.Now()
-		_, _, err := conn.Get(op.key, nil)
+		_, _, err := conn.Get(op.key, &consulapi.QueryOptions{AllowStale: true})
 
 		var errStr string
 		if err != nil {
