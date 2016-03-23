@@ -89,11 +89,9 @@ var (
 	consulToken               = "gqYeGerkZGQHBiV4Zd5BMw==" // consul keygen
 	consulDataDir             = "data.consul"
 	consulConfigDir           = "consul.d"
-	consulConfigPath          = "server.json"
+	consulConfigPath          = "server/config.json"
 	consulConfigPathBootstrap = "bootstrap/config.json"
-
-	// consulBootstrapDataDir    = "data_bootstrap.consul"
-	// consulBootstrapLogPath    = "database_bootstrap.log"
+	consulLogPathBootstrap    = "database_bootstrap.log"
 
 	consulConfigDefault = ConsulConfig{
 		Bootstrap:     false,
@@ -220,6 +218,9 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		}
 		if !filepath.HasPrefix(consulConfigPathBootstrap, consulConfigDir) {
 			consulConfigPathBootstrap = filepath.Join(consulConfigDir, consulConfigPathBootstrap)
+		}
+		if !filepath.HasPrefix(consulLogPathBootstrap, globalFlags.WorkingDirectory) {
+			consulLogPathBootstrap = filepath.Join(globalFlags.WorkingDirectory, consulLogPathBootstrap)
 		}
 		if !filepath.HasPrefix(zkWorkingDir, globalFlags.WorkingDirectory) {
 			zkWorkingDir = filepath.Join(globalFlags.WorkingDirectory, zkWorkingDir)
@@ -465,6 +466,9 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			if err := os.RemoveAll(consulConfigDir); err != nil {
 				return nil, err
 			}
+			if err := os.MkdirAll(filepath.Join(consulConfigDir, "server"), 0777); err != nil {
+				return nil, err
+			}
 			f, err := openToAppend(t.req.DatabaseLogPath)
 			if err != nil {
 				return nil, err
@@ -504,30 +508,30 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					return nil, err
 				}
 
-				// flags := []string{
-				// 	"agent",
-				// 	"-config-file", consulConfigPathBootstrap,
-				// }
-				// flagString := strings.Join(flags, " ")
-				// bf, err := openToAppend(consulBootstrapLogPath)
-				// if err != nil {
-				// 	return nil, err
-				// }
-				// cmd := exec.Command(consulBinaryPath, flags...)
-				// cmd.Stdout = bf
-				// cmd.Stderr = bf
-				// log.Printf("Starting: %s %s", cmd.Path, flagString)
-				// if err := cmd.Start(); err != nil {
-				// 	return nil, err
-				// }
-				// log.Printf("Starting: %s %s", cmd.Path, flagString)
-				// go func() {
-				// 	if err := cmd.Wait(); err != nil {
-				// 		log.Printf("%s %s cmd.Wait returned %v", cmd.Path, flagString, err)
-				// 		return
-				// 	}
-				// 	log.Printf("Exiting %s", cmd.Path)
-				// }()
+				flags := []string{
+					"agent",
+					"-config-dir", filepath.Join(consulConfigDir, "bootstrap"),
+				}
+				flagString := strings.Join(flags, " ")
+				bf, err := openToAppend(consulLogPathBootstrap)
+				if err != nil {
+					return nil, err
+				}
+				cmd := exec.Command(consulBinaryPath, flags...)
+				cmd.Stdout = bf
+				cmd.Stderr = bf
+				log.Printf("Starting: %s %s", cmd.Path, flagString)
+				if err := cmd.Start(); err != nil {
+					return nil, err
+				}
+				log.Printf("Starting: %s %s", cmd.Path, flagString)
+				go func() {
+					if err := cmd.Wait(); err != nil {
+						log.Printf("%s %s cmd.Wait returned %v", cmd.Path, flagString, err)
+						return
+					}
+					log.Printf("Exiting %s", cmd.Path)
+				}()
 			}
 
 			buf := new(bytes.Buffer)
@@ -542,7 +546,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			}
 			flags := []string{
 				"agent",
-				"-config-dir", consulConfigDir,
+				"-config-dir", filepath.Join(consulConfigDir, "server"),
 			}
 			flagString := strings.Join(flags, " ")
 
