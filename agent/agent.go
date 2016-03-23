@@ -91,6 +91,7 @@ var (
 	consulBootstrapDataDir    = "data_bootstrap.consul"
 	consulConfigPath          = "consul.json"
 	consulBootstrapConfigPath = "consul_bootstrap.json"
+	consulBootstrapLogPath    = "database_bootstrap.json"
 
 	consulConfigDefault = ConsulConfig{
 		Bootstrap:     false,
@@ -214,6 +215,9 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		}
 		if !filepath.HasPrefix(consulBootstrapConfigPath, globalFlags.WorkingDirectory) {
 			consulBootstrapConfigPath = filepath.Join(globalFlags.WorkingDirectory, consulBootstrapConfigPath)
+		}
+		if !filepath.HasPrefix(consulBootstrapLogPath, globalFlags.WorkingDirectory) {
+			consulBootstrapLogPath = filepath.Join(globalFlags.WorkingDirectory, consulBootstrapLogPath)
 		}
 		if !filepath.HasPrefix(zkWorkingDir, globalFlags.WorkingDirectory) {
 			zkWorkingDir = filepath.Join(globalFlags.WorkingDirectory, zkWorkingDir)
@@ -480,7 +484,6 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				// start bootstrap
 				bcfg := consulCfg
 				bcfg.Bootstrap = true
-				bcfg.AdvertiseAddr = ""
 				bcfg.DataDir = consulBootstrapDataDir
 				bcfg.StartJoin = nil
 				bcfg.RetryJoin = nil
@@ -500,9 +503,18 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					"-config-file", consulConfigPath,
 				}
 				flagString := strings.Join(flags, " ")
+
+				if err := os.RemoveAll(consulBootstrapDataDir); err != nil {
+					return nil, err
+				}
+				bf, err := openToAppend(consulBootstrapLogPath)
+				if err != nil {
+					return nil, err
+				}
+
 				cmd := exec.Command(consulBinaryPath, flags...)
-				cmd.Stdout = f
-				cmd.Stderr = f
+				cmd.Stdout = bf
+				cmd.Stderr = bf
 				log.Printf("Starting: %s %s", cmd.Path, flagString)
 				if err := cmd.Start(); err != nil {
 					return nil, err
