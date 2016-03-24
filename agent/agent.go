@@ -260,8 +260,6 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				"--initial-cluster-token", etcdToken,
 				"--initial-cluster", clusterStr,
 				"--initial-cluster-state", "new",
-
-				"--experimental-v3demo",
 			}
 			flagString := strings.Join(flags, " ")
 
@@ -284,7 +282,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				log.Printf("Exiting %s", cmd.Path)
 			}()
 
-		case Request_etcd2:
+		case Request_etcd2: // TODO: combine with etcd3
 			_, err := os.Stat(etcdBinaryPath)
 			if err != nil {
 				return nil, err
