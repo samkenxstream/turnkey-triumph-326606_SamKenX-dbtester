@@ -73,7 +73,7 @@ func main() {
 func CommandFunc(cmd *cobra.Command, args []string) error {
 	kbs, err := ioutil.ReadFile(googleCloudStorageJSONKeyPath)
 	if err != nil {
-		return fmt.Errorf("error when opening %s(%v)", googleCloudStorageJSONKeyPath, err)
+		return fmt.Errorf("error when opening key %s(%v)", googleCloudStorageJSONKeyPath, err)
 	}
 	u, err := remotestorage.NewGoogleCloudStorage(kbs, googleCloudProjectName)
 	if err != nil {
