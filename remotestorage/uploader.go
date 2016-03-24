@@ -90,7 +90,7 @@ func (g *GoogleCloudStorage) UploadFile(bucket, src, dst string, opts ...OpOptio
 	log.Printf("UploadFile: %s ---> %s", src, dst)
 	bts, err := ioutil.ReadFile(src)
 	if err != nil {
-		return err
+		return fmt.Errorf("error ioutil.ReadFile(%s) %v", src, err)
 	}
 	if _, err := wc.Write(bts); err != nil {
 		return err
@@ -146,7 +146,7 @@ func (g *GoogleCloudStorage) UploadDir(bucket, src, dst string, opts ...OpOption
 			}
 			bts, err := ioutil.ReadFile(source)
 			if err != nil {
-				errc <- err
+				errc <- fmt.Errorf("error ioutil.ReadFile(%s) %v", source, err)
 				return
 			}
 			if _, err := wc.Write(bts); err != nil {
