@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"path/filepath"
 	"strings"
 
 	"golang.org/x/net/context"
@@ -134,14 +135,16 @@ func (g *GoogleCloudStorage) UploadDir(bucket, src, dst string, opts ...OpOption
 	}
 
 	donec, errc := make(chan struct{}), make(chan error)
-	for source, destination := range fmap {
-		go func(src, dst string) {
-			log.Printf("UploadDir: %s ---> %s", src, dst)
-			wc := client.Bucket(bucket).Object(dst).NewWriter(context.Background())
+	for source := range fmap {
+		go func(source string) {
+			s := strings.Replace(source, src, "", -1)
+			tp := filepath.Join(dst, s)
+			log.Printf("UploadDir: %s ---> %s", source, tp)
+			wc := client.Bucket(bucket).Object(tp).NewWriter(context.Background())
 			if ret.ContentType != "" {
 				wc.ContentType = ret.ContentType
 			}
-			bts, err := ioutil.ReadFile(src)
+			bts, err := ioutil.ReadFile(source)
 			if err != nil {
 				errc <- err
 				return
@@ -155,7 +158,7 @@ func (g *GoogleCloudStorage) UploadDir(bucket, src, dst string, opts ...OpOption
 				return
 			}
 			donec <- struct{}{}
-		}(source, destination)
+		}(source)
 	}
 
 	cnt, num := 0, len(fmap)
