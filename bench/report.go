@@ -16,6 +16,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"math"
 	"sort"
 	"strings"
@@ -83,14 +84,17 @@ func wrapReport(f func()) <-chan struct{} {
 }
 
 func (r *report) finalize() {
+	log.Printf("finalize has started\n")
 	st := time.Now()
 	for res := range r.results {
 		if res.errStr != "" {
 			r.errorDist[res.errStr]++
 		} else {
 			r.sps.Add(res.happened, res.duration)
-			r.lats = append(r.lats, res.duration.Seconds())
-			r.avgTotal += res.duration.Seconds()
+			if !noHistogram {
+				r.lats = append(r.lats, res.duration.Seconds())
+				r.avgTotal += res.duration.Seconds()
+			}
 		}
 	}
 	r.total = time.Since(st)
@@ -109,26 +113,26 @@ func (r *report) finalize() {
 }
 
 func (r *report) print() {
+	log.Printf("print has started\n")
+	if sample && noHistogram {
+		r.printSecondSample()
+	}
 
 	if len(r.lats) > 0 {
-		if sample && noHistogram {
+		sort.Float64s(r.lats)
+		r.fastest = r.lats[0]
+		r.slowest = r.lats[len(r.lats)-1]
+		fmt.Printf("\nSummary:\n")
+		fmt.Printf("  Total:\t%4.4f secs.\n", r.total.Seconds())
+		fmt.Printf("  Slowest:\t%4.4f secs.\n", r.slowest)
+		fmt.Printf("  Fastest:\t%4.4f secs.\n", r.fastest)
+		fmt.Printf("  Average:\t%4.4f secs.\n", r.average)
+		fmt.Printf("  Stddev:\t%4.4f secs.\n", r.stddev)
+		fmt.Printf("  Requests/sec:\t%4.4f\n", r.rps)
+		r.printHistogram()
+		r.printLatencies()
+		if sample {
 			r.printSecondSample()
-		} else {
-			sort.Float64s(r.lats)
-			r.fastest = r.lats[0]
-			r.slowest = r.lats[len(r.lats)-1]
-			fmt.Printf("\nSummary:\n")
-			fmt.Printf("  Total:\t%4.4f secs.\n", r.total.Seconds())
-			fmt.Printf("  Slowest:\t%4.4f secs.\n", r.slowest)
-			fmt.Printf("  Fastest:\t%4.4f secs.\n", r.fastest)
-			fmt.Printf("  Average:\t%4.4f secs.\n", r.average)
-			fmt.Printf("  Stddev:\t%4.4f secs.\n", r.stddev)
-			fmt.Printf("  Requests/sec:\t%4.4f\n", r.rps)
-			r.printHistogram()
-			r.printLatencies()
-			if sample {
-				r.printSecondSample()
-			}
 		}
 	}
 
