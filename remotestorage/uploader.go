@@ -17,7 +17,6 @@ package remotestorage
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"path/filepath"
 	"strings"
 
@@ -87,10 +86,16 @@ func (g *GoogleCloudStorage) UploadFile(bucket, src, dst string, opts ...OpOptio
 		wc.ContentType = ret.ContentType
 	}
 
-	log.Printf("UploadFile: %s ---> %s", src, dst)
+	fmt.Println("UploadFile:")
+	fmt.Println()
+	fmt.Println(src)
+	fmt.Println("--->")
+	fmt.Println(dst)
+	fmt.Println()
+
 	bts, err := ioutil.ReadFile(src)
 	if err != nil {
-		return fmt.Errorf("error ioutil.ReadFile(%s) %v", src, err)
+		return fmt.Errorf("ioutil.ReadFile(%s) %v", src, err)
 	}
 	if _, err := wc.Write(bts); err != nil {
 		return err
@@ -98,7 +103,10 @@ func (g *GoogleCloudStorage) UploadFile(bucket, src, dst string, opts ...OpOptio
 	if err := wc.Close(); err != nil {
 		return err
 	}
-	log.Println("UploadFile success")
+
+	fmt.Println()
+	fmt.Println("UploadFile Done!")
+	fmt.Println()
 	return nil
 }
 
@@ -134,19 +142,26 @@ func (g *GoogleCloudStorage) UploadDir(bucket, src, dst string, opts ...OpOption
 		return err
 	}
 
+	fmt.Println("UploadDir:")
 	donec, errc := make(chan struct{}), make(chan error)
 	for source := range fmap {
 		go func(source string) {
 			s := strings.Replace(source, src, "", -1)
 			tp := filepath.Join(dst, s)
-			log.Printf("UploadDir: %s ---> %s", source, tp)
+
+			fmt.Println()
+			fmt.Println(source)
+			fmt.Println("--->")
+			fmt.Println(tp)
+			fmt.Println()
+
 			wc := client.Bucket(bucket).Object(tp).NewWriter(context.Background())
 			if ret.ContentType != "" {
 				wc.ContentType = ret.ContentType
 			}
 			bts, err := ioutil.ReadFile(source)
 			if err != nil {
-				errc <- fmt.Errorf("error ioutil.ReadFile(%s) %v", source, err)
+				errc <- fmt.Errorf("ioutil.ReadFile(%s) %v", source, err)
 				return
 			}
 			if _, err := wc.Write(bts); err != nil {
@@ -170,6 +185,8 @@ func (g *GoogleCloudStorage) UploadDir(bucket, src, dst string, opts ...OpOption
 		}
 		cnt++
 	}
-	log.Println("UploadDir success")
+	fmt.Println()
+	fmt.Println("UploadDir Done!")
+	fmt.Println()
 	return nil
 }
