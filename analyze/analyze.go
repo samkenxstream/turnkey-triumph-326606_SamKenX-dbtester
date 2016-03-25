@@ -36,6 +36,7 @@ type (
 		AggAggFilePath      string
 		ImageFormat         string
 		ImageTitle          string
+		MultiTagTitle       string
 	}
 )
 
@@ -60,6 +61,7 @@ func init() {
 	Command.PersistentFlags().StringVarP(&globalFlags.AggAggFilePath, "file-to-plot", "p", "", "Aggregated CSV file path to plot.")
 	Command.PersistentFlags().StringVarP(&globalFlags.ImageFormat, "image-format", "f", "png", "Image format (png, svg).")
 	Command.PersistentFlags().StringVarP(&globalFlags.ImageTitle, "image-title", "t", "", "Image title.")
+	Command.PersistentFlags().StringVarP(&globalFlags.MultiTagTitle, "multi-tag-title", "g", "", "Special title for *multi test.")
 }
 
 func CommandFunc(cmd *cobra.Command, args []string) error {
@@ -83,7 +85,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		}
 
 	case len(globalFlags.AggAggFilePath) > 0:
-		if err := plotAggAgg(globalFlags.AggAggFilePath, globalFlags.OutputPath, globalFlags.ImageFormat, globalFlags.ImageTitle); err != nil {
+		if err := plotAggAgg(globalFlags.AggAggFilePath, globalFlags.OutputPath, globalFlags.ImageFormat, globalFlags.ImageTitle, globalFlags.MultiTagTitle); err != nil {
 			return err
 		}
 	}
@@ -233,101 +235,89 @@ func aggMonitor(monitorPaths ...string) (dataframe.Frame, error) {
 
 // aggBenchAndMonitor combines benchmark latency results and monitor CSV files.
 func aggBenchAndMonitor(benchPath string, monitorPaths ...string) (dataframe.Frame, error) {
-	fr2, err := aggMonitor(monitorPaths...)
+	frMonitor, err := aggMonitor(monitorPaths...)
 	if err != nil {
 		return nil, err
 	}
-	col2, err := fr2.GetColumn("unix_ts")
+	colMonitorUnixTs, err := frMonitor.GetColumn("unix_ts")
 	if err != nil {
 		return nil, err
 	}
 
-	// need to combine fr2 to fr1
-	fr1, err := dataframe.NewFromCSV(nil, benchPath)
+	// need to combine frMonitor to frBench
+	frBench, err := dataframe.NewFromCSV(nil, benchPath)
 	if err != nil {
 		return nil, err
 	}
-	col1, err := fr1.GetColumn("unix_ts")
+	colBenchUnixTs, err := frBench.GetColumn("unix_ts")
 	if err != nil {
 		return nil, err
 	}
-	fv, ok := col1.FrontNonNil()
+
+	fv, ok := colBenchUnixTs.FrontNonNil()
 	if !ok {
 		return nil, fmt.Errorf("FrontNonNil %s has empty Unix time %v", benchPath, fv)
 	}
-	startIdx, ok := col2.FindValue(fv)
+	startRowMonitor, ok := colMonitorUnixTs.FindValue(fv)
 	if !ok {
-		return nil, fmt.Errorf("%v is not found in benchmark result %s", fv, benchPath)
+		return nil, fmt.Errorf("%v is not found in monitor results %q", fv, monitorPaths)
 	}
-	bv, ok := col1.BackNonNil()
+	bv, ok := colBenchUnixTs.BackNonNil()
 	if !ok {
 		return nil, fmt.Errorf("BackNonNil %s has empty Unix time %v", benchPath, bv)
 	}
-	endIdx, ok := col2.FindValue(bv)
-	if !ok {
-		return nil, fmt.Errorf("%v is not found in benchmark result %s", bv, benchPath)
+	endRowMonitor, ok := colMonitorUnixTs.FindValue(bv)
+	if !ok { // monitor short of rows
+		endRowMonitor = colMonitorUnixTs.RowNumber() - 1
 	}
 
-	var minLen int
-	for i, hd := range fr1.GetHeader() {
-		var col dataframe.Column
-		col, err = fr1.GetColumn(hd)
-		if err != nil {
-			return nil, err
+	var benchLastIdx int
+	for _, col := range frBench.GetColumns() {
+		if benchLastIdx == 0 {
+			benchLastIdx = col.RowNumber()
 		}
-		if i == 0 {
-			minLen = col.RowNumber()
-		}
-		if minLen < col.RowNumber() {
-			minLen = col.RowNumber()
+		if benchLastIdx > col.RowNumber() {
+			benchLastIdx = col.RowNumber()
 		}
 	}
-	var delta int
-	if minLen > endIdx+1-startIdx { // short of rows
-		delta = minLen - (endIdx + 1 - startIdx)
+	benchLastIdx--
+
+	if benchLastIdx+1 < endRowMonitor-startRowMonitor+1 { // benchmark is short of rows
+		endRowMonitor = startRowMonitor + benchLastIdx
+	} else { // monitor is short of rows
+		benchLastIdx = endRowMonitor - startRowMonitor
 	}
 
-	for _, hd := range fr2.GetHeader() {
+	for _, hd := range frMonitor.GetHeader() {
 		if hd == "unix_ts" {
 			continue
 		}
 		var col dataframe.Column
-		col, err = fr2.GetColumn(hd)
+		col, err = frMonitor.GetColumn(hd)
 		if err != nil {
 			return nil, err
 		}
-		if err = col.KeepRows(startIdx, endIdx+1+delta); err != nil {
+		if err = col.KeepRows(startRowMonitor, endRowMonitor); err != nil {
 			return nil, err
 		}
-		if err = fr1.AddColumn(col); err != nil {
+		if err = frBench.AddColumn(col); err != nil {
 			return nil, err
 		}
 	}
 
-	// get average value
-	uc, err := fr1.GetColumn("unix_ts")
-	if err != nil {
-		return nil, err
-	}
 	var (
-		rowNum                  = uc.RowNumber()
 		sampleSize              = float64(len(monitorPaths))
 		cumulativeThroughputCol = dataframe.NewColumn("cumulative_throughput")
 		totalThrougput          int
 		avgCpuCol               = dataframe.NewColumn("avg_cpu")
 		avgMemCol               = dataframe.NewColumn("avg_memory_mb")
 	)
-	for i := 0; i < rowNum; i++ {
+	for i := 0; i < benchLastIdx; i++ {
 		var (
 			cpuTotal    float64
 			memoryTotal float64
 		)
-		for _, hd := range fr1.GetHeader() {
-			var col dataframe.Column
-			col, err = fr1.GetColumn(hd)
-			if err != nil {
-				return nil, err
-			}
+		for _, col := range frBench.GetColumns() {
 			var rv dataframe.Value
 			rv, err = col.GetValue(i)
 			if err != nil {
@@ -335,11 +325,11 @@ func aggBenchAndMonitor(benchPath string, monitorPaths ...string) (dataframe.Fra
 			}
 			fv, _ := rv.ToNumber()
 			switch {
-			case strings.HasPrefix(hd, "cpu_"):
+			case strings.HasPrefix(col.GetHeader(), "cpu_"):
 				cpuTotal += fv
-			case strings.HasPrefix(hd, "memory_"):
+			case strings.HasPrefix(col.GetHeader(), "memory_"):
 				memoryTotal += fv
-			case hd == "throughput":
+			case col.GetHeader() == "throughput":
 				fv, _ := rv.ToNumber()
 				totalThrougput += int(fv)
 				cumulativeThroughputCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", totalThrougput)))
@@ -349,15 +339,15 @@ func aggBenchAndMonitor(benchPath string, monitorPaths ...string) (dataframe.Fra
 		avgMemCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", memoryTotal/sampleSize)))
 	}
 
-	unixTsCol, err := fr1.GetColumn("unix_ts")
+	unixTsCol, err := frBench.GetColumn("unix_ts")
 	if err != nil {
 		return nil, err
 	}
-	latencyCol, err := fr1.GetColumn("avg_latency_ms")
+	latencyCol, err := frBench.GetColumn("avg_latency_ms")
 	if err != nil {
 		return nil, err
 	}
-	throughputCol, err := fr1.GetColumn("throughput")
+	throughputCol, err := frBench.GetColumn("throughput")
 	if err != nil {
 		return nil, err
 	}
@@ -368,8 +358,8 @@ func aggBenchAndMonitor(benchPath string, monitorPaths ...string) (dataframe.Fra
 	nf.AddColumn(throughputCol)
 	nf.AddColumn(cumulativeThroughputCol)
 
-	for _, hd := range fr1.GetHeader() {
-		col, err := fr1.GetColumn(hd)
+	for _, hd := range frBench.GetHeader() {
+		col, err := frBench.GetColumn(hd)
 		if err != nil {
 			return nil, err
 		}
@@ -443,6 +433,8 @@ func aggAgg(fpaths ...string) (dataframe.Frame, error) {
 				dbID = "consul"
 			case strings.Contains(fpaths[i], "etcd2"):
 				dbID = "etcd2"
+			case strings.Contains(fpaths[i], "etcdmulti"):
+				dbID = "etcd3multi"
 			case strings.Contains(fpaths[i], "etcd"):
 				dbID = "etcd3"
 			case strings.Contains(fpaths[i], "zk"):
@@ -457,21 +449,22 @@ func aggAgg(fpaths ...string) (dataframe.Frame, error) {
 	return nf, nil
 }
 
-func plotAggAgg(fpath, outputPath, imageFormat, imageTitle string) error {
+func plotAggAgg(fpath, outputPath, imageFormat, imageTitle, multiTagTitle string) error {
 	fr, err := dataframe.NewFromCSV(nil, fpath)
 	if err != nil {
 		return err
 	}
 
 	plot.DefaultFont = "Helvetica"
-	plotter.DefaultLineStyle.Width /= 2
+	plotter.DefaultLineStyle.Width = vg.Points(1.5)
 	plotter.DefaultGlyphStyle.Radius = vg.Points(2.0)
 	var (
-		defaultSize    = 5 * vg.Inch
-		avgLatencyPath = outputPath + fmt.Sprintf("-avg-latency-ms.%s", imageFormat)
-		throughputPath = outputPath + fmt.Sprintf("-throughput.%s", imageFormat)
-		avgCpuPath     = outputPath + fmt.Sprintf("-avg-cpu.%s", imageFormat)
-		avgMemPath     = outputPath + fmt.Sprintf("-avg-mem.%s", imageFormat)
+		defaultPlotWidth  = 12 * vg.Inch
+		defaultPlotHeight = 8 * vg.Inch
+		avgLatencyPath    = outputPath + fmt.Sprintf("-avg-latency-ms.%s", imageFormat)
+		throughputPath    = outputPath + fmt.Sprintf("-throughput.%s", imageFormat)
+		avgCpuPath        = outputPath + fmt.Sprintf("-avg-cpu.%s", imageFormat)
+		avgMemPath        = outputPath + fmt.Sprintf("-avg-mem.%s", imageFormat)
 	)
 
 	plotAvgLatencyConsul, err := fr.GetColumn("avg_latency_ms_consul")
@@ -513,17 +506,40 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle string) error {
 	plotAvgLatency.Title.Text = fmt.Sprintf("%s, Latency", imageTitle)
 	plotAvgLatency.X.Label.Text = "second"
 	plotAvgLatency.Y.Label.Text = "latency(ms)"
-	if err = plotutil.AddLinePoints(
-		plotAvgLatency,
-		"consul", plotAvgLatencyConsulPoints,
-		"etcd3", plotAvgLatencyEtcd3Points,
-		"etcd2", plotAvgLatencyEtcd2Points,
-		"zk", plotAvgLatencyZkPoints,
-	); err != nil {
-		return err
-	}
-	if err = plotAvgLatency.Save(defaultSize, defaultSize, avgLatencyPath); err != nil {
-		return err
+	plotAvgLatency.Legend.Top = true
+	plotAvgLatencyEtcd3Multi, err := fr.GetColumn("avg_latency_ms_etcd3multi")
+	if err == nil {
+		var plotAvgLatencyEtcd3MultiPoints plotter.XYs
+		plotAvgLatencyEtcd3MultiPoints, err = points(plotAvgLatencyEtcd3Multi)
+		if err != nil {
+			return err
+		}
+		if err = plotutil.AddLines(
+			plotAvgLatency,
+			"consul", plotAvgLatencyConsulPoints,
+			"etcd3", plotAvgLatencyEtcd3Points,
+			strings.Replace("etcd3multi", "multi", "-"+multiTagTitle, -1), plotAvgLatencyEtcd3MultiPoints,
+			"etcd2", plotAvgLatencyEtcd2Points,
+			"zk", plotAvgLatencyZkPoints,
+		); err != nil {
+			return err
+		}
+		if err = plotAvgLatency.Save(defaultPlotWidth, defaultPlotHeight, avgLatencyPath); err != nil {
+			return err
+		}
+	} else {
+		if err = plotutil.AddLines(
+			plotAvgLatency,
+			"consul", plotAvgLatencyConsulPoints,
+			"etcd3", plotAvgLatencyEtcd3Points,
+			"etcd2", plotAvgLatencyEtcd2Points,
+			"zk", plotAvgLatencyZkPoints,
+		); err != nil {
+			return err
+		}
+		if err = plotAvgLatency.Save(defaultPlotWidth, defaultPlotHeight, avgLatencyPath); err != nil {
+			return err
+		}
 	}
 
 	plotThroughputConsul, err := fr.GetColumn("throughput_consul")
@@ -565,17 +581,40 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle string) error {
 	plotThroughput.Title.Text = fmt.Sprintf("%s, Throughput", imageTitle)
 	plotThroughput.X.Label.Text = "second"
 	plotThroughput.Y.Label.Text = "Throughput"
-	if err = plotutil.AddLinePoints(
-		plotThroughput,
-		"consul", plotThroughputConsulPoints,
-		"etcd3", plotThroughputEtcd3Points,
-		"etcd2", plotThroughputEtcd2Points,
-		"zk", plotThroughputZkPoints,
-	); err != nil {
-		return err
-	}
-	if err = plotThroughput.Save(defaultSize, defaultSize, throughputPath); err != nil {
-		return err
+	plotThroughput.Legend.Top = true
+	plotThroughputEtcd3Multi, err := fr.GetColumn("throughput_etcd3multi")
+	if err == nil {
+		var plotThroughputEtcd3MultiPoints plotter.XYs
+		plotThroughputEtcd3MultiPoints, err = points(plotThroughputEtcd3Multi)
+		if err != nil {
+			return err
+		}
+		if err = plotutil.AddLines(
+			plotThroughput,
+			"consul", plotThroughputConsulPoints,
+			"etcd3", plotThroughputEtcd3Points,
+			strings.Replace("etcd3multi", "multi", "-"+multiTagTitle, -1), plotThroughputEtcd3MultiPoints,
+			"etcd2", plotThroughputEtcd2Points,
+			"zk", plotThroughputZkPoints,
+		); err != nil {
+			return err
+		}
+		if err = plotThroughput.Save(defaultPlotWidth, defaultPlotHeight, throughputPath); err != nil {
+			return err
+		}
+	} else {
+		if err = plotutil.AddLines(
+			plotThroughput,
+			"consul", plotThroughputConsulPoints,
+			"etcd3", plotThroughputEtcd3Points,
+			"etcd2", plotThroughputEtcd2Points,
+			"zk", plotThroughputZkPoints,
+		); err != nil {
+			return err
+		}
+		if err = plotThroughput.Save(defaultPlotWidth, defaultPlotHeight, throughputPath); err != nil {
+			return err
+		}
 	}
 
 	plotAvgCpuConsul, err := fr.GetColumn("avg_cpu_consul")
@@ -617,17 +656,40 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle string) error {
 	plotAvgCpu.Title.Text = fmt.Sprintf("%s, CPU", imageTitle)
 	plotAvgCpu.X.Label.Text = "second"
 	plotAvgCpu.Y.Label.Text = "CPU"
-	if err = plotutil.AddLinePoints(
-		plotAvgCpu,
-		"consul", plotAvgCpuConsulPoints,
-		"etcd3", plotAvgCpuEtcd3Points,
-		"etcd2", plotAvgCpuEtcd2Points,
-		"zk", plotAvgCpuZkPoints,
-	); err != nil {
-		return err
-	}
-	if err = plotAvgCpu.Save(defaultSize, defaultSize, avgCpuPath); err != nil {
-		return err
+	plotAvgCpu.Legend.Top = true
+	plotAvgCpuEtcd3Multi, err := fr.GetColumn("avg_cpu_etcd3multi")
+	if err == nil {
+		var plotAvgCpuEtcd3MultiPoints plotter.XYs
+		plotAvgCpuEtcd3MultiPoints, err = points(plotAvgCpuEtcd3Multi)
+		if err != nil {
+			return err
+		}
+		if err = plotutil.AddLines(
+			plotAvgCpu,
+			"consul", plotAvgCpuConsulPoints,
+			"etcd3", plotAvgCpuEtcd3Points,
+			strings.Replace("etcd3multi", "multi", "-"+multiTagTitle, -1), plotAvgCpuEtcd3MultiPoints,
+			"etcd2", plotAvgCpuEtcd2Points,
+			"zk", plotAvgCpuZkPoints,
+		); err != nil {
+			return err
+		}
+		if err = plotAvgCpu.Save(defaultPlotWidth, defaultPlotHeight, avgCpuPath); err != nil {
+			return err
+		}
+	} else {
+		if err = plotutil.AddLines(
+			plotAvgCpu,
+			"consul", plotAvgCpuConsulPoints,
+			"etcd3", plotAvgCpuEtcd3Points,
+			"etcd2", plotAvgCpuEtcd2Points,
+			"zk", plotAvgCpuZkPoints,
+		); err != nil {
+			return err
+		}
+		if err = plotAvgCpu.Save(defaultPlotWidth, defaultPlotHeight, avgCpuPath); err != nil {
+			return err
+		}
 	}
 
 	plotAvgMemConsul, err := fr.GetColumn("avg_memory_mb_consul")
@@ -669,17 +731,40 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle string) error {
 	plotAvgMem.Title.Text = fmt.Sprintf("%s, Memory", imageTitle)
 	plotAvgMem.X.Label.Text = "second"
 	plotAvgMem.Y.Label.Text = "Memory(MB)"
-	if err = plotutil.AddLinePoints(
-		plotAvgMem,
-		"consul", plotAvgMemConsulPoints,
-		"etcd3", plotAvgMemEtcd3Points,
-		"etcd2", plotAvgMemEtcd2Points,
-		"zk", plotAvgMemZkPoints,
-	); err != nil {
-		return err
-	}
-	if err = plotAvgMem.Save(defaultSize, defaultSize, avgMemPath); err != nil {
-		return err
+	plotAvgMem.Legend.Top = true
+	plotAvgMemEtcd3Multi, err := fr.GetColumn("avg_memory_mb_etcd3multi")
+	if err == nil {
+		var plotAvgMemEtcd3MultiPoints plotter.XYs
+		plotAvgMemEtcd3MultiPoints, err = points(plotAvgMemEtcd3Multi)
+		if err != nil {
+			return err
+		}
+		if err = plotutil.AddLines(
+			plotAvgMem,
+			"consul", plotAvgMemConsulPoints,
+			"etcd3", plotAvgMemEtcd3Points,
+			strings.Replace("etcd3multi", "multi", "-"+multiTagTitle, -1), plotAvgMemEtcd3MultiPoints,
+			"etcd2", plotAvgMemEtcd2Points,
+			"zk", plotAvgMemZkPoints,
+		); err != nil {
+			return err
+		}
+		if err = plotAvgMem.Save(defaultPlotWidth, defaultPlotHeight, avgMemPath); err != nil {
+			return err
+		}
+	} else {
+		if err = plotutil.AddLines(
+			plotAvgMem,
+			"consul", plotAvgMemConsulPoints,
+			"etcd3", plotAvgMemEtcd3Points,
+			"etcd2", plotAvgMemEtcd2Points,
+			"zk", plotAvgMemZkPoints,
+		); err != nil {
+			return err
+		}
+		if err = plotAvgMem.Save(defaultPlotWidth, defaultPlotHeight, avgMemPath); err != nil {
+			return err
+		}
 	}
 
 	return nil
