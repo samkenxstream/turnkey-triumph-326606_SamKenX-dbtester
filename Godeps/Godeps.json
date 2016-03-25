@@ -9,6 +9,46 @@
 			"Rev": "4b6ea7319e214d98c938f12692336f7ca9348d6b"
 		},
 		{
+			"ImportPath": "github.com/cheggaaa/pb",
+			"Comment": "v1.0.1",
+			"Rev": "29ad9b62f9e0274422d738242b94a5b89440bfa6"
+		},
+		{
+			"ImportPath": "github.com/coreos/etcd/client",
+			"Comment": "v2.3.0-88-g20a267d",
+			"Rev": "20a267dc6a2ba27b5ff71efe31a2cb4892a98104"
+		},
+		{
+			"ImportPath": "github.com/coreos/etcd/clientv3",
+			"Comment": "v2.3.0-88-g20a267d",
+			"Rev": "20a267dc6a2ba27b5ff71efe31a2cb4892a98104"
+		},
+		{
+			"ImportPath": "github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes",
+			"Comment": "v2.3.0-88-g20a267d",
+			"Rev": "20a267dc6a2ba27b5ff71efe31a2cb4892a98104"
+		},
+		{
+			"ImportPath": "github.com/coreos/etcd/etcdserver/etcdserverpb",
+			"Comment": "v2.3.0-88-g20a267d",
+			"Rev": "20a267dc6a2ba27b5ff71efe31a2cb4892a98104"
+		},
+		{
+			"ImportPath": "github.com/coreos/etcd/pkg/pathutil",
+			"Comment": "v2.3.0-88-g20a267d",
+			"Rev": "20a267dc6a2ba27b5ff71efe31a2cb4892a98104"
+		},
+		{
+			"ImportPath": "github.com/coreos/etcd/pkg/types",
+			"Comment": "v2.3.0-88-g20a267d",
+			"Rev": "20a267dc6a2ba27b5ff71efe31a2cb4892a98104"
+		},
+		{
+			"ImportPath": "github.com/coreos/etcd/storage/storagepb",
+			"Comment": "v2.3.0-88-g20a267d",
+			"Rev": "20a267dc6a2ba27b5ff71efe31a2cb4892a98104"
+		},
+		{
 			"ImportPath": "github.com/dustin/go-humanize",
 			"Rev": "8929fe90cee4b2cb9deb468b51fb34eba64d1bf0"
 		},
@@ -19,17 +59,17 @@
 		},
 		{
 			"ImportPath": "github.com/gogo/protobuf/gogoproto",
-			"Comment": "v0.1-150-g4168943",
+			"Comment": "v0.2",
 			"Rev": "4168943e65a2802828518e95310aeeed6d84c4e5"
 		},
 		{
 			"ImportPath": "github.com/gogo/protobuf/proto",
-			"Comment": "v0.1-150-g4168943",
+			"Comment": "v0.2",
 			"Rev": "4168943e65a2802828518e95310aeeed6d84c4e5"
 		},
 		{
 			"ImportPath": "github.com/gogo/protobuf/protoc-gen-gogo/descriptor",
-			"Comment": "v0.1-150-g4168943",
+			"Comment": "v0.2",
 			"Rev": "4168943e65a2802828518e95310aeeed6d84c4e5"
 		},
 		{
@@ -37,12 +77,26 @@
 			"Rev": "8d92cf5fc15a4382f8964b08e1f42a75c0591aa3"
 		},
 		{
-			"ImportPath": "github.com/gyuho/psn/ps",
-			"Rev": "566e7f491f7aa4ea5e373888a695a15d11be8310"
+			"ImportPath": "github.com/gyuho/dataframe",
+			"Rev": "cf21c08f7d29755f85b7e35b9f315588caf8612d"
 		},
 		{
-			"ImportPath": "github.com/gyuho/psn/table",
-			"Rev": "566e7f491f7aa4ea5e373888a695a15d11be8310"
+			"ImportPath": "github.com/gyuho/psn/ps",
+			"Rev": "66914e389f9256e6bd39df94c003d31f1bf3e51b"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/consul/api",
+			"Comment": "v0.6.4-33-gd3da5ef",
+			"Rev": "d3da5efdb2e8f7145b714a393fb850f9193db21a"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/go-cleanhttp",
+			"Rev": "875fb671b3ddc66f8e2f0acc33829c8cb989a38d"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/serf/coordinate",
+			"Comment": "v0.7.0-47-g598c548",
+			"Rev": "598c54895cc5a7b1a24a398d635e8c0ea0959870"
 		},
 		{
 			"ImportPath": "github.com/inconshreveable/mousetrap",
@@ -66,12 +120,20 @@
 			"Rev": "cca8bbc0798408af109aaaa239cbd2634846b340"
 		},
 		{
+			"ImportPath": "github.com/samuel/go-zookeeper/zk",
+			"Rev": "218e9c81c0dd8b3b18172b2bbfad92cc7d6db55f"
+		},
+		{
 			"ImportPath": "github.com/spf13/cobra",
 			"Rev": "c678ff029ee250b65714e518f4f5c5cb934955de"
 		},
 		{
 			"ImportPath": "github.com/spf13/pflag",
 			"Rev": "7f60f83a2c81bc3c3c0d5297f61ddfa68da9d3b7"
+		},
+		{
+			"ImportPath": "github.com/ugorji/go/codec",
+			"Rev": "f1f1a805ed361a0e078bb537e4ea78cd37dcf065"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",

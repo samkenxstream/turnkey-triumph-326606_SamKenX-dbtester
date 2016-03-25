@@ -1,29 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-<<COMMENT
-curl https://.../dbtester_agent.sh | bash -s f /mnt/ssd0
-COMMENT
-
 # clean page cache
 echo "echo 1 > /proc/sys/vm/drop_caches" | sudo sh
-
-if [ "$1" = "f" ]; then
-  echo "Formatting following https://cloud.google.com/compute/docs/disks/local-ssd"
-  sudo mkdir -p /mnt/ssd0
-  ls /dev/disk/by-id/
-  sudo mkfs.ext4 -F /dev/disk/by-id/google-local-ssd-0
-  sudo mount -o discard,defaults /dev/disk/by-id/google-local-ssd-0 /mnt/ssd0
-  sudo chmod a+w /mnt/ssd0
-  echo '/dev/disk/by-id/google-local-ssd-0 /mnt/ssd0 ext4 defaults 1 1' | sudo tee -a /etc/fstab
-  echo 'Hello, World!' > /mnt/ssd0/hello.txt
-  cat /mnt/ssd0/hello.txt
-  df -h
-  rm -f /mnt/ssd0/hello.txt
-  ls /mnt/ssd0/
-else
-  echo "No formatting"
-fi;
 
 WORKING_DIR=$HOME
 if [ -n "$2" ]; then
@@ -44,22 +23,27 @@ export GOPATH=$(echo $HOME)/go
 PATH_VAR=$PATH":/usr/local/go/bin:$(echo $HOME)/go/bin"
 export PATH=$(echo $PATH_VAR)
 
-go get -v -u -f github.com/gyuho/psn
-psn ps-kill --force --clean-up
-psn ps-kill --force --program etcd
-psn ps-kill --force --program dbtester
-psn ps-kill --force --program java
-psn ss-kill --local-port 2181
-psn ss-kill --local-port 2379
-psn ss-kill --local-port 2380
-psn ss-kill --local-port 2888
-psn ss-kill --local-port 3500
-psn ss-kill --local-port 3888
-rm -rf $WORKING_DIR/*.etcd
-rm -rf $WORKING_DIR/*.log
-rm -rf $WORKING_DIR/failure_archive
-go get -v -u -f github.com/coreos/etcd
-go get -v -u -f github.com/coreos/dbtester
+echo "Installing etcd"
+rm -f $GOPATH/bin/etcd
+go get -v -u -d github.com/coreos/etcd
+rm -rf $GOPATH/src/github.com/coreos/etcd
+git clone https://github.com/coreos/etcd $GOPATH/src/github.com/coreos/etcd
+go install github.com/coreos/etcd
+# cd $GOPATH/src/github.com/coreos/etcd
+# ./build
+# cp ./bin/etcd $GOPATH/bin/etcd
+etcd -version
+
+echo "Installing consul"
+rm -f /tmp/consul.zip
+rm -f $GOPATH/bin/consul
+go get -v -u -d github.com/hashicorp/consul
+rm -rf $GOPATH/src/github.com/hashicorp
+git clone https://github.com/coreos/etcd $GOPATH/src/github.com/hashicorp/consul
+curl -sf -o /tmp/consul.zip https://releases.hashicorp.com/consul/0.6.4/consul_0.6.4_linux_amd64.zip
+unzip /tmp/consul.zip -d $GOPATH/bin
+rm -f /tmp/consul.zip
+consul version
 
 if [ -n "$3" ]; then
   echo "Running node_exporter..."

@@ -4,7 +4,7 @@
 
 Distributed database tester.
 
-Run [`install.sh`](install.sh):
+Please databases as in [`install.sh`](install.sh). And:
 
 ```
 go get github.com/coreos/dbtester
@@ -17,8 +17,10 @@ dbtester agent
 dbtester agent
 
 # Client machine
-dbtester start --agent-endpoints="$(echo $ETCD_RPC_ENDPOINTS)" --database="etcd" 
-dbtester start --agent-endpoints="$(echo $ZK_RPC_ENDPOINTS)"   --database="zk" --zk-max-client-conns=5000
+dbtester start --agent-endpoints=$(echo $RPC_ENDPOINTS) --database=etcd 
+dbtester start --agent-endpoints=$(echo $RPC_ENDPOINTS) --database=etcd2 
+dbtester start --agent-endpoints=$(echo $RPC_ENDPOINTS) --database=zk
+dbtester start --agent-endpoints=$(echo $RPC_ENDPOINTS) --database=consul
 ```
 
 [cistat]: https://travis-ci.org/coreos/dbtester
