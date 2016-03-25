@@ -8,8 +8,8 @@ import (
 
 // Column represents column-based data.
 type Column interface {
-	// Len returns the number of rows of the Column.
-	Len() int
+	// RowNumber returns the number of rows of the Column.
+	RowNumber() int
 
 	// GetHeader returns the header of the Column.
 	GetHeader() string
@@ -20,6 +20,13 @@ type Column interface {
 	// GetValue returns the Value in the row. It returns error if the row
 	// is out of index range.
 	GetValue(row int) (Value, error)
+
+	// SetValue overwrites the value
+	SetValue(row int, v Value) error
+
+	// FindValue finds the first Value, and returns the row number.
+	// It returns -1 and false if the value does not exist.
+	FindValue(v Value) (int, bool)
 
 	// Front returns the first row Value.
 	Front() (Value, bool)
@@ -42,11 +49,20 @@ type Column interface {
 	// DeleteRow deletes a row by index.
 	DeleteRow(row int) (Value, error)
 
+	// DeleteRows deletes rows by index [start, end).
+	DeleteRows(start, end int) error
+
+	// KeepRows keeps the rows by index [start, end).
+	KeepRows(start, end int) error
+
 	// PopFront deletes the value at front.
 	PopFront() (Value, bool)
 
 	// PopBack deletes the last value.
 	PopBack() (Value, bool)
+
+	// Appends adds the Value to the Column until it reaches the target size.
+	Appends(v Value, targetSize int) error
 
 	// SortByStringAscending sorts Column in string ascending order.
 	SortByStringAscending()
@@ -82,7 +98,7 @@ func NewColumn(hd string) Column {
 	}
 }
 
-func (c *column) Len() int {
+func (c *column) RowNumber() int {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -111,6 +127,29 @@ func (c *column) GetValue(row int) (Value, error) {
 		return nil, fmt.Errorf("index out of range (got %d for size %d)", row, c.size)
 	}
 	return c.data[row], nil
+}
+
+func (c *column) SetValue(row int, v Value) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	if row > c.size-1 {
+		return fmt.Errorf("index out of range (got %d for size %d)", row, c.size)
+	}
+	c.data[row] = v
+	return nil
+}
+
+func (c *column) FindValue(v Value) (int, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	for i := range c.data {
+		if c.data[i].EqualTo(v) {
+			return i, true
+		}
+	}
+	return -1, false
 }
 
 func (c *column) Front() (Value, bool) {
@@ -195,10 +234,67 @@ func (c *column) DeleteRow(row int) (Value, error) {
 		return nil, fmt.Errorf("index out of range (got %d for size %d)", row, c.size)
 	}
 	v := c.data[row]
-	copy(c.data[row:], c.data[row:])
+	copy(c.data[row:], c.data[row+1:])
 	c.data = c.data[:len(c.data)-1 : len(c.data)-1]
 	c.size--
 	return v, nil
+}
+
+func (c *column) DeleteRows(start, end int) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	if start < 0 || end < 0 || start > end {
+		return fmt.Errorf("wrong range %d %d", start, end)
+	}
+	if start > c.size {
+		return fmt.Errorf("index out of range (start %d, size %d)", start, c.size)
+	}
+	if end > c.size {
+		return fmt.Errorf("index out of range (end %d, size %d)", end, c.size)
+	}
+	if start == end {
+		return nil
+	}
+
+	delta := end - start
+	c.size = c.size - delta
+	var nds []Value
+	for i := range c.data {
+		if i >= start && i < end {
+			continue
+		}
+		nds = append(nds, c.data[i])
+	}
+	c.data = nds
+	return nil
+}
+
+func (c *column) KeepRows(start, end int) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	if start < 0 || end < 0 || start > end {
+		return fmt.Errorf("wrong range %d %d", start, end)
+	}
+	if start > c.size {
+		return fmt.Errorf("index out of range (start %d, size %d)", start, c.size)
+	}
+	if end > c.size {
+		return fmt.Errorf("index out of range (end %d, size %d)", end, c.size)
+	}
+	if start == end {
+		return nil
+	}
+
+	delta := end - start
+	c.size = delta
+	var nds []Value
+	for _, v := range c.data[start:end] {
+		nds = append(nds, v)
+	}
+	c.data = nds
+	return nil
 }
 
 func (c *column) PopFront() (Value, bool) {
@@ -225,6 +321,21 @@ func (c *column) PopBack() (Value, bool) {
 	c.data = c.data[:len(c.data)-1 : len(c.data)-1]
 	c.size--
 	return v, true
+}
+
+func (c *column) Appends(v Value, targetSize int) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	if c.size > 0 && c.size > targetSize {
+		return fmt.Errorf("cannot append with target size %d, which is less than the column size %d (can't overwrite)", targetSize, c.size)
+	}
+
+	for i := c.size; i < targetSize; i++ {
+		c.data = append(c.data, v)
+		c.size++
+	}
+	return nil
 }
 
 func (c *column) SortByStringAscending()    { sort.Sort(ByStringAscending(c.data)) }

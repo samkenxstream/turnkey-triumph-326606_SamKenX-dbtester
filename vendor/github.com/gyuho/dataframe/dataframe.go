@@ -18,6 +18,9 @@ type Frame interface {
 	// GetColumn returns the Column by its header name.
 	GetColumn(header string) (Column, error)
 
+	// GetColumns returns all Columns.
+	GetColumns() []Column
+
 	// GetColumnNumber returns the number of Columns in the Frame.
 	GetColumnNumber() int
 
@@ -68,11 +71,11 @@ func NewFromRows(header []string, rows [][]string) (Frame, error) {
 				return nil, fmt.Errorf("header %q is not specified correctly for %q", header, row)
 			}
 			for j, v := range row {
-				cols[j].PushBack(NewValue(v))
+				cols[j].PushBack(NewStringValue(v))
 			}
 			if rowN < headerN { // fill in empty values
 				for k := rowN; k < headerN; k++ {
-					cols[k].PushBack(NewValue(""))
+					cols[k].PushBack(NewStringValue(""))
 				}
 			}
 		}
@@ -100,11 +103,11 @@ func NewFromRows(header []string, rows [][]string) (Frame, error) {
 			return nil, fmt.Errorf("header %q is not specified correctly for %q", header, row)
 		}
 		for j, v := range row {
-			cols[j].PushBack(NewValue(v))
+			cols[j].PushBack(NewStringValue(v))
 		}
 		if rowN < headerN { // fill in empty values
 			for k := rowN; k < headerN; k++ {
-				cols[k].PushBack(NewValue(""))
+				cols[k].PushBack(NewStringValue(""))
 			}
 		}
 	}
@@ -171,6 +174,13 @@ func (f *frame) GetColumn(header string) (Column, error) {
 	return f.columns[idx], nil
 }
 
+func (f *frame) GetColumns() []Column {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+
+	return f.columns
+}
+
 func (f *frame) GetColumnNumber() int {
 	f.mu.Lock()
 	defer f.mu.Unlock()
@@ -231,7 +241,7 @@ func (f *frame) ToRows() ([]string, [][]string) {
 
 	var rowN int
 	for _, col := range f.columns {
-		n := col.Len()
+		n := col.RowNumber()
 		if rowN < n {
 			rowN = n
 		}
