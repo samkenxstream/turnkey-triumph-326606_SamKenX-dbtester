@@ -35,6 +35,7 @@ type (
 		AggregatedFilePaths []string
 		AggAggFilePath      string
 		ImageFormat         string
+		ImageTitle          string
 	}
 )
 
@@ -58,6 +59,7 @@ func init() {
 
 	Command.PersistentFlags().StringVarP(&globalFlags.AggAggFilePath, "file-to-plot", "p", "", "Aggregated CSV file path to plot.")
 	Command.PersistentFlags().StringVarP(&globalFlags.ImageFormat, "image-format", "f", "png", "Image format (png, svg).")
+	Command.PersistentFlags().StringVarP(&globalFlags.ImageTitle, "image-title", "t", "", "Image title.")
 }
 
 func CommandFunc(cmd *cobra.Command, args []string) error {
@@ -81,7 +83,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		}
 
 	case len(globalFlags.AggAggFilePath) > 0:
-		if err := plotAggAgg(globalFlags.AggAggFilePath, globalFlags.OutputPath, globalFlags.ImageFormat); err != nil {
+		if err := plotAggAgg(globalFlags.AggAggFilePath, globalFlags.OutputPath, globalFlags.ImageFormat, globalFlags.ImageTitle); err != nil {
 			return err
 		}
 	}
@@ -455,7 +457,7 @@ func aggAgg(fpaths ...string) (dataframe.Frame, error) {
 	return nf, nil
 }
 
-func plotAggAgg(fpath, outputPath, imageFormat string) error {
+func plotAggAgg(fpath, outputPath, imageFormat, imageTitle string) error {
 	fr, err := dataframe.NewFromCSV(nil, fpath)
 	if err != nil {
 		return err
@@ -508,7 +510,7 @@ func plotAggAgg(fpath, outputPath, imageFormat string) error {
 	if err != nil {
 		return err
 	}
-	plotAvgLatency.Title.Text = "Write 50K, with 1 clients, Latency"
+	plotAvgLatency.Title.Text = fmt.Sprintf("%s, Latency", imageTitle)
 	plotAvgLatency.X.Label.Text = "second"
 	plotAvgLatency.Y.Label.Text = "latency(ms)"
 	if err := plotutil.AddLinePoints(
@@ -560,7 +562,7 @@ func plotAggAgg(fpath, outputPath, imageFormat string) error {
 	if err != nil {
 		return err
 	}
-	plotThroughput.Title.Text = "Write 50K, with 1 clients, Throughput"
+	plotThroughput.Title.Text = fmt.Sprintf("%s, Throughput", imageTitle)
 	plotThroughput.X.Label.Text = "second"
 	plotThroughput.Y.Label.Text = "Throughput"
 	if err := plotutil.AddLinePoints(
@@ -612,7 +614,7 @@ func plotAggAgg(fpath, outputPath, imageFormat string) error {
 	if err != nil {
 		return err
 	}
-	plotAvgCpu.Title.Text = "Write 50K, with 1 clients, CPU"
+	plotAvgCpu.Title.Text = fmt.Sprintf("%s, CPU", imageTitle)
 	plotAvgCpu.X.Label.Text = "second"
 	plotAvgCpu.Y.Label.Text = "CPU"
 	if err := plotutil.AddLinePoints(
@@ -664,7 +666,7 @@ func plotAggAgg(fpath, outputPath, imageFormat string) error {
 	if err != nil {
 		return err
 	}
-	plotAvgMem.Title.Text = "Write 50K, with 1 clients, Memory"
+	plotAvgMem.Title.Text = fmt.Sprintf("%s, Memory", imageTitle)
 	plotAvgMem.X.Label.Text = "second"
 	plotAvgMem.Y.Label.Text = "Memory(MB)"
 	if err := plotutil.AddLinePoints(
