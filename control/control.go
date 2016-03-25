@@ -34,12 +34,12 @@ type (
 		ZookeeperPreAllocSize   int64
 		ZookeeperMaxClientCnxns int64
 
-		LogPrefix                     string
-		DatabaseLogPath               string
-		MonitorResultPath             string
-		GoogleCloudProjectName        string
-		GoogleCloudStorageJSONKeyPath string
-		GoogleCloudStorageBucketName  string
+		LogPrefix              string
+		DatabaseLogPath        string
+		MonitorResultPath      string
+		GoogleCloudProjectName string
+		KeyPath                string
+		Bucket                 string
 	}
 )
 
@@ -72,8 +72,8 @@ func init() {
 	StartCommand.PersistentFlags().StringVar(&globalFlags.DatabaseLogPath, "database-log-path", "database.log", "Path of database log.")
 	StartCommand.PersistentFlags().StringVar(&globalFlags.MonitorResultPath, "monitor-result-path", "monitor.csv", "CSV file path of monitoring results.")
 	StartCommand.PersistentFlags().StringVar(&globalFlags.GoogleCloudProjectName, "google-cloud-project-name", "", "Google cloud project name.")
-	StartCommand.PersistentFlags().StringVar(&globalFlags.GoogleCloudStorageJSONKeyPath, "google-cloud-storage-json-key-path", "", "Path of JSON key file.")
-	StartCommand.PersistentFlags().StringVar(&globalFlags.GoogleCloudStorageBucketName, "google-cloud-storage-bucket-name", "", "Google cloud storage bucket name.")
+	StartCommand.PersistentFlags().StringVar(&globalFlags.KeyPath, "key-path", "", "Path of key file.")
+	StartCommand.PersistentFlags().StringVar(&globalFlags.Bucket, "bucket", "", "Bucket name in cloud storage.")
 
 	StopCommand.PersistentFlags().StringSliceVar(&globalFlags.AgentEndpoints, "agent-endpoints", []string{""}, "Endpoints to send client requests to, then it automatically configures.")
 
@@ -122,12 +122,12 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		req.DatabaseLogPath = globalFlags.DatabaseLogPath
 		req.MonitorResultPath = globalFlags.MonitorResultPath
 		req.GoogleCloudProjectName = globalFlags.GoogleCloudProjectName
-		bts, err := ioutil.ReadFile(globalFlags.GoogleCloudStorageJSONKeyPath)
+		bts, err := ioutil.ReadFile(globalFlags.KeyPath)
 		if err != nil {
 			return err
 		}
-		req.GoogleCloudStorageJSONKey = string(bts)
-		req.GoogleCloudStorageBucketName = globalFlags.GoogleCloudStorageBucketName
+		req.StorageKey = string(bts)
+		req.Bucket = globalFlags.Bucket
 	}
 
 	donec, errc := make(chan struct{}), make(chan error)

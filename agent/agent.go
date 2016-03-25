@@ -211,8 +211,8 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		t.req = *r
 	}
 
-	if t.req.GoogleCloudStorageJSONKey != "" {
-		if err := toFile(t.req.GoogleCloudStorageJSONKey, filepath.Join(globalFlags.WorkingDirectory, "key.json")); err != nil {
+	if t.req.StorageKey != "" {
+		if err := toFile(t.req.StorageKey, filepath.Join(globalFlags.WorkingDirectory, "key.json")); err != nil {
 			return nil, err
 		}
 	}
@@ -572,7 +572,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					return
 				case <-databaseStopped:
 					log.Println("Monitoring stopped. Uploading data to cloud storage...")
-					u, err := remotestorage.NewGoogleCloudStorage([]byte(t.req.GoogleCloudStorageJSONKey), t.req.GoogleCloudProjectName)
+					u, err := remotestorage.NewGoogleCloudStorage([]byte(t.req.StorageKey), t.req.GoogleCloudProjectName)
 					if err != nil {
 						log.Warnf("error (%v)", err)
 						return
@@ -587,7 +587,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					log.Printf("Uploading %s to %s", srcDatabaseLogPath, dstDatabaseLogPath)
 					var uerr error
 					for k := 0; k < 5; k++ {
-						if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcDatabaseLogPath, dstDatabaseLogPath); uerr != nil {
+						if uerr = u.UploadFile(t.req.Bucket, srcDatabaseLogPath, dstDatabaseLogPath); uerr != nil {
 							log.Println(uerr)
 							continue
 						} else {
@@ -602,7 +602,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					}
 					log.Printf("Uploading %s to %s", srcMonitorResultPath, dstMonitorResultPath)
 					for k := 0; k < 5; k++ {
-						if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcMonitorResultPath, dstMonitorResultPath); uerr != nil {
+						if uerr = u.UploadFile(t.req.Bucket, srcMonitorResultPath, dstMonitorResultPath); uerr != nil {
 							log.Println(uerr)
 							continue
 						} else {
@@ -617,7 +617,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					}
 					log.Printf("Uploading %s to %s", srcAgentLogPath, dstAgentLogPath)
 					for k := 0; k < 5; k++ {
-						if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcAgentLogPath, dstAgentLogPath); uerr != nil {
+						if uerr = u.UploadFile(t.req.Bucket, srcAgentLogPath, dstAgentLogPath); uerr != nil {
 							log.Println(uerr)
 							continue
 						} else {
