@@ -14,7 +14,7 @@
 <br><br><hr>
 ##### Results
 
-![bench-01-plot-avg-cpu.svg](bench-01-plot-avg-cpu.svg)
+![bench-01-plot-avg-cpu.svg](bench-01-plot-avg-cpu.png)
 
 ![bench-01-plot-avg-latency-ms.svg](./bench-01-plot-avg-latency-ms.svg)
 
