@@ -85,5 +85,21 @@ dbtester analyze --output=bench-20160325/bench-05-plot --image-format=svg --file
 
 
 #######################################################################
+# create aggregated csv files
+dbtester analyze --output=bench-20160325/bench-06-consul-aggregated.csv --bench-file-path=bench-20160325/bench-06-consul-timeseries.csv --monitor-data-file-paths=bench-20160325/bench-06-consul-1-monitor.csv,bench-20160325/bench-06-consul-2-monitor.csv,bench-20160325/bench-06-consul-3-monitor.csv
+dbtester analyze --output=bench-20160325/bench-06-etcd-aggregated.csv --bench-file-path=bench-20160325/bench-06-etcd-timeseries.csv --monitor-data-file-paths=bench-20160325/bench-06-etcd-1-monitor.csv,bench-20160325/bench-06-etcd-2-monitor.csv,bench-20160325/bench-06-etcd-3-monitor.csv
+dbtester analyze --output=bench-20160325/bench-06-etcd2-aggregated.csv --bench-file-path=bench-20160325/bench-06-etcd2-timeseries.csv --monitor-data-file-paths=bench-20160325/bench-06-etcd2-1-monitor.csv,bench-20160325/bench-06-etcd2-2-monitor.csv,bench-20160325/bench-06-etcd2-3-monitor.csv
+dbtester analyze --output=bench-20160325/bench-06-zk-aggregated.csv --bench-file-path=bench-20160325/bench-06-zk-timeseries.csv --monitor-data-file-paths=bench-20160325/bench-06-zk-1-monitor.csv,bench-20160325/bench-06-zk-2-monitor.csv,bench-20160325/bench-06-zk-3-monitor.csv
+
+# create agg/agg
+dbtester analyze --output=bench-20160325/bench-06-all-aggregated.csv --aggregated-file-paths=bench-20160325/bench-06-consul-aggregated.csv,bench-20160325/bench-06-etcd-aggregated.csv,bench-20160325/bench-06-etcd2-aggregated.csv,bench-20160325/bench-06-zk-aggregated.csv
+
+# plot
+IMAGE_TITLE="Read 1M keys, 1000 clients, key 64 bytes, value 1 kb"
+dbtester analyze --output=bench-20160325/bench-06-plot --image-format=png --file-to-plot=bench-20160325/bench-06-all-aggregated.csv --image-title="$(echo $IMAGE_TITLE)"
+dbtester analyze --output=bench-20160325/bench-06-plot --image-format=svg --file-to-plot=bench-20160325/bench-06-all-aggregated.csv --image-title="$(echo $IMAGE_TITLE)"
+
+
+#######################################################################
 # generate README
 dbtester readme --readme-dir=bench-20160325 --readme-preface=README_template
