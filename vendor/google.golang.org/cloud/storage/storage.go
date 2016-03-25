@@ -31,6 +31,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -191,16 +192,6 @@ func (c *BucketHandle) ACL() *ACLHandle {
 // This call does not perform any network operations.
 func (c *BucketHandle) DefaultObjectACL() *ACLHandle {
 	return c.defaultObjectACL
-}
-
-// ObjectHandle provides operations on an object in a Google Cloud Storage bucket.
-// Use BucketHandle.Object to get a handle.
-type ObjectHandle struct {
-	c      *Client
-	bucket string
-	object string
-
-	acl *ACLHandle
 }
 
 // Object returns an ObjectHandle, which provides operations on the named object.
@@ -380,11 +371,29 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 	return u.String(), nil
 }
 
+// ObjectHandle provides operations on an object in a Google Cloud Storage bucket.
+// Use BucketHandle.Object to get a handle.
+type ObjectHandle struct {
+	c      *Client
+	bucket string
+	object string
+
+	acl   *ACLHandle
+	conds []Condition
+}
+
 // ACL provides access to the object's access control list.
 // This controls who can read and write this object.
 // This call does not perform any network operations.
 func (o *ObjectHandle) ACL() *ACLHandle {
 	return o.acl
+}
+
+// WithConditions returns a copy of o using the provided conditions.
+func (o *ObjectHandle) WithConditions(conds ...Condition) *ObjectHandle {
+	o2 := *o
+	o2.conds = conds
+	return &o2
 }
 
 // Attrs returns meta information about the object.
@@ -393,7 +402,11 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (*ObjectAttrs, error) {
 	if !utf8.ValidString(o.object) {
 		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
 	}
-	obj, err := o.c.raw.Objects.Get(o.bucket, o.object).Projection("full").Context(ctx).Do()
+	call := o.c.raw.Objects.Get(o.bucket, o.object).Projection("full").Context(ctx)
+	if err := applyConds("Attrs", o.conds, call); err != nil {
+		return nil, err
+	}
+	obj, err := call.Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
 	}
@@ -410,7 +423,11 @@ func (o *ObjectHandle) Update(ctx context.Context, attrs ObjectAttrs) (*ObjectAt
 	if !utf8.ValidString(o.object) {
 		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
 	}
-	obj, err := o.c.raw.Objects.Patch(o.bucket, o.object, attrs.toRawObject(o.bucket)).Projection("full").Context(ctx).Do()
+	call := o.c.raw.Objects.Patch(o.bucket, o.object, attrs.toRawObject(o.bucket)).Projection("full").Context(ctx)
+	if err := applyConds("Update", o.conds, call); err != nil {
+		return nil, err
+	}
+	obj, err := call.Do()
 	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
 	}
@@ -425,38 +442,49 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 	if !utf8.ValidString(o.object) {
 		return fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
 	}
-	return o.c.raw.Objects.Delete(o.bucket, o.object).Context(ctx).Do()
+	call := o.c.raw.Objects.Delete(o.bucket, o.object).Context(ctx)
+	if err := applyConds("Delete", o.conds, call); err != nil {
+		return err
+	}
+	return call.Do()
 }
 
-// CopyObject copies the source object to the destination.
+// CopyTo copies the object to the given dst.
 // The copied object's attributes are overwritten by attrs if non-nil.
-func (c *Client) CopyObject(ctx context.Context, srcBucket, srcName string, destBucket, destName string, attrs *ObjectAttrs) (*ObjectAttrs, error) {
-	if srcBucket == "" || destBucket == "" {
-		return nil, errors.New("storage: srcBucket and destBucket must both be non-empty")
+func (o *ObjectHandle) CopyTo(ctx context.Context, dst *ObjectHandle, attrs *ObjectAttrs) (*ObjectAttrs, error) {
+	// TODO(djd): move bucket/object name validation to a single helper func.
+	if o.bucket == "" || dst.bucket == "" {
+		return nil, errors.New("storage: the source and destination bucket names must both be non-empty")
 	}
-	if srcName == "" || destName == "" {
-		return nil, errors.New("storage: srcName and destName must be non-empty")
+	if o.object == "" || dst.object == "" {
+		return nil, errors.New("storage: the source and destination object names must both be non-empty")
 	}
-	if !utf8.ValidString(srcName) {
-		return nil, fmt.Errorf("storage: srcName %q is not valid UTF-8", srcName)
+	if !utf8.ValidString(o.object) {
+		return nil, fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
 	}
-	if !utf8.ValidString(destName) {
-		return nil, fmt.Errorf("storage: destName %q is not valid UTF-8", destName)
+	if !utf8.ValidString(dst.object) {
+		return nil, fmt.Errorf("storage: dst name %q is not valid UTF-8", dst.object)
 	}
 	var rawObject *raw.Object
 	if attrs != nil {
-		attrs.Name = destName
+		attrs.Name = dst.object
 		if attrs.ContentType == "" {
 			return nil, errors.New("storage: attrs.ContentType must be non-empty")
 		}
-		rawObject = attrs.toRawObject(destBucket)
+		rawObject = attrs.toRawObject(dst.bucket)
 	}
-	o, err := c.raw.Objects.Copy(
-		srcBucket, srcName, destBucket, destName, rawObject).Projection("full").Context(ctx).Do()
+	call := o.c.raw.Objects.Copy(o.bucket, o.object, dst.bucket, dst.object, rawObject).Projection("full").Context(ctx)
+	if err := applyConds("CopyTo destination", dst.conds, call); err != nil {
+		return nil, err
+	}
+	if err := applyConds("CopyTo source", toSourceConds(o.conds), call); err != nil {
+		return nil, err
+	}
+	obj, err := call.Do()
 	if err != nil {
 		return nil, err
 	}
-	return newObject(o), nil
+	return newObject(obj), nil
 }
 
 // NewReader creates a new Reader to read the contents of the
@@ -487,6 +515,9 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	}
 	req, err := http.NewRequest(verb, u.String(), nil)
 	if err != nil {
+		return nil, err
+	}
+	if err := applyConds("NewReader", o.conds, objectsGetCall{req}); err != nil {
 		return nil, err
 	}
 	if length < 0 {
@@ -552,9 +583,7 @@ var emptyBody = ioutil.NopCloser(strings.NewReader(""))
 func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer {
 	return &Writer{
 		ctx:         ctx,
-		client:      o.c,
-		bucket:      o.bucket,
-		name:        o.object,
+		o:           o,
 		donec:       make(chan struct{}),
 		ObjectAttrs: ObjectAttrs{Name: o.object},
 	}
@@ -887,4 +916,105 @@ type contentTyper struct {
 
 func (c *contentTyper) ContentType() string {
 	return c.t
+}
+
+// A Condition constrains methods to act on specific generations of
+// resources.
+//
+// Not all conditions or combinations of conditions are applicable to
+// all methods.
+type Condition interface {
+	// method is the high-level ObjectHandle method name, for
+	// error messages.  call is the call object to modify.
+	modifyCall(method string, call interface{}) error
+}
+
+// applyConds modifies the provided call using the conditions in conds.
+// call is something that quacks like a *raw.WhateverCall.
+func applyConds(method string, conds []Condition, call interface{}) error {
+	for _, cond := range conds {
+		if err := cond.modifyCall(method, call); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// toSourceConds returns a slice of Conditions derived from Conds that instead
+// function on the equivalent Source methods of a call.
+func toSourceConds(conds []Condition) []Condition {
+	out := make([]Condition, 0, len(conds))
+	for _, c := range conds {
+		switch c := c.(type) {
+		case genCond:
+			var m string
+			if strings.HasPrefix(c.method, "If") {
+				m = "IfSource" + c.method[2:]
+			} else {
+				m = "Source" + c.method
+			}
+			out = append(out, genCond{method: m, val: c.val})
+		default:
+			// NOTE(djd): If the message from unsupportedCond becomes
+			// confusing, we'll need to find a way for Conditions to
+			// identify themselves.
+			out = append(out, unsupportedCond{})
+		}
+	}
+	return out
+}
+
+func Generation(gen int64) Condition               { return genCond{"Generation", gen} }
+func IfGenerationMatch(gen int64) Condition        { return genCond{"IfGenerationMatch", gen} }
+func IfGenerationNotMatch(gen int64) Condition     { return genCond{"IfGenerationNotMatch", gen} }
+func IfMetaGenerationMatch(gen int64) Condition    { return genCond{"IfMetagenerationMatch", gen} }
+func IfMetaGenerationNotMatch(gen int64) Condition { return genCond{"IfMetagenerationNotMatch", gen} }
+
+type genCond struct {
+	method string
+	val    int64
+}
+
+func (g genCond) modifyCall(srcMethod string, call interface{}) error {
+	rv := reflect.ValueOf(call)
+	meth := rv.MethodByName(g.method)
+	if !meth.IsValid() {
+		return fmt.Errorf("%s: condition %s not supported", srcMethod, g.method)
+	}
+	meth.Call([]reflect.Value{reflect.ValueOf(g.val)})
+	return nil
+}
+
+type unsupportedCond struct{}
+
+func (unsupportedCond) modifyCall(srcMethod string, call interface{}) error {
+	return fmt.Errorf("%s: condition not supported", srcMethod)
+}
+
+func appendParam(req *http.Request, k, v string) {
+	sep := ""
+	if req.URL.RawQuery != "" {
+		sep = "&"
+	}
+	req.URL.RawQuery += sep + url.QueryEscape(k) + "=" + url.QueryEscape(v)
+}
+
+// objectsGetCall wraps an *http.Request for an object fetch call, but adds the methods
+// that modifyCall searches for by name. (the same names as the raw, auto-generated API)
+type objectsGetCall struct{ req *http.Request }
+
+func (c objectsGetCall) Generation(gen int64) {
+	appendParam(c.req, "generation", fmt.Sprint(gen))
+}
+func (c objectsGetCall) IfGenerationMatch(gen int64) {
+	appendParam(c.req, "ifGenerationMatch", fmt.Sprint(gen))
+}
+func (c objectsGetCall) IfGenerationNotMatch(gen int64) {
+	appendParam(c.req, "ifGenerationNotMatch", fmt.Sprint(gen))
+}
+func (c objectsGetCall) IfMetagenerationMatch(gen int64) {
+	appendParam(c.req, "ifMetagenerationMatch", fmt.Sprint(gen))
+}
+func (c objectsGetCall) IfMetagenerationNotMatch(gen int64) {
+	appendParam(c.req, "ifMetagenerationNotMatch", fmt.Sprint(gen))
 }

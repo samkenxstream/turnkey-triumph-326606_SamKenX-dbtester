@@ -23,7 +23,7 @@ import (
 
 type (
 	Flags struct {
-		DataDirectory string
+		RawMonitorFilePaths string
 	}
 )
 
@@ -38,18 +38,24 @@ var (
 )
 
 func init() {
-	Command.PersistentFlags().StringVarP(&globalFlags.DataDirectory, "data-directory", "d", "", "Data directory.")
+	Command.PersistentFlags().StringSliceVarP(&globalFlags.RawMonitorFilePaths, "monitor-data-file-paths", "m", []string{}, "Monitor file paths to aggregate.")
 }
 
 func CommandFunc(cmd *cobra.Command, args []string) error {
-	fr, err := dataframe.NewFromCSV(nil, "testdata/bench-01-consul-1-monitor.csv")
-	if err != nil {
-		return err
-	}
-	fmt.Println(fr)
+
 	return nil
 }
 
 func aggregate(fpaths ...string) (dataframe.Frame, error) {
-	return nil, nil
+	if len(fpaths) == 0 {
+		return nil, fmt.Errorf("no file specified")
+	}
+
+	for _, fpath := range fpaths {
+		fr, err := dataframe.NewFromCSV(nil, fpath)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 }
