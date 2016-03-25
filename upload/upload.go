@@ -12,15 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// bench-uploader uploads bench results to cloud storage.
-package main
+package upload
 
 import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
-	"time"
 
 	"github.com/coreos/dbtester/remotestorage"
 	"github.com/spf13/cobra"
@@ -32,7 +29,7 @@ import (
 
 var (
 	Command = &cobra.Command{
-		Use:   "bench-uploader",
+		Use:   "upload",
 		Short: "Uploads to cloud storage.",
 		RunE:  CommandFunc,
 	}
@@ -59,15 +56,6 @@ func init() {
 	Command.PersistentFlags().StringVar(&googleCloudProjectName, "google-cloud-project-name", "", "Google cloud project name.")
 	Command.PersistentFlags().StringVar(&keyPath, "key-path", "", "Path of key file.")
 	Command.PersistentFlags().StringVar(&bucket, "bucket", "", "Bucket name in cloud storage.")
-}
-
-func main() {
-	log.Printf("bench-uploader started at %s\n", time.Now().String()[:19])
-	if err := Command.Execute(); err != nil {
-		fmt.Fprintln(os.Stdout, err)
-		os.Exit(1)
-	}
-	log.Printf("bench-uploader ended at %s\n", time.Now().String()[:19])
 }
 
 func CommandFunc(cmd *cobra.Command, args []string) error {
