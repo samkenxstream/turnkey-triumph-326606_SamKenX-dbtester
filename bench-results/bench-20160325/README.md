@@ -54,3 +54,11 @@
 
 ![bench-05-plot-throughput.png](./bench-05-plot-throughput.png)
 
+![bench-06-plot-avg-cpu.png](./bench-06-plot-avg-cpu.png)
+
+![bench-06-plot-avg-latency-ms.png](./bench-06-plot-avg-latency-ms.png)
+
+![bench-06-plot-avg-mem.png](./bench-06-plot-avg-mem.png)
+
+![bench-06-plot-throughput.png](./bench-06-plot-throughput.png)
+
