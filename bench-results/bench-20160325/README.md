@@ -14,43 +14,43 @@
 <br><br><hr>
 ##### Results
 
-![bench-01-plot-avg-cpu.svg](bench-01-plot-avg-cpu.png)
+![bench-01-plot-avg-cpu.png](./bench-01-plot-avg-cpu.png)
 
-![bench-01-plot-avg-latency-ms.svg](./bench-01-plot-avg-latency-ms.svg)
+![bench-01-plot-avg-latency-ms.png](./bench-01-plot-avg-latency-ms.png)
 
-![bench-01-plot-avg-mem.svg](./bench-01-plot-avg-mem.svg)
+![bench-01-plot-avg-mem.png](./bench-01-plot-avg-mem.png)
 
-![bench-01-plot-throughput.svg](./bench-01-plot-throughput.svg)
+![bench-01-plot-throughput.png](./bench-01-plot-throughput.png)
 
-![bench-02-plot-avg-cpu.svg](./bench-02-plot-avg-cpu.svg)
+![bench-02-plot-avg-cpu.png](./bench-02-plot-avg-cpu.png)
 
-![bench-02-plot-avg-latency-ms.svg](./bench-02-plot-avg-latency-ms.svg)
+![bench-02-plot-avg-latency-ms.png](./bench-02-plot-avg-latency-ms.png)
 
-![bench-02-plot-avg-mem.svg](./bench-02-plot-avg-mem.svg)
+![bench-02-plot-avg-mem.png](./bench-02-plot-avg-mem.png)
 
-![bench-02-plot-throughput.svg](./bench-02-plot-throughput.svg)
+![bench-02-plot-throughput.png](./bench-02-plot-throughput.png)
 
-![bench-03-plot-avg-cpu.svg](./bench-03-plot-avg-cpu.svg)
+![bench-03-plot-avg-cpu.png](./bench-03-plot-avg-cpu.png)
 
-![bench-03-plot-avg-latency-ms.svg](./bench-03-plot-avg-latency-ms.svg)
+![bench-03-plot-avg-latency-ms.png](./bench-03-plot-avg-latency-ms.png)
 
-![bench-03-plot-avg-mem.svg](./bench-03-plot-avg-mem.svg)
+![bench-03-plot-avg-mem.png](./bench-03-plot-avg-mem.png)
 
-![bench-03-plot-throughput.svg](./bench-03-plot-throughput.svg)
+![bench-03-plot-throughput.png](./bench-03-plot-throughput.png)
 
-![bench-04-plot-avg-cpu.svg](./bench-04-plot-avg-cpu.svg)
+![bench-04-plot-avg-cpu.png](./bench-04-plot-avg-cpu.png)
 
-![bench-04-plot-avg-latency-ms.svg](./bench-04-plot-avg-latency-ms.svg)
+![bench-04-plot-avg-latency-ms.png](./bench-04-plot-avg-latency-ms.png)
 
-![bench-04-plot-avg-mem.svg](./bench-04-plot-avg-mem.svg)
+![bench-04-plot-avg-mem.png](./bench-04-plot-avg-mem.png)
 
-![bench-04-plot-throughput.svg](./bench-04-plot-throughput.svg)
+![bench-04-plot-throughput.png](./bench-04-plot-throughput.png)
 
-![bench-05-plot-avg-cpu.svg](./bench-05-plot-avg-cpu.svg)
+![bench-05-plot-avg-cpu.png](./bench-05-plot-avg-cpu.png)
 
-![bench-05-plot-avg-latency-ms.svg](./bench-05-plot-avg-latency-ms.svg)
+![bench-05-plot-avg-latency-ms.png](./bench-05-plot-avg-latency-ms.png)
 
-![bench-05-plot-avg-mem.svg](./bench-05-plot-avg-mem.svg)
+![bench-05-plot-avg-mem.png](./bench-05-plot-avg-mem.png)
 
-![bench-05-plot-throughput.svg](./bench-05-plot-throughput.svg)
+![bench-05-plot-throughput.png](./bench-05-plot-throughput.png)
 
