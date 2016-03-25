@@ -46,12 +46,12 @@ message Request {
 	// to upload logs.
 	string googleCloudProjectName = 8;
 
-	// GoogleCloudStorageJSONKey is the key to be used to upload
-	// data and logs to Google Cloud Storage.
-	string googleCloudStorageJSONKey = 9;
+	// StorageKey is the key to be used to upload
+	// data and logs to Google Cloud Storage and others.
+	string storageKey = 9;
 
-	// GoogleCloudStorageBucketName is the bucket name to store all data and logs.
-	string googleCloudStorageBucketName = 10;
+	// Bucket is the bucket name to store all data and logs.
+	string bucket = 10;
 
 	// ZookeeperMyID is myid that needs to be stored as a file in the remote machine.
 	uint32 zookeeperMyID   = 11;

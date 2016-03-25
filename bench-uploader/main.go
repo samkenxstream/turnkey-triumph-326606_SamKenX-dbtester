@@ -43,9 +43,9 @@ var (
 	to          string
 	isDirectory bool
 
-	googleCloudProjectName        string
-	googleCloudStorageJSONKeyPath string
-	googleCloudStorageBucketName  string
+	googleCloudProjectName string
+	keyPath                string
+	bucket                 string
 )
 
 func init() {
@@ -57,8 +57,8 @@ func init() {
 	Command.PersistentFlags().StringVar(&to, "to", "", "file path to upload.")
 	Command.PersistentFlags().BoolVar(&isDirectory, "directory", false, "'true' if uploading directory.")
 	Command.PersistentFlags().StringVar(&googleCloudProjectName, "google-cloud-project-name", "", "Google cloud project name.")
-	Command.PersistentFlags().StringVar(&googleCloudStorageJSONKeyPath, "google-cloud-storage-json-key-path", "", "Path of JSON key file.")
-	Command.PersistentFlags().StringVar(&googleCloudStorageBucketName, "google-cloud-storage-bucket-name", "", "Google cloud storage bucket name.")
+	Command.PersistentFlags().StringVar(&keyPath, "key-path", "", "Path of key file.")
+	Command.PersistentFlags().StringVar(&bucket, "bucket", "", "Bucket name in cloud storage.")
 }
 
 func main() {
@@ -71,20 +71,21 @@ func main() {
 }
 
 func CommandFunc(cmd *cobra.Command, args []string) error {
-	kbs, err := ioutil.ReadFile(googleCloudStorageJSONKeyPath)
+	log.Println("opening key", keyPath)
+	kbs, err := ioutil.ReadFile(keyPath)
 	if err != nil {
-		return fmt.Errorf("error when opening key %s(%v)", googleCloudStorageJSONKeyPath, err)
+		return fmt.Errorf("error when opening key %s(%v)", keyPath, err)
 	}
 	u, err := remotestorage.NewGoogleCloudStorage(kbs, googleCloudProjectName)
 	if err != nil {
 		return fmt.Errorf("error when NewGoogleCloudStorage %s(%v)", googleCloudProjectName, err)
 	}
 	if !isDirectory {
-		if err := u.UploadFile(googleCloudStorageBucketName, from, to); err != nil {
+		if err := u.UploadFile(bucket, from, to); err != nil {
 			return err
 		}
 	} else {
-		if err := u.UploadDir(googleCloudStorageBucketName, from, to); err != nil {
+		if err := u.UploadDir(bucket, from, to); err != nil {
 			return err
 		}
 	}
