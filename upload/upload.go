@@ -23,10 +23,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// TODO: vendor gRPC and combine this into bench
-// Currently, we get:
-// panic: http: multiple registrations for /debug/requests
-
 var (
 	Command = &cobra.Command{
 		Use:   "upload",

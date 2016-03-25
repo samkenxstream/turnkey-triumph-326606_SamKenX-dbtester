@@ -513,7 +513,7 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle string) error {
 	plotAvgLatency.Title.Text = fmt.Sprintf("%s, Latency", imageTitle)
 	plotAvgLatency.X.Label.Text = "second"
 	plotAvgLatency.Y.Label.Text = "latency(ms)"
-	if err := plotutil.AddLinePoints(
+	if err = plotutil.AddLinePoints(
 		plotAvgLatency,
 		"consul", plotAvgLatencyConsulPoints,
 		"etcd3", plotAvgLatencyEtcd3Points,
@@ -522,7 +522,7 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle string) error {
 	); err != nil {
 		return err
 	}
-	if err := plotAvgLatency.Save(defaultSize, defaultSize, avgLatencyPath); err != nil {
+	if err = plotAvgLatency.Save(defaultSize, defaultSize, avgLatencyPath); err != nil {
 		return err
 	}
 
@@ -565,7 +565,7 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle string) error {
 	plotThroughput.Title.Text = fmt.Sprintf("%s, Throughput", imageTitle)
 	plotThroughput.X.Label.Text = "second"
 	plotThroughput.Y.Label.Text = "Throughput"
-	if err := plotutil.AddLinePoints(
+	if err = plotutil.AddLinePoints(
 		plotThroughput,
 		"consul", plotThroughputConsulPoints,
 		"etcd3", plotThroughputEtcd3Points,
@@ -574,7 +574,7 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle string) error {
 	); err != nil {
 		return err
 	}
-	if err := plotThroughput.Save(defaultSize, defaultSize, throughputPath); err != nil {
+	if err = plotThroughput.Save(defaultSize, defaultSize, throughputPath); err != nil {
 		return err
 	}
 
@@ -617,7 +617,7 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle string) error {
 	plotAvgCpu.Title.Text = fmt.Sprintf("%s, CPU", imageTitle)
 	plotAvgCpu.X.Label.Text = "second"
 	plotAvgCpu.Y.Label.Text = "CPU"
-	if err := plotutil.AddLinePoints(
+	if err = plotutil.AddLinePoints(
 		plotAvgCpu,
 		"consul", plotAvgCpuConsulPoints,
 		"etcd3", plotAvgCpuEtcd3Points,
@@ -626,7 +626,7 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle string) error {
 	); err != nil {
 		return err
 	}
-	if err := plotAvgCpu.Save(defaultSize, defaultSize, avgCpuPath); err != nil {
+	if err = plotAvgCpu.Save(defaultSize, defaultSize, avgCpuPath); err != nil {
 		return err
 	}
 
@@ -669,7 +669,7 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle string) error {
 	plotAvgMem.Title.Text = fmt.Sprintf("%s, Memory", imageTitle)
 	plotAvgMem.X.Label.Text = "second"
 	plotAvgMem.Y.Label.Text = "Memory(MB)"
-	if err := plotutil.AddLinePoints(
+	if err = plotutil.AddLinePoints(
 		plotAvgMem,
 		"consul", plotAvgMemConsulPoints,
 		"etcd3", plotAvgMemEtcd3Points,
@@ -678,7 +678,7 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle string) error {
 	); err != nil {
 		return err
 	}
-	if err := plotAvgMem.Save(defaultSize, defaultSize, avgMemPath); err != nil {
+	if err = plotAvgMem.Save(defaultSize, defaultSize, avgMemPath); err != nil {
 		return err
 	}
 
