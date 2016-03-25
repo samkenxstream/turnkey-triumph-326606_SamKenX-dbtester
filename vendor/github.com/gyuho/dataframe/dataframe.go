@@ -252,8 +252,11 @@ func (f *frame) ToRows() ([]string, [][]string) {
 	for rowIdx := 0; rowIdx < rowN; rowIdx++ {
 		row := make([]string, colN)
 		for colIdx, col := range f.columns { // rowIdx * colIdx
-			v, _ := col.GetValue(rowIdx)
-			elem, _ := v.ToString()
+			v, err := col.GetValue(rowIdx)
+			var elem string
+			if err == nil {
+				elem, _ = v.ToString()
+			}
 			row[colIdx] = elem
 		}
 		rows[rowIdx] = row
