@@ -41,7 +41,7 @@ func ReadmeCommandFunc(cmd *cobra.Command, args []string) error {
 	buf.WriteString("<br><br><hr>\n##### Results")
 	buf.WriteString("\n\n")
 
-	paths, err := walkExt(readmeDir, ".svg")
+	paths, err := walkExt(readmeDir, ".png") // svg not working
 	if err != nil {
 		return err
 	}
