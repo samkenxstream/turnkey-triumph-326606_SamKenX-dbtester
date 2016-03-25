@@ -12,6 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// bench implements benchmark commands
+// Package bench implements benchmark commands
 // based on https://github.com/coreos/etcd/tree/master/tools/benchmark.
-package main
+package bench

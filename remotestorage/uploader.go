@@ -144,24 +144,22 @@ func (g *GoogleCloudStorage) UploadDir(bucket, src, dst string, opts ...OpOption
 
 	fmt.Println("UploadDir:")
 	donec, errc := make(chan struct{}), make(chan error)
-	for source := range fmap {
-		go func(source string) {
-			s := strings.Replace(source, src, "", -1)
-			tp := filepath.Join(dst, s)
-
+	for fpath := range fmap {
+		go func(fpath string) {
+			targetPath := filepath.Join(dst, strings.Replace(fpath, src, "", -1))
 			fmt.Println()
-			fmt.Println(source)
+			fmt.Println(fpath)
 			fmt.Println("--->")
-			fmt.Println(tp)
+			fmt.Println(targetPath)
 			fmt.Println()
 
-			wc := client.Bucket(bucket).Object(tp).NewWriter(context.Background())
+			wc := client.Bucket(bucket).Object(targetPath).NewWriter(context.Background())
 			if ret.ContentType != "" {
 				wc.ContentType = ret.ContentType
 			}
-			bts, err := ioutil.ReadFile(source)
+			bts, err := ioutil.ReadFile(fpath)
 			if err != nil {
-				errc <- fmt.Errorf("ioutil.ReadFile(%s) %v", source, err)
+				errc <- fmt.Errorf("ioutil.ReadFile(%s) %v", fpath, err)
 				return
 			}
 			if _, err := wc.Write(bts); err != nil {
@@ -173,7 +171,7 @@ func (g *GoogleCloudStorage) UploadDir(bucket, src, dst string, opts ...OpOption
 				return
 			}
 			donec <- struct{}{}
-		}(source)
+		}(fpath)
 	}
 
 	cnt, num := 0, len(fmap)

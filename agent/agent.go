@@ -116,7 +116,7 @@ maxClientCnxns={{.MaxClientCnxns}}
 	Command = &cobra.Command{
 		Use:   "agent",
 		Short: "Database agent in remote servers.",
-		Run:   CommandFunc,
+		RunE:  CommandFunc,
 	}
 
 	globalFlags = Flags{}
@@ -133,9 +133,9 @@ func init() {
 	Command.PersistentFlags().StringVar(&globalFlags.WorkingDirectory, "working-directory", homeDir(), "Working directory.")
 }
 
-func CommandFunc(cmd *cobra.Command, args []string) {
+func CommandFunc(cmd *cobra.Command, args []string) error {
 	if !exist(globalFlags.WorkingDirectory) {
-		log.Fatalf("%s does not exist", globalFlags.WorkingDirectory)
+		return fmt.Errorf("%s does not exist", globalFlags.WorkingDirectory)
 	}
 	if !filepath.HasPrefix(agentLogPath, globalFlags.WorkingDirectory) {
 		agentLogPath = filepath.Join(globalFlags.WorkingDirectory, agentLogPath)
@@ -143,8 +143,7 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 
 	f, err := openToAppend(agentLogPath)
 	if err != nil {
-		log.Println(err)
-		os.Exit(-1)
+		return err
 	}
 	defer f.Close()
 	log.SetOutput(f)
@@ -156,16 +155,15 @@ func CommandFunc(cmd *cobra.Command, args []string) {
 	)
 	ln, err := net.Listen("tcp", globalFlags.GRPCPort)
 	if err != nil {
-		log.Println(err)
-		os.Exit(-1)
+		return err
 	}
 
 	RegisterTransporterServer(grpcServer, sender)
 
 	if err := grpcServer.Serve(ln); err != nil {
-		log.Println(err)
-		os.Exit(-1)
+		return err
 	}
+	return nil
 }
 
 type transporterServer struct { // satisfy TransporterServer

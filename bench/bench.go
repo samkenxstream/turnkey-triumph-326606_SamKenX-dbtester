@@ -12,26 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package bench
 
 import (
-	"fmt"
-	"log"
-	"os"
 	"sync"
-	"time"
 
 	"github.com/cheggaaa/pb"
 	"github.com/spf13/cobra"
 )
 
-// This represents the base command when called without any subcommands
-var Command = &cobra.Command{
-	Use:   "bench",
-	Short: "Low-level benchmark tool for etcd, Zookeeper, etcd2, consul.",
-}
-
 var (
+	Command = &cobra.Command{
+		Use:   "bench",
+		Short: "Low-level benchmark tool for etcd, Zookeeper, etcd2, consul.",
+	}
+
 	database     string
 	endpoints    []string
 	totalConns   uint
@@ -39,10 +34,10 @@ var (
 	sample       bool
 	noHistogram  bool
 
-	csvResultPath                 string
-	googleCloudProjectName        string
-	googleCloudStorageJSONKeyPath string
-	googleCloudStorageBucketName  string
+	csvResultPath          string
+	googleCloudProjectName string
+	keyPath                string
+	bucket                 string
 
 	bar     *pb.ProgressBar
 	results chan result
@@ -62,16 +57,7 @@ func init() {
 	Command.PersistentFlags().BoolVar(&noHistogram, "no-histogram", false, "'true' to not show results in histogram.")
 
 	Command.PersistentFlags().StringVar(&csvResultPath, "csv-result-path", "timeseries.csv", "path to store csv results.")
-	// Command.PersistentFlags().StringVar(&googleCloudProjectName, "google-cloud-project-name", "", "Google cloud project name.")
-	// Command.PersistentFlags().StringVar(&googleCloudStorageJSONKeyPath, "google-cloud-storage-json-key-path", "", "Path of JSON key file.")
-	// Command.PersistentFlags().StringVar(&googleCloudStorageBucketName, "google-cloud-storage-bucket-name", "", "Google cloud storage bucket name.")
-}
-
-func main() {
-	log.Printf("bench started at %s\n", time.Now().String()[:19])
-	if err := Command.Execute(); err != nil {
-		fmt.Fprintln(os.Stdout, err)
-		os.Exit(1)
-	}
-	log.Printf("bench ended at %s\n", time.Now().String()[:19])
+	Command.PersistentFlags().StringVar(&googleCloudProjectName, "google-cloud-project-name", "", "Google cloud project name.")
+	Command.PersistentFlags().StringVar(&keyPath, "key-path", "", "Path of key file.")
+	Command.PersistentFlags().StringVar(&bucket, "bucket", "", "Bucket name in cloud storage.")
 }

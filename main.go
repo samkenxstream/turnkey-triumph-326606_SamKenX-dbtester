@@ -19,9 +19,12 @@
 //
 //	Available Commands:
 //	  agent       Database agent in remote servers.
+//	  analyze     Analyzes test results specific to dbtester.
+//	  bench       Low-level benchmark tool for etcd, Zookeeper, etcd2, consul.
 //	  start       Starts database through RPC calls.
 //	  stop        Stops database through RPC calls.
 //	  restart     Restarts database through RPC calls.
+//	  upload      Uploads to cloud storage.
 //
 //	Flags:
 //	  -h, --help   help for dbtester
@@ -35,7 +38,10 @@ import (
 	"os"
 
 	"github.com/coreos/dbtester/agent"
+	"github.com/coreos/dbtester/analyze"
+	"github.com/coreos/dbtester/bench"
 	"github.com/coreos/dbtester/control"
+	"github.com/coreos/dbtester/upload"
 
 	"github.com/spf13/cobra"
 )
@@ -54,10 +60,12 @@ func init() {
 
 func init() {
 	rootCommand.AddCommand(agent.Command)
-	// rootCommand.AddCommand(bench.Command)
+	rootCommand.AddCommand(analyze.Command)
+	rootCommand.AddCommand(bench.Command)
 	rootCommand.AddCommand(control.StartCommand)
 	rootCommand.AddCommand(control.StopCommand)
 	rootCommand.AddCommand(control.RestartCommand)
+	rootCommand.AddCommand(upload.Command)
 }
 
 func main() {
