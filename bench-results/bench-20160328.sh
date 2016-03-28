@@ -12,5 +12,9 @@ dbtester analyze --same-database --output=bench-20160328/bench-all-aggregated.cs
 
 # plot
 IMAGE_TITLE="Write 3M keys, 700 conns, 1500 clients, key 64 bytes, value 256 bytes"
-dbtester analyze --output=bench-20160328/bench-plot --image-format=png --file-to-plot=bench-20160328/bench-all-aggregated.csv --image-title="$(echo $IMAGE_TITLE)"
-dbtester analyze --output=bench-20160328/bench-plot --image-format=svg --file-to-plot=bench-20160328/bench-all-aggregated.csv --image-title="$(echo $IMAGE_TITLE)"
+dbtester analyze --same-database --output=bench-20160328/bench-plot --image-format=png --file-to-plot=bench-20160328/bench-all-aggregated.csv --image-title="$(echo $IMAGE_TITLE)"
+dbtester analyze --same-database --output=bench-20160328/bench-plot --image-format=svg --file-to-plot=bench-20160328/bench-all-aggregated.csv --image-title="$(echo $IMAGE_TITLE)"
+
+#######################################################################
+# generate README
+dbtester readme --readme-dir=bench-20160328 --readme-preface=README_template
