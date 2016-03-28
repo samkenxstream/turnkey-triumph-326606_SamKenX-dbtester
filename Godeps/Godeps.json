@@ -25,38 +25,38 @@
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/client",
-			"Comment": "v2.3.0-88-g20a267d",
-			"Rev": "20a267dc6a2ba27b5ff71efe31a2cb4892a98104"
+			"Comment": "v2.3.0-104-g83ada72",
+			"Rev": "83ada7232a13491f7ef94cb398d9af8b3b2cb5fb"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/clientv3",
-			"Comment": "v2.3.0-88-g20a267d",
-			"Rev": "20a267dc6a2ba27b5ff71efe31a2cb4892a98104"
+			"Comment": "v2.3.0-104-g83ada72",
+			"Rev": "83ada7232a13491f7ef94cb398d9af8b3b2cb5fb"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes",
-			"Comment": "v2.3.0-88-g20a267d",
-			"Rev": "20a267dc6a2ba27b5ff71efe31a2cb4892a98104"
+			"Comment": "v2.3.0-104-g83ada72",
+			"Rev": "83ada7232a13491f7ef94cb398d9af8b3b2cb5fb"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/etcdserverpb",
-			"Comment": "v2.3.0-88-g20a267d",
-			"Rev": "20a267dc6a2ba27b5ff71efe31a2cb4892a98104"
+			"Comment": "v2.3.0-104-g83ada72",
+			"Rev": "83ada7232a13491f7ef94cb398d9af8b3b2cb5fb"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/pathutil",
-			"Comment": "v2.3.0-88-g20a267d",
-			"Rev": "20a267dc6a2ba27b5ff71efe31a2cb4892a98104"
+			"Comment": "v2.3.0-104-g83ada72",
+			"Rev": "83ada7232a13491f7ef94cb398d9af8b3b2cb5fb"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/types",
-			"Comment": "v2.3.0-88-g20a267d",
-			"Rev": "20a267dc6a2ba27b5ff71efe31a2cb4892a98104"
+			"Comment": "v2.3.0-104-g83ada72",
+			"Rev": "83ada7232a13491f7ef94cb398d9af8b3b2cb5fb"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/storage/storagepb",
-			"Comment": "v2.3.0-88-g20a267d",
-			"Rev": "20a267dc6a2ba27b5ff71efe31a2cb4892a98104"
+			"Comment": "v2.3.0-104-g83ada72",
+			"Rev": "83ada7232a13491f7ef94cb398d9af8b3b2cb5fb"
 		},
 		{
 			"ImportPath": "github.com/dustin/go-humanize",
@@ -151,7 +151,7 @@
 		},
 		{
 			"ImportPath": "github.com/gyuho/dataframe",
-			"Rev": "740858301d887e27281c083a4f8119944a7a50d3"
+			"Rev": "7ebbdad5f014cf60edb41946f3b1ed60054cb824"
 		},
 		{
 			"ImportPath": "github.com/gyuho/psn/ps",
