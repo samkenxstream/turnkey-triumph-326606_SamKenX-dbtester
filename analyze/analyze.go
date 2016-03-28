@@ -473,6 +473,150 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle, multiTagTitle string
 		avgMemPath        = outputPath + fmt.Sprintf("-avg-mem.%s", imageFormat)
 	)
 
+	if globalFlags.SameDatabase {
+		plotAvgLatencyEtcd3_0, err := fr.GetColumn("avg_latency_ms_etcd3_0")
+		if err != nil {
+			return err
+		}
+		plotAvgLatencyEtcd3Points_0, err := points(plotAvgLatencyEtcd3_0)
+		if err != nil {
+			return err
+		}
+		plotAvgLatencyEtcd3_1, err := fr.GetColumn("avg_latency_ms_etcd3_1")
+		if err != nil {
+			return err
+		}
+		plotAvgLatencyEtcd3Points_1, err := points(plotAvgLatencyEtcd3_1)
+		if err != nil {
+			return err
+		}
+		plotAvgLatency, err := plot.New()
+		if err != nil {
+			return err
+		}
+		plotAvgLatency.Title.Text = fmt.Sprintf("%s, Latency", imageTitle)
+		plotAvgLatency.X.Label.Text = "second"
+		plotAvgLatency.Y.Label.Text = "Latency(ms)"
+		plotAvgLatency.Legend.Top = true
+		if err = plotutil.AddLines(
+			plotAvgLatency,
+			"etcd3_0", plotAvgLatencyEtcd3Points_0,
+			"etcd3_1", plotAvgLatencyEtcd3Points_1,
+		); err != nil {
+			return err
+		}
+		if err = plotAvgLatency.Save(defaultPlotWidth, defaultPlotHeight, avgLatencyPath); err != nil {
+			return err
+		}
+
+		plotThroughputEtcd3_0, err := fr.GetColumn("throughput_etcd3_0")
+		if err != nil {
+			return err
+		}
+		plotThroughputEtcd3Points_0, err := points(plotThroughputEtcd3_0)
+		if err != nil {
+			return err
+		}
+		plotThroughputEtcd3_1, err := fr.GetColumn("throughput_etcd3_1")
+		if err != nil {
+			return err
+		}
+		plotThroughputEtcd3Points_1, err := points(plotThroughputEtcd3_1)
+		if err != nil {
+			return err
+		}
+		plotThroughput, err := plot.New()
+		if err != nil {
+			return err
+		}
+		plotThroughput.Title.Text = fmt.Sprintf("%s, Throughput", imageTitle)
+		plotThroughput.X.Label.Text = "second"
+		plotThroughput.Y.Label.Text = "Throughput"
+		plotThroughput.Legend.Top = true
+		if err = plotutil.AddLines(
+			plotThroughput,
+			"etcd3_0", plotThroughputEtcd3Points_0,
+			"etcd3_1", plotThroughputEtcd3Points_1,
+		); err != nil {
+			return err
+		}
+		if err = plotThroughput.Save(defaultPlotWidth, defaultPlotHeight, throughputPath); err != nil {
+			return err
+		}
+
+		plotAvgCpuEtcd3_0, err := fr.GetColumn("avg_cpu_etcd3_0")
+		if err != nil {
+			return err
+		}
+		plotAvgCpuEtcd3Points_0, err := points(plotAvgCpuEtcd3_0)
+		if err != nil {
+			return err
+		}
+		plotAvgCpuEtcd3_1, err := fr.GetColumn("avg_cpu_etcd3_1")
+		if err != nil {
+			return err
+		}
+		plotAvgCpuEtcd3Points_1, err := points(plotAvgCpuEtcd3_1)
+		if err != nil {
+			return err
+		}
+		plotAvgCpu, err := plot.New()
+		if err != nil {
+			return err
+		}
+		plotAvgCpu.Title.Text = fmt.Sprintf("%s, CPU", imageTitle)
+		plotAvgCpu.X.Label.Text = "second"
+		plotAvgCpu.Y.Label.Text = "CPU"
+		plotAvgCpu.Legend.Top = true
+		if err = plotutil.AddLines(
+			plotAvgCpu,
+			"etcd3_0", plotAvgCpuEtcd3Points_0,
+			"etcd3_1", plotAvgCpuEtcd3Points_1,
+		); err != nil {
+			return err
+		}
+		if err = plotAvgCpu.Save(defaultPlotWidth, defaultPlotHeight, avgCpuPath); err != nil {
+			return err
+		}
+
+		plotAvgMemoryEtcd3_0, err := fr.GetColumn("avg_memory_mb_etcd3_0")
+		if err != nil {
+			return err
+		}
+		plotAvgMemoryEtcd3Points_0, err := points(plotAvgMemoryEtcd3_0)
+		if err != nil {
+			return err
+		}
+		plotAvgMemoryEtcd3_1, err := fr.GetColumn("avg_memory_mb_etcd3_1")
+		if err != nil {
+			return err
+		}
+		plotAvgMemoryEtcd3Points_1, err := points(plotAvgMemoryEtcd3_1)
+		if err != nil {
+			return err
+		}
+		plotAvgMemory, err := plot.New()
+		if err != nil {
+			return err
+		}
+		plotAvgMemory.Title.Text = fmt.Sprintf("%s, Memory", imageTitle)
+		plotAvgMemory.X.Label.Text = "second"
+		plotAvgMemory.Y.Label.Text = "Memory(MB)"
+		plotAvgMemory.Legend.Top = true
+		if err = plotutil.AddLines(
+			plotAvgMemory,
+			"etcd3_0", plotAvgMemoryEtcd3Points_0,
+			"etcd3_1", plotAvgMemoryEtcd3Points_1,
+		); err != nil {
+			return err
+		}
+		if err = plotAvgMemory.Save(defaultPlotWidth, defaultPlotHeight, avgMemPath); err != nil {
+			return err
+		}
+
+		return nil
+	}
+
 	plotAvgLatencyConsul, err := fr.GetColumn("avg_latency_ms_consul")
 	if err != nil {
 		return err
@@ -511,7 +655,7 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle, multiTagTitle string
 	}
 	plotAvgLatency.Title.Text = fmt.Sprintf("%s, Latency", imageTitle)
 	plotAvgLatency.X.Label.Text = "second"
-	plotAvgLatency.Y.Label.Text = "latency(ms)"
+	plotAvgLatency.Y.Label.Text = "Latency(ms)"
 	plotAvgLatency.Legend.Top = true
 	plotAvgLatencyEtcd3Multi, err := fr.GetColumn("avg_latency_ms_etcd3multi")
 	if err == nil {
