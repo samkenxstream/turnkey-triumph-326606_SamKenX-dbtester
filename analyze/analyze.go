@@ -37,6 +37,7 @@ type (
 		ImageFormat         string
 		ImageTitle          string
 		MultiTagTitle       string
+		SameDatabase        bool
 	}
 )
 
@@ -62,6 +63,7 @@ func init() {
 	Command.PersistentFlags().StringVarP(&globalFlags.ImageFormat, "image-format", "f", "png", "Image format (png, svg).")
 	Command.PersistentFlags().StringVarP(&globalFlags.ImageTitle, "image-title", "t", "", "Image title.")
 	Command.PersistentFlags().StringVarP(&globalFlags.MultiTagTitle, "multi-tag-title", "g", "", "Special title for *multi test.")
+	Command.PersistentFlags().BoolVarP(&globalFlags.SameDatabase, "same-database", "s", false, "'true' when testing same database.")
 }
 
 func CommandFunc(cmd *cobra.Command, args []string) error {
@@ -332,7 +334,7 @@ func aggBenchAndMonitor(benchPath string, monitorPaths ...string) (dataframe.Fra
 			case col.GetHeader() == "throughput":
 				fv, _ := rv.ToNumber()
 				totalThrougput += int(fv)
-				cumulativeThroughputCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", totalThrougput)))
+				cumulativeThroughputCol.PushBack(dataframe.NewStringValue(totalThrougput))
 			}
 		}
 		avgCpuCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", cpuTotal/sampleSize)))
@@ -405,7 +407,7 @@ func aggAgg(fpaths ...string) (dataframe.Frame, error) {
 	nf := dataframe.New()
 	secondCol := dataframe.NewColumn("second")
 	for i := 0; i < maxSize; i++ {
-		secondCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", i)))
+		secondCol.PushBack(dataframe.NewStringValue(i))
 	}
 	nf.AddColumn(secondCol)
 
@@ -441,7 +443,11 @@ func aggAgg(fpaths ...string) (dataframe.Frame, error) {
 				dbID = "zk"
 			}
 
-			col.UpdateHeader(fmt.Sprintf("%s_%s", col.GetHeader(), dbID))
+			if !globalFlags.SameDatabase {
+				col.UpdateHeader(fmt.Sprintf("%s_%s", col.GetHeader(), dbID))
+			} else {
+				col.UpdateHeader(fmt.Sprintf("%s_%s_%d", col.GetHeader(), dbID, i))
+			}
 			nf.AddColumn(col)
 		}
 	}
