@@ -81,6 +81,23 @@ func walkExt(targetDir, ext string) ([]string, error) {
 		rs = append(rs, k)
 	}
 	sort.Strings(rs)
+	// ns := make([]string, len(rs))
+	// for i := range rs {
+	// 	// latency, throughput, cpu, memory
+	// 	if strings.Contains(rs[i], "latency") {
+	// 		nidx := i/4 + 0
+	// 		ns[nidx] = rs[i]
+	// 	} else if strings.Contains(rs[i], "throughput") {
+	// 		nidx := i/4 + 1
+	// 		ns[nidx] = rs[i]
+	// 	} else if strings.Contains(rs[i], "cpu") {
+	// 		nidx := i/4 + 2
+	// 		ns[nidx] = rs[i]
+	// 	} else if strings.Contains(rs[i], "memory") {
+	// 		nidx := i/4 + 3
+	// 		ns[nidx] = rs[i]
+	// 	}
+	// }
 	return rs, nil
 }
 

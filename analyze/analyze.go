@@ -617,14 +617,14 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle, multiTagTitle string
 		return nil
 	}
 
-	plotAvgLatencyConsul, err := fr.GetColumn("avg_latency_ms_consul")
-	if err != nil {
-		return err
-	}
-	plotAvgLatencyConsulPoints, err := points(plotAvgLatencyConsul)
-	if err != nil {
-		return err
-	}
+	// plotAvgLatencyConsul, err := fr.GetColumn("avg_latency_ms_consul")
+	// if err != nil {
+	// 	return err
+	// }
+	// plotAvgLatencyConsulPoints, err := points(plotAvgLatencyConsul)
+	// if err != nil {
+	// 	return err
+	// }
 	plotAvgLatencyEtcd3, err := fr.GetColumn("avg_latency_ms_etcd3")
 	if err != nil {
 		return err
@@ -633,14 +633,14 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle, multiTagTitle string
 	if err != nil {
 		return err
 	}
-	plotAvgLatencyEtcd2, err := fr.GetColumn("avg_latency_ms_etcd2")
-	if err != nil {
-		return err
-	}
-	plotAvgLatencyEtcd2Points, err := points(plotAvgLatencyEtcd2)
-	if err != nil {
-		return err
-	}
+	// plotAvgLatencyEtcd2, err := fr.GetColumn("avg_latency_ms_etcd2")
+	// if err != nil {
+	// 	return err
+	// }
+	// plotAvgLatencyEtcd2Points, err := points(plotAvgLatencyEtcd2)
+	// if err != nil {
+	// 	return err
+	// }
 	plotAvgLatency, err := plot.New()
 	if err != nil {
 		return err
@@ -657,49 +657,49 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle, multiTagTitle string
 	plotAvgLatency.X.Label.Text = "second"
 	plotAvgLatency.Y.Label.Text = "Latency(ms)"
 	plotAvgLatency.Legend.Top = true
-	plotAvgLatencyEtcd3Multi, err := fr.GetColumn("avg_latency_ms_etcd3multi")
-	if err == nil {
-		var plotAvgLatencyEtcd3MultiPoints plotter.XYs
-		plotAvgLatencyEtcd3MultiPoints, err = points(plotAvgLatencyEtcd3Multi)
-		if err != nil {
-			return err
-		}
-		if err = plotutil.AddLines(
-			plotAvgLatency,
-			"consul", plotAvgLatencyConsulPoints,
-			"etcd3", plotAvgLatencyEtcd3Points,
-			strings.Replace("etcd3multi", "multi", "-"+multiTagTitle, -1), plotAvgLatencyEtcd3MultiPoints,
-			"etcd2", plotAvgLatencyEtcd2Points,
-			"zk", plotAvgLatencyZkPoints,
-		); err != nil {
-			return err
-		}
-		if err = plotAvgLatency.Save(defaultPlotWidth, defaultPlotHeight, avgLatencyPath); err != nil {
-			return err
-		}
-	} else {
-		if err = plotutil.AddLines(
-			plotAvgLatency,
-			"consul", plotAvgLatencyConsulPoints,
-			"etcd3", plotAvgLatencyEtcd3Points,
-			"etcd2", plotAvgLatencyEtcd2Points,
-			"zk", plotAvgLatencyZkPoints,
-		); err != nil {
-			return err
-		}
-		if err = plotAvgLatency.Save(defaultPlotWidth, defaultPlotHeight, avgLatencyPath); err != nil {
-			return err
-		}
+	// plotAvgLatencyEtcd3Multi, err := fr.GetColumn("avg_latency_ms_etcd3multi")
+	// if err == nil {
+	// 	var plotAvgLatencyEtcd3MultiPoints plotter.XYs
+	// 	plotAvgLatencyEtcd3MultiPoints, err = points(plotAvgLatencyEtcd3Multi)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	if err = plotutil.AddLines(
+	// 		plotAvgLatency,
+	// 		// "consul", plotAvgLatencyConsulPoints,
+	// 		"etcd3", plotAvgLatencyEtcd3Points,
+	// 		strings.Replace("etcd3multi", "multi", "-"+multiTagTitle, -1), plotAvgLatencyEtcd3MultiPoints,
+	// 		"etcd2", plotAvgLatencyEtcd2Points,
+	// 		"zk", plotAvgLatencyZkPoints,
+	// 	); err != nil {
+	// 		return err
+	// 	}
+	// 	if err = plotAvgLatency.Save(defaultPlotWidth, defaultPlotHeight, avgLatencyPath); err != nil {
+	// 		return err
+	// 	}
+	// } else {
+	if err = plotutil.AddLines(
+		plotAvgLatency,
+		// "consul", plotAvgLatencyConsulPoints,
+		"etcd3", plotAvgLatencyEtcd3Points,
+		// "etcd2", plotAvgLatencyEtcd2Points,
+		"zk", plotAvgLatencyZkPoints,
+	); err != nil {
+		return err
 	}
+	if err = plotAvgLatency.Save(defaultPlotWidth, defaultPlotHeight, avgLatencyPath); err != nil {
+		return err
+	}
+	// }
 
-	plotThroughputConsul, err := fr.GetColumn("throughput_consul")
-	if err != nil {
-		return err
-	}
-	plotThroughputConsulPoints, err := points(plotThroughputConsul)
-	if err != nil {
-		return err
-	}
+	// plotThroughputConsul, err := fr.GetColumn("throughput_consul")
+	// if err != nil {
+	// 	return err
+	// }
+	// plotThroughputConsulPoints, err := points(plotThroughputConsul)
+	// if err != nil {
+	// 	return err
+	// }
 	plotThroughputEtcd3, err := fr.GetColumn("throughput_etcd3")
 	if err != nil {
 		return err
@@ -708,14 +708,14 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle, multiTagTitle string
 	if err != nil {
 		return err
 	}
-	plotThroughputEtcd2, err := fr.GetColumn("throughput_etcd2")
-	if err != nil {
-		return err
-	}
-	plotThroughputEtcd2Points, err := points(plotThroughputEtcd2)
-	if err != nil {
-		return err
-	}
+	// plotThroughputEtcd2, err := fr.GetColumn("throughput_etcd2")
+	// if err != nil {
+	// 	return err
+	// }
+	// plotThroughputEtcd2Points, err := points(plotThroughputEtcd2)
+	// if err != nil {
+	// 	return err
+	// }
 	plotThroughputZk, err := fr.GetColumn("throughput_zk")
 	if err != nil {
 		return err
@@ -741,10 +741,10 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle, multiTagTitle string
 		}
 		if err = plotutil.AddLines(
 			plotThroughput,
-			"consul", plotThroughputConsulPoints,
+			// "consul", plotThroughputConsulPoints,
 			"etcd3", plotThroughputEtcd3Points,
 			strings.Replace("etcd3multi", "multi", "-"+multiTagTitle, -1), plotThroughputEtcd3MultiPoints,
-			"etcd2", plotThroughputEtcd2Points,
+			// "etcd2", plotThroughputEtcd2Points,
 			"zk", plotThroughputZkPoints,
 		); err != nil {
 			return err
@@ -755,9 +755,9 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle, multiTagTitle string
 	} else {
 		if err = plotutil.AddLines(
 			plotThroughput,
-			"consul", plotThroughputConsulPoints,
+			// "consul", plotThroughputConsulPoints,
 			"etcd3", plotThroughputEtcd3Points,
-			"etcd2", plotThroughputEtcd2Points,
+			// "etcd2", plotThroughputEtcd2Points,
 			"zk", plotThroughputZkPoints,
 		); err != nil {
 			return err
@@ -767,14 +767,14 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle, multiTagTitle string
 		}
 	}
 
-	plotAvgCpuConsul, err := fr.GetColumn("avg_cpu_consul")
-	if err != nil {
-		return err
-	}
-	plotAvgCpuConsulPoints, err := points(plotAvgCpuConsul)
-	if err != nil {
-		return err
-	}
+	// plotAvgCpuConsul, err := fr.GetColumn("avg_cpu_consul")
+	// if err != nil {
+	// 	return err
+	// }
+	// plotAvgCpuConsulPoints, err := points(plotAvgCpuConsul)
+	// if err != nil {
+	// 	return err
+	// }
 	plotAvgCpuEtcd3, err := fr.GetColumn("avg_cpu_etcd3")
 	if err != nil {
 		return err
@@ -783,14 +783,14 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle, multiTagTitle string
 	if err != nil {
 		return err
 	}
-	plotAvgCpuEtcd2, err := fr.GetColumn("avg_cpu_etcd2")
-	if err != nil {
-		return err
-	}
-	plotAvgCpuEtcd2Points, err := points(plotAvgCpuEtcd2)
-	if err != nil {
-		return err
-	}
+	// plotAvgCpuEtcd2, err := fr.GetColumn("avg_cpu_etcd2")
+	// if err != nil {
+	// 	return err
+	// }
+	// plotAvgCpuEtcd2Points, err := points(plotAvgCpuEtcd2)
+	// if err != nil {
+	// 	return err
+	// }
 	plotAvgCpuZk, err := fr.GetColumn("avg_cpu_zk")
 	if err != nil {
 		return err
@@ -807,49 +807,49 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle, multiTagTitle string
 	plotAvgCpu.X.Label.Text = "second"
 	plotAvgCpu.Y.Label.Text = "CPU"
 	plotAvgCpu.Legend.Top = true
-	plotAvgCpuEtcd3Multi, err := fr.GetColumn("avg_cpu_etcd3multi")
-	if err == nil {
-		var plotAvgCpuEtcd3MultiPoints plotter.XYs
-		plotAvgCpuEtcd3MultiPoints, err = points(plotAvgCpuEtcd3Multi)
-		if err != nil {
-			return err
-		}
-		if err = plotutil.AddLines(
-			plotAvgCpu,
-			"consul", plotAvgCpuConsulPoints,
-			"etcd3", plotAvgCpuEtcd3Points,
-			strings.Replace("etcd3multi", "multi", "-"+multiTagTitle, -1), plotAvgCpuEtcd3MultiPoints,
-			"etcd2", plotAvgCpuEtcd2Points,
-			"zk", plotAvgCpuZkPoints,
-		); err != nil {
-			return err
-		}
-		if err = plotAvgCpu.Save(defaultPlotWidth, defaultPlotHeight, avgCpuPath); err != nil {
-			return err
-		}
-	} else {
-		if err = plotutil.AddLines(
-			plotAvgCpu,
-			"consul", plotAvgCpuConsulPoints,
-			"etcd3", plotAvgCpuEtcd3Points,
-			"etcd2", plotAvgCpuEtcd2Points,
-			"zk", plotAvgCpuZkPoints,
-		); err != nil {
-			return err
-		}
-		if err = plotAvgCpu.Save(defaultPlotWidth, defaultPlotHeight, avgCpuPath); err != nil {
-			return err
-		}
+	// plotAvgCpuEtcd3Multi, err := fr.GetColumn("avg_cpu_etcd3multi")
+	// if err == nil {
+	// var plotAvgCpuEtcd3MultiPoints plotter.XYs
+	// plotAvgCpuEtcd3MultiPoints, err = points(plotAvgCpuEtcd3Multi)
+	// if err != nil {
+	// 	return err
+	// }
+	// if err = plotutil.AddLines(
+	// 	plotAvgCpu,
+	// 	// "consul", plotAvgCpuConsulPoints,
+	// 	"etcd3", plotAvgCpuEtcd3Points,
+	// 	// strings.Replace("etcd3multi", "multi", "-"+multiTagTitle, -1), plotAvgCpuEtcd3MultiPoints,
+	// 	// "etcd2", plotAvgCpuEtcd2Points,
+	// 	"zk", plotAvgCpuZkPoints,
+	// ); err != nil {
+	// 	return err
+	// }
+	// if err = plotAvgCpu.Save(defaultPlotWidth, defaultPlotHeight, avgCpuPath); err != nil {
+	// 	return err
+	// }
+	// } else {
+	if err = plotutil.AddLines(
+		plotAvgCpu,
+		// "consul", plotAvgCpuConsulPoints,
+		"etcd3", plotAvgCpuEtcd3Points,
+		// "etcd2", plotAvgCpuEtcd2Points,
+		"zk", plotAvgCpuZkPoints,
+	); err != nil {
+		return err
 	}
+	if err = plotAvgCpu.Save(defaultPlotWidth, defaultPlotHeight, avgCpuPath); err != nil {
+		return err
+	}
+	// }
 
-	plotAvgMemConsul, err := fr.GetColumn("avg_memory_mb_consul")
-	if err != nil {
-		return err
-	}
-	plotAvgMemConsulPoints, err := points(plotAvgMemConsul)
-	if err != nil {
-		return err
-	}
+	// plotAvgMemConsul, err := fr.GetColumn("avg_memory_mb_consul")
+	// if err != nil {
+	// 	return err
+	// }
+	// plotAvgMemConsulPoints, err := points(plotAvgMemConsul)
+	// if err != nil {
+	// 	return err
+	// }
 	plotAvgMemEtcd3, err := fr.GetColumn("avg_memory_mb_etcd3")
 	if err != nil {
 		return err
@@ -858,14 +858,14 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle, multiTagTitle string
 	if err != nil {
 		return err
 	}
-	plotAvgMemEtcd2, err := fr.GetColumn("avg_memory_mb_etcd2")
-	if err != nil {
-		return err
-	}
-	plotAvgMemEtcd2Points, err := points(plotAvgMemEtcd2)
-	if err != nil {
-		return err
-	}
+	// plotAvgMemEtcd2, err := fr.GetColumn("avg_memory_mb_etcd2")
+	// if err != nil {
+	// 	return err
+	// }
+	// plotAvgMemEtcd2Points, err := points(plotAvgMemEtcd2)
+	// if err != nil {
+	// 	return err
+	// }
 	plotAvgMemZk, err := fr.GetColumn("avg_memory_mb_zk")
 	if err != nil {
 		return err
@@ -882,40 +882,40 @@ func plotAggAgg(fpath, outputPath, imageFormat, imageTitle, multiTagTitle string
 	plotAvgMem.X.Label.Text = "second"
 	plotAvgMem.Y.Label.Text = "Memory(MB)"
 	plotAvgMem.Legend.Top = true
-	plotAvgMemEtcd3Multi, err := fr.GetColumn("avg_memory_mb_etcd3multi")
-	if err == nil {
-		var plotAvgMemEtcd3MultiPoints plotter.XYs
-		plotAvgMemEtcd3MultiPoints, err = points(plotAvgMemEtcd3Multi)
-		if err != nil {
-			return err
-		}
-		if err = plotutil.AddLines(
-			plotAvgMem,
-			"consul", plotAvgMemConsulPoints,
-			"etcd3", plotAvgMemEtcd3Points,
-			strings.Replace("etcd3multi", "multi", "-"+multiTagTitle, -1), plotAvgMemEtcd3MultiPoints,
-			"etcd2", plotAvgMemEtcd2Points,
-			"zk", plotAvgMemZkPoints,
-		); err != nil {
-			return err
-		}
-		if err = plotAvgMem.Save(defaultPlotWidth, defaultPlotHeight, avgMemPath); err != nil {
-			return err
-		}
-	} else {
-		if err = plotutil.AddLines(
-			plotAvgMem,
-			"consul", plotAvgMemConsulPoints,
-			"etcd3", plotAvgMemEtcd3Points,
-			"etcd2", plotAvgMemEtcd2Points,
-			"zk", plotAvgMemZkPoints,
-		); err != nil {
-			return err
-		}
-		if err = plotAvgMem.Save(defaultPlotWidth, defaultPlotHeight, avgMemPath); err != nil {
-			return err
-		}
+	// plotAvgMemEtcd3Multi, err := fr.GetColumn("avg_memory_mb_etcd3multi")
+	// if err == nil {
+	// var plotAvgMemEtcd3MultiPoints plotter.XYs
+	// plotAvgMemEtcd3MultiPoints, err = points(plotAvgMemEtcd3Multi)
+	// if err != nil {
+	// 	return err
+	// }
+	// if err = plotutil.AddLines(
+	// 	plotAvgMem,
+	// 	// "consul", plotAvgMemConsulPoints,
+	// 	"etcd3", plotAvgMemEtcd3Points,
+	// 	// strings.Replace("etcd3multi", "multi", "-"+multiTagTitle, -1), plotAvgMemEtcd3MultiPoints,
+	// 	// "etcd2", plotAvgMemEtcd2Points,
+	// 	"zk", plotAvgMemZkPoints,
+	// ); err != nil {
+	// 	return err
+	// }
+	// if err = plotAvgMem.Save(defaultPlotWidth, defaultPlotHeight, avgMemPath); err != nil {
+	// 	return err
+	// }
+	// } else {
+	if err = plotutil.AddLines(
+		plotAvgMem,
+		// "consul", plotAvgMemConsulPoints,
+		"etcd3", plotAvgMemEtcd3Points,
+		// "etcd2", plotAvgMemEtcd2Points,
+		"zk", plotAvgMemZkPoints,
+	); err != nil {
+		return err
 	}
+	if err = plotAvgMem.Save(defaultPlotWidth, defaultPlotHeight, avgMemPath); err != nil {
+		return err
+	}
+	// }
 
 	return nil
 }
