@@ -25,38 +25,38 @@
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/client",
-			"Comment": "v2.3.0-104-g83ada72",
-			"Rev": "83ada7232a13491f7ef94cb398d9af8b3b2cb5fb"
+			"Comment": "v2.3.0-172-g93c3f92",
+			"Rev": "93c3f920ca5443089fab9b45eb470ffc46a5170c"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/clientv3",
-			"Comment": "v2.3.0-104-g83ada72",
-			"Rev": "83ada7232a13491f7ef94cb398d9af8b3b2cb5fb"
+			"Comment": "v2.3.0-172-g93c3f92",
+			"Rev": "93c3f920ca5443089fab9b45eb470ffc46a5170c"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes",
-			"Comment": "v2.3.0-104-g83ada72",
-			"Rev": "83ada7232a13491f7ef94cb398d9af8b3b2cb5fb"
+			"Comment": "v2.3.0-172-g93c3f92",
+			"Rev": "93c3f920ca5443089fab9b45eb470ffc46a5170c"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/etcdserverpb",
-			"Comment": "v2.3.0-104-g83ada72",
-			"Rev": "83ada7232a13491f7ef94cb398d9af8b3b2cb5fb"
+			"Comment": "v2.3.0-172-g93c3f92",
+			"Rev": "93c3f920ca5443089fab9b45eb470ffc46a5170c"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/pathutil",
-			"Comment": "v2.3.0-104-g83ada72",
-			"Rev": "83ada7232a13491f7ef94cb398d9af8b3b2cb5fb"
+			"Comment": "v2.3.0-172-g93c3f92",
+			"Rev": "93c3f920ca5443089fab9b45eb470ffc46a5170c"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/types",
-			"Comment": "v2.3.0-104-g83ada72",
-			"Rev": "83ada7232a13491f7ef94cb398d9af8b3b2cb5fb"
+			"Comment": "v2.3.0-172-g93c3f92",
+			"Rev": "93c3f920ca5443089fab9b45eb470ffc46a5170c"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/storage/storagepb",
-			"Comment": "v2.3.0-104-g83ada72",
-			"Rev": "83ada7232a13491f7ef94cb398d9af8b3b2cb5fb"
+			"Comment": "v2.3.0-172-g93c3f92",
+			"Rev": "93c3f920ca5443089fab9b45eb470ffc46a5170c"
 		},
 		{
 			"ImportPath": "github.com/dustin/go-humanize",
