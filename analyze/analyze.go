@@ -411,7 +411,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 			if err != nil {
 				return err
 			}
-			pl.Title.Text = elem.Title
+			pl.Title.Text = fmt.Sprintf("%s, %s", elem.Title, pelem.YAxis)
 			pl.X.Label.Text = pelem.XAxis
 			pl.Y.Label.Text = pelem.YAxis
 			pl.Legend.Top = true
