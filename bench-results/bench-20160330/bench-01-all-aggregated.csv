@@ -1,4 +1,4 @@
-second,avg_latency_ms_etcd3,throughput_etcd3,cumulative_throughput_etcd3,avg_cpu_etcd3,avg_memory_mb_etcd3,avg_latency_ms_zk,throughput_zk,cumulative_throughput_zk,avg_cpu_zk,avg_memory_mb_zk
+second,avg_latency_ms_etcd_v3,throughput_etcd_v3,cumulative_throughput_etcd_v3,avg_cpu_etcd_v3,avg_memory_mb_etcd_v3,avg_latency_ms_zookeeper_3.4.8,throughput_zookeeper_3.4.8,cumulative_throughput_zookeeper_3.4.8,avg_cpu_zookeeper_3.4.8,avg_memory_mb_zookeeper_3.4.8
 0,4.428145,31,31,2.60,27.51,7.196191,35,35,2.51,58.08
 1,4.885625,204,235,3.35,30.21,4.818989,207,242,3.55,64.69
 2,5.044722,198,433,4.03,33.57,4.591267,218,460,4.41,71.21

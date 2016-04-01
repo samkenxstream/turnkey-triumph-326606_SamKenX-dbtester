@@ -21,8 +21,10 @@ import (
 )
 
 type (
-	AuthEnableResponse  pb.AuthEnableResponse
-	AuthUserAddResponse pb.AuthUserAddResponse
+	AuthEnableResponse             pb.AuthEnableResponse
+	AuthUserAddResponse            pb.AuthUserAddResponse
+	AuthUserDeleteResponse         pb.AuthUserDeleteResponse
+	AuthUserChangePasswordResponse pb.AuthUserChangePasswordResponse
 )
 
 type Auth interface {
@@ -31,6 +33,12 @@ type Auth interface {
 
 	// UserAdd adds a new user to an etcd cluster.
 	UserAdd(ctx context.Context, name string, password string) (*AuthUserAddResponse, error)
+
+	// UserDelete deletes a user from an etcd cluster.
+	UserDelete(ctx context.Context, name string) (*AuthUserDeleteResponse, error)
+
+	// UserChangePassword changes a password of a user.
+	UserChangePassword(ctx context.Context, name string, password string) (*AuthUserChangePasswordResponse, error)
 }
 
 type auth struct {
@@ -57,4 +65,14 @@ func (auth *auth) AuthEnable(ctx context.Context) (*AuthEnableResponse, error) {
 func (auth *auth) UserAdd(ctx context.Context, name string, password string) (*AuthUserAddResponse, error) {
 	resp, err := auth.remote.UserAdd(ctx, &pb.AuthUserAddRequest{Name: name, Password: password})
 	return (*AuthUserAddResponse)(resp), err
+}
+
+func (auth *auth) UserDelete(ctx context.Context, name string) (*AuthUserDeleteResponse, error) {
+	resp, err := auth.remote.UserDelete(ctx, &pb.AuthUserDeleteRequest{Name: name})
+	return (*AuthUserDeleteResponse)(resp), err
+}
+
+func (auth *auth) UserChangePassword(ctx context.Context, name string, password string) (*AuthUserChangePasswordResponse, error) {
+	resp, err := auth.remote.UserChangePassword(ctx, &pb.AuthUserChangePasswordRequest{Name: name, Password: password})
+	return (*AuthUserChangePasswordResponse)(resp), err
 }
