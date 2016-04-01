@@ -61,7 +61,6 @@ func init() {
 func init() {
 	rootCommand.AddCommand(agent.Command)
 	rootCommand.AddCommand(analyze.Command)
-	rootCommand.AddCommand(analyze.ReadmeCommand)
 	rootCommand.AddCommand(bench.Command)
 	rootCommand.AddCommand(control.StartCommand)
 	rootCommand.AddCommand(control.StopCommand)
