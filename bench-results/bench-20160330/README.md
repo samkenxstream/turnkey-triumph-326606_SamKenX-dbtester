@@ -1,3 +1,5 @@
+
+
 - Google Cloud Compute Engine
 - 8 vCPUs + 16GB Memory + 375GB local SSD (SCSI)
 - Ubuntu 15.10
