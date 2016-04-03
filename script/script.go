@@ -15,6 +15,7 @@ type scriptConfig struct {
 	ClientPort  string
 	ProjectName string
 	KeyPath     string
+	BenchType   string
 	Conns       int
 	Clients     int
 	ValSize     int
@@ -41,6 +42,7 @@ func init() {
 	Command.PersistentFlags().StringVarP(&cfg.ClientPort, "client-port", "c", "2379", "2379 for etcd, 2181 for Zookeeper, 8500 for Consul.")
 	Command.PersistentFlags().StringVarP(&cfg.ProjectName, "project-name", "n", "etcd-development", "Project name.")
 	Command.PersistentFlags().StringVarP(&cfg.KeyPath, "key-path", "k", "$HOME/key.json", "Key path.")
+	Command.PersistentFlags().StringVarP(&cfg.BenchType, "bench-type", "t", "put", "'put' or 'range'.")
 	Command.PersistentFlags().IntVar(&cfg.Conns, "conns", 1, "conns.")
 	Command.PersistentFlags().IntVar(&cfg.Clients, "clients", 1, "clients.")
 	Command.PersistentFlags().IntVar(&cfg.ValSize, "val-size", 256, "val-size.")
@@ -48,6 +50,9 @@ func init() {
 }
 
 func scriptCommandFunc(cmd *cobra.Command, args []string) error {
+	if cfg.BenchType == "range" {
+		cfg.BenchType = "range --consistency s --single-key"
+	}
 	tpl := template.Must(template.New("scriptTemplate").Parse(scriptTemplate))
 	buf := new(bytes.Buffer)
 	if err := tpl.Execute(buf, cfg); err != nil {
@@ -117,7 +122,7 @@ cat /mnt/ssd0/agent.log
 cat /mnt/ssd0/database.log
 
 # start benchmark
-nohup dbtester bench --database={{.DBName}} --sample --no-histogram --csv-result-path={{.LogPrefix}}-{{.DBName}}-timeseries.csv --google-cloud-project-name={{.ProjectName}} --key-path={{.KeyPath}} --bucket={{.BucketName}} --endpoints=$DATABASE_ENDPOINTS --conns={{.Conns}} --clients={{.Clients}} put --key-size=64 --val-size={{.ValSize}} --total={{.Total}} > {{.LogPrefix}}-{{.DBName}}-result.txt 2>&1 &
+nohup dbtester bench --database={{.DBName}} --sample --no-histogram --csv-result-path={{.LogPrefix}}-{{.DBName}}-timeseries.csv --google-cloud-project-name={{.ProjectName}} --key-path={{.KeyPath}} --bucket={{.BucketName}} --endpoints=$DATABASE_ENDPOINTS --conns={{.Conns}} --clients={{.Clients}} {{.BenchType}} --key-size=64 --val-size={{.ValSize}} --total={{.Total}} > {{.LogPrefix}}-{{.DBName}}-result.txt 2>&1 &
 
 cat {{.LogPrefix}}-{{.DBName}}-result.txt
 
