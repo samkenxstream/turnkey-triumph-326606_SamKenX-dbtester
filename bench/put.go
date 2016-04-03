@@ -15,10 +15,12 @@
 package bench
 
 import (
-	"encoding/binary"
+	"bufio"
 	"fmt"
 	"log"
-	"os"
+	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/cheggaaa/pb"
@@ -47,9 +49,6 @@ var (
 
 	putTotal int
 
-	keySpaceSize int
-	seqKeys      bool
-
 	etcdCompactionCycle int64
 )
 
@@ -58,23 +57,16 @@ func init() {
 	putCmd.Flags().IntVar(&keySize, "key-size", 8, "Key size of put request")
 	putCmd.Flags().IntVar(&valSize, "val-size", 8, "Value size of put request")
 	putCmd.Flags().IntVar(&putTotal, "total", 10000, "Total number of put requests")
-	putCmd.Flags().IntVar(&keySpaceSize, "key-space-size", 1, "Maximum possible keys")
-	putCmd.Flags().BoolVar(&seqKeys, "sequential-keys", false, "Use sequential keys")
 	putCmd.Flags().Int64Var(&etcdCompactionCycle, "etcd-compaction-cycle", 0, "Compact every X number of put requests. 0 means no compaction.")
 }
 
 func putFunc(cmd *cobra.Command, args []string) {
-	if keySpaceSize <= 0 {
-		fmt.Fprintf(os.Stderr, "expected positive --key-space-size, got (%v)", keySpaceSize)
-		os.Exit(1)
-	}
-
 	results = make(chan result)
 	requests := make(chan request, totalClients)
 	bar = pb.New(putTotal)
 
-	k, v := make([]byte, keySize), string(mustRandBytes(valSize))
-	keys := multiRandBytes(keySize, putTotal)
+	keys := multiRandStrings(keySize, putTotal)
+	value := string(mustRandBytes(valSize))
 
 	bar.Format("Bom !")
 	bar.Start()
@@ -132,20 +124,16 @@ func putFunc(cmd *cobra.Command, args []string) {
 					compactKV(etcdClients)
 				}()
 			}
-			if seqKeys {
-				binary.PutVarint(k, int64(i%keySpaceSize))
-			} else {
-				k = keys[i]
-			}
+			key := keys[i]
 			switch database {
 			case "etcdv2":
-				requests <- request{etcdv2Op: etcdv2Op{key: string(k), value: v}}
+				requests <- request{etcdv2Op: etcdv2Op{key: key, value: value}}
 			case "etcdv3":
-				requests <- request{etcdv3Op: clientv3.OpPut(string(k), v)}
+				requests <- request{etcdv3Op: clientv3.OpPut(key, value)}
 			case "zk":
-				requests <- request{zkOp: zkOp{key: "/" + string(k), value: []byte(v)}}
+				requests <- request{zkOp: zkOp{key: "/" + key, value: []byte(value)}}
 			case "consul":
-				requests <- request{consulOp: consulOp{key: string(k), value: []byte(v)}}
+				requests <- request{consulOp: consulOp{key: key, value: []byte(value)}}
 			}
 		}
 		close(requests)
@@ -158,7 +146,35 @@ func putFunc(cmd *cobra.Command, args []string) {
 	close(results)
 	<-pdoneC
 
-	// TODO: get total number of keys
+	fmt.Println("Expected Put Total:", putTotal)
+	switch database {
+	case "etcdv2":
+		for k, v := range getTotalKeysEtcdv2(endpoints) {
+			fmt.Println("Endpoint      :", k)
+			fmt.Println("Number of Keys:", v)
+			fmt.Println()
+		}
+	case "etcdv3":
+		for k, v := range getTotalKeysEtcdv3(endpoints) {
+			fmt.Println("Endpoint      :", k)
+			fmt.Println("Number of Keys:", v)
+			fmt.Println()
+		}
+
+	case "zk":
+		for k, v := range getTotalKeysZk(endpoints) {
+			fmt.Println("Endpoint      :", k)
+			fmt.Println("Number of Keys:", v)
+			fmt.Println()
+		}
+
+	case "consul":
+		for k, v := range getTotalKeysConsul(endpoints) {
+			fmt.Println("Endpoint      :", k)
+			fmt.Println("Number of Keys:", v)
+			fmt.Println()
+		}
+	}
 }
 
 func doPutEtcdv2(ctx context.Context, conn clientv2.KeysAPI, requests <-chan request) {
@@ -179,6 +195,14 @@ func doPutEtcdv2(ctx context.Context, conn clientv2.KeysAPI, requests <-chan req
 	}
 }
 
+func getTotalKeysEtcdv2(endpoints []string) map[string]int64 {
+	rs := make(map[string]int64)
+	for _, ep := range endpoints {
+		rs[ep] = 0 // not supported in metrics
+	}
+	return rs
+}
+
 func doPutEtcdv3(ctx context.Context, client clientv3.KV, requests <-chan request) {
 	defer wg.Done()
 
@@ -194,6 +218,41 @@ func doPutEtcdv3(ctx context.Context, client clientv3.KV, requests <-chan reques
 		results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
 		bar.Increment()
 	}
+}
+
+func getTotalKeysEtcdv3(endpoints []string) map[string]int64 {
+	rs := make(map[string]int64)
+	for _, ep := range endpoints {
+		if strings.HasPrefix(ep, "http://") {
+			ep = "http://" + ep
+		}
+		resp, err := http.Get(ep + "/metrics")
+		if err != nil {
+			log.Println(err)
+			rs[ep] = 0
+		}
+		scanner := bufio.NewScanner(resp.Body)
+		for scanner.Scan() {
+			txt := scanner.Text()
+			if strings.HasPrefix(txt, "#") {
+				continue
+			}
+			ts := strings.SplitN(txt, " ", 2)
+			fv := 0.0
+			if len(ts) == 2 {
+				v, err := strconv.ParseFloat(ts[1], 64)
+				if err == nil {
+					fv = v
+				}
+			}
+			if ts[0] == "etcd_storage_keys_total" {
+				rs[ep] = int64(fv)
+				break
+			}
+		}
+		gracefulClose(resp)
+	}
+	return rs
 }
 
 func doPutZk(conn *zk.Conn, requests <-chan request) {
@@ -214,6 +273,22 @@ func doPutZk(conn *zk.Conn, requests <-chan request) {
 	}
 }
 
+func getTotalKeysZk(endpoints []string) map[string]int64 {
+	rs := make(map[string]int64)
+	stats, ok := zk.FLWSrvr(endpoints, 5*time.Second)
+	if !ok {
+		log.Printf("getTotalKeysZk failed with %+v", stats)
+		for _, ep := range endpoints {
+			rs[ep] = 0
+		}
+		return rs
+	}
+	for i, s := range stats {
+		rs[endpoints[i]] = s.NodeCount
+	}
+	return rs
+}
+
 func doPutConsul(conn *consulapi.KV, requests <-chan request) {
 	defer wg.Done()
 
@@ -231,6 +306,15 @@ func doPutConsul(conn *consulapi.KV, requests <-chan request) {
 		bar.Increment()
 	}
 }
+
+func getTotalKeysConsul(endpoints []string) map[string]int64 {
+	rs := make(map[string]int64)
+	for _, ep := range endpoints {
+		rs[ep] = 0 // not supported in consul
+	}
+	return rs
+}
+
 func compactKV(clients []*clientv3.Client) {
 	var curRev int64
 	for _, c := range clients {

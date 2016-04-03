@@ -17,7 +17,10 @@ package bench
 import (
 	"crypto/rand"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -173,15 +176,16 @@ func randBytes(bytesN int) []byte {
 	return b
 }
 
-func multiRandBytes(bytesN, sliceN int) [][]byte {
+func multiRandStrings(keyN, sliceN int) []string {
 	m := make(map[string]struct{})
-	var rs [][]byte
-	for len(rs) != sliceN {
-		b := randBytes(bytesN)
-		if _, ok := m[string(b)]; !ok {
-			rs = append(rs, b)
-			m[string(b)] = struct{}{}
-		}
+	for len(m) != sliceN {
+		m[string(randBytes(keyN))] = struct{}{}
+	}
+	rs := make([]string, sliceN)
+	idx := 0
+	for k := range m {
+		rs[idx] = k
+		idx++
 	}
 	return rs
 }
@@ -203,4 +207,12 @@ func toFile(txt, fpath string) error {
 
 func toMillisecond(d time.Duration) float64 {
 	return d.Seconds() * 1000
+}
+
+// gracefulClose drains http.Response.Body until it hits EOF
+// and closes it. This prevents TCP/TLS connections from closing,
+// therefore available for reuse.
+func gracefulClose(resp *http.Response) {
+	io.Copy(ioutil.Discard, resp.Body)
+	resp.Body.Close()
 }
