@@ -17,8 +17,8 @@ dbtester agent
 dbtester agent
 
 # Client machine
-dbtester start --agent-endpoints=$(echo $RPC_ENDPOINTS) --database=etcd 
-dbtester start --agent-endpoints=$(echo $RPC_ENDPOINTS) --database=etcd2 
+dbtester start --agent-endpoints=$(echo $RPC_ENDPOINTS) --database=etcdv2
+dbtester start --agent-endpoints=$(echo $RPC_ENDPOINTS) --database=etcdv3
 dbtester start --agent-endpoints=$(echo $RPC_ENDPOINTS) --database=zk
 dbtester start --agent-endpoints=$(echo $RPC_ENDPOINTS) --database=consul
 ```
