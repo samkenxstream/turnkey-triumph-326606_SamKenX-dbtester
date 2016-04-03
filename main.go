@@ -20,10 +20,11 @@
 //	Available Commands:
 //	  agent       Database agent in remote servers.
 //	  analyze     Analyzes test results specific to dbtester.
-//	  bench       Low-level benchmark tool for etcd, Zookeeper, etcd2, consul.
+//	  bench       Low-level benchmark tool for etcdv2, etcdv3, Zookeeper, Consul.
 //	  start       Starts database through RPC calls.
 //	  stop        Stops database through RPC calls.
 //	  restart     Restarts database through RPC calls.
+//	  script      Generates cloud provisioning script.
 //	  upload      Uploads to cloud storage.
 //
 //	Flags:

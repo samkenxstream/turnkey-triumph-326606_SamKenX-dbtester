@@ -59,16 +59,16 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 		v := randBytes(valSize)
 		vs := string(v)
 		switch database {
-		case "etcd":
-			fmt.Printf("PUT '%s' to etcd\n", k)
+		case "etcdv2":
+			fmt.Printf("PUT '%s' to etcdv2\n", k)
 			var err error
 			for i := 0; i < 5; i++ {
-				clients := mustCreateClients(1, 1)
-				_, err = clients[0].Do(context.Background(), clientv3.OpPut(k, vs))
+				clients := mustCreateClientsEtcdv2(totalConns)
+				_, err = clients[0].Set(context.Background(), k, vs, nil)
 				if err != nil {
 					continue
 				}
-				fmt.Printf("Done with PUT '%s' to etcd\n", k)
+				fmt.Printf("Done with PUT '%s' to etcdv2\n", k)
 				break
 			}
 			if err != nil {
@@ -76,16 +76,16 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 				os.Exit(1)
 			}
 
-		case "etcd2":
-			fmt.Printf("PUT '%s' to etcd2\n", k)
+		case "etcdv3":
+			fmt.Printf("PUT '%s' to etcd\n", k)
 			var err error
 			for i := 0; i < 5; i++ {
-				clients := mustCreateClientsEtcd2(totalConns)
-				_, err = clients[0].Set(context.Background(), k, vs, nil)
+				clients := mustCreateClientsEtcdv3(1, 1)
+				_, err = clients[0].Do(context.Background(), clientv3.OpPut(k, vs))
 				if err != nil {
 					continue
 				}
-				fmt.Printf("Done with PUT '%s' to etcd2\n", k)
+				fmt.Printf("Done with PUT '%s' to etcd\n", k)
 				break
 			}
 			if err != nil {
@@ -141,7 +141,7 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	if database == "etcd" { // etcd2 quorum false by default
+	if database == "etcdv3" { // etcdv2 quorum false by default
 		if rangeConsistency == "l" {
 			fmt.Println("bench with linearizable range")
 		} else if rangeConsistency == "s" {
@@ -162,24 +162,24 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 	bar.Start()
 
 	switch database {
-	case "etcd":
-		clients := mustCreateClients(totalClients, totalConns)
+	case "etcdv2":
+		conns := mustCreateClientsEtcdv2(totalConns)
+		for i := range conns {
+			wg.Add(1)
+			go doRangeEtcdv2(conns[i], requests)
+		}
+
+	case "etcdv3":
+		clients := mustCreateClientsEtcdv3(totalClients, totalConns)
 		for i := range clients {
 			wg.Add(1)
-			go doRange(clients[i].KV, requests)
+			go doRangeEtcdv3(clients[i].KV, requests)
 		}
 		defer func() {
 			for i := range clients {
 				clients[i].Close()
 			}
 		}()
-
-	case "etcd2":
-		conns := mustCreateClientsEtcd2(totalConns)
-		for i := range conns {
-			wg.Add(1)
-			go doRangeEtcd2(conns[i], requests)
-		}
 
 	case "zk":
 		conns := mustCreateConnsZk(totalConns)
@@ -208,22 +208,23 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 	go func() {
 		for i := 0; i < rangeTotal; i++ {
 			switch database {
-			case "etcd":
+			case "etcdv2":
+				// serializable read by default
+				requests <- request{etcdv2Op: etcdv2Op{key: k}}
+
+			case "etcdv3":
 				opts := []clientv3.OpOption{clientv3.WithRange(end)}
 				if rangeConsistency == "s" {
 					opts = append(opts, clientv3.WithSerializable())
 				}
-				requests <- request{etcdOp: clientv3.OpGet(k, opts...)}
-
-				// TODO: all below, serializable read by default
-				// make it configurable
-			case "etcd2":
-				requests <- request{etcd2Op: etcd2Op{key: k}}
+				requests <- request{etcdv3Op: clientv3.OpGet(k, opts...)}
 
 			case "zk":
+				// serializable read by default
 				requests <- request{zkOp: zkOp{key: k}}
 
 			case "consul":
+				// serializable read by default
 				requests <- request{consulOp: consulOp{key: k}}
 			}
 		}
@@ -238,14 +239,14 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 	<-pdoneC
 }
 
-func doRange(client clientv3.KV, requests <-chan request) {
+func doRangeEtcdv2(conn clientv2.KeysAPI, requests <-chan request) {
 	defer wg.Done()
 
 	for req := range requests {
-		op := req.etcdOp
+		op := req.etcdv2Op
 
 		st := time.Now()
-		_, err := client.Do(context.Background(), op)
+		_, err := conn.Get(context.Background(), op.key, nil)
 
 		var errStr string
 		if err != nil {
@@ -256,14 +257,14 @@ func doRange(client clientv3.KV, requests <-chan request) {
 	}
 }
 
-func doRangeEtcd2(conn clientv2.KeysAPI, requests <-chan request) {
+func doRangeEtcdv3(client clientv3.KV, requests <-chan request) {
 	defer wg.Done()
 
 	for req := range requests {
-		op := req.etcd2Op
+		op := req.etcdv3Op
 
 		st := time.Now()
-		_, err := conn.Get(context.Background(), op.key, nil)
+		_, err := client.Do(context.Background(), op)
 
 		var errStr string
 		if err != nil {

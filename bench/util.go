@@ -30,13 +30,35 @@ import (
 	"github.com/samuel/go-zookeeper/zk"
 )
 
+type request struct {
+	etcdv2Op etcdv2Op
+	etcdv3Op clientv3.Op
+	zkOp     zkOp
+	consulOp consulOp
+}
+
+type etcdv2Op struct {
+	key   string
+	value string
+}
+
+type zkOp struct {
+	key   string
+	value []byte
+}
+
+type consulOp struct {
+	key   string
+	value []byte
+}
+
 var (
 	// dialTotal counts the number of mustCreateConn calls so that endpoint
 	// connections can be handed out in round-robin order
 	dialTotal int
 )
 
-func mustCreateConn() *clientv3.Client {
+func mustCreateConnEtcdv3() *clientv3.Client {
 	endpoint := endpoints[dialTotal%len(endpoints)]
 	dialTotal++
 	cfg := clientv3.Config{Endpoints: []string{endpoint}}
@@ -48,10 +70,10 @@ func mustCreateConn() *clientv3.Client {
 	return client
 }
 
-func mustCreateClients(totalClients, totalConns uint) []*clientv3.Client {
+func mustCreateClientsEtcdv3(totalClients, totalConns uint) []*clientv3.Client {
 	conns := make([]*clientv3.Client, totalConns)
 	for i := range conns {
-		conns[i] = mustCreateConn()
+		conns[i] = mustCreateConnEtcdv3()
 	}
 
 	clients := make([]*clientv3.Client, totalClients)
@@ -61,7 +83,7 @@ func mustCreateClients(totalClients, totalConns uint) []*clientv3.Client {
 	return clients
 }
 
-func mustCreateClientsEtcd2(total uint) []clientv2.KeysAPI {
+func mustCreateClientsEtcdv2(total uint) []clientv2.KeysAPI {
 	cks := make([]clientv2.KeysAPI, total)
 	for i := range cks {
 		endpoint := endpoints[dialTotal%len(endpoints)]

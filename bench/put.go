@@ -63,28 +63,6 @@ func init() {
 	putCmd.Flags().Int64Var(&etcdCompactionCycle, "etcd-compaction-cycle", 0, "Compact every X number of put requests. 0 means no compaction.")
 }
 
-type request struct {
-	etcdOp   clientv3.Op
-	etcd2Op  etcd2Op
-	zkOp     zkOp
-	consulOp consulOp
-}
-
-type etcd2Op struct {
-	key   string
-	value string
-}
-
-type zkOp struct {
-	key   string
-	value []byte
-}
-
-type consulOp struct {
-	key   string
-	value []byte
-}
-
 func putFunc(cmd *cobra.Command, args []string) {
 	if keySpaceSize <= 0 {
 		fmt.Fprintf(os.Stderr, "expected positive --key-space-size, got (%v)", keySpaceSize)
@@ -103,24 +81,24 @@ func putFunc(cmd *cobra.Command, args []string) {
 
 	var etcdClients []*clientv3.Client
 	switch database {
-	case "etcd":
-		etcdClients = mustCreateClients(totalClients, totalConns)
+	case "etcdv2":
+		conns := mustCreateClientsEtcdv2(totalConns)
+		for i := range conns {
+			wg.Add(1)
+			go doPutEtcdv2(context.Background(), conns[i], requests)
+		}
+
+	case "etcdv3":
+		etcdClients = mustCreateClientsEtcdv3(totalClients, totalConns)
 		for i := range etcdClients {
 			wg.Add(1)
-			go doPut(context.Background(), etcdClients[i], requests)
+			go doPutEtcdv3(context.Background(), etcdClients[i], requests)
 		}
 		defer func() {
 			for i := range etcdClients {
 				etcdClients[i].Close()
 			}
 		}()
-
-	case "etcd2":
-		conns := mustCreateClientsEtcd2(totalConns)
-		for i := range conns {
-			wg.Add(1)
-			go doPutEtcd2(context.Background(), conns[i], requests)
-		}
 
 	case "zk":
 		conns := mustCreateConnsZk(totalConns)
@@ -160,10 +138,10 @@ func putFunc(cmd *cobra.Command, args []string) {
 				k = keys[i]
 			}
 			switch database {
-			case "etcd":
-				requests <- request{etcdOp: clientv3.OpPut(string(k), v)}
-			case "etcd2":
-				requests <- request{etcd2Op: etcd2Op{key: string(k), value: v}}
+			case "etcdv2":
+				requests <- request{etcdv2Op: etcdv2Op{key: string(k), value: v}}
+			case "etcdv3":
+				requests <- request{etcdv3Op: clientv3.OpPut(string(k), v)}
 			case "zk":
 				requests <- request{zkOp: zkOp{key: "/" + string(k), value: []byte(v)}}
 			case "consul":
@@ -179,15 +157,18 @@ func putFunc(cmd *cobra.Command, args []string) {
 
 	close(results)
 	<-pdoneC
+
+	// TODO: get total number of keys
 }
 
-func doPut(ctx context.Context, client clientv3.KV, requests <-chan request) {
+func doPutEtcdv2(ctx context.Context, conn clientv2.KeysAPI, requests <-chan request) {
 	defer wg.Done()
 
 	for req := range requests {
-		op := req.etcdOp
+		op := req.etcdv2Op
 		st := time.Now()
-		_, err := client.Do(ctx, op)
+
+		_, err := conn.Set(context.Background(), op.key, op.value, nil)
 
 		var errStr string
 		if err != nil {
@@ -198,14 +179,13 @@ func doPut(ctx context.Context, client clientv3.KV, requests <-chan request) {
 	}
 }
 
-func doPutEtcd2(ctx context.Context, conn clientv2.KeysAPI, requests <-chan request) {
+func doPutEtcdv3(ctx context.Context, client clientv3.KV, requests <-chan request) {
 	defer wg.Done()
 
 	for req := range requests {
-		op := req.etcd2Op
+		op := req.etcdv3Op
 		st := time.Now()
-
-		_, err := conn.Set(context.Background(), op.key, op.value, nil)
+		_, err := client.Do(ctx, op)
 
 		var errStr string
 		if err != nil {
