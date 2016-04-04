@@ -57,14 +57,14 @@
 <path d="M60.137,229.2L120.13,230.47L180.12,240.34L240.11,240.34L300.11,244.92L360.1,244.92L420.09,244.92L480.08,244.92L540.07,245.14L600.06,245.33L660.06,245.33L720.05,245.52L780.04,254.21L840.03,254.21L900.02,262.96L960.02,262.96L1020,263.18L1080,263.18" style="fill:none;stroke:#F15A60;stroke-width:1.875" />
 <path d="M60.137,198.77L120.13,363.02L180.12,376.67L240.11,438.66L300.11,579.03L360.1,701.44L420.09,698.9L480.08,686.29" style="fill:none;stroke:#7AC36A;stroke-width:1.875;stroke-dasharray:7.5,2.5" />
 <path d="M60.137,47.03L120.13,51.638L180.12,51.856L240.11,52.559L300.11,52.947L360.1,53.166L420.09,53.166L480.08,53.166L540.07,53.166L600.06,53.723L660.06,53.723L720.05,53.723L780.04,53.723L840.03,53.723L900.02,54.912L960.02,54.912L1020,55.275" style="fill:none;stroke:#5A9BD4;stroke-width:1.875;stroke-dasharray:2.5,2.5" />
-<path d="M1055,694.3L1080,694.3" style="fill:none;stroke:#F15A60;stroke-width:1.875" />
-<text x="1002.5" y="-687.85" transform="scale(1, -1)"
-	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:12pt">etcd v3</text>
-<path d="M1055,680L1080,680" style="fill:none;stroke:#7AC36A;stroke-width:1.875;stroke-dasharray:7.5,2.5" />
-<text x="941.6" y="-673.56" transform="scale(1, -1)"
+<path d="M1055,694.3L1080,694.3" style="fill:none;stroke:#7AC36A;stroke-width:1.875;stroke-dasharray:7.5,2.5" />
+<text x="941.6" y="-687.85" transform="scale(1, -1)"
 	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:12pt">Zookeeper 3.4.8</text>
-<path d="M1055,665.71L1080,665.71" style="fill:none;stroke:#5A9BD4;stroke-width:1.875;stroke-dasharray:2.5,2.5" />
-<text x="966.62" y="-659.26" transform="scale(1, -1)"
+<path d="M1055,680L1080,680" style="fill:none;stroke:#5A9BD4;stroke-width:1.875;stroke-dasharray:2.5,2.5" />
+<text x="966.62" y="-673.56" transform="scale(1, -1)"
 	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:12pt">Consul 0.6.4</text>
+<path d="M1055,665.71L1080,665.71" style="fill:none;stroke:#F15A60;stroke-width:1.875" />
+<text x="1002.5" y="-659.26" transform="scale(1, -1)"
+	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:12pt">etcd v3</text>
 </g>
 </svg>
