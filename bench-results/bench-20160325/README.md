@@ -14,8 +14,11 @@
 <br><br><hr>
 ##### Write 300K keys, 1 client, key 64 bytes, value 256 bytes
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-01-avg-latency-ms.svg">
+<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-01-avg-latency-ms.png">
 
+<a href="https://olivermak.es/">
+  <img src="https://olivermak.es/resources/icons/favicon144.svg" width="100%" height="144">
+</a>
 <img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-01-throughput.svg">
 
 <img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-01-avg-cpu.svg">
