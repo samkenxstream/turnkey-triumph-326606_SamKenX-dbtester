@@ -14,79 +14,76 @@
 <br><br><hr>
 ##### Write 300K keys, 1 client, key 64 bytes, value 256 bytes
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-01-avg-latency-ms.png">
+<img src="https://storage.googleapis.com/bench-20160325/bench-01-avg-latency-ms.svg">
 
-<a href="https://olivermak.es/">
-  <img src="https://olivermak.es/resources/icons/favicon144.svg" width="100%" height="144">
-</a>
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-01-throughput.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-01-throughput.svg">
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-01-avg-cpu.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-01-avg-cpu.svg">
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-01-avg-memory.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-01-avg-memory.svg">
 
 
 
 <br><br><hr>
 ##### Write 1M keys, 10 clients, key 64 bytes, value 256 bytes
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-02-avg-latency-ms.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-02-avg-latency-ms.svg">
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-02-throughput.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-02-throughput.svg">
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-02-avg-cpu.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-02-avg-cpu.svg">
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-02-avg-memory.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-02-avg-memory.svg">
 
 
 
 <br><br><hr>
 ##### Write 3M keys, 500 clients, key 64 bytes, value 256 bytes
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-03-avg-latency-ms.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-03-avg-latency-ms.svg">
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-03-throughput.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-03-throughput.svg">
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-03-avg-cpu.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-03-avg-cpu.svg">
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-03-avg-memory.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-03-avg-memory.svg">
 
 
 
 <br><br><hr>
 ##### Write 3M keys, 1K clients, key 64 bytes, value 256 bytes
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-04-avg-latency-ms.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-04-avg-latency-ms.svg">
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-04-throughput.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-04-throughput.svg">
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-04-avg-cpu.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-04-avg-cpu.svg">
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-04-avg-memory.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-04-avg-memory.svg">
 
 
 
 <br><br><hr>
 ##### Read single key 1M times, 1 client, key 64 bytes, value 1 kb
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-05-avg-latency-ms.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-05-avg-latency-ms.svg">
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-05-throughput.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-05-throughput.svg">
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-05-avg-cpu.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-05-avg-cpu.svg">
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-05-avg-memory.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-05-avg-memory.svg">
 
 
 
 <br><br><hr>
 ##### Read single key 1M times, 100 clients, key 64 bytes, value 1 kb
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-06-avg-latency-ms.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-06-avg-latency-ms.svg">
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-06-throughput.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-06-throughput.svg">
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-06-avg-cpu.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-06-avg-cpu.svg">
 
-<img src="https://console.cloud.google.com/m/cloudstorage/b/bench-20160325/o/bench-06-avg-memory.svg">
+<img src="https://storage.googleapis.com/bench-20160325/bench-06-avg-memory.svg">
 
