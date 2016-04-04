@@ -25,7 +25,59 @@
 
 
 <br><br><hr>
+##### Write 1M keys, 10 clients, key 64 bytes, value 256 bytes
+
+![bench-02-avg-latency-ms.png](./bench-02-avg-latency-ms.png)
+
+![bench-02-throughput.png](./bench-02-throughput.png)
+
+![bench-02-avg-cpu.png](./bench-02-avg-cpu.png)
+
+![bench-02-avg-memory.png](./bench-02-avg-memory.png)
+
+
+
+<br><br><hr>
+##### Write 3M keys, 500 clients, key 64 bytes, value 256 bytes
+
+![bench-01-avg-latency-ms.png](./bench-01-avg-latency-ms.png)
+
+![bench-01-throughput.png](./bench-01-throughput.png)
+
+![bench-01-avg-cpu.png](./bench-01-avg-cpu.png)
+
+![bench-01-avg-memory.png](./bench-01-avg-memory.png)
+
+
+
+<br><br><hr>
 ##### Write 3M keys, 1K clients, key 64 bytes, value 256 bytes
+
+![bench-04-avg-latency-ms.png](./bench-04-avg-latency-ms.png)
+
+![bench-04-throughput.png](./bench-04-throughput.png)
+
+![bench-04-avg-cpu.png](./bench-04-avg-cpu.png)
+
+![bench-04-avg-memory.png](./bench-04-avg-memory.png)
+
+
+
+<br><br><hr>
+##### Read single key 1M times, 1 client, key 64 bytes, value 1 kb
+
+![bench-01-avg-latency-ms.png](./bench-01-avg-latency-ms.png)
+
+![bench-01-throughput.png](./bench-01-throughput.png)
+
+![bench-01-avg-cpu.png](./bench-01-avg-cpu.png)
+
+![bench-01-avg-memory.png](./bench-01-avg-memory.png)
+
+
+
+<br><br><hr>
+##### Read single key 1M times, 100 clients, key 64 bytes, value 1 kb
 
 ![bench-02-avg-latency-ms.png](./bench-02-avg-latency-ms.png)
 
