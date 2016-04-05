@@ -25,43 +25,43 @@
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/client",
-			"Comment": "v2.3.0-227-ge8a4ed0",
-			"Rev": "e8a4ed01e20fc5fbb09e2a00b9a31ef30c6e25e5"
+			"Comment": "v2.3.0-245-g01c3031",
+			"Rev": "01c303113d0a3d5a8075864321c3aedb72035bdd"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/clientv3",
-			"Comment": "v2.3.0-227-ge8a4ed0",
-			"Rev": "e8a4ed01e20fc5fbb09e2a00b9a31ef30c6e25e5"
+			"Comment": "v2.3.0-245-g01c3031",
+			"Rev": "01c303113d0a3d5a8075864321c3aedb72035bdd"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes",
-			"Comment": "v2.3.0-227-ge8a4ed0",
-			"Rev": "e8a4ed01e20fc5fbb09e2a00b9a31ef30c6e25e5"
+			"Comment": "v2.3.0-245-g01c3031",
+			"Rev": "01c303113d0a3d5a8075864321c3aedb72035bdd"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/etcdserverpb",
-			"Comment": "v2.3.0-227-ge8a4ed0",
-			"Rev": "e8a4ed01e20fc5fbb09e2a00b9a31ef30c6e25e5"
+			"Comment": "v2.3.0-245-g01c3031",
+			"Rev": "01c303113d0a3d5a8075864321c3aedb72035bdd"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/pathutil",
-			"Comment": "v2.3.0-227-ge8a4ed0",
-			"Rev": "e8a4ed01e20fc5fbb09e2a00b9a31ef30c6e25e5"
+			"Comment": "v2.3.0-245-g01c3031",
+			"Rev": "01c303113d0a3d5a8075864321c3aedb72035bdd"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/tlsutil",
-			"Comment": "v2.3.0-227-ge8a4ed0",
-			"Rev": "e8a4ed01e20fc5fbb09e2a00b9a31ef30c6e25e5"
+			"Comment": "v2.3.0-245-g01c3031",
+			"Rev": "01c303113d0a3d5a8075864321c3aedb72035bdd"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/types",
-			"Comment": "v2.3.0-227-ge8a4ed0",
-			"Rev": "e8a4ed01e20fc5fbb09e2a00b9a31ef30c6e25e5"
+			"Comment": "v2.3.0-245-g01c3031",
+			"Rev": "01c303113d0a3d5a8075864321c3aedb72035bdd"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/storage/storagepb",
-			"Comment": "v2.3.0-227-ge8a4ed0",
-			"Rev": "e8a4ed01e20fc5fbb09e2a00b9a31ef30c6e25e5"
+			"Comment": "v2.3.0-245-g01c3031",
+			"Rev": "01c303113d0a3d5a8075864321c3aedb72035bdd"
 		},
 		{
 			"ImportPath": "github.com/dustin/go-humanize",
