@@ -14,5 +14,5 @@
 <br><br><hr>
 ##### Write 300K keys, 1K clients, key 64 bytes, value 256 bytes
 
-<img src="bench-20160410/bench-avg-latency-ms.svg" alt="bench-20160410/bench-avg-latency-ms"><img src="bench-20160410/bench-throughput.svg" alt="bench-20160410/bench-throughput"><img src="bench-20160410/bench-avg-cpu.svg" alt="bench-20160410/bench-avg-cpu"><img src="bench-20160410/bench-avg-memory.svg" alt="bench-20160410/bench-avg-memory">
+<img src="bench-20160410/bench-avg-latency-ms.svg" alt="bench-20160410/bench-avg-latency-ms">\n\n<img src="bench-20160410/bench-throughput.svg" alt="bench-20160410/bench-throughput">\n\n<img src="bench-20160410/bench-avg-cpu.svg" alt="bench-20160410/bench-avg-cpu">\n\n<img src="bench-20160410/bench-avg-memory.svg" alt="bench-20160410/bench-avg-memory">\n\n
 
