@@ -223,9 +223,9 @@ func doPutEtcdv3(ctx context.Context, client clientv3.KV, requests <-chan reques
 func getTotalKeysEtcdv3(endpoints []string) map[string]int64 {
 	rs := make(map[string]int64)
 	for _, ep := range endpoints {
-		if strings.HasPrefix(ep, "http://") {
+		if !strings.HasPrefix(ep, "http://") {
 			ep = "http://" + ep
-		}
+		} // TODO: support https
 		resp, err := http.Get(ep + "/metrics")
 		if err != nil {
 			log.Println(err)
