@@ -456,7 +456,8 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 				imgPath = "./" + filepath.Base(img.ImagePath)
 				rdBuf.WriteString(fmt.Sprintf("![%s](%s)\n\n", img.ImageTitle, imgPath))
 			case "remote":
-				rdBuf.WriteString(fmt.Sprintf(`<img src="%s" alt="%s">\n\n`, img.ImagePath, img.ImageTitle))
+				rdBuf.WriteString(fmt.Sprintf(`<img src="%s" alt="%s">`, img.ImagePath, img.ImageTitle))
+				rdBuf.WriteString("\n\n")
 			default:
 				return fmt.Errorf("%s is not supported", img.ImageType)
 			}

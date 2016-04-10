@@ -83,15 +83,15 @@ step4:
     - title: Write 300K keys, 1K clients, key 64 bytes, value 256 bytes
       images:
         - image_title: bench-20160410/bench-avg-latency-ms
-          image_path: bench-20160410/bench-avg-latency-ms.svg
+          image_path: https://storage.googleapis.com/bench-20160410/bench-avg-latency-ms.svg
           image_type: remote
         - image_title: bench-20160410/bench-throughput
-          image_path: bench-20160410/bench-throughput.svg
+          image_path: https://storage.googleapis.com/bench-20160410/bench-throughput.svg
           image_type: remote
         - image_title: bench-20160410/bench-avg-cpu
-          image_path: bench-20160410/bench-avg-cpu.svg
+          image_path: https://storage.googleapis.com/bench-20160410/bench-avg-cpu.svg
           image_type: remote
         - image_title: bench-20160410/bench-avg-memory
-          image_path: bench-20160410/bench-avg-memory.svg
+          image_path: https://storage.googleapis.com/bench-20160410/bench-avg-memory.svg
           image_type: remote
   output_path: bench-20160410/README.md
