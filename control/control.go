@@ -81,7 +81,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		cfg.AgentEndpoints[i] = fmt.Sprintf("%s:%d", cfg.PeerIPs[i], cfg.AgentPort)
 	}
 	for i := range cfg.PeerIPs {
-		cfg.DatabaseEndpoints[i] = fmt.Sprintf("%s:%d", cfg.DatabaseEndpoints[i], cfg.DatabasePort)
+		cfg.DatabaseEndpoints[i] = fmt.Sprintf("%s:%d", cfg.PeerIPs[i], cfg.DatabasePort)
 	}
 
 	println()
