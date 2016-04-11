@@ -94,6 +94,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 	}
 
 	println()
+	time.Sleep(5 * time.Second)
 	if !cfg.Step2.Skip {
 		log.Println("Step 2: starting tests...")
 
@@ -103,6 +104,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 	}
 
 	println()
+	time.Sleep(5 * time.Second)
 	if !cfg.Step3.Skip {
 		log.Println("Step 3: stopping databases...")
 
@@ -510,7 +512,7 @@ func step3(cfg Config) error {
 	for i := range cfg.PeerIPs {
 
 		go func(i int) {
-			ep := cfg.AgentEndpoints[req.ServerIndex]
+			ep := cfg.AgentEndpoints[i]
 			log.Printf("[%d] %s %s at %s", i, req.Operation, req.Database, ep)
 
 			conn, err := grpc.Dial(ep, grpc.WithInsecure())
