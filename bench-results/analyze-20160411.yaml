@@ -1,28 +1,28 @@
 step1:
   - data_path_list:
-    - bench-20160410/bench-01-etcdv3-1-monitor.csv
-    - bench-20160410/bench-01-etcdv3-2-monitor.csv
-    - bench-20160410/bench-01-etcdv3-3-monitor.csv
-    data_benchmark_path: bench-20160410/bench-01-etcdv3-timeseries.csv
-    output_path: bench-20160410/bench-01-etcdv3-aggregated.csv
+    - bench-20160411/bench-01-etcdv3-1-monitor.csv
+    - bench-20160411/bench-01-etcdv3-2-monitor.csv
+    - bench-20160411/bench-01-etcdv3-3-monitor.csv
+    data_benchmark_path: bench-20160411/bench-01-etcdv3-timeseries.csv
+    output_path: bench-20160411/bench-01-etcdv3-aggregated.csv
   - data_path_list:
-    - bench-20160410/bench-02-etcdv3-1-monitor.csv
-    - bench-20160410/bench-02-etcdv3-2-monitor.csv
-    - bench-20160410/bench-02-etcdv3-3-monitor.csv
-    data_benchmark_path: bench-20160410/bench-02-etcdv3-timeseries.csv
-    output_path: bench-20160410/bench-02-etcdv3-aggregated.csv
+    - bench-20160411/bench-02-etcdv3-1-monitor.csv
+    - bench-20160411/bench-02-etcdv3-2-monitor.csv
+    - bench-20160411/bench-02-etcdv3-3-monitor.csv
+    data_benchmark_path: bench-20160411/bench-02-etcdv3-timeseries.csv
+    output_path: bench-20160411/bench-02-etcdv3-aggregated.csv
 
 step2:
   - data_list:
-      - path: bench-20160410/bench-01-etcdv3-aggregated.csv
+      - path: bench-20160411/bench-01-etcdv3-aggregated.csv
         name: etcd_v3
-      - path: bench-20160410/bench-02-etcdv3-aggregated.csv
+      - path: bench-20160411/bench-02-etcdv3-aggregated.csv
         name: etcdv3_after_patch
-    output_path: bench-20160410/bench-all-aggregated.csv
+    output_path: bench-20160411/bench-all-aggregated.csv
 
 step3:
-  - data_path: bench-20160410/bench-all-aggregated.csv
-    title: Write 300K keys, 1K clients, key 64 bytes, value 256 bytes
+  - data_path: bench-20160411/bench-all-aggregated.csv
+    title: Write 3M keys, 1K clients, key 64 bytes, value 256 bytes
 
     plot_list:
     - lines:
@@ -33,8 +33,8 @@ step3:
       x_axis: Second
       y_axis: Latency(millisecond)
       output_path_list:
-        - bench-20160410/bench-avg-latency-ms.svg
-        - bench-20160410/bench-avg-latency-ms.png
+        - bench-20160411/bench-avg-latency-ms.svg
+        - bench-20160411/bench-avg-latency-ms.png
 
     - lines:
       - column: throughput_etcd_v3
@@ -44,8 +44,8 @@ step3:
       x_axis: Second
       y_axis: Throughput
       output_path_list:
-        - bench-20160410/bench-throughput.svg
-        - bench-20160410/bench-throughput.png
+        - bench-20160411/bench-throughput.svg
+        - bench-20160411/bench-throughput.png
 
     - lines:
       - column: avg_cpu_etcd_v3
@@ -55,8 +55,8 @@ step3:
       x_axis: Second
       y_axis: CPU
       output_path_list:
-        - bench-20160410/bench-avg-cpu.svg
-        - bench-20160410/bench-avg-cpu.png
+        - bench-20160411/bench-avg-cpu.svg
+        - bench-20160411/bench-avg-cpu.png
 
     - lines:
       - column: avg_memory_mb_etcd_v3
@@ -66,32 +66,36 @@ step3:
       x_axis: Second
       y_axis: Memory(MB)
       output_path_list:
-        - bench-20160410/bench-avg-memory.svg
-        - bench-20160410/bench-avg-memory.png
+        - bench-20160411/bench-avg-memory.svg
+        - bench-20160411/bench-avg-memory.png
 
 step4:
   preface: |
     - Google Cloud Compute Engine
-    - 8 vCPUs + 16GB Memory + 375GB local SSD (SCSI)
+    - 8 vCPUs + 16GB Memory + 50GB SSD
     - 1 machine(client) of 16 vCPUs + 30GB Memory + 50GB SSD
     - Ubuntu 15.10
-    - Go 1.6 with etcd master branch as of testing date
-    - Java 8 with etcd v3 (patch(current)
+    - Go 1.6
+    - Java 8
       - Java(TM) SE Runtime Environment (build 1.8.0_74-b02)
       - Java HotSpot(TM) 64-Bit Server VM (build 25.74-b02, mixed mode)
+    - etcd v3 (master branch)
+    - Zookeeper v3.4.8
+    - Consul v0.6.4
   results:
     - title: Write 300K keys, 1K clients, key 64 bytes, value 256 bytes
       images:
-        - image_title: bench-20160410/bench-avg-latency-ms
-          image_path: https://storage.googleapis.com/bench-20160410/bench-avg-latency-ms.svg
+        - image_title: bench-20160411/bench-avg-latency-ms
+          image_path: https://storage.googleapis.com/bench-20160411/bench-avg-latency-ms.svg
           image_type: remote
-        - image_title: bench-20160410/bench-throughput
-          image_path: https://storage.googleapis.com/bench-20160410/bench-throughput.svg
+        - image_title: bench-20160411/bench-throughput
+          image_path: https://storage.googleapis.com/bench-20160411/bench-throughput.svg
           image_type: remote
-        - image_title: bench-20160410/bench-avg-cpu
-          image_path: https://storage.googleapis.com/bench-20160410/bench-avg-cpu.svg
+        - image_title: bench-20160411/bench-avg-cpu
+          image_path: https://storage.googleapis.com/bench-20160411/bench-avg-cpu.svg
           image_type: remote
-        - image_title: bench-20160410/bench-avg-memory
-          image_path: https://storage.googleapis.com/bench-20160410/bench-avg-memory.svg
+        - image_title: bench-20160411/bench-avg-memory
+          image_path: https://storage.googleapis.com/bench-20160411/bench-avg-memory.svg
           image_type: remote
-  output_path: bench-20160410/README.md
+  output_path: bench-20160411/README.md
+
