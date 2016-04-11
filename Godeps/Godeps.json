@@ -29,48 +29,48 @@
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/auth/authpb",
-			"Comment": "v2.3.0-322-gaf1b3f0",
-			"Rev": "af1b3f061ae8073610a1af285b4b088743eedbe0"
+			"Comment": "v2.3.0-334-g0a684c1",
+			"Rev": "0a684c10adfb01ce629d3493ca5c54be83cc6e83"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/client",
-			"Comment": "v2.3.0-322-gaf1b3f0",
-			"Rev": "af1b3f061ae8073610a1af285b4b088743eedbe0"
+			"Comment": "v2.3.0-334-g0a684c1",
+			"Rev": "0a684c10adfb01ce629d3493ca5c54be83cc6e83"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/clientv3",
-			"Comment": "v2.3.0-322-gaf1b3f0",
-			"Rev": "af1b3f061ae8073610a1af285b4b088743eedbe0"
+			"Comment": "v2.3.0-334-g0a684c1",
+			"Rev": "0a684c10adfb01ce629d3493ca5c54be83cc6e83"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes",
-			"Comment": "v2.3.0-322-gaf1b3f0",
-			"Rev": "af1b3f061ae8073610a1af285b4b088743eedbe0"
+			"Comment": "v2.3.0-334-g0a684c1",
+			"Rev": "0a684c10adfb01ce629d3493ca5c54be83cc6e83"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/etcdserverpb",
-			"Comment": "v2.3.0-322-gaf1b3f0",
-			"Rev": "af1b3f061ae8073610a1af285b4b088743eedbe0"
+			"Comment": "v2.3.0-334-g0a684c1",
+			"Rev": "0a684c10adfb01ce629d3493ca5c54be83cc6e83"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/pathutil",
-			"Comment": "v2.3.0-322-gaf1b3f0",
-			"Rev": "af1b3f061ae8073610a1af285b4b088743eedbe0"
+			"Comment": "v2.3.0-334-g0a684c1",
+			"Rev": "0a684c10adfb01ce629d3493ca5c54be83cc6e83"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/tlsutil",
-			"Comment": "v2.3.0-322-gaf1b3f0",
-			"Rev": "af1b3f061ae8073610a1af285b4b088743eedbe0"
+			"Comment": "v2.3.0-334-g0a684c1",
+			"Rev": "0a684c10adfb01ce629d3493ca5c54be83cc6e83"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/types",
-			"Comment": "v2.3.0-322-gaf1b3f0",
-			"Rev": "af1b3f061ae8073610a1af285b4b088743eedbe0"
+			"Comment": "v2.3.0-334-g0a684c1",
+			"Rev": "0a684c10adfb01ce629d3493ca5c54be83cc6e83"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/storage/storagepb",
-			"Comment": "v2.3.0-322-gaf1b3f0",
-			"Rev": "af1b3f061ae8073610a1af285b4b088743eedbe0"
+			"Comment": "v2.3.0-334-g0a684c1",
+			"Rev": "0a684c10adfb01ce629d3493ca5c54be83cc6e83"
 		},
 		{
 			"ImportPath": "github.com/dustin/go-humanize",

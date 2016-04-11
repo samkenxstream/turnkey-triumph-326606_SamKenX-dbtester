@@ -15,9 +15,11 @@
 package control
 
 import (
+	"encoding/binary"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"os"
 	"strings"
 	"sync"
@@ -93,9 +95,9 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	println()
-	time.Sleep(5 * time.Second)
 	if !cfg.Step2.Skip {
+		println()
+		time.Sleep(5 * time.Second)
 		log.Println("Step 2: starting tests...")
 
 		if err = step2(cfg); err != nil {
@@ -103,9 +105,9 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	println()
-	time.Sleep(5 * time.Second)
 	if !cfg.Step3.Skip {
+		println()
+		time.Sleep(5 * time.Second)
 		log.Println("Step 3: stopping databases...")
 
 		if err = step3(cfg); err != nil {
@@ -132,11 +134,8 @@ func step1(cfg Config) error {
 	case "etcdv3":
 		req.Database = agent.Request_etcdv3
 
-	case "zk":
+	case "zk", "zookeeper":
 		cfg.Database = "zookeeper"
-		req.Database = agent.Request_ZooKeeper
-
-	case "zookeeper":
 		req.Database = agent.Request_ZooKeeper
 
 	case "consul":
@@ -207,17 +206,14 @@ var (
 )
 
 func step2(cfg Config) error {
-	valueBts := mustRandBytes(cfg.Step2.ValueSize)
-	value := string(valueBts)
-
 	switch cfg.Step2.BenchType {
 	case "write":
-		log.Printf("generating %d keys", cfg.Step2.TotalRequests)
-		keys := multiRandStrings(cfg.Step2.KeySize, cfg.Step2.TotalRequests)
 
 		results = make(chan result)
 		requests := make(chan request, cfg.Step2.Clients)
 		bar = pb.New(cfg.Step2.TotalRequests)
+
+		k, v := make([]byte, cfg.Step2.KeySize), string(mustRandBytes(cfg.Step2.ValueSize))
 
 		bar.Format("Bom !")
 		bar.Start()
@@ -272,19 +268,25 @@ func step2(cfg Config) error {
 						compactKV(etcdClients)
 					}()
 				}
-				key := keys[i]
+
+				if cfg.Step2.SequentialKeys {
+					binary.PutVarint(k, int64(i%cfg.Step2.KeySpaceSize))
+				} else {
+					binary.PutVarint(k, int64(rand.Intn(cfg.Step2.KeySpaceSize)))
+				}
+
 				switch cfg.Database {
 				case "etcdv2":
-					requests <- request{etcdv2Op: etcdv2Op{key: key, value: value}}
+					requests <- request{etcdv2Op: etcdv2Op{key: string(k), value: v}}
 
 				case "etcdv3":
-					requests <- request{etcdv3Op: clientv3.OpPut(key, value)}
+					requests <- request{etcdv3Op: clientv3.OpPut(string(k), v)}
 
 				case "zk", "zookeeper":
-					requests <- request{zkOp: zkOp{key: "/" + key, value: []byte(value)}}
+					requests <- request{zkOp: zkOp{key: "/" + string(k), value: []byte(v)}}
 
 				case "consul":
-					requests <- request{consulOp: consulOp{key: key, value: []byte(value)}}
+					requests <- request{consulOp: consulOp{key: string(k), value: []byte(v)}}
 				}
 			}
 			close(requests)
@@ -329,8 +331,11 @@ func step2(cfg Config) error {
 		}
 
 	case "read":
-		key := string(randBytes(cfg.Step2.KeySize))
-
+		var (
+			key      = string(randBytes(cfg.Step2.KeySize))
+			valueBts = randBytes(cfg.Step2.ValueSize)
+			value    = string(valueBts)
+		)
 		switch cfg.Database {
 		case "etcdv2":
 			log.Printf("PUT '%s' to etcdv2", key)

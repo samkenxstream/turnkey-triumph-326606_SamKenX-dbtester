@@ -66,6 +66,12 @@ func TestReadConfig(t *testing.T) {
 	if c.Step2.BenchType != "write" {
 		t.Fatalf("unexpected %s", c.Step2.BenchType)
 	}
+	if c.Step2.KeySpaceSize != 1 {
+		t.Fatalf("unexpected %s", c.Step2.KeySpaceSize)
+	}
+	if c.Step2.SequentialKeys {
+		t.Fatalf("unexpected %s", c.Step2.SequentialKeys)
+	}
 	if c.Step2.ResultPath != "bench-01-etcdv3-timeseries.csv" {
 		t.Fatalf("unexpected %s", c.Step2.ResultPath)
 	}
