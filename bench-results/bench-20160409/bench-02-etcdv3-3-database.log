@@ -1,0 +1,1249 @@
+2016-04-11 20:27:25.182718 I | etcdmain: etcd Version: 2.3.0+git
+2016-04-11 20:27:25.182773 I | etcdmain: Git SHA: Not provided (use ./build instead of go build)
+2016-04-11 20:27:25.182780 I | etcdmain: Go Version: go1.6
+2016-04-11 20:27:25.182793 I | etcdmain: Go OS/Arch: linux/amd64
+2016-04-11 20:27:25.182802 I | etcdmain: setting maximum number of CPUs to 8, total number of available CPUs is 8
+2016-04-11 20:27:25.182884 I | etcdmain: listening for peers on http://10.240.0.19:2380
+2016-04-11 20:27:25.182911 I | etcdmain: listening for client requests on 10.240.0.19:2379
+2016-04-11 20:27:25.184583 I | etcdserver: name = etcd-3
+2016-04-11 20:27:25.184598 I | etcdserver: data dir = /home/gyuho/data.etcd
+2016-04-11 20:27:25.184606 I | etcdserver: member dir = /home/gyuho/data.etcd/member
+2016-04-11 20:27:25.184612 I | etcdserver: heartbeat = 100ms
+2016-04-11 20:27:25.184618 I | etcdserver: election = 1000ms
+2016-04-11 20:27:25.184623 I | etcdserver: snapshot count = 10000
+2016-04-11 20:27:25.184633 I | etcdserver: advertise client URLs = http://10.240.0.19:2379
+2016-04-11 20:27:25.184640 I | etcdserver: initial advertise peer URLs = http://10.240.0.19:2380
+2016-04-11 20:27:25.184653 I | etcdserver: initial cluster = etcd-1=http://10.240.0.17:2380,etcd-2=http://10.240.0.18:2380,etcd-3=http://10.240.0.19:2380
+2016-04-11 20:27:25.189039 I | etcdserver: starting member b33da349595da114 in cluster d01df2c6b3269be0
+2016-04-11 20:27:25.189091 I | raft: b33da349595da114 became follower at term 0
+2016-04-11 20:27:25.189110 I | raft: newRaft b33da349595da114 [peers: [], term: 0, commit: 0, applied: 0, lastindex: 0, lastterm: 0]
+2016-04-11 20:27:25.189119 I | raft: b33da349595da114 became follower at term 1
+2016-04-11 20:27:25.206886 I | rafthttp: the connection with 66358a82ef379101 became active
+2016-04-11 20:27:25.206955 I | etcdserver: starting server... [version: 2.3.0+git, cluster version: to_be_decided]
+2016-04-11 20:27:25.208337 N | etcdserver: added member 66358a82ef379101 [http://10.240.0.18:2380] to cluster d01df2c6b3269be0
+2016-04-11 20:27:25.208419 N | etcdserver: added member 8b1cff98eebdba1d [http://10.240.0.17:2380] to cluster d01df2c6b3269be0
+2016-04-11 20:27:25.208507 N | etcdserver: added local member b33da349595da114 [http://10.240.0.19:2380] to cluster d01df2c6b3269be0
+2016-04-11 20:27:25.208520 E | etcdmain: failed to notify systemd for readiness: No socket
+2016-04-11 20:27:25.208528 E | etcdmain: forgot to set Type=notify in systemd service file?
+2016-04-11 20:27:25.208544 N | etcdmain: serving insecure client requests on 10.240.0.19:2379, this is strongly discouraged!
+2016-04-11 20:27:25.208758 I | rafthttp: the connection with 8b1cff98eebdba1d became active
+2016-04-11 20:27:25.208793 I | raft: b33da349595da114 [term: 1] received a MsgHeartbeat message with higher term from 8b1cff98eebdba1d [term: 3]
+2016-04-11 20:27:25.208830 I | raft: b33da349595da114 became follower at term 3
+2016-04-11 20:27:25.208845 I | raft: raft.node: b33da349595da114 elected leader 8b1cff98eebdba1d at term 3
+2016-04-11 20:27:25.209928 N | membership: set the initial cluster version to 2.2
+2016-04-11 20:27:25.212750 I | etcdserver: published {Name:etcd-3 ClientURLs:[http://10.240.0.19:2379]} to cluster d01df2c6b3269be0
+2016-04-11 20:27:25.708479 I | v2http: enabled capabilities for version 2.2.0
+2016-04-11 20:27:29.107287 N | membership: updated the cluster version from 2.2 to 2.3
+2016-04-11 20:27:29.209746 I | v2http: enabled capabilities for version 2.3.0
+2016-04-11 20:28:43.998464 I | etcdserver: start to snapshot (applied: 10257, lastsnap: 0)
+2016-04-11 20:28:44.010518 I | etcdserver: saved snapshot at index 10257
+2016-04-11 20:28:44.010712 I | etcdserver: compacted raft log at 5257
+2016-04-11 20:28:44.297682 I | etcdserver: start to snapshot (applied: 20633, lastsnap: 10257)
+2016-04-11 20:28:44.315318 I | etcdserver: saved snapshot at index 20633
+2016-04-11 20:28:44.315484 I | etcdserver: compacted raft log at 15633
+2016-04-11 20:28:44.591809 I | etcdserver: start to snapshot (applied: 30677, lastsnap: 20633)
+2016-04-11 20:28:44.603357 I | etcdserver: saved snapshot at index 30677
+2016-04-11 20:28:44.603646 I | etcdserver: compacted raft log at 25677
+2016-04-11 20:28:44.946467 I | etcdserver: start to snapshot (applied: 40767, lastsnap: 30677)
+2016-04-11 20:28:44.959992 I | etcdserver: saved snapshot at index 40767
+2016-04-11 20:28:44.960160 I | etcdserver: compacted raft log at 35767
+2016-04-11 20:28:45.305945 I | etcdserver: start to snapshot (applied: 50777, lastsnap: 40767)
+2016-04-11 20:28:45.312145 I | etcdserver: saved snapshot at index 50777
+2016-04-11 20:28:45.312318 I | etcdserver: compacted raft log at 45777
+2016-04-11 20:28:45.659204 I | etcdserver: start to snapshot (applied: 60943, lastsnap: 50777)
+2016-04-11 20:28:45.666266 I | etcdserver: saved snapshot at index 60943
+2016-04-11 20:28:45.666548 I | etcdserver: compacted raft log at 55943
+2016-04-11 20:28:46.660631 I | etcdserver: start to snapshot (applied: 71030, lastsnap: 60943)
+2016-04-11 20:28:46.674909 I | etcdserver: saved snapshot at index 71030
+2016-04-11 20:28:46.675098 I | etcdserver: compacted raft log at 66030
+2016-04-11 20:28:47.035749 I | etcdserver: start to snapshot (applied: 81078, lastsnap: 71030)
+2016-04-11 20:28:47.042903 I | etcdserver: saved snapshot at index 81078
+2016-04-11 20:28:47.043219 I | etcdserver: compacted raft log at 76078
+2016-04-11 20:28:47.397733 I | etcdserver: start to snapshot (applied: 91115, lastsnap: 81078)
+2016-04-11 20:28:47.406604 I | etcdserver: saved snapshot at index 91115
+2016-04-11 20:28:47.406974 I | etcdserver: compacted raft log at 86115
+2016-04-11 20:28:47.772465 I | etcdserver: start to snapshot (applied: 101167, lastsnap: 91115)
+2016-04-11 20:28:47.783802 I | etcdserver: saved snapshot at index 101167
+2016-04-11 20:28:47.784009 I | etcdserver: compacted raft log at 96167
+2016-04-11 20:28:48.159774 I | etcdserver: start to snapshot (applied: 111281, lastsnap: 101167)
+2016-04-11 20:28:48.169168 I | etcdserver: saved snapshot at index 111281
+2016-04-11 20:28:48.169344 I | etcdserver: compacted raft log at 106281
+2016-04-11 20:28:48.571080 I | etcdserver: start to snapshot (applied: 121400, lastsnap: 111281)
+2016-04-11 20:28:48.604326 I | etcdserver: saved snapshot at index 121400
+2016-04-11 20:28:48.604859 I | etcdserver: compacted raft log at 116400
+2016-04-11 20:28:48.964799 I | etcdserver: start to snapshot (applied: 131569, lastsnap: 121400)
+2016-04-11 20:28:48.972897 I | etcdserver: saved snapshot at index 131569
+2016-04-11 20:28:48.973363 I | etcdserver: compacted raft log at 126569
+2016-04-11 20:28:50.024363 I | etcdserver: start to snapshot (applied: 141640, lastsnap: 131569)
+2016-04-11 20:28:50.031919 I | etcdserver: saved snapshot at index 141640
+2016-04-11 20:28:50.032281 I | etcdserver: compacted raft log at 136640
+2016-04-11 20:28:50.392058 I | etcdserver: start to snapshot (applied: 151658, lastsnap: 141640)
+2016-04-11 20:28:50.396803 I | etcdserver: saved snapshot at index 151658
+2016-04-11 20:28:50.397084 I | etcdserver: compacted raft log at 146658
+2016-04-11 20:28:50.707463 I | etcdserver: start to snapshot (applied: 161659, lastsnap: 151658)
+2016-04-11 20:28:50.721111 I | etcdserver: saved snapshot at index 161659
+2016-04-11 20:28:50.721313 I | etcdserver: compacted raft log at 156659
+2016-04-11 20:28:51.091535 I | etcdserver: start to snapshot (applied: 171815, lastsnap: 161659)
+2016-04-11 20:28:51.101594 I | etcdserver: saved snapshot at index 171815
+2016-04-11 20:28:51.101771 I | etcdserver: compacted raft log at 166815
+2016-04-11 20:28:51.168010 I | wal: segmented wal file /home/gyuho/data.etcd/member/wal/0000000000000001-000000000002a609.wal is created
+2016-04-11 20:28:51.461803 I | etcdserver: start to snapshot (applied: 181836, lastsnap: 171815)
+2016-04-11 20:28:51.475145 I | etcdserver: saved snapshot at index 181836
+2016-04-11 20:28:51.475347 I | etcdserver: compacted raft log at 176836
+2016-04-11 20:28:51.858586 I | etcdserver: start to snapshot (applied: 191892, lastsnap: 181836)
+2016-04-11 20:28:51.870294 I | etcdserver: saved snapshot at index 191892
+2016-04-11 20:28:51.870571 I | etcdserver: compacted raft log at 186892
+2016-04-11 20:28:52.276960 I | etcdserver: start to snapshot (applied: 202010, lastsnap: 191892)
+2016-04-11 20:28:52.289234 I | etcdserver: saved snapshot at index 202010
+2016-04-11 20:28:52.289441 I | etcdserver: compacted raft log at 197010
+2016-04-11 20:28:52.625162 I | etcdserver: start to snapshot (applied: 212054, lastsnap: 202010)
+2016-04-11 20:28:52.643551 I | etcdserver: saved snapshot at index 212054
+2016-04-11 20:28:52.643746 I | etcdserver: compacted raft log at 207054
+2016-04-11 20:28:53.501471 I | etcdserver: start to snapshot (applied: 222206, lastsnap: 212054)
+2016-04-11 20:28:53.511923 I | etcdserver: saved snapshot at index 222206
+2016-04-11 20:28:53.512098 I | etcdserver: compacted raft log at 217206
+2016-04-11 20:28:53.886428 I | etcdserver: start to snapshot (applied: 232326, lastsnap: 222206)
+2016-04-11 20:28:53.891766 I | etcdserver: saved snapshot at index 232326
+2016-04-11 20:28:53.891935 I | etcdserver: compacted raft log at 227326
+2016-04-11 20:28:54.232481 I | etcdserver: start to snapshot (applied: 242381, lastsnap: 232326)
+2016-04-11 20:28:54.241628 I | etcdserver: saved snapshot at index 242381
+2016-04-11 20:28:54.241836 I | etcdserver: compacted raft log at 237381
+2016-04-11 20:28:54.645486 I | etcdserver: start to snapshot (applied: 252404, lastsnap: 242381)
+2016-04-11 20:28:54.656763 I | etcdserver: saved snapshot at index 252404
+2016-04-11 20:28:54.656950 I | etcdserver: compacted raft log at 247404
+2016-04-11 20:28:55.071547 I | etcdserver: start to snapshot (applied: 262408, lastsnap: 252404)
+2016-04-11 20:28:55.080691 I | etcdserver: saved snapshot at index 262408
+2016-04-11 20:28:55.080955 I | etcdserver: compacted raft log at 257408
+2016-04-11 20:28:55.208830 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000002811.snap successfully
+2016-04-11 20:28:55.208924 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000005099.snap successfully
+2016-04-11 20:28:55.209841 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000077d5.snap successfully
+2016-04-11 20:28:55.209919 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000009f3f.snap successfully
+2016-04-11 20:28:55.209954 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000000c659.snap successfully
+2016-04-11 20:28:55.210027 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000000ee0f.snap successfully
+2016-04-11 20:28:55.210091 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000011576.snap successfully
+2016-04-11 20:28:55.210134 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000013cb6.snap successfully
+2016-04-11 20:28:55.210203 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000163eb.snap successfully
+2016-04-11 20:28:55.210251 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000018b2f.snap successfully
+2016-04-11 20:28:55.210290 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000001b2b1.snap successfully
+2016-04-11 20:28:55.210336 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000001da38.snap successfully
+2016-04-11 20:28:55.210381 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000201f1.snap successfully
+2016-04-11 20:28:55.210495 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000022948.snap successfully
+2016-04-11 20:28:55.210549 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000002506a.snap successfully
+2016-04-11 20:28:55.210590 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000002777b.snap successfully
+2016-04-11 20:28:55.210631 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000029f27.snap successfully
+2016-04-11 20:28:55.210676 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000002c64c.snap successfully
+2016-04-11 20:28:55.210728 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000002ed94.snap successfully
+2016-04-11 20:28:55.210774 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000003151a.snap successfully
+2016-04-11 20:28:55.210844 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000033c56.snap successfully
+2016-04-11 20:28:55.436449 I | etcdserver: start to snapshot (applied: 272446, lastsnap: 262408)
+2016-04-11 20:28:55.443282 I | etcdserver: saved snapshot at index 272446
+2016-04-11 20:28:55.443454 I | etcdserver: compacted raft log at 267446
+2016-04-11 20:28:55.946946 I | etcdserver: start to snapshot (applied: 282970, lastsnap: 272446)
+2016-04-11 20:28:55.954571 I | etcdserver: saved snapshot at index 282970
+2016-04-11 20:28:55.954778 I | etcdserver: compacted raft log at 277970
+2016-04-11 20:28:56.753151 I | etcdserver: start to snapshot (applied: 293062, lastsnap: 282970)
+2016-04-11 20:28:56.760995 I | etcdserver: saved snapshot at index 293062
+2016-04-11 20:28:56.761192 I | etcdserver: compacted raft log at 288062
+2016-04-11 20:28:57.243780 I | etcdserver: start to snapshot (applied: 303439, lastsnap: 293062)
+2016-04-11 20:28:57.256872 I | etcdserver: saved snapshot at index 303439
+2016-04-11 20:28:57.257115 I | etcdserver: compacted raft log at 298439
+2016-04-11 20:28:57.616621 I | etcdserver: start to snapshot (applied: 313484, lastsnap: 303439)
+2016-04-11 20:28:57.634831 I | etcdserver: saved snapshot at index 313484
+2016-04-11 20:28:57.635033 I | etcdserver: compacted raft log at 308484
+2016-04-11 20:28:58.033779 I | etcdserver: start to snapshot (applied: 323572, lastsnap: 313484)
+2016-04-11 20:28:58.041537 I | etcdserver: saved snapshot at index 323572
+2016-04-11 20:28:58.041751 I | etcdserver: compacted raft log at 318572
+2016-04-11 20:28:58.481751 I | etcdserver: start to snapshot (applied: 333735, lastsnap: 323572)
+2016-04-11 20:28:58.490632 I | etcdserver: saved snapshot at index 333735
+2016-04-11 20:28:58.490787 I | etcdserver: compacted raft log at 328735
+2016-04-11 20:28:58.868075 I | etcdserver: start to snapshot (applied: 343792, lastsnap: 333735)
+2016-04-11 20:28:58.878674 I | etcdserver: saved snapshot at index 343792
+2016-04-11 20:28:58.878836 I | etcdserver: compacted raft log at 338792
+2016-04-11 20:28:58.955027 I | wal: segmented wal file /home/gyuho/data.etcd/member/wal/0000000000000002-0000000000054ba0.wal is created
+2016-04-11 20:28:59.247557 I | etcdserver: start to snapshot (applied: 353819, lastsnap: 343792)
+2016-04-11 20:28:59.259157 I | etcdserver: saved snapshot at index 353819
+2016-04-11 20:28:59.259309 I | etcdserver: compacted raft log at 348819
+2016-04-11 20:29:00.157823 I | etcdserver: start to snapshot (applied: 363830, lastsnap: 353819)
+2016-04-11 20:29:00.170272 I | etcdserver: saved snapshot at index 363830
+2016-04-11 20:29:00.170444 I | etcdserver: compacted raft log at 358830
+2016-04-11 20:29:00.577658 I | etcdserver: start to snapshot (applied: 374058, lastsnap: 363830)
+2016-04-11 20:29:00.590153 I | etcdserver: saved snapshot at index 374058
+2016-04-11 20:29:00.590379 I | etcdserver: compacted raft log at 369058
+2016-04-11 20:29:00.975776 I | etcdserver: start to snapshot (applied: 384126, lastsnap: 374058)
+2016-04-11 20:29:00.980343 I | etcdserver: saved snapshot at index 384126
+2016-04-11 20:29:00.980508 I | etcdserver: compacted raft log at 379126
+2016-04-11 20:29:01.457076 I | etcdserver: start to snapshot (applied: 394164, lastsnap: 384126)
+2016-04-11 20:29:01.467110 I | etcdserver: saved snapshot at index 394164
+2016-04-11 20:29:01.467332 I | etcdserver: compacted raft log at 389164
+2016-04-11 20:29:01.847631 I | etcdserver: start to snapshot (applied: 404320, lastsnap: 394164)
+2016-04-11 20:29:01.861138 I | etcdserver: saved snapshot at index 404320
+2016-04-11 20:29:01.861307 I | etcdserver: compacted raft log at 399320
+2016-04-11 20:29:02.232470 I | etcdserver: start to snapshot (applied: 414370, lastsnap: 404320)
+2016-04-11 20:29:02.242664 I | etcdserver: saved snapshot at index 414370
+2016-04-11 20:29:02.242913 I | etcdserver: compacted raft log at 409370
+2016-04-11 20:29:02.651927 I | etcdserver: start to snapshot (applied: 424447, lastsnap: 414370)
+2016-04-11 20:29:02.658431 I | etcdserver: saved snapshot at index 424447
+2016-04-11 20:29:02.658622 I | etcdserver: compacted raft log at 419447
+2016-04-11 20:29:03.189233 I | etcdserver: start to snapshot (applied: 434546, lastsnap: 424447)
+2016-04-11 20:29:03.201986 I | etcdserver: saved snapshot at index 434546
+2016-04-11 20:29:03.202411 I | etcdserver: compacted raft log at 429546
+2016-04-11 20:29:04.055176 I | etcdserver: start to snapshot (applied: 444568, lastsnap: 434546)
+2016-04-11 20:29:04.067155 I | etcdserver: saved snapshot at index 444568
+2016-04-11 20:29:04.067431 I | etcdserver: compacted raft log at 439568
+2016-04-11 20:29:04.482834 I | etcdserver: start to snapshot (applied: 454649, lastsnap: 444568)
+2016-04-11 20:29:04.495423 I | etcdserver: saved snapshot at index 454649
+2016-04-11 20:29:04.495582 I | etcdserver: compacted raft log at 449649
+2016-04-11 20:29:04.887785 I | etcdserver: start to snapshot (applied: 464654, lastsnap: 454649)
+2016-04-11 20:29:04.908213 I | etcdserver: saved snapshot at index 464654
+2016-04-11 20:29:04.908738 I | etcdserver: compacted raft log at 459654
+2016-04-11 20:29:05.314286 I | etcdserver: start to snapshot (applied: 474680, lastsnap: 464654)
+2016-04-11 20:29:05.320746 I | etcdserver: saved snapshot at index 474680
+2016-04-11 20:29:05.320882 I | etcdserver: compacted raft log at 469680
+2016-04-11 20:29:05.820075 I | etcdserver: start to snapshot (applied: 484947, lastsnap: 474680)
+2016-04-11 20:29:05.829160 I | etcdserver: saved snapshot at index 484947
+2016-04-11 20:29:05.829455 I | etcdserver: compacted raft log at 479947
+2016-04-11 20:29:06.257255 I | etcdserver: start to snapshot (applied: 494965, lastsnap: 484947)
+2016-04-11 20:29:06.270193 I | etcdserver: saved snapshot at index 494965
+2016-04-11 20:29:06.270379 I | etcdserver: compacted raft log at 489965
+2016-04-11 20:29:06.782885 I | etcdserver: start to snapshot (applied: 505124, lastsnap: 494965)
+2016-04-11 20:29:06.790026 I | etcdserver: saved snapshot at index 505124
+2016-04-11 20:29:06.790227 I | etcdserver: compacted raft log at 500124
+2016-04-11 20:29:07.648659 I | etcdserver: start to snapshot (applied: 515164, lastsnap: 505124)
+2016-04-11 20:29:07.657519 I | etcdserver: saved snapshot at index 515164
+2016-04-11 20:29:07.657939 I | etcdserver: compacted raft log at 510164
+2016-04-11 20:29:07.850973 I | wal: segmented wal file /home/gyuho/data.etcd/member/wal/0000000000000003-000000000007f133.wal is created
+2016-04-11 20:29:08.108604 I | etcdserver: start to snapshot (applied: 525402, lastsnap: 515164)
+2016-04-11 20:29:08.123197 I | etcdserver: saved snapshot at index 525402
+2016-04-11 20:29:08.123656 I | etcdserver: compacted raft log at 520402
+2016-04-11 20:29:08.547743 I | etcdserver: start to snapshot (applied: 535488, lastsnap: 525402)
+2016-04-11 20:29:08.564580 I | etcdserver: saved snapshot at index 535488
+2016-04-11 20:29:08.564755 I | etcdserver: compacted raft log at 530488
+2016-04-11 20:29:08.996360 I | etcdserver: start to snapshot (applied: 545543, lastsnap: 535488)
+2016-04-11 20:29:09.009964 I | etcdserver: saved snapshot at index 545543
+2016-04-11 20:29:09.010151 I | etcdserver: compacted raft log at 540543
+2016-04-11 20:29:09.444195 I | etcdserver: start to snapshot (applied: 555596, lastsnap: 545543)
+2016-04-11 20:29:09.453580 I | etcdserver: saved snapshot at index 555596
+2016-04-11 20:29:09.453716 I | etcdserver: compacted raft log at 550596
+2016-04-11 20:29:09.949823 I | etcdserver: start to snapshot (applied: 565655, lastsnap: 555596)
+2016-04-11 20:29:09.962318 I | etcdserver: saved snapshot at index 565655
+2016-04-11 20:29:09.962509 I | etcdserver: compacted raft log at 560655
+2016-04-11 20:29:10.410154 I | etcdserver: start to snapshot (applied: 575665, lastsnap: 565655)
+2016-04-11 20:29:10.418764 I | etcdserver: saved snapshot at index 575665
+2016-04-11 20:29:10.418909 I | etcdserver: compacted raft log at 570665
+2016-04-11 20:29:11.389933 I | etcdserver: start to snapshot (applied: 585691, lastsnap: 575665)
+2016-04-11 20:29:11.402145 I | etcdserver: saved snapshot at index 585691
+2016-04-11 20:29:11.402388 I | etcdserver: compacted raft log at 580691
+2016-04-11 20:29:11.863433 I | etcdserver: start to snapshot (applied: 595832, lastsnap: 585691)
+2016-04-11 20:29:11.880447 I | etcdserver: saved snapshot at index 595832
+2016-04-11 20:29:11.880614 I | etcdserver: compacted raft log at 590832
+2016-04-11 20:29:12.301668 I | etcdserver: start to snapshot (applied: 605893, lastsnap: 595832)
+2016-04-11 20:29:12.318282 I | etcdserver: saved snapshot at index 605893
+2016-04-11 20:29:12.318447 I | etcdserver: compacted raft log at 600893
+2016-04-11 20:29:12.707109 I | etcdserver: start to snapshot (applied: 615972, lastsnap: 605893)
+2016-04-11 20:29:12.719228 I | etcdserver: saved snapshot at index 615972
+2016-04-11 20:29:12.719472 I | etcdserver: compacted raft log at 610972
+2016-04-11 20:29:13.121997 I | etcdserver: start to snapshot (applied: 626256, lastsnap: 615972)
+2016-04-11 20:29:13.137871 I | etcdserver: saved snapshot at index 626256
+2016-04-11 20:29:13.138201 I | etcdserver: compacted raft log at 621256
+2016-04-11 20:29:13.542888 I | etcdserver: start to snapshot (applied: 636265, lastsnap: 626256)
+2016-04-11 20:29:13.552934 I | etcdserver: saved snapshot at index 636265
+2016-04-11 20:29:13.553127 I | etcdserver: compacted raft log at 631265
+2016-04-11 20:29:13.949084 I | etcdserver: start to snapshot (applied: 646271, lastsnap: 636265)
+2016-04-11 20:29:13.960884 I | etcdserver: saved snapshot at index 646271
+2016-04-11 20:29:13.961364 I | etcdserver: compacted raft log at 641271
+2016-04-11 20:29:14.374596 I | etcdserver: start to snapshot (applied: 656301, lastsnap: 646271)
+2016-04-11 20:29:14.383783 I | etcdserver: saved snapshot at index 656301
+2016-04-11 20:29:14.383968 I | etcdserver: compacted raft log at 651301
+2016-04-11 20:29:15.202465 I | etcdserver: start to snapshot (applied: 666411, lastsnap: 656301)
+2016-04-11 20:29:15.295711 I | etcdserver: saved snapshot at index 666411
+2016-04-11 20:29:15.310324 I | etcdserver: compacted raft log at 661411
+2016-04-11 20:29:15.603976 I | etcdserver: start to snapshot (applied: 676448, lastsnap: 666411)
+2016-04-11 20:29:15.613750 I | etcdserver: saved snapshot at index 676448
+2016-04-11 20:29:15.613940 I | etcdserver: compacted raft log at 671448
+2016-04-11 20:29:16.028293 I | etcdserver: start to snapshot (applied: 686457, lastsnap: 676448)
+2016-04-11 20:29:16.040854 I | etcdserver: saved snapshot at index 686457
+2016-04-11 20:29:16.041169 I | etcdserver: compacted raft log at 681457
+2016-04-11 20:29:16.366605 I | wal: segmented wal file /home/gyuho/data.etcd/member/wal/0000000000000004-00000000000a969b.wal is created
+2016-04-11 20:29:16.456847 I | etcdserver: start to snapshot (applied: 696534, lastsnap: 686457)
+2016-04-11 20:29:16.465406 I | etcdserver: saved snapshot at index 696534
+2016-04-11 20:29:16.465571 I | etcdserver: compacted raft log at 691534
+2016-04-11 20:29:16.861242 I | etcdserver: start to snapshot (applied: 706584, lastsnap: 696534)
+2016-04-11 20:29:16.871600 I | etcdserver: saved snapshot at index 706584
+2016-04-11 20:29:16.871859 I | etcdserver: compacted raft log at 701584
+2016-04-11 20:29:17.275295 I | etcdserver: start to snapshot (applied: 716596, lastsnap: 706584)
+2016-04-11 20:29:17.288007 I | etcdserver: saved snapshot at index 716596
+2016-04-11 20:29:17.288208 I | etcdserver: compacted raft log at 711596
+2016-04-11 20:29:17.713524 I | etcdserver: start to snapshot (applied: 726610, lastsnap: 716596)
+2016-04-11 20:29:17.735047 I | etcdserver: saved snapshot at index 726610
+2016-04-11 20:29:17.735240 I | etcdserver: compacted raft log at 721610
+2016-04-11 20:29:18.769363 I | etcdserver: start to snapshot (applied: 736670, lastsnap: 726610)
+2016-04-11 20:29:18.783323 I | etcdserver: saved snapshot at index 736670
+2016-04-11 20:29:18.783501 I | etcdserver: compacted raft log at 731670
+2016-04-11 20:29:19.312160 I | etcdserver: start to snapshot (applied: 747202, lastsnap: 736670)
+2016-04-11 20:29:19.323800 I | etcdserver: saved snapshot at index 747202
+2016-04-11 20:29:19.324197 I | etcdserver: compacted raft log at 742202
+2016-04-11 20:29:19.728357 I | etcdserver: start to snapshot (applied: 757448, lastsnap: 747202)
+2016-04-11 20:29:19.740401 I | etcdserver: saved snapshot at index 757448
+2016-04-11 20:29:19.740555 I | etcdserver: compacted raft log at 752448
+2016-04-11 20:29:20.142311 I | etcdserver: start to snapshot (applied: 767665, lastsnap: 757448)
+2016-04-11 20:29:20.154317 I | etcdserver: saved snapshot at index 767665
+2016-04-11 20:29:20.154507 I | etcdserver: compacted raft log at 762665
+2016-04-11 20:29:20.665553 I | etcdserver: start to snapshot (applied: 777752, lastsnap: 767665)
+2016-04-11 20:29:20.678834 I | etcdserver: saved snapshot at index 777752
+2016-04-11 20:29:20.678987 I | etcdserver: compacted raft log at 772752
+2016-04-11 20:29:21.206570 I | etcdserver: start to snapshot (applied: 787763, lastsnap: 777752)
+2016-04-11 20:29:21.224806 I | etcdserver: saved snapshot at index 787763
+2016-04-11 20:29:21.225034 I | etcdserver: compacted raft log at 782763
+2016-04-11 20:29:21.738486 I | etcdserver: start to snapshot (applied: 797938, lastsnap: 787763)
+2016-04-11 20:29:21.751920 I | etcdserver: saved snapshot at index 797938
+2016-04-11 20:29:21.752099 I | etcdserver: compacted raft log at 792938
+2016-04-11 20:29:22.843604 I | etcdserver: start to snapshot (applied: 808494, lastsnap: 797938)
+2016-04-11 20:29:22.854739 I | etcdserver: saved snapshot at index 808494
+2016-04-11 20:29:22.855103 I | etcdserver: compacted raft log at 803494
+2016-04-11 20:29:23.271524 I | etcdserver: start to snapshot (applied: 818867, lastsnap: 808494)
+2016-04-11 20:29:23.287051 I | etcdserver: saved snapshot at index 818867
+2016-04-11 20:29:23.287268 I | etcdserver: compacted raft log at 813867
+2016-04-11 20:29:23.807697 I | etcdserver: start to snapshot (applied: 828935, lastsnap: 818867)
+2016-04-11 20:29:23.812139 I | etcdserver: saved snapshot at index 828935
+2016-04-11 20:29:23.812280 I | etcdserver: compacted raft log at 823935
+2016-04-11 20:29:24.224920 I | etcdserver: start to snapshot (applied: 838969, lastsnap: 828935)
+2016-04-11 20:29:24.237236 I | etcdserver: saved snapshot at index 838969
+2016-04-11 20:29:24.237385 I | etcdserver: compacted raft log at 833969
+2016-04-11 20:29:24.765192 I | etcdserver: start to snapshot (applied: 848993, lastsnap: 838969)
+2016-04-11 20:29:24.784613 I | etcdserver: saved snapshot at index 848993
+2016-04-11 20:29:24.784812 I | etcdserver: compacted raft log at 843993
+2016-04-11 20:29:25.318528 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000363fe.snap successfully
+2016-04-11 20:29:25.318617 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000038b86.snap successfully
+2016-04-11 20:29:25.318670 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000003b2cd.snap successfully
+2016-04-11 20:29:25.318721 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000003d9f4.snap successfully
+2016-04-11 20:29:25.318771 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000040108.snap successfully
+2016-04-11 20:29:25.318819 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000004283e.snap successfully
+2016-04-11 20:29:25.318868 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000004515a.snap successfully
+2016-04-11 20:29:25.318916 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000478c6.snap successfully
+2016-04-11 20:29:25.318972 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000004a14f.snap successfully
+2016-04-11 20:29:25.319020 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000004c88c.snap successfully
+2016-04-11 20:29:25.319077 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000004eff4.snap successfully
+2016-04-11 20:29:25.319127 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000517a7.snap successfully
+2016-04-11 20:29:25.319175 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000053ef0.snap successfully
+2016-04-11 20:29:25.319223 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000005661b.snap successfully
+2016-04-11 20:29:25.319274 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000058d36.snap successfully
+2016-04-11 20:29:25.319342 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000005b52a.snap successfully
+2016-04-11 20:29:25.319392 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000005dc7e.snap successfully
+2016-04-11 20:29:25.319450 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000603b4.snap successfully
+2016-04-11 20:29:25.319499 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000062b60.snap successfully
+2016-04-11 20:29:25.319547 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000652a2.snap successfully
+2016-04-11 20:29:25.319593 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000679ff.snap successfully
+2016-04-11 20:29:25.319640 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000006a172.snap successfully
+2016-04-11 20:29:25.319688 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000006c898.snap successfully
+2016-04-11 20:29:25.319737 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000006eff9.snap successfully
+2016-04-11 20:29:25.319784 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000007170e.snap successfully
+2016-04-11 20:29:25.319834 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000073e38.snap successfully
+2016-04-11 20:29:25.319925 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000076653.snap successfully
+2016-04-11 20:29:25.320011 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000078d75.snap successfully
+2016-04-11 20:29:25.320085 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000007b524.snap successfully
+2016-04-11 20:29:25.321812 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000007dc5c.snap successfully
+2016-04-11 20:29:25.321875 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000008045a.snap successfully
+2016-04-11 20:29:25.321925 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000082bc0.snap successfully
+2016-04-11 20:29:25.321966 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000085307.snap successfully
+2016-04-11 20:29:25.321994 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000087a4c.snap successfully
+2016-04-11 20:29:25.322020 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000008a197.snap successfully
+2016-04-11 20:29:25.322046 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000008c8b1.snap successfully
+2016-04-11 20:29:25.322082 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000008efdb.snap successfully
+2016-04-11 20:29:25.322128 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000091778.snap successfully
+2016-04-11 20:29:25.322186 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000093ec5.snap successfully
+2016-04-11 20:29:25.322217 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000096624.snap successfully
+2016-04-11 20:29:25.322250 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000098e50.snap successfully
+2016-04-11 20:29:25.322278 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000009b569.snap successfully
+2016-04-11 20:29:25.322333 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000009dc7f.snap successfully
+2016-04-11 20:29:25.322375 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000a03ad.snap successfully
+2016-04-11 20:29:25.322411 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000a2b2b.snap successfully
+2016-04-11 20:29:25.322449 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000a5260.snap successfully
+2016-04-11 20:29:25.322504 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000a7979.snap successfully
+2016-04-11 20:29:25.322542 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000aa0d6.snap successfully
+2016-04-11 20:29:25.322579 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000ac818.snap successfully
+2016-04-11 20:29:25.322615 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000aef34.snap successfully
+2016-04-11 20:29:25.322652 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000b1652.snap successfully
+2016-04-11 20:29:25.322690 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000b3d9e.snap successfully
+2016-04-11 20:29:25.322727 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000b66c2.snap successfully
+2016-04-11 20:29:25.322764 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000b8ec8.snap successfully
+2016-04-11 20:29:25.322801 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000bb6b1.snap successfully
+2016-04-11 20:29:25.322838 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000bde18.snap successfully
+2016-04-11 20:29:25.322876 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000c0533.snap successfully
+2016-04-11 20:29:25.322913 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000c2cf2.snap successfully
+2016-04-11 20:29:25.336018 I | etcdserver: start to snapshot (applied: 859024, lastsnap: 848993)
+2016-04-11 20:29:25.341147 I | etcdserver: saved snapshot at index 859024
+2016-04-11 20:29:25.341513 I | etcdserver: compacted raft log at 854024
+2016-04-11 20:29:25.681387 I | wal: segmented wal file /home/gyuho/data.etcd/member/wal/0000000000000005-00000000000d3be8.wal is created
+2016-04-11 20:29:25.751648 I | etcdserver: start to snapshot (applied: 869260, lastsnap: 859024)
+2016-04-11 20:29:25.768481 I | etcdserver: saved snapshot at index 869260
+2016-04-11 20:29:25.768638 I | etcdserver: compacted raft log at 864260
+2016-04-11 20:29:26.173185 I | etcdserver: start to snapshot (applied: 879270, lastsnap: 869260)
+2016-04-11 20:29:26.183843 I | etcdserver: saved snapshot at index 879270
+2016-04-11 20:29:26.184017 I | etcdserver: compacted raft log at 874270
+2016-04-11 20:29:27.143985 I | etcdserver: start to snapshot (applied: 889273, lastsnap: 879270)
+2016-04-11 20:29:27.163375 I | etcdserver: saved snapshot at index 889273
+2016-04-11 20:29:27.163578 I | etcdserver: compacted raft log at 884273
+2016-04-11 20:29:27.560662 I | etcdserver: start to snapshot (applied: 899276, lastsnap: 889273)
+2016-04-11 20:29:27.574398 I | etcdserver: saved snapshot at index 899276
+2016-04-11 20:29:27.574682 I | etcdserver: compacted raft log at 894276
+2016-04-11 20:29:28.125990 I | etcdserver: start to snapshot (applied: 909280, lastsnap: 899276)
+2016-04-11 20:29:28.131824 I | etcdserver: saved snapshot at index 909280
+2016-04-11 20:29:28.132072 I | etcdserver: compacted raft log at 904280
+2016-04-11 20:29:28.706716 I | etcdserver: start to snapshot (applied: 919540, lastsnap: 909280)
+2016-04-11 20:29:28.720700 I | etcdserver: saved snapshot at index 919540
+2016-04-11 20:29:28.720894 I | etcdserver: compacted raft log at 914540
+2016-04-11 20:29:29.152507 I | etcdserver: start to snapshot (applied: 929614, lastsnap: 919540)
+2016-04-11 20:29:29.161493 I | etcdserver: saved snapshot at index 929614
+2016-04-11 20:29:29.162898 I | etcdserver: compacted raft log at 924614
+2016-04-11 20:29:29.579764 I | etcdserver: start to snapshot (applied: 939676, lastsnap: 929614)
+2016-04-11 20:29:29.593773 I | etcdserver: saved snapshot at index 939676
+2016-04-11 20:29:29.593988 I | etcdserver: compacted raft log at 934676
+2016-04-11 20:29:30.143493 I | etcdserver: start to snapshot (applied: 949739, lastsnap: 939676)
+2016-04-11 20:29:30.153765 I | etcdserver: saved snapshot at index 949739
+2016-04-11 20:29:30.153931 I | etcdserver: compacted raft log at 944739
+2016-04-11 20:29:31.280961 I | etcdserver: start to snapshot (applied: 959892, lastsnap: 949739)
+2016-04-11 20:29:31.287017 I | etcdserver: saved snapshot at index 959892
+2016-04-11 20:29:31.287246 I | etcdserver: compacted raft log at 954892
+2016-04-11 20:29:31.591650 I | etcdserver: start to snapshot (applied: 969975, lastsnap: 959892)
+2016-04-11 20:29:31.601204 I | etcdserver: saved snapshot at index 969975
+2016-04-11 20:29:31.601556 I | etcdserver: compacted raft log at 964975
+2016-04-11 20:29:32.165755 I | etcdserver: start to snapshot (applied: 980038, lastsnap: 969975)
+2016-04-11 20:29:32.182081 I | etcdserver: saved snapshot at index 980038
+2016-04-11 20:29:32.182301 I | etcdserver: compacted raft log at 975038
+2016-04-11 20:29:32.755347 I | etcdserver: start to snapshot (applied: 990125, lastsnap: 980038)
+2016-04-11 20:29:32.771159 I | etcdserver: saved snapshot at index 990125
+2016-04-11 20:29:32.771624 I | etcdserver: compacted raft log at 985125
+2016-04-11 20:29:33.217759 I | etcdserver: start to snapshot (applied: 1000197, lastsnap: 990125)
+2016-04-11 20:29:33.225494 I | etcdserver: saved snapshot at index 1000197
+2016-04-11 20:29:33.225762 I | etcdserver: compacted raft log at 995197
+2016-04-11 20:29:33.642050 I | etcdserver: start to snapshot (applied: 1010205, lastsnap: 1000197)
+2016-04-11 20:29:33.659486 I | etcdserver: saved snapshot at index 1010205
+2016-04-11 20:29:33.659677 I | etcdserver: compacted raft log at 1005205
+2016-04-11 20:29:34.129621 I | etcdserver: start to snapshot (applied: 1020310, lastsnap: 1010205)
+2016-04-11 20:29:34.140766 I | etcdserver: saved snapshot at index 1020310
+2016-04-11 20:29:34.140946 I | etcdserver: compacted raft log at 1015310
+2016-04-11 20:29:35.253297 I | etcdserver: start to snapshot (applied: 1030378, lastsnap: 1020310)
+2016-04-11 20:29:35.263212 I | etcdserver: saved snapshot at index 1030378
+2016-04-11 20:29:35.263596 I | etcdserver: compacted raft log at 1025378
+2016-04-11 20:29:35.547527 I | wal: segmented wal file /home/gyuho/data.etcd/member/wal/0000000000000006-00000000000fe130.wal is created
+2016-04-11 20:29:35.553557 I | etcdserver: start to snapshot (applied: 1040410, lastsnap: 1030378)
+2016-04-11 20:29:35.565523 I | etcdserver: saved snapshot at index 1040410
+2016-04-11 20:29:35.565718 I | etcdserver: compacted raft log at 1035410
+2016-04-11 20:29:36.029299 I | etcdserver: start to snapshot (applied: 1050636, lastsnap: 1040410)
+2016-04-11 20:29:36.041039 I | etcdserver: saved snapshot at index 1050636
+2016-04-11 20:29:36.041241 I | etcdserver: compacted raft log at 1045636
+2016-04-11 20:29:36.501368 I | etcdserver: start to snapshot (applied: 1060761, lastsnap: 1050636)
+2016-04-11 20:29:36.508664 I | etcdserver: saved snapshot at index 1060761
+2016-04-11 20:29:36.508832 I | etcdserver: compacted raft log at 1055761
+2016-04-11 20:29:36.796620 I | etcdserver: start to snapshot (applied: 1070809, lastsnap: 1060761)
+2016-04-11 20:29:36.807577 I | etcdserver: saved snapshot at index 1070809
+2016-04-11 20:29:36.808925 I | etcdserver: compacted raft log at 1065809
+2016-04-11 20:29:37.291206 I | etcdserver: start to snapshot (applied: 1080895, lastsnap: 1070809)
+2016-04-11 20:29:37.307467 I | etcdserver: saved snapshot at index 1080895
+2016-04-11 20:29:37.307658 I | etcdserver: compacted raft log at 1075895
+2016-04-11 20:29:37.770980 I | etcdserver: start to snapshot (applied: 1090925, lastsnap: 1080895)
+2016-04-11 20:29:37.775636 I | etcdserver: saved snapshot at index 1090925
+2016-04-11 20:29:37.775809 I | etcdserver: compacted raft log at 1085925
+2016-04-11 20:29:38.110883 I | etcdserver: start to snapshot (applied: 1100931, lastsnap: 1090925)
+2016-04-11 20:29:38.117462 I | etcdserver: saved snapshot at index 1100931
+2016-04-11 20:29:38.117649 I | etcdserver: compacted raft log at 1095931
+2016-04-11 20:29:39.092076 I | etcdserver: start to snapshot (applied: 1110959, lastsnap: 1100931)
+2016-04-11 20:29:39.102916 I | etcdserver: saved snapshot at index 1110959
+2016-04-11 20:29:39.103235 I | etcdserver: compacted raft log at 1105959
+2016-04-11 20:29:39.436991 I | etcdserver: start to snapshot (applied: 1120986, lastsnap: 1110959)
+2016-04-11 20:29:39.444483 I | etcdserver: saved snapshot at index 1120986
+2016-04-11 20:29:39.444678 I | etcdserver: compacted raft log at 1115986
+2016-04-11 20:29:39.946976 I | etcdserver: start to snapshot (applied: 1131066, lastsnap: 1120986)
+2016-04-11 20:29:39.969703 I | etcdserver: saved snapshot at index 1131066
+2016-04-11 20:29:39.969853 I | etcdserver: compacted raft log at 1126066
+2016-04-11 20:29:40.447842 I | etcdserver: start to snapshot (applied: 1141126, lastsnap: 1131066)
+2016-04-11 20:29:40.458868 I | etcdserver: saved snapshot at index 1141126
+2016-04-11 20:29:40.459153 I | etcdserver: compacted raft log at 1136126
+2016-04-11 20:29:40.800415 I | etcdserver: start to snapshot (applied: 1151152, lastsnap: 1141126)
+2016-04-11 20:29:40.809798 I | etcdserver: saved snapshot at index 1151152
+2016-04-11 20:29:40.809961 I | etcdserver: compacted raft log at 1146152
+2016-04-11 20:29:41.303098 I | etcdserver: start to snapshot (applied: 1161230, lastsnap: 1151152)
+2016-04-11 20:29:41.313150 I | etcdserver: saved snapshot at index 1161230
+2016-04-11 20:29:41.313345 I | etcdserver: compacted raft log at 1156230
+2016-04-11 20:29:41.819554 I | etcdserver: start to snapshot (applied: 1171324, lastsnap: 1161230)
+2016-04-11 20:29:41.833598 I | etcdserver: saved snapshot at index 1171324
+2016-04-11 20:29:41.833872 I | etcdserver: compacted raft log at 1166324
+2016-04-11 20:29:42.628376 I | etcdserver: start to snapshot (applied: 1181353, lastsnap: 1171324)
+2016-04-11 20:29:42.636664 I | etcdserver: saved snapshot at index 1181353
+2016-04-11 20:29:42.636937 I | etcdserver: compacted raft log at 1176353
+2016-04-11 20:29:43.132260 I | etcdserver: start to snapshot (applied: 1191411, lastsnap: 1181353)
+2016-04-11 20:29:43.144243 I | etcdserver: saved snapshot at index 1191411
+2016-04-11 20:29:43.144427 I | etcdserver: compacted raft log at 1186411
+2016-04-11 20:29:43.466034 I | etcdserver: start to snapshot (applied: 1201464, lastsnap: 1191411)
+2016-04-11 20:29:43.477071 I | etcdserver: saved snapshot at index 1201464
+2016-04-11 20:29:43.477307 I | etcdserver: compacted raft log at 1196464
+2016-04-11 20:29:43.965387 I | etcdserver: start to snapshot (applied: 1211517, lastsnap: 1201464)
+2016-04-11 20:29:43.972899 I | etcdserver: saved snapshot at index 1211517
+2016-04-11 20:29:43.973047 I | etcdserver: compacted raft log at 1206517
+2016-04-11 20:29:44.029902 I | wal: segmented wal file /home/gyuho/data.etcd/member/wal/0000000000000007-00000000001286a9.wal is created
+2016-04-11 20:29:44.533057 I | etcdserver: start to snapshot (applied: 1221814, lastsnap: 1211517)
+2016-04-11 20:29:44.545373 I | etcdserver: saved snapshot at index 1221814
+2016-04-11 20:29:44.545900 I | etcdserver: compacted raft log at 1216814
+2016-04-11 20:29:44.854386 I | etcdserver: start to snapshot (applied: 1231854, lastsnap: 1221814)
+2016-04-11 20:29:44.865874 I | etcdserver: saved snapshot at index 1231854
+2016-04-11 20:29:44.866049 I | etcdserver: compacted raft log at 1226854
+2016-04-11 20:29:45.397557 I | etcdserver: start to snapshot (applied: 1241966, lastsnap: 1231854)
+2016-04-11 20:29:45.407505 I | etcdserver: saved snapshot at index 1241966
+2016-04-11 20:29:45.407645 I | etcdserver: compacted raft log at 1236966
+2016-04-11 20:29:46.204410 I | etcdserver: start to snapshot (applied: 1251990, lastsnap: 1241966)
+2016-04-11 20:29:46.212337 I | etcdserver: saved snapshot at index 1251990
+2016-04-11 20:29:46.212583 I | etcdserver: compacted raft log at 1246990
+2016-04-11 20:29:46.721062 I | etcdserver: start to snapshot (applied: 1261993, lastsnap: 1251990)
+2016-04-11 20:29:46.735220 I | etcdserver: saved snapshot at index 1261993
+2016-04-11 20:29:46.735397 I | etcdserver: compacted raft log at 1256993
+2016-04-11 20:29:47.285555 I | etcdserver: start to snapshot (applied: 1272374, lastsnap: 1261993)
+2016-04-11 20:29:47.295346 I | etcdserver: saved snapshot at index 1272374
+2016-04-11 20:29:47.298716 I | etcdserver: compacted raft log at 1267374
+2016-04-11 20:29:47.585705 I | etcdserver: start to snapshot (applied: 1282386, lastsnap: 1272374)
+2016-04-11 20:29:47.610821 I | etcdserver: saved snapshot at index 1282386
+2016-04-11 20:29:47.611022 I | etcdserver: compacted raft log at 1277386
+2016-04-11 20:29:48.133710 I | etcdserver: start to snapshot (applied: 1292451, lastsnap: 1282386)
+2016-04-11 20:29:48.140448 I | etcdserver: saved snapshot at index 1292451
+2016-04-11 20:29:48.140660 I | etcdserver: compacted raft log at 1287451
+2016-04-11 20:29:48.443274 I | etcdserver: start to snapshot (applied: 1302547, lastsnap: 1292451)
+2016-04-11 20:29:48.459327 I | etcdserver: saved snapshot at index 1302547
+2016-04-11 20:29:48.459523 I | etcdserver: compacted raft log at 1297547
+2016-04-11 20:29:49.004278 I | etcdserver: start to snapshot (applied: 1312627, lastsnap: 1302547)
+2016-04-11 20:29:49.022545 I | etcdserver: saved snapshot at index 1312627
+2016-04-11 20:29:49.022766 I | etcdserver: compacted raft log at 1307627
+2016-04-11 20:29:49.307150 I | etcdserver: start to snapshot (applied: 1322679, lastsnap: 1312627)
+2016-04-11 20:29:49.313617 I | etcdserver: saved snapshot at index 1322679
+2016-04-11 20:29:49.313745 I | etcdserver: compacted raft log at 1317679
+2016-04-11 20:29:50.384178 I | etcdserver: start to snapshot (applied: 1332702, lastsnap: 1322679)
+2016-04-11 20:29:50.392508 I | etcdserver: saved snapshot at index 1332702
+2016-04-11 20:29:50.392719 I | etcdserver: compacted raft log at 1327702
+2016-04-11 20:29:50.682419 I | etcdserver: start to snapshot (applied: 1342814, lastsnap: 1332702)
+2016-04-11 20:29:50.693859 I | etcdserver: saved snapshot at index 1342814
+2016-04-11 20:29:50.693999 I | etcdserver: compacted raft log at 1337814
+2016-04-11 20:29:51.261106 I | etcdserver: start to snapshot (applied: 1352837, lastsnap: 1342814)
+2016-04-11 20:29:51.279268 I | etcdserver: saved snapshot at index 1352837
+2016-04-11 20:29:51.279447 I | etcdserver: compacted raft log at 1347837
+2016-04-11 20:29:51.862452 I | etcdserver: start to snapshot (applied: 1362969, lastsnap: 1352837)
+2016-04-11 20:29:51.916886 I | etcdserver: saved snapshot at index 1362969
+2016-04-11 20:29:51.975479 I | etcdserver: compacted raft log at 1357969
+2016-04-11 20:29:52.214502 I | etcdserver: start to snapshot (applied: 1373072, lastsnap: 1362969)
+2016-04-11 20:29:52.224639 I | etcdserver: saved snapshot at index 1373072
+2016-04-11 20:29:52.224836 I | etcdserver: compacted raft log at 1368072
+2016-04-11 20:29:52.682309 I | etcdserver: start to snapshot (applied: 1383153, lastsnap: 1373072)
+2016-04-11 20:29:52.694855 I | etcdserver: saved snapshot at index 1383153
+2016-04-11 20:29:52.695166 I | etcdserver: compacted raft log at 1378153
+2016-04-11 20:29:52.963986 I | wal: segmented wal file /home/gyuho/data.etcd/member/wal/0000000000000008-0000000000153463.wal is created
+2016-04-11 20:29:53.158980 I | etcdserver: start to snapshot (applied: 1393160, lastsnap: 1383153)
+2016-04-11 20:29:53.166143 I | etcdserver: saved snapshot at index 1393160
+2016-04-11 20:29:53.166382 I | etcdserver: compacted raft log at 1388160
+2016-04-11 20:29:54.044523 I | etcdserver: start to snapshot (applied: 1403279, lastsnap: 1393160)
+2016-04-11 20:29:54.057546 I | etcdserver: saved snapshot at index 1403279
+2016-04-11 20:29:54.057745 I | etcdserver: compacted raft log at 1398279
+2016-04-11 20:29:54.526564 I | etcdserver: start to snapshot (applied: 1413352, lastsnap: 1403279)
+2016-04-11 20:29:54.537190 I | etcdserver: saved snapshot at index 1413352
+2016-04-11 20:29:54.537407 I | etcdserver: compacted raft log at 1408352
+2016-04-11 20:29:54.976677 I | etcdserver: start to snapshot (applied: 1423411, lastsnap: 1413352)
+2016-04-11 20:29:54.987744 I | etcdserver: saved snapshot at index 1423411
+2016-04-11 20:29:54.987918 I | etcdserver: compacted raft log at 1418411
+2016-04-11 20:29:55.323283 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000c562e.snap successfully
+2016-04-11 20:29:55.323347 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000c7eb3.snap successfully
+2016-04-11 20:29:55.323391 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000ca607.snap successfully
+2016-04-11 20:29:55.323434 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000ccd39.snap successfully
+2016-04-11 20:29:55.323482 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000cf461.snap successfully
+2016-04-11 20:29:55.323521 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000d1b90.snap successfully
+2016-04-11 20:29:55.323569 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000d438c.snap successfully
+2016-04-11 20:29:55.323610 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000d6aa6.snap successfully
+2016-04-11 20:29:55.323649 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000d91b9.snap successfully
+2016-04-11 20:29:55.323687 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000db8cc.snap successfully
+2016-04-11 20:29:55.323727 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000ddfe0.snap successfully
+2016-04-11 20:29:55.323769 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000e07f4.snap successfully
+2016-04-11 20:29:55.323807 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000e2f4e.snap successfully
+2016-04-11 20:29:55.323846 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000e569c.snap successfully
+2016-04-11 20:29:55.323885 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000e7deb.snap successfully
+2016-04-11 20:29:55.323927 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000ea594.snap successfully
+2016-04-11 20:29:55.323967 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000eccf7.snap successfully
+2016-04-11 20:29:55.324004 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000ef446.snap successfully
+2016-04-11 20:29:55.324043 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000f1bad.snap successfully
+2016-04-11 20:29:55.324091 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000f4305.snap successfully
+2016-04-11 20:29:55.324136 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000f6a1d.snap successfully
+2016-04-11 20:29:55.324174 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000f9196.snap successfully
+2016-04-11 20:29:55.324211 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000fb8ea.snap successfully
+2016-04-11 20:29:55.324257 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000000fe01a.snap successfully
+2016-04-11 20:29:55.325113 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000010080c.snap successfully
+2016-04-11 20:29:55.325314 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000102f99.snap successfully
+2016-04-11 20:29:55.325346 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001056d9.snap successfully
+2016-04-11 20:29:55.325373 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000107e3f.snap successfully
+2016-04-11 20:29:55.325399 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000010a56d.snap successfully
+2016-04-11 20:29:55.325426 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000010cc83.snap successfully
+2016-04-11 20:29:55.325452 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000010f3af.snap successfully
+2016-04-11 20:29:55.325478 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000111ada.snap successfully
+2016-04-11 20:29:55.325504 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000011423a.snap successfully
+2016-04-11 20:29:55.325539 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000116986.snap successfully
+2016-04-11 20:29:55.325567 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001190b0.snap successfully
+2016-04-11 20:29:55.325596 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000011b80e.snap successfully
+2016-04-11 20:29:55.325638 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000011df7c.snap successfully
+2016-04-11 20:29:55.325688 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001206a9.snap successfully
+2016-04-11 20:29:55.325733 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000122df3.snap successfully
+2016-04-11 20:29:55.325830 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000125538.snap successfully
+2016-04-11 20:29:55.325903 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000127c7d.snap successfully
+2016-04-11 20:29:55.325949 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000012a4b6.snap successfully
+2016-04-11 20:29:55.325997 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000012cbee.snap successfully
+2016-04-11 20:29:55.326040 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000012f36e.snap successfully
+2016-04-11 20:29:55.326084 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000131a96.snap successfully
+2016-04-11 20:29:55.326133 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001341a9.snap successfully
+2016-04-11 20:29:55.326197 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000136a36.snap successfully
+2016-04-11 20:29:55.326245 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000139152.snap successfully
+2016-04-11 20:29:55.326289 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000013b8a3.snap successfully
+2016-04-11 20:29:55.326331 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000013e013.snap successfully
+2016-04-11 20:29:55.326377 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000140773.snap successfully
+2016-04-11 20:29:55.326422 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000142eb7.snap successfully
+2016-04-11 20:29:55.326466 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001455de.snap successfully
+2016-04-11 20:29:55.326511 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000147d5e.snap successfully
+2016-04-11 20:29:55.326573 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000014a485.snap successfully
+2016-04-11 20:29:55.326617 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000014cc19.snap successfully
+2016-04-11 20:29:55.326659 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000014f390.snap successfully
+2016-04-11 20:29:55.328016 I | fileutil: purged file /home/gyuho/data.etcd/member/wal/0000000000000000-0000000000000000.wal successfully
+2016-04-11 20:29:55.336280 I | fileutil: purged file /home/gyuho/data.etcd/member/wal/0000000000000001-000000000002a609.wal successfully
+2016-04-11 20:29:55.344364 I | fileutil: purged file /home/gyuho/data.etcd/member/wal/0000000000000002-0000000000054ba0.wal successfully
+2016-04-11 20:29:55.352302 I | fileutil: purged file /home/gyuho/data.etcd/member/wal/0000000000000003-000000000007f133.wal successfully
+2016-04-11 20:29:55.442980 I | etcdserver: start to snapshot (applied: 1433464, lastsnap: 1423411)
+2016-04-11 20:29:55.457903 I | etcdserver: saved snapshot at index 1433464
+2016-04-11 20:29:55.458099 I | etcdserver: compacted raft log at 1428464
+2016-04-11 20:29:55.955261 I | etcdserver: start to snapshot (applied: 1443518, lastsnap: 1433464)
+2016-04-11 20:29:55.964056 I | etcdserver: saved snapshot at index 1443518
+2016-04-11 20:29:55.964224 I | etcdserver: compacted raft log at 1438518
+2016-04-11 20:29:56.445469 I | etcdserver: start to snapshot (applied: 1453522, lastsnap: 1443518)
+2016-04-11 20:29:56.455248 I | etcdserver: saved snapshot at index 1453522
+2016-04-11 20:29:56.455406 I | etcdserver: compacted raft log at 1448522
+2016-04-11 20:29:56.970459 I | etcdserver: start to snapshot (applied: 1463658, lastsnap: 1453522)
+2016-04-11 20:29:56.988962 I | etcdserver: saved snapshot at index 1463658
+2016-04-11 20:29:56.989187 I | etcdserver: compacted raft log at 1458658
+2016-04-11 20:29:58.083099 I | etcdserver: start to snapshot (applied: 1473777, lastsnap: 1463658)
+2016-04-11 20:29:58.098116 I | etcdserver: saved snapshot at index 1473777
+2016-04-11 20:29:58.098287 I | etcdserver: compacted raft log at 1468777
+2016-04-11 20:29:58.450295 I | etcdserver: start to snapshot (applied: 1483912, lastsnap: 1473777)
+2016-04-11 20:29:58.459412 I | etcdserver: saved snapshot at index 1483912
+2016-04-11 20:29:58.459617 I | etcdserver: compacted raft log at 1478912
+2016-04-11 20:29:59.089217 I | etcdserver: start to snapshot (applied: 1494080, lastsnap: 1483912)
+2016-04-11 20:29:59.106318 I | etcdserver: saved snapshot at index 1494080
+2016-04-11 20:29:59.106664 I | etcdserver: compacted raft log at 1489080
+2016-04-11 20:29:59.425294 I | etcdserver: start to snapshot (applied: 1504241, lastsnap: 1494080)
+2016-04-11 20:29:59.444695 I | etcdserver: saved snapshot at index 1504241
+2016-04-11 20:29:59.444880 I | etcdserver: compacted raft log at 1499241
+2016-04-11 20:30:00.065833 I | etcdserver: start to snapshot (applied: 1514346, lastsnap: 1504241)
+2016-04-11 20:30:00.074186 I | etcdserver: saved snapshot at index 1514346
+2016-04-11 20:30:00.074366 I | etcdserver: compacted raft log at 1509346
+2016-04-11 20:30:00.375299 I | etcdserver: start to snapshot (applied: 1524395, lastsnap: 1514346)
+2016-04-11 20:30:00.389000 I | etcdserver: saved snapshot at index 1524395
+2016-04-11 20:30:00.389243 I | etcdserver: compacted raft log at 1519395
+2016-04-11 20:30:01.058093 I | etcdserver: start to snapshot (applied: 1534460, lastsnap: 1524395)
+2016-04-11 20:30:01.070126 I | etcdserver: saved snapshot at index 1534460
+2016-04-11 20:30:01.070355 I | etcdserver: compacted raft log at 1529460
+2016-04-11 20:30:02.183604 I | etcdserver: start to snapshot (applied: 1544520, lastsnap: 1534460)
+2016-04-11 20:30:02.189532 I | etcdserver: saved snapshot at index 1544520
+2016-04-11 20:30:02.189702 I | etcdserver: compacted raft log at 1539520
+2016-04-11 20:30:02.876606 I | etcdserver: start to snapshot (applied: 1554657, lastsnap: 1544520)
+2016-04-11 20:30:02.886118 I | etcdserver: saved snapshot at index 1554657
+2016-04-11 20:30:02.886321 I | etcdserver: compacted raft log at 1549657
+2016-04-11 20:30:03.131127 I | wal: segmented wal file /home/gyuho/data.etcd/member/wal/0000000000000009-000000000017d9cc.wal is created
+2016-04-11 20:30:03.192326 I | etcdserver: start to snapshot (applied: 1564750, lastsnap: 1554657)
+2016-04-11 20:30:03.208010 I | etcdserver: saved snapshot at index 1564750
+2016-04-11 20:30:03.208166 I | etcdserver: compacted raft log at 1559750
+2016-04-11 20:30:03.948190 I | etcdserver: start to snapshot (applied: 1575046, lastsnap: 1564750)
+2016-04-11 20:30:03.956771 I | etcdserver: saved snapshot at index 1575046
+2016-04-11 20:30:03.956915 I | etcdserver: compacted raft log at 1570046
+2016-04-11 20:30:04.249169 I | etcdserver: start to snapshot (applied: 1585060, lastsnap: 1575046)
+2016-04-11 20:30:04.262796 I | etcdserver: saved snapshot at index 1585060
+2016-04-11 20:30:04.262958 I | etcdserver: compacted raft log at 1580060
+2016-04-11 20:30:05.019375 I | etcdserver: start to snapshot (applied: 1595457, lastsnap: 1585060)
+2016-04-11 20:30:05.026490 I | etcdserver: saved snapshot at index 1595457
+2016-04-11 20:30:05.026625 I | etcdserver: compacted raft log at 1590457
+2016-04-11 20:30:05.327626 I | etcdserver: start to snapshot (applied: 1605512, lastsnap: 1595457)
+2016-04-11 20:30:05.339741 I | etcdserver: saved snapshot at index 1605512
+2016-04-11 20:30:05.339911 I | etcdserver: compacted raft log at 1600512
+2016-04-11 20:30:05.946622 I | etcdserver: start to snapshot (applied: 1615963, lastsnap: 1605512)
+2016-04-11 20:30:05.957114 I | etcdserver: saved snapshot at index 1615963
+2016-04-11 20:30:05.957371 I | etcdserver: compacted raft log at 1610963
+2016-04-11 20:30:06.893704 I | etcdserver: start to snapshot (applied: 1625982, lastsnap: 1615963)
+2016-04-11 20:30:06.906276 I | etcdserver: saved snapshot at index 1625982
+2016-04-11 20:30:06.906419 I | etcdserver: compacted raft log at 1620982
+2016-04-11 20:30:07.481898 I | etcdserver: start to snapshot (applied: 1635992, lastsnap: 1625982)
+2016-04-11 20:30:07.486627 I | etcdserver: saved snapshot at index 1635992
+2016-04-11 20:30:07.486790 I | etcdserver: compacted raft log at 1630992
+2016-04-11 20:30:07.933408 I | etcdserver: start to snapshot (applied: 1646026, lastsnap: 1635992)
+2016-04-11 20:30:07.941689 I | etcdserver: saved snapshot at index 1646026
+2016-04-11 20:30:07.941900 I | etcdserver: compacted raft log at 1641026
+2016-04-11 20:30:08.249311 I | etcdserver: start to snapshot (applied: 1656082, lastsnap: 1646026)
+2016-04-11 20:30:08.259199 I | etcdserver: saved snapshot at index 1656082
+2016-04-11 20:30:08.259376 I | etcdserver: compacted raft log at 1651082
+2016-04-11 20:30:08.838691 I | etcdserver: start to snapshot (applied: 1666112, lastsnap: 1656082)
+2016-04-11 20:30:08.851824 I | etcdserver: saved snapshot at index 1666112
+2016-04-11 20:30:08.851970 I | etcdserver: compacted raft log at 1661112
+2016-04-11 20:30:09.143922 I | etcdserver: start to snapshot (applied: 1676217, lastsnap: 1666112)
+2016-04-11 20:30:09.161650 I | etcdserver: saved snapshot at index 1676217
+2016-04-11 20:30:09.161857 I | etcdserver: compacted raft log at 1671217
+2016-04-11 20:30:09.736734 I | etcdserver: start to snapshot (applied: 1686279, lastsnap: 1676217)
+2016-04-11 20:30:09.749796 I | etcdserver: saved snapshot at index 1686279
+2016-04-11 20:30:09.750053 I | etcdserver: compacted raft log at 1681279
+2016-04-11 20:30:10.758479 I | etcdserver: start to snapshot (applied: 1696410, lastsnap: 1686279)
+2016-04-11 20:30:10.767678 I | etcdserver: saved snapshot at index 1696410
+2016-04-11 20:30:10.767860 I | etcdserver: compacted raft log at 1691410
+2016-04-11 20:30:11.557253 I | etcdserver: start to snapshot (applied: 1708682, lastsnap: 1696410)
+2016-04-11 20:30:11.576578 I | etcdserver: saved snapshot at index 1708682
+2016-04-11 20:30:11.576856 I | etcdserver: compacted raft log at 1703682
+2016-04-11 20:30:11.800062 I | etcdserver: start to snapshot (applied: 1718728, lastsnap: 1708682)
+2016-04-11 20:30:11.818922 I | etcdserver: saved snapshot at index 1718728
+2016-04-11 20:30:11.819091 I | etcdserver: compacted raft log at 1713728
+2016-04-11 20:30:12.676761 I | wal: segmented wal file /home/gyuho/data.etcd/member/wal/000000000000000a-00000000001a812f.wal is created
+2016-04-11 20:30:12.755013 I | etcdserver: start to snapshot (applied: 1732083, lastsnap: 1718728)
+2016-04-11 20:30:12.765000 I | etcdserver: saved snapshot at index 1732083
+2016-04-11 20:30:12.765435 I | etcdserver: compacted raft log at 1727083
+2016-04-11 20:30:12.982597 I | etcdserver: start to snapshot (applied: 1742101, lastsnap: 1732083)
+2016-04-11 20:30:12.996809 I | etcdserver: saved snapshot at index 1742101
+2016-04-11 20:30:12.997142 I | etcdserver: compacted raft log at 1737101
+2016-04-11 20:30:13.495822 I | etcdserver: start to snapshot (applied: 1752155, lastsnap: 1742101)
+2016-04-11 20:30:13.506814 I | etcdserver: saved snapshot at index 1752155
+2016-04-11 20:30:13.507075 I | etcdserver: compacted raft log at 1747155
+2016-04-11 20:30:13.996175 I | etcdserver: start to snapshot (applied: 1762166, lastsnap: 1752155)
+2016-04-11 20:30:14.010806 I | etcdserver: saved snapshot at index 1762166
+2016-04-11 20:30:14.011025 I | etcdserver: compacted raft log at 1757166
+2016-04-11 20:30:14.992186 I | etcdserver: start to snapshot (applied: 1772234, lastsnap: 1762166)
+2016-04-11 20:30:15.002950 I | etcdserver: saved snapshot at index 1772234
+2016-04-11 20:30:15.003154 I | etcdserver: compacted raft log at 1767234
+2016-04-11 20:30:15.630212 I | etcdserver: start to snapshot (applied: 1783509, lastsnap: 1772234)
+2016-04-11 20:30:15.642740 I | etcdserver: saved snapshot at index 1783509
+2016-04-11 20:30:15.642992 I | etcdserver: compacted raft log at 1778509
+2016-04-11 20:30:16.116190 I | etcdserver: start to snapshot (applied: 1793644, lastsnap: 1783509)
+2016-04-11 20:30:16.125310 I | etcdserver: saved snapshot at index 1793644
+2016-04-11 20:30:16.125508 I | etcdserver: compacted raft log at 1788644
+2016-04-11 20:30:16.782521 I | etcdserver: start to snapshot (applied: 1805126, lastsnap: 1793644)
+2016-04-11 20:30:16.793260 I | etcdserver: saved snapshot at index 1805126
+2016-04-11 20:30:16.794472 I | etcdserver: compacted raft log at 1800126
+2016-04-11 20:30:17.272410 I | etcdserver: start to snapshot (applied: 1815147, lastsnap: 1805126)
+2016-04-11 20:30:17.284507 I | etcdserver: saved snapshot at index 1815147
+2016-04-11 20:30:17.284789 I | etcdserver: compacted raft log at 1810147
+2016-04-11 20:30:17.591482 I | etcdserver: start to snapshot (applied: 1825236, lastsnap: 1815147)
+2016-04-11 20:30:17.600591 I | etcdserver: saved snapshot at index 1825236
+2016-04-11 20:30:17.600744 I | etcdserver: compacted raft log at 1820236
+2016-04-11 20:30:18.141036 I | etcdserver: start to snapshot (applied: 1835355, lastsnap: 1825236)
+2016-04-11 20:30:18.154241 I | etcdserver: saved snapshot at index 1835355
+2016-04-11 20:30:18.154474 I | etcdserver: compacted raft log at 1830355
+2016-04-11 20:30:19.236992 I | etcdserver: start to snapshot (applied: 1845421, lastsnap: 1835355)
+2016-04-11 20:30:19.242441 I | etcdserver: saved snapshot at index 1845421
+2016-04-11 20:30:19.242773 I | etcdserver: compacted raft log at 1840421
+2016-04-11 20:30:19.875879 I | etcdserver: start to snapshot (applied: 1856224, lastsnap: 1845421)
+2016-04-11 20:30:19.889645 I | etcdserver: saved snapshot at index 1856224
+2016-04-11 20:30:19.890189 I | etcdserver: compacted raft log at 1851224
+2016-04-11 20:30:20.392998 I | etcdserver: start to snapshot (applied: 1866276, lastsnap: 1856224)
+2016-04-11 20:30:20.409881 I | etcdserver: saved snapshot at index 1866276
+2016-04-11 20:30:20.410061 I | etcdserver: compacted raft log at 1861276
+2016-04-11 20:30:20.726173 I | etcdserver: start to snapshot (applied: 1876334, lastsnap: 1866276)
+2016-04-11 20:30:20.743653 I | etcdserver: saved snapshot at index 1876334
+2016-04-11 20:30:20.743826 I | etcdserver: compacted raft log at 1871334
+2016-04-11 20:30:21.582185 I | etcdserver: start to snapshot (applied: 1886489, lastsnap: 1876334)
+2016-04-11 20:30:21.593674 I | etcdserver: saved snapshot at index 1886489
+2016-04-11 20:30:21.593820 I | etcdserver: compacted raft log at 1881489
+2016-04-11 20:30:21.902054 I | etcdserver: start to snapshot (applied: 1896521, lastsnap: 1886489)
+2016-04-11 20:30:21.912112 I | etcdserver: saved snapshot at index 1896521
+2016-04-11 20:30:21.912290 I | etcdserver: compacted raft log at 1891521
+2016-04-11 20:30:22.517263 I | etcdserver: start to snapshot (applied: 1906542, lastsnap: 1896521)
+2016-04-11 20:30:22.530067 I | etcdserver: saved snapshot at index 1906542
+2016-04-11 20:30:22.530481 I | etcdserver: compacted raft log at 1901542
+2016-04-11 20:30:22.910915 I | wal: segmented wal file /home/gyuho/data.etcd/member/wal/000000000000000b-00000000001d270e.wal is created
+2016-04-11 20:30:23.667646 I | etcdserver: start to snapshot (applied: 1916581, lastsnap: 1906542)
+2016-04-11 20:30:23.682239 I | etcdserver: saved snapshot at index 1916581
+2016-04-11 20:30:23.682426 I | etcdserver: compacted raft log at 1911581
+2016-04-11 20:30:23.971648 I | etcdserver: start to snapshot (applied: 1926623, lastsnap: 1916581)
+2016-04-11 20:30:23.986891 I | etcdserver: saved snapshot at index 1926623
+2016-04-11 20:30:23.987052 I | etcdserver: compacted raft log at 1921623
+2016-04-11 20:30:24.878031 I | etcdserver: start to snapshot (applied: 1936654, lastsnap: 1926623)
+2016-04-11 20:30:24.885307 I | etcdserver: saved snapshot at index 1936654
+2016-04-11 20:30:24.885585 I | etcdserver: compacted raft log at 1931654
+2016-04-11 20:30:25.202148 I | etcdserver: start to snapshot (applied: 1946705, lastsnap: 1936654)
+2016-04-11 20:30:25.209220 I | etcdserver: saved snapshot at index 1946705
+2016-04-11 20:30:25.209388 I | etcdserver: compacted raft log at 1941705
+2016-04-11 20:30:25.326987 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000151af1.snap successfully
+2016-04-11 20:30:25.327043 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000154208.snap successfully
+2016-04-11 20:30:25.327145 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000015698f.snap successfully
+2016-04-11 20:30:25.327224 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001590e8.snap successfully
+2016-04-11 20:30:25.327336 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000015b833.snap successfully
+2016-04-11 20:30:25.327392 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000015df78.snap successfully
+2016-04-11 20:30:25.327456 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001606be.snap successfully
+2016-04-11 20:30:25.327490 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000162dd2.snap successfully
+2016-04-11 20:30:25.327518 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000016556a.snap successfully
+2016-04-11 20:30:25.327544 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000167cf1.snap successfully
+2016-04-11 20:30:25.327570 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000016a488.snap successfully
+2016-04-11 20:30:25.327600 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000016cc40.snap successfully
+2016-04-11 20:30:25.327640 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000016f3f1.snap successfully
+2016-04-11 20:30:25.328473 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000171b6a.snap successfully
+2016-04-11 20:30:25.328520 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001742ab.snap successfully
+2016-04-11 20:30:25.328550 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001769fc.snap successfully
+2016-04-11 20:30:25.328577 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000179148.snap successfully
+2016-04-11 20:30:25.328610 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000017b8e1.snap successfully
+2016-04-11 20:30:25.328644 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000017e04e.snap successfully
+2016-04-11 20:30:25.328672 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000180886.snap successfully
+2016-04-11 20:30:25.328702 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000182fa4.snap successfully
+2016-04-11 20:30:25.328730 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000185841.snap successfully
+2016-04-11 20:30:25.328754 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000187f88.snap successfully
+2016-04-11 20:30:25.328781 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000018a85b.snap successfully
+2016-04-11 20:30:25.328806 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000018cf7e.snap successfully
+2016-04-11 20:30:25.328831 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000018f698.snap successfully
+2016-04-11 20:30:25.328864 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000191dca.snap successfully
+2016-04-11 20:30:25.328908 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000194512.snap successfully
+2016-04-11 20:30:25.328991 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000196c40.snap successfully
+2016-04-11 20:30:25.329040 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001993b9.snap successfully
+2016-04-11 20:30:25.329085 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000019bb07.snap successfully
+2016-04-11 20:30:25.329131 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000019e29a.snap successfully
+2016-04-11 20:30:25.329178 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001a128a.snap successfully
+2016-04-11 20:30:25.329223 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001a39c8.snap successfully
+2016-04-11 20:30:25.329269 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001a6df3.snap successfully
+2016-04-11 20:30:25.329314 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001a9515.snap successfully
+2016-04-11 20:30:25.329360 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001abc5b.snap successfully
+2016-04-11 20:30:25.329398 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001ae376.snap successfully
+2016-04-11 20:30:25.329426 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001b0aca.snap successfully
+2016-04-11 20:30:25.329454 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001b36d5.snap successfully
+2016-04-11 20:30:25.329499 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001b5e6c.snap successfully
+2016-04-11 20:30:25.329544 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001b8b46.snap successfully
+2016-04-11 20:30:25.329574 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001bb26b.snap successfully
+2016-04-11 20:30:25.329599 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001bd9d4.snap successfully
+2016-04-11 20:30:25.329635 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001c015b.snap successfully
+2016-04-11 20:30:25.329670 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001c28ad.snap successfully
+2016-04-11 20:30:25.329702 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001c52e0.snap successfully
+2016-04-11 20:30:25.329728 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001c7a24.snap successfully
+2016-04-11 20:30:25.329754 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001ca16e.snap successfully
+2016-04-11 20:30:25.329805 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001cc919.snap successfully
+2016-04-11 20:30:25.329837 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001cf049.snap successfully
+2016-04-11 20:30:25.364725 I | fileutil: purged file /home/gyuho/data.etcd/member/wal/0000000000000004-00000000000a969b.wal successfully
+2016-04-11 20:30:25.374760 I | fileutil: purged file /home/gyuho/data.etcd/member/wal/0000000000000005-00000000000d3be8.wal successfully
+2016-04-11 20:30:25.384569 I | fileutil: purged file /home/gyuho/data.etcd/member/wal/0000000000000006-00000000000fe130.wal successfully
+2016-04-11 20:30:25.821923 I | etcdserver: start to snapshot (applied: 1956804, lastsnap: 1946705)
+2016-04-11 20:30:25.835267 I | etcdserver: saved snapshot at index 1956804
+2016-04-11 20:30:25.835622 I | etcdserver: compacted raft log at 1951804
+2016-04-11 20:30:26.408566 I | etcdserver: start to snapshot (applied: 1966827, lastsnap: 1956804)
+2016-04-11 20:30:26.417602 I | etcdserver: saved snapshot at index 1966827
+2016-04-11 20:30:26.417786 I | etcdserver: compacted raft log at 1961827
+2016-04-11 20:30:26.715489 I | etcdserver: start to snapshot (applied: 1976939, lastsnap: 1966827)
+2016-04-11 20:30:26.726256 I | etcdserver: saved snapshot at index 1976939
+2016-04-11 20:30:26.726617 I | etcdserver: compacted raft log at 1971939
+2016-04-11 20:30:27.647876 I | etcdserver: start to snapshot (applied: 1986997, lastsnap: 1976939)
+2016-04-11 20:30:27.656567 I | etcdserver: saved snapshot at index 1986997
+2016-04-11 20:30:27.656734 I | etcdserver: compacted raft log at 1981997
+2016-04-11 20:30:28.474913 I | etcdserver: start to snapshot (applied: 1997030, lastsnap: 1986997)
+2016-04-11 20:30:28.485383 I | etcdserver: saved snapshot at index 1997030
+2016-04-11 20:30:28.485574 I | etcdserver: compacted raft log at 1992030
+2016-04-11 20:30:29.118093 I | etcdserver: start to snapshot (applied: 2007085, lastsnap: 1997030)
+2016-04-11 20:30:29.127353 I | etcdserver: saved snapshot at index 2007085
+2016-04-11 20:30:29.127615 I | etcdserver: compacted raft log at 2002085
+2016-04-11 20:30:29.749673 I | etcdserver: start to snapshot (applied: 2017139, lastsnap: 2007085)
+2016-04-11 20:30:29.757257 I | etcdserver: saved snapshot at index 2017139
+2016-04-11 20:30:29.757456 I | etcdserver: compacted raft log at 2012139
+2016-04-11 20:30:30.064908 I | etcdserver: start to snapshot (applied: 2027170, lastsnap: 2017139)
+2016-04-11 20:30:30.072293 I | etcdserver: saved snapshot at index 2027170
+2016-04-11 20:30:30.072534 I | etcdserver: compacted raft log at 2022170
+2016-04-11 20:30:31.030022 I | etcdserver: start to snapshot (applied: 2037359, lastsnap: 2027170)
+2016-04-11 20:30:31.041728 I | etcdserver: saved snapshot at index 2037359
+2016-04-11 20:30:31.041927 I | etcdserver: compacted raft log at 2032359
+2016-04-11 20:30:31.339867 I | etcdserver: start to snapshot (applied: 2047452, lastsnap: 2037359)
+2016-04-11 20:30:31.351754 I | etcdserver: saved snapshot at index 2047452
+2016-04-11 20:30:31.352083 I | etcdserver: compacted raft log at 2042452
+2016-04-11 20:30:31.698992 I | etcdserver: start to snapshot (applied: 2057495, lastsnap: 2047452)
+2016-04-11 20:30:31.924283 I | etcdserver: saved snapshot at index 2057495
+2016-04-11 20:30:31.963081 I | etcdserver: compacted raft log at 2052495
+2016-04-11 20:30:33.072888 I | etcdserver: start to snapshot (applied: 2067496, lastsnap: 2057495)
+2016-04-11 20:30:33.083358 I | etcdserver: saved snapshot at index 2067496
+2016-04-11 20:30:33.083548 I | etcdserver: compacted raft log at 2062496
+2016-04-11 20:30:33.386304 I | etcdserver: start to snapshot (applied: 2077553, lastsnap: 2067496)
+2016-04-11 20:30:33.393775 I | etcdserver: saved snapshot at index 2077553
+2016-04-11 20:30:33.393941 I | etcdserver: compacted raft log at 2072553
+2016-04-11 20:30:33.563600 I | wal: segmented wal file /home/gyuho/data.etcd/member/wal/000000000000000c-00000000001fcc51.wal is created
+2016-04-11 20:30:34.049247 I | etcdserver: start to snapshot (applied: 2087556, lastsnap: 2077553)
+2016-04-11 20:30:34.057003 I | etcdserver: saved snapshot at index 2087556
+2016-04-11 20:30:34.057352 I | etcdserver: compacted raft log at 2082556
+2016-04-11 20:30:34.368962 I | etcdserver: start to snapshot (applied: 2097630, lastsnap: 2087556)
+2016-04-11 20:30:34.379129 I | etcdserver: saved snapshot at index 2097630
+2016-04-11 20:30:34.379431 I | etcdserver: compacted raft log at 2092630
+2016-04-11 20:30:34.685670 I | etcdserver: start to snapshot (applied: 2107678, lastsnap: 2097630)
+2016-04-11 20:30:34.695733 I | etcdserver: saved snapshot at index 2107678
+2016-04-11 20:30:34.695931 I | etcdserver: compacted raft log at 2102678
+2016-04-11 20:30:35.408144 I | etcdserver: start to snapshot (applied: 2117731, lastsnap: 2107678)
+2016-04-11 20:30:35.420952 I | etcdserver: saved snapshot at index 2117731
+2016-04-11 20:30:35.421099 I | etcdserver: compacted raft log at 2112731
+2016-04-11 20:30:35.724613 I | etcdserver: start to snapshot (applied: 2127789, lastsnap: 2117731)
+2016-04-11 20:30:35.735310 I | etcdserver: saved snapshot at index 2127789
+2016-04-11 20:30:35.735529 I | etcdserver: compacted raft log at 2122789
+2016-04-11 20:30:36.675394 I | etcdserver: start to snapshot (applied: 2137829, lastsnap: 2127789)
+2016-04-11 20:30:36.688262 I | etcdserver: saved snapshot at index 2137829
+2016-04-11 20:30:36.688448 I | etcdserver: compacted raft log at 2132829
+2016-04-11 20:30:37.440549 I | etcdserver: start to snapshot (applied: 2147868, lastsnap: 2137829)
+2016-04-11 20:30:37.451989 I | etcdserver: saved snapshot at index 2147868
+2016-04-11 20:30:37.452163 I | etcdserver: compacted raft log at 2142868
+2016-04-11 20:30:37.756540 I | etcdserver: start to snapshot (applied: 2157943, lastsnap: 2147868)
+2016-04-11 20:30:37.773803 I | etcdserver: saved snapshot at index 2157943
+2016-04-11 20:30:37.774007 I | etcdserver: compacted raft log at 2152943
+2016-04-11 20:30:38.448136 I | etcdserver: start to snapshot (applied: 2168035, lastsnap: 2157943)
+2016-04-11 20:30:38.463135 I | etcdserver: saved snapshot at index 2168035
+2016-04-11 20:30:38.463493 I | etcdserver: compacted raft log at 2163035
+2016-04-11 20:30:38.854851 I | etcdserver: start to snapshot (applied: 2178038, lastsnap: 2168035)
+2016-04-11 20:30:38.865438 I | etcdserver: saved snapshot at index 2178038
+2016-04-11 20:30:38.865603 I | etcdserver: compacted raft log at 2173038
+2016-04-11 20:30:39.202668 I | etcdserver: start to snapshot (applied: 2188086, lastsnap: 2178038)
+2016-04-11 20:30:39.217311 I | etcdserver: saved snapshot at index 2188086
+2016-04-11 20:30:39.217785 I | etcdserver: compacted raft log at 2183086
+2016-04-11 20:30:39.919583 I | etcdserver: start to snapshot (applied: 2198208, lastsnap: 2188086)
+2016-04-11 20:30:39.930389 I | etcdserver: saved snapshot at index 2198208
+2016-04-11 20:30:39.930643 I | etcdserver: compacted raft log at 2193208
+2016-04-11 20:30:40.305570 I | etcdserver: start to snapshot (applied: 2208227, lastsnap: 2198208)
+2016-04-11 20:30:40.310671 I | etcdserver: saved snapshot at index 2208227
+2016-04-11 20:30:40.310877 I | etcdserver: compacted raft log at 2203227
+2016-04-11 20:30:41.116037 I | etcdserver: start to snapshot (applied: 2218238, lastsnap: 2208227)
+2016-04-11 20:30:41.128692 I | etcdserver: saved snapshot at index 2218238
+2016-04-11 20:30:41.128908 I | etcdserver: compacted raft log at 2213238
+2016-04-11 20:30:41.822896 I | etcdserver: start to snapshot (applied: 2228450, lastsnap: 2218238)
+2016-04-11 20:30:41.833254 I | etcdserver: saved snapshot at index 2228450
+2016-04-11 20:30:41.833431 I | etcdserver: compacted raft log at 2223450
+2016-04-11 20:30:42.161404 I | etcdserver: start to snapshot (applied: 2238454, lastsnap: 2228450)
+2016-04-11 20:30:42.168878 I | etcdserver: saved snapshot at index 2238454
+2016-04-11 20:30:42.169189 I | etcdserver: compacted raft log at 2233454
+2016-04-11 20:30:42.506413 I | etcdserver: start to snapshot (applied: 2248472, lastsnap: 2238454)
+2016-04-11 20:30:42.613204 I | etcdserver: saved snapshot at index 2248472
+2016-04-11 20:30:42.813665 I | etcdserver: compacted raft log at 2243472
+2016-04-11 20:30:43.151093 I | wal: segmented wal file /home/gyuho/data.etcd/member/wal/000000000000000d-000000000022702c.wal is created
+2016-04-11 20:30:43.221560 I | etcdserver: start to snapshot (applied: 2258525, lastsnap: 2248472)
+2016-04-11 20:30:43.228931 I | etcdserver: saved snapshot at index 2258525
+2016-04-11 20:30:43.229073 I | etcdserver: compacted raft log at 2253525
+2016-04-11 20:30:43.567601 I | etcdserver: start to snapshot (applied: 2268569, lastsnap: 2258525)
+2016-04-11 20:30:43.575942 I | etcdserver: saved snapshot at index 2268569
+2016-04-11 20:30:43.576111 I | etcdserver: compacted raft log at 2263569
+2016-04-11 20:30:44.309536 I | etcdserver: start to snapshot (applied: 2278703, lastsnap: 2268569)
+2016-04-11 20:30:44.322823 I | etcdserver: saved snapshot at index 2278703
+2016-04-11 20:30:44.323152 I | etcdserver: compacted raft log at 2273703
+2016-04-11 20:30:45.090362 I | etcdserver: start to snapshot (applied: 2288738, lastsnap: 2278703)
+2016-04-11 20:30:45.099711 I | etcdserver: saved snapshot at index 2288738
+2016-04-11 20:30:45.099911 I | etcdserver: compacted raft log at 2283738
+2016-04-11 20:30:45.422086 I | etcdserver: start to snapshot (applied: 2298803, lastsnap: 2288738)
+2016-04-11 20:30:45.430316 I | etcdserver: saved snapshot at index 2298803
+2016-04-11 20:30:45.430471 I | etcdserver: compacted raft log at 2293803
+2016-04-11 20:30:46.166517 I | etcdserver: start to snapshot (applied: 2308882, lastsnap: 2298803)
+2016-04-11 20:30:46.181088 I | etcdserver: saved snapshot at index 2308882
+2016-04-11 20:30:46.181451 I | etcdserver: compacted raft log at 2303882
+2016-04-11 20:30:46.479784 I | etcdserver: start to snapshot (applied: 2318915, lastsnap: 2308882)
+2016-04-11 20:30:46.489718 I | etcdserver: saved snapshot at index 2318915
+2016-04-11 20:30:46.489923 I | etcdserver: compacted raft log at 2313915
+2016-04-11 20:30:46.834898 I | etcdserver: start to snapshot (applied: 2329101, lastsnap: 2318915)
+2016-04-11 20:30:46.843633 I | etcdserver: saved snapshot at index 2329101
+2016-04-11 20:30:46.843821 I | etcdserver: compacted raft log at 2324101
+2016-04-11 20:30:47.624130 I | etcdserver: start to snapshot (applied: 2339169, lastsnap: 2329101)
+2016-04-11 20:30:47.634384 I | etcdserver: saved snapshot at index 2339169
+2016-04-11 20:30:47.635096 I | etcdserver: compacted raft log at 2334169
+2016-04-11 20:30:47.945443 I | etcdserver: start to snapshot (applied: 2349216, lastsnap: 2339169)
+2016-04-11 20:30:47.954286 I | etcdserver: saved snapshot at index 2349216
+2016-04-11 20:30:47.954549 I | etcdserver: compacted raft log at 2344216
+2016-04-11 20:30:48.753804 I | etcdserver: start to snapshot (applied: 2359232, lastsnap: 2349216)
+2016-04-11 20:30:48.762905 I | etcdserver: saved snapshot at index 2359232
+2016-04-11 20:30:48.763116 I | etcdserver: compacted raft log at 2354232
+2016-04-11 20:30:49.471664 I | etcdserver: start to snapshot (applied: 2369365, lastsnap: 2359232)
+2016-04-11 20:30:49.490966 I | etcdserver: saved snapshot at index 2369365
+2016-04-11 20:30:49.491534 I | etcdserver: compacted raft log at 2364365
+2016-04-11 20:30:49.792761 I | etcdserver: start to snapshot (applied: 2379475, lastsnap: 2369365)
+2016-04-11 20:30:49.802666 I | etcdserver: saved snapshot at index 2379475
+2016-04-11 20:30:49.802830 I | etcdserver: compacted raft log at 2374475
+2016-04-11 20:30:50.168706 I | etcdserver: start to snapshot (applied: 2389495, lastsnap: 2379475)
+2016-04-11 20:30:50.175841 I | etcdserver: saved snapshot at index 2389495
+2016-04-11 20:30:50.176008 I | etcdserver: compacted raft log at 2384495
+2016-04-11 20:30:51.007144 I | etcdserver: start to snapshot (applied: 2399497, lastsnap: 2389495)
+2016-04-11 20:30:51.019963 I | etcdserver: saved snapshot at index 2399497
+2016-04-11 20:30:51.020197 I | etcdserver: compacted raft log at 2394497
+2016-04-11 20:30:51.336209 I | etcdserver: start to snapshot (applied: 2409508, lastsnap: 2399497)
+2016-04-11 20:30:51.357368 I | etcdserver: saved snapshot at index 2409508
+2016-04-11 20:30:51.357592 I | etcdserver: compacted raft log at 2404508
+2016-04-11 20:30:51.683938 I | etcdserver: start to snapshot (applied: 2419662, lastsnap: 2409508)
+2016-04-11 20:30:51.695196 I | etcdserver: saved snapshot at index 2419662
+2016-04-11 20:30:51.695372 I | etcdserver: compacted raft log at 2414662
+2016-04-11 20:30:52.487387 I | wal: segmented wal file /home/gyuho/data.etcd/member/wal/000000000000000e-00000000002513e4.wal is created
+2016-04-11 20:30:52.487591 I | etcdserver: start to snapshot (applied: 2429663, lastsnap: 2419662)
+2016-04-11 20:30:52.507806 I | etcdserver: saved snapshot at index 2429663
+2016-04-11 20:30:52.508176 I | etcdserver: compacted raft log at 2424663
+2016-04-11 20:30:53.283016 I | etcdserver: start to snapshot (applied: 2439699, lastsnap: 2429663)
+2016-04-11 20:30:53.293781 I | etcdserver: saved snapshot at index 2439699
+2016-04-11 20:30:53.293961 I | etcdserver: compacted raft log at 2434699
+2016-04-11 20:30:53.608841 I | etcdserver: start to snapshot (applied: 2449925, lastsnap: 2439699)
+2016-04-11 20:30:53.632702 I | etcdserver: saved snapshot at index 2449925
+2016-04-11 20:30:53.632896 I | etcdserver: compacted raft log at 2444925
+2016-04-11 20:30:54.549223 I | etcdserver: start to snapshot (applied: 2460006, lastsnap: 2449925)
+2016-04-11 20:30:54.567612 I | etcdserver: saved snapshot at index 2460006
+2016-04-11 20:30:54.568170 I | etcdserver: compacted raft log at 2455006
+2016-04-11 20:30:54.835954 I | etcdserver: start to snapshot (applied: 2470158, lastsnap: 2460006)
+2016-04-11 20:30:54.844670 I | etcdserver: saved snapshot at index 2470158
+2016-04-11 20:30:54.844881 I | etcdserver: compacted raft log at 2465158
+2016-04-11 20:30:55.175175 I | etcdserver: start to snapshot (applied: 2480184, lastsnap: 2470158)
+2016-04-11 20:30:55.194687 I | etcdserver: saved snapshot at index 2480184
+2016-04-11 20:30:55.194882 I | etcdserver: compacted raft log at 2475184
+2016-04-11 20:30:55.330223 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001d176e.snap successfully
+2016-04-11 20:30:55.330271 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001d3ea5.snap successfully
+2016-04-11 20:30:55.330304 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001d65df.snap successfully
+2016-04-11 20:30:55.330348 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001d8d0e.snap successfully
+2016-04-11 20:30:55.330396 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001db451.snap successfully
+2016-04-11 20:30:55.330441 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001ddbc4.snap successfully
+2016-04-11 20:30:55.330486 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001e02eb.snap successfully
+2016-04-11 20:30:55.330533 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001e2a6b.snap successfully
+2016-04-11 20:30:55.330885 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001e51b5.snap successfully
+2016-04-11 20:30:55.330929 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001e78e6.snap successfully
+2016-04-11 20:30:55.330975 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001ea02d.snap successfully
+2016-04-11 20:30:55.331049 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001ec773.snap successfully
+2016-04-11 20:30:55.331115 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001eeea2.snap successfully
+2016-04-11 20:30:55.331177 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001f166f.snap successfully
+2016-04-11 20:30:55.331222 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001f3ddc.snap successfully
+2016-04-11 20:30:55.331262 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001f6517.snap successfully
+2016-04-11 20:30:55.331291 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001f8c28.snap successfully
+2016-04-11 20:30:55.331316 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001fb371.snap successfully
+2016-04-11 20:30:55.331342 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000001fda84.snap successfully
+2016-04-11 20:30:55.331380 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002001de.snap successfully
+2016-04-11 20:30:55.331422 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000020291e.snap successfully
+2016-04-11 20:30:55.331465 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000205063.snap successfully
+2016-04-11 20:30:55.331502 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002077ad.snap successfully
+2016-04-11 20:30:55.331530 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000209ee5.snap successfully
+2016-04-11 20:30:55.331576 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000020c61c.snap successfully
+2016-04-11 20:30:55.331618 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000020ed77.snap successfully
+2016-04-11 20:30:55.331664 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002114e3.snap successfully
+2016-04-11 20:30:55.331701 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000213bf6.snap successfully
+2016-04-11 20:30:55.331737 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000216336.snap successfully
+2016-04-11 20:30:55.331779 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000218ac0.snap successfully
+2016-04-11 20:30:55.331814 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000021b1e3.snap successfully
+2016-04-11 20:30:55.331848 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000021d8fe.snap successfully
+2016-04-11 20:30:55.331892 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002200e2.snap successfully
+2016-04-11 20:30:55.331931 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002227f6.snap successfully
+2016-04-11 20:30:55.331962 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000224f18.snap successfully
+2016-04-11 20:30:55.331987 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000022765d.snap successfully
+2016-04-11 20:30:55.332012 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000229d99.snap successfully
+2016-04-11 20:30:55.332045 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000022c52f.snap successfully
+2016-04-11 20:30:55.332072 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000022ec62.snap successfully
+2016-04-11 20:30:55.332096 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002313b3.snap successfully
+2016-04-11 20:30:55.332121 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000233b12.snap successfully
+2016-04-11 20:30:55.332145 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000236243.snap successfully
+2016-04-11 20:30:55.332173 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000238a0d.snap successfully
+2016-04-11 20:30:55.332206 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000023b161.snap successfully
+2016-04-11 20:30:55.332231 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000023d8a0.snap successfully
+2016-04-11 20:30:55.332257 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000023ffc0.snap successfully
+2016-04-11 20:30:55.332282 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000242755.snap successfully
+2016-04-11 20:30:55.332307 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000244ed3.snap successfully
+2016-04-11 20:30:55.332332 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002475f7.snap successfully
+2016-04-11 20:30:55.332361 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000249d09.snap successfully
+2016-04-11 20:30:55.332407 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000024c424.snap successfully
+2016-04-11 20:30:55.332440 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000024ebce.snap successfully
+2016-04-11 20:30:55.333746 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002512df.snap successfully
+2016-04-11 20:30:55.393007 I | fileutil: purged file /home/gyuho/data.etcd/member/wal/0000000000000007-00000000001286a9.wal successfully
+2016-04-11 20:30:55.400904 I | fileutil: purged file /home/gyuho/data.etcd/member/wal/0000000000000008-0000000000153463.wal successfully
+2016-04-11 20:30:55.407973 I | fileutil: purged file /home/gyuho/data.etcd/member/wal/0000000000000009-000000000017d9cc.wal successfully
+2016-04-11 20:30:56.408841 I | etcdserver: start to snapshot (applied: 2490711, lastsnap: 2480184)
+2016-04-11 20:30:56.422536 I | etcdserver: saved snapshot at index 2490711
+2016-04-11 20:30:56.423724 I | etcdserver: compacted raft log at 2485711
+2016-04-11 20:30:56.626333 I | etcdserver: start to snapshot (applied: 2501221, lastsnap: 2490711)
+2016-04-11 20:30:56.639749 I | etcdserver: saved snapshot at index 2501221
+2016-04-11 20:30:56.640129 I | etcdserver: compacted raft log at 2496221
+2016-04-11 20:30:57.217783 I | etcdserver: start to snapshot (applied: 2511236, lastsnap: 2501221)
+2016-04-11 20:30:57.227012 I | etcdserver: saved snapshot at index 2511236
+2016-04-11 20:30:57.227457 I | etcdserver: compacted raft log at 2506236
+2016-04-11 20:30:58.034865 I | etcdserver: start to snapshot (applied: 2521400, lastsnap: 2511236)
+2016-04-11 20:30:58.045903 I | etcdserver: saved snapshot at index 2521400
+2016-04-11 20:30:58.046267 I | etcdserver: compacted raft log at 2516400
+2016-04-11 20:30:58.752683 I | etcdserver: start to snapshot (applied: 2531973, lastsnap: 2521400)
+2016-04-11 20:30:58.765449 I | etcdserver: saved snapshot at index 2531973
+2016-04-11 20:30:58.765836 I | etcdserver: compacted raft log at 2526973
+2016-04-11 20:30:58.980713 I | etcdserver: start to snapshot (applied: 2542096, lastsnap: 2531973)
+2016-04-11 20:30:58.993076 I | etcdserver: saved snapshot at index 2542096
+2016-04-11 20:30:58.993502 I | etcdserver: compacted raft log at 2537096
+2016-04-11 20:30:59.652944 I | etcdserver: start to snapshot (applied: 2552192, lastsnap: 2542096)
+2016-04-11 20:30:59.666032 I | etcdserver: saved snapshot at index 2552192
+2016-04-11 20:30:59.666313 I | etcdserver: compacted raft log at 2547192
+2016-04-11 20:31:00.451446 I | etcdserver: start to snapshot (applied: 2564096, lastsnap: 2552192)
+2016-04-11 20:31:00.467076 I | etcdserver: saved snapshot at index 2564096
+2016-04-11 20:31:00.467505 I | etcdserver: compacted raft log at 2559096
+2016-04-11 20:31:00.681960 I | etcdserver: start to snapshot (applied: 2574161, lastsnap: 2564096)
+2016-04-11 20:31:00.694410 I | etcdserver: saved snapshot at index 2574161
+2016-04-11 20:31:00.694787 I | etcdserver: compacted raft log at 2569161
+2016-04-11 20:31:01.805764 I | etcdserver: start to snapshot (applied: 2584204, lastsnap: 2574161)
+2016-04-11 20:31:01.813388 I | etcdserver: saved snapshot at index 2584204
+2016-04-11 20:31:01.813593 I | etcdserver: compacted raft log at 2579204
+2016-04-11 20:31:02.599705 I | etcdserver: start to snapshot (applied: 2594264, lastsnap: 2584204)
+2016-04-11 20:31:02.603235 I | wal: segmented wal file /home/gyuho/data.etcd/member/wal/000000000000000f-000000000027c0d8.wal is created
+2016-04-11 20:31:02.611107 I | etcdserver: saved snapshot at index 2594264
+2016-04-11 20:31:02.612792 I | etcdserver: compacted raft log at 2589264
+2016-04-11 20:31:02.849799 I | etcdserver: start to snapshot (applied: 2605090, lastsnap: 2594264)
+2016-04-11 20:31:02.855188 I | etcdserver: saved snapshot at index 2605090
+2016-04-11 20:31:02.855442 I | etcdserver: compacted raft log at 2600090
+2016-04-11 20:31:03.425198 I | etcdserver: start to snapshot (applied: 2615153, lastsnap: 2605090)
+2016-04-11 20:31:03.436253 I | etcdserver: saved snapshot at index 2615153
+2016-04-11 20:31:03.436448 I | etcdserver: compacted raft log at 2610153
+2016-04-11 20:31:03.752122 I | etcdserver: start to snapshot (applied: 2625338, lastsnap: 2615153)
+2016-04-11 20:31:03.765155 I | etcdserver: saved snapshot at index 2625338
+2016-04-11 20:31:03.765313 I | etcdserver: compacted raft log at 2620338
+2016-04-11 20:31:04.546337 I | etcdserver: start to snapshot (applied: 2638505, lastsnap: 2625338)
+2016-04-11 20:31:04.555032 I | etcdserver: saved snapshot at index 2638505
+2016-04-11 20:31:04.555401 I | etcdserver: compacted raft log at 2633505
+2016-04-11 20:31:05.099995 I | etcdserver: start to snapshot (applied: 2648605, lastsnap: 2638505)
+2016-04-11 20:31:05.108857 I | etcdserver: saved snapshot at index 2648605
+2016-04-11 20:31:05.109061 I | etcdserver: compacted raft log at 2643605
+2016-04-11 20:31:05.890068 I | etcdserver: start to snapshot (applied: 2658707, lastsnap: 2648605)
+2016-04-11 20:31:05.897798 I | etcdserver: saved snapshot at index 2658707
+2016-04-11 20:31:05.898002 I | etcdserver: compacted raft log at 2653707
+2016-04-11 20:31:06.700133 I | etcdserver: start to snapshot (applied: 2672998, lastsnap: 2658707)
+2016-04-11 20:31:06.715311 I | etcdserver: saved snapshot at index 2672998
+2016-04-11 20:31:06.715513 I | etcdserver: compacted raft log at 2667998
+2016-04-11 20:31:07.287385 I | etcdserver: start to snapshot (applied: 2683233, lastsnap: 2672998)
+2016-04-11 20:31:07.295956 I | etcdserver: saved snapshot at index 2683233
+2016-04-11 20:31:07.296093 I | etcdserver: compacted raft log at 2678233
+2016-04-11 20:31:07.594713 I | etcdserver: start to snapshot (applied: 2693290, lastsnap: 2683233)
+2016-04-11 20:31:07.601311 I | etcdserver: saved snapshot at index 2693290
+2016-04-11 20:31:07.601494 I | etcdserver: compacted raft log at 2688290
+2016-04-11 20:31:08.432331 I | etcdserver: start to snapshot (applied: 2707208, lastsnap: 2693290)
+2016-04-11 20:31:08.443763 I | etcdserver: saved snapshot at index 2707208
+2016-04-11 20:31:08.443950 I | etcdserver: compacted raft log at 2702208
+2016-04-11 20:31:09.075908 I | etcdserver: start to snapshot (applied: 2717328, lastsnap: 2707208)
+2016-04-11 20:31:09.094604 I | etcdserver: saved snapshot at index 2717328
+2016-04-11 20:31:09.094792 I | etcdserver: compacted raft log at 2712328
+2016-04-11 20:31:09.911988 I | etcdserver: start to snapshot (applied: 2727379, lastsnap: 2717328)
+2016-04-11 20:31:09.919480 I | etcdserver: saved snapshot at index 2727379
+2016-04-11 20:31:09.919651 I | etcdserver: compacted raft log at 2722379
+2016-04-11 20:31:10.739346 I | etcdserver: start to snapshot (applied: 2738819, lastsnap: 2727379)
+2016-04-11 20:31:10.755922 I | etcdserver: saved snapshot at index 2738819
+2016-04-11 20:31:10.756325 I | etcdserver: compacted raft log at 2733819
+2016-04-11 20:31:11.245535 I | etcdserver: start to snapshot (applied: 2748856, lastsnap: 2738819)
+2016-04-11 20:31:11.256451 I | etcdserver: saved snapshot at index 2748856
+2016-04-11 20:31:11.256662 I | etcdserver: compacted raft log at 2743856
+2016-04-11 20:31:11.559128 I | etcdserver: start to snapshot (applied: 2758889, lastsnap: 2748856)
+2016-04-11 20:31:11.569028 I | etcdserver: saved snapshot at index 2758889
+2016-04-11 20:31:11.569221 I | etcdserver: compacted raft log at 2753889
+2016-04-11 20:31:11.871373 I | etcdserver: start to snapshot (applied: 2768906, lastsnap: 2758889)
+2016-04-11 20:31:11.880254 I | etcdserver: saved snapshot at index 2768906
+2016-04-11 20:31:11.880446 I | etcdserver: compacted raft log at 2763906
+2016-04-11 20:31:12.809584 I | wal: segmented wal file /home/gyuho/data.etcd/member/wal/0000000000000010-00000000002a64b0.wal is created
+2016-04-11 20:31:12.859375 I | etcdserver: start to snapshot (applied: 2778936, lastsnap: 2768906)
+2016-04-11 20:31:12.866941 I | etcdserver: saved snapshot at index 2778936
+2016-04-11 20:31:12.867203 I | etcdserver: compacted raft log at 2773936
+2016-04-11 20:31:13.162408 I | etcdserver: start to snapshot (applied: 2788995, lastsnap: 2778936)
+2016-04-11 20:31:13.172920 I | etcdserver: saved snapshot at index 2788995
+2016-04-11 20:31:13.173190 I | etcdserver: compacted raft log at 2783995
+2016-04-11 20:31:13.475079 I | etcdserver: start to snapshot (applied: 2799052, lastsnap: 2788995)
+2016-04-11 20:31:13.493037 I | etcdserver: saved snapshot at index 2799052
+2016-04-11 20:31:13.493228 I | etcdserver: compacted raft log at 2794052
+2016-04-11 20:31:14.880829 I | etcdserver: start to snapshot (applied: 2809404, lastsnap: 2799052)
+2016-04-11 20:31:14.894910 I | etcdserver: saved snapshot at index 2809404
+2016-04-11 20:31:14.895298 I | etcdserver: compacted raft log at 2804404
+2016-04-11 20:31:15.251389 I | etcdserver: start to snapshot (applied: 2819479, lastsnap: 2809404)
+2016-04-11 20:31:15.262082 I | etcdserver: saved snapshot at index 2819479
+2016-04-11 20:31:15.262265 I | etcdserver: compacted raft log at 2814479
+2016-04-11 20:31:15.571028 I | etcdserver: start to snapshot (applied: 2829489, lastsnap: 2819479)
+2016-04-11 20:31:15.577139 I | etcdserver: saved snapshot at index 2829489
+2016-04-11 20:31:15.577287 I | etcdserver: compacted raft log at 2824489
+2016-04-11 20:31:15.883187 I | etcdserver: start to snapshot (applied: 2839821, lastsnap: 2829489)
+2016-04-11 20:31:15.895774 I | etcdserver: saved snapshot at index 2839821
+2016-04-11 20:31:15.895932 I | etcdserver: compacted raft log at 2834821
+2016-04-11 20:31:16.765994 I | etcdserver: start to snapshot (applied: 2849878, lastsnap: 2839821)
+2016-04-11 20:31:16.775374 I | etcdserver: saved snapshot at index 2849878
+2016-04-11 20:31:16.775624 I | etcdserver: compacted raft log at 2844878
+2016-04-11 20:31:17.134696 I | etcdserver: start to snapshot (applied: 2859932, lastsnap: 2849878)
+2016-04-11 20:31:17.143675 I | etcdserver: saved snapshot at index 2859932
+2016-04-11 20:31:17.143867 I | etcdserver: compacted raft log at 2854932
+2016-04-11 20:31:17.499356 I | etcdserver: start to snapshot (applied: 2869993, lastsnap: 2859932)
+2016-04-11 20:31:17.509068 I | etcdserver: saved snapshot at index 2869993
+2016-04-11 20:31:17.509303 I | etcdserver: compacted raft log at 2864993
+2016-04-11 20:31:18.919434 I | etcdserver: start to snapshot (applied: 2880989, lastsnap: 2869993)
+2016-04-11 20:31:18.925301 I | etcdserver: saved snapshot at index 2880989
+2016-04-11 20:31:18.925578 I | etcdserver: compacted raft log at 2875989
+2016-04-11 20:31:19.317751 I | etcdserver: start to snapshot (applied: 2891036, lastsnap: 2880989)
+2016-04-11 20:31:19.329100 I | etcdserver: saved snapshot at index 2891036
+2016-04-11 20:31:19.329277 I | etcdserver: compacted raft log at 2886036
+2016-04-11 20:31:19.684471 I | etcdserver: start to snapshot (applied: 2901127, lastsnap: 2891036)
+2016-04-11 20:31:19.693300 I | etcdserver: saved snapshot at index 2901127
+2016-04-11 20:31:19.693498 I | etcdserver: compacted raft log at 2896127
+2016-04-11 20:31:20.023211 I | etcdserver: start to snapshot (applied: 2911136, lastsnap: 2901127)
+2016-04-11 20:31:20.037293 I | etcdserver: saved snapshot at index 2911136
+2016-04-11 20:31:20.038525 I | etcdserver: compacted raft log at 2906136
+2016-04-11 20:31:20.892629 I | etcdserver: start to snapshot (applied: 2921166, lastsnap: 2911136)
+2016-04-11 20:31:20.903537 I | etcdserver: saved snapshot at index 2921166
+2016-04-11 20:31:20.903695 I | etcdserver: compacted raft log at 2916166
+2016-04-11 20:31:21.218892 I | etcdserver: start to snapshot (applied: 2931210, lastsnap: 2921166)
+2016-04-11 20:31:21.228462 I | etcdserver: saved snapshot at index 2931210
+2016-04-11 20:31:21.228646 I | etcdserver: compacted raft log at 2926210
+2016-04-11 20:31:21.561838 I | etcdserver: start to snapshot (applied: 2941257, lastsnap: 2931210)
+2016-04-11 20:31:21.574342 I | etcdserver: saved snapshot at index 2941257
+2016-04-11 20:31:21.574533 I | etcdserver: compacted raft log at 2936257
+2016-04-11 20:31:22.842537 I | wal: segmented wal file /home/gyuho/data.etcd/member/wal/0000000000000011-00000000002d086a.wal is created
+2016-04-11 20:31:22.904808 I | etcdserver: start to snapshot (applied: 2951437, lastsnap: 2941257)
+2016-04-11 20:31:22.918909 I | etcdserver: saved snapshot at index 2951437
+2016-04-11 20:31:22.919301 I | etcdserver: compacted raft log at 2946437
+2016-04-11 20:31:23.234297 I | etcdserver: start to snapshot (applied: 2961468, lastsnap: 2951437)
+2016-04-11 20:31:23.249835 I | etcdserver: saved snapshot at index 2961468
+2016-04-11 20:31:23.250034 I | etcdserver: compacted raft log at 2956468
+2016-04-11 20:31:23.601206 I | etcdserver: start to snapshot (applied: 2971630, lastsnap: 2961468)
+2016-04-11 20:31:23.605372 I | etcdserver: saved snapshot at index 2971630
+2016-04-11 20:31:23.605636 I | etcdserver: compacted raft log at 2966630
+2016-04-11 20:31:23.953357 I | etcdserver: start to snapshot (applied: 2981707, lastsnap: 2971630)
+2016-04-11 20:31:23.963957 I | etcdserver: saved snapshot at index 2981707
+2016-04-11 20:31:23.964133 I | etcdserver: compacted raft log at 2976707
+2016-04-11 20:31:24.831097 I | etcdserver: start to snapshot (applied: 2991709, lastsnap: 2981707)
+2016-04-11 20:31:24.841129 I | etcdserver: saved snapshot at index 2991709
+2016-04-11 20:31:24.841431 I | etcdserver: compacted raft log at 2986709
+2016-04-11 20:31:25.334113 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000253a13.snap successfully
+2016-04-11 20:31:25.334181 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000256205.snap successfully
+2016-04-11 20:31:25.334214 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000258966.snap successfully
+2016-04-11 20:31:25.334244 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000025b10e.snap successfully
+2016-04-11 20:31:25.334271 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000025d838.snap successfully
+2016-04-11 20:31:25.334304 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000260157.snap successfully
+2016-04-11 20:31:25.334331 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000262a65.snap successfully
+2016-04-11 20:31:25.334356 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000265184.snap successfully
+2016-04-11 20:31:25.334391 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000267938.snap successfully
+2016-04-11 20:31:25.334423 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000026a285.snap successfully
+2016-04-11 20:31:25.334449 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000026ca10.snap successfully
+2016-04-11 20:31:25.334474 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000026f180.snap successfully
+2016-04-11 20:31:25.334499 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000272000.snap successfully
+2016-04-11 20:31:25.334526 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000274751.snap successfully
+2016-04-11 20:31:25.334562 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000276e8c.snap successfully
+2016-04-11 20:31:25.334588 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002795d8.snap successfully
+2016-04-11 20:31:25.334613 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000027c022.snap successfully
+2016-04-11 20:31:25.334639 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000027e771.snap successfully
+2016-04-11 20:31:25.334664 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000280f3a.snap successfully
+2016-04-11 20:31:25.334693 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002842a9.snap successfully
+2016-04-11 20:31:25.334720 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000286a1d.snap successfully
+2016-04-11 20:31:25.334745 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000289193.snap successfully
+2016-04-11 20:31:25.334770 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000028c966.snap successfully
+2016-04-11 20:31:25.334795 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000028f161.snap successfully
+2016-04-11 20:31:25.334820 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002918aa.snap successfully
+2016-04-11 20:31:25.334845 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000294f08.snap successfully
+2016-04-11 20:31:25.334871 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000297690.snap successfully
+2016-04-11 20:31:25.334895 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-0000000000299dd3.snap successfully
+2016-04-11 20:31:25.334922 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000029ca83.snap successfully
+2016-04-11 20:31:25.334948 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-000000000029f1b8.snap successfully
+2016-04-11 20:31:25.334974 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002a18e9.snap successfully
+2016-04-11 20:31:25.334998 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002a400a.snap successfully
+2016-04-11 20:31:25.335023 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002a6738.snap successfully
+2016-04-11 20:31:25.335049 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002a8e83.snap successfully
+2016-04-11 20:31:25.335073 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002ab5cc.snap successfully
+2016-04-11 20:31:25.335098 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002ade3c.snap successfully
+2016-04-11 20:31:25.335122 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002b0597.snap successfully
+2016-04-11 20:31:25.335147 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002b2cb1.snap successfully
+2016-04-11 20:31:25.335172 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002b550d.snap successfully
+2016-04-11 20:31:25.335198 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002b7c56.snap successfully
+2016-04-11 20:31:25.335224 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002ba39c.snap successfully
+2016-04-11 20:31:25.335251 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002bcae9.snap successfully
+2016-04-11 20:31:25.335276 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002bf5dd.snap successfully
+2016-04-11 20:31:25.335300 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002c1d1c.snap successfully
+2016-04-11 20:31:25.335331 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002c4487.snap successfully
+2016-04-11 20:31:25.335360 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002c6ba0.snap successfully
+2016-04-11 20:31:25.335393 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002c92ce.snap successfully
+2016-04-11 20:31:25.335420 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002cba0a.snap successfully
+2016-04-11 20:31:25.335445 I | fileutil: purged file /home/gyuho/data.etcd/member/snap/0000000000000003-00000000002ce149.snap successfully
+2016-04-11 20:31:25.417079 I | fileutil: purged file /home/gyuho/data.etcd/member/wal/000000000000000a-00000000001a812f.wal successfully
+2016-04-11 20:31:25.425042 I | fileutil: purged file /home/gyuho/data.etcd/member/wal/000000000000000b-00000000001d270e.wal successfully
+2016-04-11 20:31:25.432401 I | fileutil: purged file /home/gyuho/data.etcd/member/wal/000000000000000c-00000000001fcc51.wal successfully
+2016-04-11 20:31:32.806873 E | rafthttp: failed to dial 8b1cff98eebdba1d on stream MsgApp v2 (dial tcp 10.240.0.17:2380: getsockopt: connection refused)
+2016-04-11 20:31:32.806917 I | rafthttp: the connection with 8b1cff98eebdba1d became inactive
+2016-04-11 20:31:33.807694 E | rafthttp: failed to dial 66358a82ef379101 on stream Message (dial tcp 10.240.0.18:2380: getsockopt: connection refused)
+2016-04-11 20:31:33.807739 I | rafthttp: the connection with 66358a82ef379101 became inactive
+2016-04-11 20:31:34.389482 I | raft: b33da349595da114 is starting a new election at term 3
+2016-04-11 20:31:34.389548 I | raft: b33da349595da114 became candidate at term 4
+2016-04-11 20:31:34.389557 I | raft: b33da349595da114 received vote from b33da349595da114 at term 4
+2016-04-11 20:31:34.389570 I | raft: b33da349595da114 [logterm: 3, index: 3000506] sent vote request to 66358a82ef379101 at term 4
+2016-04-11 20:31:34.389581 I | raft: b33da349595da114 [logterm: 3, index: 3000506] sent vote request to 8b1cff98eebdba1d at term 4
+2016-04-11 20:31:34.389592 I | raft: raft.node: b33da349595da114 lost leader 8b1cff98eebdba1d at term 4
+2016-04-11 20:31:34.706081 N | osutil: received terminated signal, shutting down...
