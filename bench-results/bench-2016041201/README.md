@@ -10,7 +10,7 @@
   - Java HotSpot(TM) 64-Bit Server VM (build 25.74-b02, mixed mode)
 - etcd v3 (master branch)
 - Zookeeper v3.4.8
-
+- Consul v0.6.4
 
 
 <br><br><hr>
