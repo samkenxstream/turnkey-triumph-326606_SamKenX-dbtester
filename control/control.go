@@ -15,11 +15,9 @@
 package control
 
 import (
-	"encoding/binary"
 	"fmt"
 	"io/ioutil"
 	"log"
-	"math/rand"
 	"os"
 	"strings"
 	"sync"
@@ -213,7 +211,8 @@ func step2(cfg Config) error {
 		requests := make(chan request, cfg.Step2.Clients)
 		bar = pb.New(cfg.Step2.TotalRequests)
 
-		k, v := make([]byte, cfg.Step2.KeySize), string(mustRandBytes(cfg.Step2.ValueSize))
+		v := randBytes(cfg.Step2.ValueSize)
+		vs := string(v)
 
 		bar.Format("Bom !")
 		bar.Start()
@@ -269,24 +268,20 @@ func step2(cfg Config) error {
 					}()
 				}
 
-				if cfg.Step2.SequentialKeys {
-					binary.PutVarint(k, int64(i%cfg.Step2.KeySpaceSize))
-				} else {
-					binary.PutVarint(k, int64(rand.Intn(cfg.Step2.KeySpaceSize)))
-				}
+				k := sequentialKey(cfg.Step2.KeySize, i)
 
 				switch cfg.Database {
 				case "etcdv2":
-					requests <- request{etcdv2Op: etcdv2Op{key: string(k), value: v}}
+					requests <- request{etcdv2Op: etcdv2Op{key: k, value: vs}}
 
 				case "etcdv3":
-					requests <- request{etcdv3Op: clientv3.OpPut(string(k), v)}
+					requests <- request{etcdv3Op: clientv3.OpPut(k, vs)}
 
 				case "zk", "zookeeper":
-					requests <- request{zkOp: zkOp{key: "/" + string(k), value: []byte(v)}}
+					requests <- request{zkOp: zkOp{key: "/" + k, value: v}}
 
 				case "consul":
-					requests <- request{consulOp: consulOp{key: string(k), value: []byte(v)}}
+					requests <- request{consulOp: consulOp{key: k, value: v}}
 				}
 			}
 			close(requests)

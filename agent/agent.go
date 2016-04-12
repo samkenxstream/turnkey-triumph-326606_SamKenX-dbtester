@@ -190,7 +190,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 	}
 
 	if t.req.GoogleCloudStorageKey != "" {
-		if err := toFile(t.req.GoogleCloudStorageKey, filepath.Join(globalFlags.WorkingDirectory, "key.json")); err != nil {
+		if err := toFile(t.req.GoogleCloudStorageKey, filepath.Join(globalFlags.WorkingDirectory, "gcloud-key.json")); err != nil {
 			return nil, err
 		}
 	}

@@ -465,3 +465,13 @@ func gracefulClose(resp *http.Response) {
 	io.Copy(ioutil.Discard, resp.Body)
 	resp.Body.Close()
 }
+
+// sequentialKey returns '00012' when size is 5 and num is 12.
+func sequentialKey(size, num int) string {
+	txt := fmt.Sprintf("%d", num)
+	if len(txt) > size {
+		return txt
+	}
+	delta := size - len(txt)
+	return strings.Repeat("0", delta) + txt
+}

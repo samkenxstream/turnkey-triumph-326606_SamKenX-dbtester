@@ -54,8 +54,6 @@ type Config struct {
 		KeySize               int    `yaml:"key_size"`
 		ValueSize             int    `yaml:"value_size"`
 		TotalRequests         int    `yaml:"total_requests"`
-		KeySpaceSize          int    `yaml:"key_space_size"`
-		SequentialKeys        bool   `yaml:"sequential_keys"`
 		Etcdv3CompactionCycle int    `yaml:"etcdv3_compaction_cycle"`
 	} `yaml:"step2"`
 

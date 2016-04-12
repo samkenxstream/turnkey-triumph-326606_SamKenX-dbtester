@@ -30,8 +30,6 @@ step2:
     connections: 100
     clients: 100
     key_size: 64
-    key_space_size: 1
-    sequential_keys: false
     value_size: 256
     total_requests: 3000000
     etcdv3_compaction_cycle: 0
