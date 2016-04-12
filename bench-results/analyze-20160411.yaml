@@ -28,7 +28,7 @@ step3:
     - lines:
       - column: avg_latency_ms_etcd_v3
         legend: etcd v3
-      - column: avg_latency_ms_zk_v3.4.8
+      - column: avg_latency_ms_zookeeper_v3.4.8
         legend: Zookeeper v3.4.8
       x_axis: Second
       y_axis: Latency(millisecond)
@@ -39,7 +39,7 @@ step3:
     - lines:
       - column: throughput_etcd_v3
         legend: etcd v3
-      - column: throughput_zk_v3.4.8
+      - column: throughput_zookeeper_v3.4.8
         legend: Zookeeper v3.4.8
       x_axis: Second
       y_axis: Throughput
@@ -50,7 +50,7 @@ step3:
     - lines:
       - column: avg_cpu_etcd_v3
         legend: etcd v3
-      - column: avg_cpu_zk_v3.4.8
+      - column: avg_cpu_zookeeper_v3.4.8
         legend: Zookeeper v3.4.8
       x_axis: Second
       y_axis: CPU
@@ -61,7 +61,7 @@ step3:
     - lines:
       - column: avg_memory_mb_etcd_v3
         legend: etcd v3
-      - column: avg_memory_mb_zk_v3.4.8
+      - column: avg_memory_mb_zookeeper_v3.4.8
         legend: Zookeeper v3.4.8
       x_axis: Second
       y_axis: Memory(MB)
