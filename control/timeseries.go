@@ -68,20 +68,46 @@ func (sp *secondPoints) getTimeSeries() TimeSeries {
 	sp.mu.Lock()
 	defer sp.mu.Unlock()
 
-	tslice := make(TimeSeries, len(sp.tm))
-	i := 0
-	log.Printf("getTimeSeries has started on %d results\n", len(sp.tm))
+	var (
+		first        = true
+		minTs, maxTs int64
+	)
+	for k := range sp.tm {
+		if first {
+			minTs = k
+			maxTs = k
+			first = false
+		}
+		if minTs > k {
+			minTs = k
+		}
+		if maxTs < k {
+			maxTs = k
+		}
+	}
+	for ti := minTs; ti < maxTs; ti++ {
+		if _, ok := sp.tm[ti]; !ok { // fill-in empties
+			sp.tm[ti] = secondPoint{totalLatency: 0, count: 0}
+		}
+	}
+
+	var (
+		tslice = make(TimeSeries, len(sp.tm))
+		i      int
+	)
 	for k, v := range sp.tm {
+		var lat time.Duration
+		if v.count > 0 {
+			lat = time.Duration(v.totalLatency) / time.Duration(v.count)
+		}
 		tslice[i] = timeSeries{
 			timestamp:  k,
-			avgLatency: time.Duration(v.totalLatency) / time.Duration(v.count),
+			avgLatency: lat,
 			throughPut: v.count,
 		}
 		i++
-		if i%100 == 0 {
-			log.Printf("processing timeseries at %d / %d", i, len(sp.tm))
-		}
 	}
+
 	sort.Sort(tslice)
 	return tslice
 }
