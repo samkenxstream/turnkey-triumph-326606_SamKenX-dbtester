@@ -54,20 +54,20 @@
 <path d="M67.088,49.587L72.127,60.942L77.166,54.896L82.206,52.632L87.245,52.695L92.284,52.088L97.324,51.83L102.36,52.122L107.4,51.695L112.44,52.925L117.48,52.136L122.52,57.248L127.56,57.904L132.6,51.62L137.64,51.574L142.68,51.597L147.72,51.489L152.76,56.403L157.8,52.007L162.84,52.198L167.87,69.225L172.91,51.588L177.95,52.316L182.99,52.063L188.03,53.207L193.07,51.812L198.11,53.131L203.15,51.836L208.19,51.555L213.23,47.03L218.27,71.77L223.31,50.852L228.35,104.79" style="fill:none;stroke:#5A9BD4;stroke-width:1.875;stroke-dasharray:2.5,2.5" />
 <path d="M67.088,49.479L72.127,48.852L77.166,53.063L82.206,54.259L87.245,52.677L92.284,51.565L97.324,52.628L102.36,51.404L107.4,51.563L112.44,51.364L117.48,56.091L122.52,52.393L127.56,53.24L132.6,51.284L137.64,51.522L142.68,52.325L147.72,56.43L152.76,50.908L157.8,51.12L162.84,62.926L167.87,51.166L172.91,50.97L177.95,52.374L182.99,51.495L188.03,51.534L193.07,51.491L198.11,50.78L203.15,47.03" style="fill:none;stroke:#FAA75B;stroke-width:1.875;stroke-dasharray:1.25,1.25" />
 <path d="M67.088,64.399L72.127,68.105L77.166,67.997L82.206,67.821L87.245,68.831L92.284,68.869L97.324,67.994L102.36,69.498L107.4,68.061L112.44,68.525L117.48,67.786L122.52,67.88L127.56,69.229L132.6,67.713L137.64,69.304L142.68,68.691L147.72,68.328L152.76,69.461L157.8,68.837L162.84,67.268L167.87,68.542L172.91,69.349L177.95,68.116L182.99,68.265L188.03,68.396L193.07,68.08L198.11,66.542L203.15,68.63L208.19,67.322L213.23,68.56L218.27,70.455L223.31,69.615L228.35,65.579L233.39,69.169L238.43,69.251L243.47,66.948L248.5,69.196L253.54,72.156L258.58,66.185L263.62,70.166L268.66,68.033L273.7,69.445L278.74,71.581L283.78,66.132L288.82,69.464L293.86,66.128L298.9,72.893L303.94,72.553L308.98,75.036L314.02,71.324L319.06,74.707L324.1,72.031L329.13,71.134L334.17,76.538L339.21,71.113L344.25,75.11L349.29,67.767L354.33,71.283L359.37,66.556L364.41,71.514L369.45,65.993L374.49,71.773L379.53,68.189L384.57,70.001L389.61,67.593L394.65,66.901L399.69,71.873L404.73,66.017L409.76,71.817L414.8,66.657L419.84,67.158L424.88,70.51L429.92,66.322L434.96,71.321L440,66.573L445.04,66.689L450.08,71.702L455.12,67.017L460.16,71.95L465.2,65.687L470.24,67.293L475.28,72.775L480.32,66.984L485.35,66.722L490.39,74.49L495.43,66.551L500.47,67.058L505.51,72.771L510.55,65.833L515.59,65.683L520.63,75.625L525.67,66.415L530.71,66.97L535.75,74.14L540.79,68.214L545.83,71.794L550.87,66.408L555.91,76.722L560.95,66.602L565.98,70.488L571.02,76.216L576.06,67.467L581.1,68.664L586.14,70.649L591.18,74.305L596.22,66.496L601.26,67.843L606.3,73.926L611.34,82.642L616.38,73.652L621.42,69.556" style="fill:none;stroke:#9E67AB;stroke-width:1.875;stroke-dasharray:6.25,2.5,1.25,2.5" />
-<path d="M1055,694.3L1080,694.3" style="fill:none;stroke:#9E67AB;stroke-width:1.875;stroke-dasharray:6.25,2.5,1.25,2.5" />
-<text x="959.12" y="-687.85" transform="scale(1, -1)"
-	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:12pt">Consul v0.6.4</text>
-<path d="M1055,680L1080,680" style="fill:none;stroke:#F15A60;stroke-width:1.875" />
-<text x="1002.5" y="-673.56" transform="scale(1, -1)"
+<path d="M1055,694.3L1080,694.3" style="fill:none;stroke:#F15A60;stroke-width:1.875" />
+<text x="1002.5" y="-687.85" transform="scale(1, -1)"
 	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:12pt">etcd v2</text>
-<path d="M1055,665.71L1080,665.71" style="fill:none;stroke:#7AC36A;stroke-width:1.875;stroke-dasharray:7.5,2.5" />
-<text x="1002.5" y="-659.26" transform="scale(1, -1)"
+<path d="M1055,680L1080,680" style="fill:none;stroke:#7AC36A;stroke-width:1.875;stroke-dasharray:7.5,2.5" />
+<text x="1002.5" y="-673.56" transform="scale(1, -1)"
 	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:12pt">etcd v3</text>
-<path d="M1055,651.41L1080,651.41" style="fill:none;stroke:#5A9BD4;stroke-width:1.875;stroke-dasharray:2.5,2.5" />
-<text x="934.1" y="-644.97" transform="scale(1, -1)"
+<path d="M1055,665.71L1080,665.71" style="fill:none;stroke:#5A9BD4;stroke-width:1.875;stroke-dasharray:2.5,2.5" />
+<text x="934.1" y="-659.26" transform="scale(1, -1)"
 	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:12pt">Zookeeper v3.4.8</text>
-<path d="M1055,637.12L1080,637.12" style="fill:none;stroke:#FAA75B;stroke-width:1.875;stroke-dasharray:1.25,1.25" />
-<text x="833.22" y="-630.67" transform="scale(1, -1)"
+<path d="M1055,651.41L1080,651.41" style="fill:none;stroke:#FAA75B;stroke-width:1.875;stroke-dasharray:1.25,1.25" />
+<text x="833.22" y="-644.97" transform="scale(1, -1)"
 	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:12pt">Zookeeper v3.4.8 (No Snapshot)</text>
+<path d="M1055,637.12L1080,637.12" style="fill:none;stroke:#9E67AB;stroke-width:1.875;stroke-dasharray:6.25,2.5,1.25,2.5" />
+<text x="959.12" y="-630.67" transform="scale(1, -1)"
+	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:12pt">Consul v0.6.4</text>
 </g>
 </svg>

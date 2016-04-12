@@ -506,7 +506,7 @@ func points(col dataframe.Column) (plotter.XYs, error) {
 	if !ok {
 		return nil, fmt.Errorf("BackNonNil not found")
 	}
-	rowN, ok := col.FindValue(bv)
+	rowN, ok := col.FindLastValue(bv)
 	if !ok {
 		return nil, fmt.Errorf("not found %v", bv)
 	}
