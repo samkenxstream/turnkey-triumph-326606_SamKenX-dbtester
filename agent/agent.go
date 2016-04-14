@@ -509,9 +509,10 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					}
 					log.Printf("Uploading %s to %s", srcDatabaseLogPath, dstDatabaseLogPath)
 					var uerr error
-					for k := 0; k < 5; k++ {
+					for k := 0; k < 30; k++ {
 						if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcDatabaseLogPath, dstDatabaseLogPath); uerr != nil {
 							log.Println(uerr)
+							time.Sleep(2 * time.Second)
 							continue
 						} else {
 							break
@@ -524,9 +525,10 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 						dstMonitorResultPath = fmt.Sprintf("%s-%d-%s", t.req.TestName, t.req.ServerIndex+1, filepath.Base(t.req.MonitorLogPath))
 					}
 					log.Printf("Uploading %s to %s", srcMonitorResultPath, dstMonitorResultPath)
-					for k := 0; k < 5; k++ {
+					for k := 0; k < 30; k++ {
 						if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcMonitorResultPath, dstMonitorResultPath); uerr != nil {
 							log.Println(uerr)
+							time.Sleep(2 * time.Second)
 							continue
 						} else {
 							break
@@ -539,9 +541,10 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 						dstAgentLogPath = fmt.Sprintf("%s-%d-%s", t.req.TestName, t.req.ServerIndex+1, filepath.Base(agentLogPath))
 					}
 					log.Printf("Uploading %s to %s", srcAgentLogPath, dstAgentLogPath)
-					for k := 0; k < 5; k++ {
+					for k := 0; k < 30; k++ {
 						if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcAgentLogPath, dstAgentLogPath); uerr != nil {
 							log.Println(uerr)
+							time.Sleep(2 * time.Second)
 							continue
 						} else {
 							break
