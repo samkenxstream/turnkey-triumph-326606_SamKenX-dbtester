@@ -6,9 +6,9 @@ google_cloud_storage_key_path: /home/gyuho/gcloud-key.json
 google_cloud_storage_bucket_name: bench-2016041401
 
 peer_ips:
-    - 10.240.0.32
-    - 10.240.0.33
-    - 10.240.0.34
+    - 10.240.0.7
+    - 10.240.0.13
+    - 10.240.0.14
 
 agent_port: 3500
 database_port: 2181
