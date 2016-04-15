@@ -1,11 +1,15 @@
+Please let us know or file an issue if:
 
-We keep full logs here and cloud storage (if it's too big).
+- Need help with running this testing suite
+- Test results are wrong
 
-- If you want to look at full logs
-- If you need help with running this testing suite
-- If you think test results are wrong
+We keep full logs here and cloud storage(when it's over 1MB):
 
-Please let us know or file an issue.
+- https://console.cloud.google.com/storage/browser/bench-2016041501
+- https://console.cloud.google.com/storage/browser/bench-2016041401
+- https://console.cloud.google.com/storage/browser/bench-2016041203
+- https://console.cloud.google.com/storage/browser/bench-2016041202
+- https://console.cloud.google.com/storage/browser/bench-2016041201
 
 Thanks!
 
