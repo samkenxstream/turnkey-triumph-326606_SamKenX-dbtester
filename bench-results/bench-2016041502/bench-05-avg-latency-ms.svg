@@ -5,8 +5,8 @@
 	xmlns:xlink="http://www.w3.org/1999/xlink">
 <g transform="scale(1, -1) translate(0, -720)">
 <path d="M0,0L1080,0L1080,720L0,720Z" style="fill:#FFFFFF" />
-<text x="262.4" y="-706.41" transform="scale(1, -1)"
-	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:12pt">Write 2M keys, 1,000 clients, 8-byte key, 256-byte value (Test, Latency(millisecond)</text>
+<text x="253.65" y="-706.41" transform="scale(1, -1)"
+	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:12pt">Write 2M keys, 1,000 clients, 8-byte key, 256-byte value (Test 5), Latency(millisecond)</text>
 <text x="548.11" y="-4.965" transform="scale(1, -1)"
 	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:12pt">Second</text>
 <text x="63.613" y="-19.142" transform="scale(1, -1)"

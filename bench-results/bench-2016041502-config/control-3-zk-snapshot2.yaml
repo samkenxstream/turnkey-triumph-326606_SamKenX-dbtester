@@ -7,8 +7,8 @@ google_cloud_storage_bucket_name: bench-2016041502
 
 peer_ips:
     - 10.240.0.16
-    - 10.240.0.18
     - 10.240.0.17
+    - 10.240.0.18
 
 agent_port: 3500
 database_port: 2181

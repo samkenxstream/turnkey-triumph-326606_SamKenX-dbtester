@@ -1,9 +1,10 @@
 
 titles:
-  - Write 2M keys, 1,000 clients, 8-byte key, 256-byte value (Test #1)
-  - Write 2M keys, 1,000 clients, 8-byte key, 256-byte value (Test #2)
-  - Write 2M keys, 1,000 clients, 8-byte key, 256-byte value (Test #4)
-  - Write 2M keys, 1,000 clients, 8-byte key, 256-byte value (Test #5)
+  - Write 2M keys, 1,000 clients, 8-byte key, 256-byte value (Test 1)
+  - Write 2M keys, 1,000 clients, 8-byte key, 256-byte value (Test 2)
+  - Write 2M keys, 1,000 clients, 8-byte key, 256-byte value (Test 3)
+  - Write 2M keys, 1,000 clients, 8-byte key, 256-byte value (Test 4)
+  - Write 2M keys, 1,000 clients, 8-byte key, 256-byte value (Test 5)
 
 step1:
   - data_path_list:
@@ -47,6 +48,27 @@ step1:
     - bench-2016041502/bench-02-zk-snapshot3-3-monitor.csv
     data_benchmark_path: bench-2016041502/bench-02-zk-snapshot3-timeseries.csv
     output_path: bench-2016041502/bench-02-zk-snapshot3-aggregated.csv
+
+  - data_path_list:
+    - bench-2016041502/bench-03-zk-snapshot1-1-monitor.csv
+    - bench-2016041502/bench-03-zk-snapshot1-2-monitor.csv
+    - bench-2016041502/bench-03-zk-snapshot1-3-monitor.csv
+    data_benchmark_path: bench-2016041502/bench-03-zk-snapshot1-timeseries.csv
+    output_path: bench-2016041502/bench-03-zk-snapshot1-aggregated.csv
+
+  - data_path_list:
+    - bench-2016041502/bench-03-zk-snapshot2-1-monitor.csv
+    - bench-2016041502/bench-03-zk-snapshot2-2-monitor.csv
+    - bench-2016041502/bench-03-zk-snapshot2-3-monitor.csv
+    data_benchmark_path: bench-2016041502/bench-03-zk-snapshot2-timeseries.csv
+    output_path: bench-2016041502/bench-03-zk-snapshot2-aggregated.csv
+
+  - data_path_list:
+    - bench-2016041502/bench-03-zk-snapshot3-1-monitor.csv
+    - bench-2016041502/bench-03-zk-snapshot3-2-monitor.csv
+    - bench-2016041502/bench-03-zk-snapshot3-3-monitor.csv
+    data_benchmark_path: bench-2016041502/bench-03-zk-snapshot3-timeseries.csv
+    output_path: bench-2016041502/bench-03-zk-snapshot3-aggregated.csv
 
   - data_path_list:
     - bench-2016041502/bench-04-zk-snapshot1-1-monitor.csv
@@ -108,6 +130,15 @@ step2:
       - path: bench-2016041502/bench-02-zk-snapshot3-aggregated.csv
         name: zookeeper_v3.4.8_snapshot3
     output_path: bench-2016041502/bench-02-all-aggregated.csv
+
+  - data_list:
+      - path: bench-2016041502/bench-03-zk-snapshot1-aggregated.csv
+        name: zookeeper_v3.4.8_snapshot1
+      - path: bench-2016041502/bench-03-zk-snapshot2-aggregated.csv
+        name: zookeeper_v3.4.8_snapshot2
+      - path: bench-2016041502/bench-03-zk-snapshot3-aggregated.csv
+        name: zookeeper_v3.4.8_snapshot3
+    output_path: bench-2016041502/bench-03-all-aggregated.csv
 
   - data_list:
       - path: bench-2016041502/bench-04-zk-snapshot1-aggregated.csv
@@ -237,6 +268,61 @@ step3:
       output_path_list:
         - bench-2016041502/bench-02-avg-memory.svg
         - bench-2016041502/bench-02-avg-memory.png
+
+  - data_path: bench-2016041502/bench-03-all-aggregated.csv
+
+    plot_list:
+    - lines:
+      - column: avg_latency_ms_zookeeper_v3.4.8_snapshot1
+        legend: Zookeeper v3.4.8 (snapCount 100000)
+      - column: avg_latency_ms_zookeeper_v3.4.8_snapshot2
+        legend: Zookeeper v3.4.8 (snapCount 500000)
+      - column: avg_latency_ms_zookeeper_v3.4.8_snapshot3
+        legend: Zookeeper v3.4.8 (snapCount 1000000)
+      x_axis: Second
+      y_axis: Latency(millisecond)
+      output_path_list:
+        - bench-2016041502/bench-03-avg-latency-ms.svg
+        - bench-2016041502/bench-03-avg-latency-ms.png
+
+    - lines:
+      - column: throughput_zookeeper_v3.4.8_snapshot1
+        legend: Zookeeper v3.4.8 (snapCount 100000)
+      - column: throughput_zookeeper_v3.4.8_snapshot2
+        legend: Zookeeper v3.4.8 (snapCount 500000)
+      - column: throughput_zookeeper_v3.4.8_snapshot3
+        legend: Zookeeper v3.4.8 (snapCount 1000000)
+      x_axis: Second
+      y_axis: Throughput
+      output_path_list:
+        - bench-2016041502/bench-03-throughput.svg
+        - bench-2016041502/bench-03-throughput.png
+
+    - lines:
+      - column: avg_cpu_zookeeper_v3.4.8_snapshot1
+        legend: Zookeeper v3.4.8 (snapCount 100000)
+      - column: avg_cpu_zookeeper_v3.4.8_snapshot2
+        legend: Zookeeper v3.4.8 (snapCount 500000)
+      - column: avg_cpu_zookeeper_v3.4.8_snapshot3
+        legend: Zookeeper v3.4.8 (snapCount 1000000)
+      x_axis: Second
+      y_axis: CPU
+      output_path_list:
+        - bench-2016041502/bench-03-avg-cpu.svg
+        - bench-2016041502/bench-03-avg-cpu.png
+
+    - lines:
+      - column: avg_memory_mb_zookeeper_v3.4.8_snapshot1
+        legend: Zookeeper v3.4.8 (snapCount 100000)
+      - column: avg_memory_mb_zookeeper_v3.4.8_snapshot2
+        legend: Zookeeper v3.4.8 (snapCount 500000)
+      - column: avg_memory_mb_zookeeper_v3.4.8_snapshot3
+        legend: Zookeeper v3.4.8 (snapCount 1000000)
+      x_axis: Second
+      y_axis: Memory(MB)
+      output_path_list:
+        - bench-2016041502/bench-03-avg-memory.svg
+        - bench-2016041502/bench-03-avg-memory.png
 
   - data_path: bench-2016041502/bench-04-all-aggregated.csv
 
@@ -386,6 +472,20 @@ step4:
           image_type: remote
         - image_title: bench-2016041502/bench-02-avg-memory
           image_path: https://storage.googleapis.com/bench-2016041502/bench-02-avg-memory.svg
+          image_type: remote
+
+    - images:
+        - image_title: bench-2016041502/bench-03-avg-latency-ms
+          image_path: https://storage.googleapis.com/bench-2016041502/bench-03-avg-latency-ms.svg
+          image_type: remote
+        - image_title: bench-2016041502/bench-03-throughput
+          image_path: https://storage.googleapis.com/bench-2016041502/bench-03-throughput.svg
+          image_type: remote
+        - image_title: bench-2016041502/bench-03-avg-cpu
+          image_path: https://storage.googleapis.com/bench-2016041502/bench-03-avg-cpu.svg
+          image_type: remote
+        - image_title: bench-2016041502/bench-03-avg-memory
+          image_path: https://storage.googleapis.com/bench-2016041502/bench-03-avg-memory.svg
           image_type: remote
 
     - images:
