@@ -9,7 +9,7 @@ Distributed database tester.
 Please let us know or file an issue if:
 
 - Need help with running this testing suite
-- Test results are wrong
+- Questions about test results
 
 We keep full logs here and cloud storage(when it's over 1MB):
 
