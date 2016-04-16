@@ -66,7 +66,7 @@ func TestReadConfig(t *testing.T) {
 	if c.Step2.BenchType != "write" {
 		t.Fatalf("unexpected %s", c.Step2.BenchType)
 	}
-	if c.Step2.ResultPath != "01-etcdv3-timeseries.csv" {
+	if c.Step2.ResultPath != "timeseries.csv" {
 		t.Fatalf("unexpected %s", c.Step2.ResultPath)
 	}
 	if c.Step2.Connections != 100 {
@@ -81,7 +81,7 @@ func TestReadConfig(t *testing.T) {
 	if c.Step3.Skip {
 		t.Fatalf("unexpected %v", c.Step3.Skip)
 	}
-	if c.Step3.ResultPath != "dbtester-01-etcdv3-result.log" {
+	if c.Step3.ResultPath != "result.log" {
 		t.Fatalf("unexpected %v", c.Step3.ResultPath)
 	}
 }

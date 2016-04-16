@@ -161,6 +161,9 @@ func (r *report) printSecondSample() {
 
 		srcCSVResultPath := cfg.Step2.ResultPath
 		dstCSVResultPath := filepath.Base(cfg.Step2.ResultPath)
+		if !strings.HasPrefix(dstCSVResultPath, cfg.TestName) {
+			dstCSVResultPath = fmt.Sprintf("%s-%s", cfg.TestName, dstCSVResultPath)
+		}
 		dstCSVResultPath = filepath.Join(cfg.GoogleCloudStorageSubDirectory, dstCSVResultPath)
 		log.Printf("Uploading %s to %s", srcCSVResultPath, dstCSVResultPath)
 
@@ -184,6 +187,9 @@ func (r *report) printSecondSample() {
 
 		srcCSVResultPath := cfg.Step3.ResultPath
 		dstCSVResultPath := filepath.Base(cfg.Step3.ResultPath)
+		if !strings.HasPrefix(dstCSVResultPath, cfg.TestName) {
+			dstCSVResultPath = fmt.Sprintf("%s-%s", cfg.TestName, dstCSVResultPath)
+		}
 		dstCSVResultPath = filepath.Join(cfg.GoogleCloudStorageSubDirectory, dstCSVResultPath)
 		log.Printf("Uploading %s to %s", srcCSVResultPath, dstCSVResultPath)
 

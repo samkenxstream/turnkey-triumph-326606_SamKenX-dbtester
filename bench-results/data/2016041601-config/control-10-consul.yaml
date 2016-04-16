@@ -25,7 +25,7 @@ step2:
     skip: false
     bench_type: write
     local_read: true
-    result_path: 10-consul-timeseries.csv
+    result_path: timeseries.csv
     connections: 1000
     clients: 1000
     key_size: 8
@@ -36,5 +36,5 @@ step2:
 # after benchmark
 step3:
     skip: false
-    result_path: 10-consul-result.log
+    result_path: result.log
 

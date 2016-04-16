@@ -25,7 +25,7 @@ step2:
     skip: false
     bench_type: write
     local_read: true
-    result_path: 01-etcdv3-timeseries.csv
+    result_path: timeseries.csv
     connections: 100
     clients: 100
     key_size: 64
@@ -36,5 +36,5 @@ step2:
 # after benchmark
 step3:
     skip: false
-    result_path: 01-etcdv3-result.log
+    result_path: result.log
 

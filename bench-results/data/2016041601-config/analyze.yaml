@@ -1,10 +1,10 @@
 
 titles:
-  - Write 2M keys, 1000-client, 8-byte key, 256-byte value
+  - Write 2M keys, 1000-client (etcdv3 100-conns), 8-byte key, 256-byte value
 
-  - Write 2M keys, 1000-client, 8-byte key, 256-byte value (etcd v3, Test 1)
-  - Write 2M keys, 1000-client, 8-byte key, 256-byte value (etcd v3, Test 2)
-  - Write 2M keys, 1000-client, 8-byte key, 256-byte value (etcd v3, Test 3)
+  - Write 2M keys, 1000-client, 100-connections, 8-byte key, 256-byte value (etcd v3, Test 1)
+  - Write 2M keys, 1000-client, 100-connections, 8-byte key, 256-byte value (etcd v3, Test 2)
+  - Write 2M keys, 1000-client, 100-connections, 8-byte key, 256-byte value (etcd v3, Test 3)
 
   - Write 500K keys, 1000-client, 8-byte key, 256-byte value (etcd v2, Test 1)
   - Write 500K keys, 1000-client, 8-byte key, 256-byte value (etcd v2, Test 2)
