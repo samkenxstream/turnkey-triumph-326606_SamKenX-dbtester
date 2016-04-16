@@ -17,13 +17,13 @@ We keep full logs here and cloud storage(when it's over 1MB):
 
 Test results:
 
-- https://github.com/coreos/dbtester/tree/master/bench-results/data/2016041601/README.md
-- https://github.com/coreos/dbtester/tree/master/bench-results/data/2016041502/README.md
-- https://github.com/coreos/dbtester/tree/master/bench-results/data/2016041501/README.md
-- https://github.com/coreos/dbtester/tree/master/bench-results/data/2016041401/README.md
-- https://github.com/coreos/dbtester/tree/master/bench-results/data/2016041203/README.md
-- https://github.com/coreos/dbtester/tree/master/bench-results/data/2016041202/README.md
-- https://github.com/coreos/dbtester/tree/master/bench-results/data/2016041201/README.md
+- https://github.com/coreos/dbtester/tree/master/bench-results/2016041601/README.md
+- https://github.com/coreos/dbtester/tree/master/bench-results/2016041502/README.md
+- https://github.com/coreos/dbtester/tree/master/bench-results/2016041501/README.md
+- https://github.com/coreos/dbtester/tree/master/bench-results/2016041401/README.md
+- https://github.com/coreos/dbtester/tree/master/bench-results/2016041203/README.md
+- https://github.com/coreos/dbtester/tree/master/bench-results/2016041202/README.md
+- https://github.com/coreos/dbtester/tree/master/bench-results/2016041201/README.md
 
 [cistat]: https://travis-ci.org/coreos/dbtester
 [dbtester-godoc]: https://godoc.org/github.com/coreos/dbtester
