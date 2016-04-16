@@ -7,9 +7,9 @@ google_cloud_storage_bucket_name: dbtester-results
 google_cloud_storage_sub_directory: 2016041601
 
 peer_ips:
-    - 10.240.0.17
-    - 10.240.0.18
-    - 10.240.0.19
+    - 10.240.0.32
+    - 10.240.0.33
+    - 10.240.0.34
 
 agent_port: 3500
 database_port: 2181

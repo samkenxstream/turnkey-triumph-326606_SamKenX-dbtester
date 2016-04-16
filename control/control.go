@@ -124,6 +124,7 @@ func step1(cfg Config) error {
 	req.GoogleCloudProjectName = cfg.GoogleCloudProjectName
 	req.GoogleCloudStorageKey = cfg.GoogleCloudStorageKey
 	req.GoogleCloudStorageBucketName = cfg.GoogleCloudStorageBucketName
+	req.GoogleCloudStorageSubDirectory = cfg.GoogleCloudStorageSubDirectory
 
 	switch cfg.Database {
 	case "etcdv2":
