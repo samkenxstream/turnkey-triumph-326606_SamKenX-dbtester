@@ -140,8 +140,6 @@ func step1(cfg Config) error {
 		req.Database = agent.Request_Consul
 	}
 
-	req.DatabaseLogPath = cfg.Step1.DatabaseLogPath
-	req.MonitorLogPath = cfg.Step1.MonitorLogPath
 	req.PeerIPString = cfg.PeerIPString
 
 	req.ZookeeperMaxClientCnxns = cfg.Step1.ZookeeperMaxClientCnxns

@@ -1,44 +1,44 @@
 # aggregate the data from each machine
 step1:
   - data_path_list:
-    - bench-20160330/bench-01-etcd-1-monitor.csv
-    - bench-20160330/bench-01-etcd-2-monitor.csv
-    - bench-20160330/bench-01-etcd-3-monitor.csv
-    data_benchmark_path: bench-20160330/bench-01-etcd-timeseries.csv
-    output_path: bench-20160330/bench-01-etcd-aggregated.csv
+    - 20160330/01-etcd-1-monitor.csv
+    - 20160330/01-etcd-2-monitor.csv
+    - 20160330/01-etcd-3-monitor.csv
+    data_benchmark_path: 20160330/01-etcd-timeseries.csv
+    output_path: 20160330/01-etcd-aggregated.csv
   - data_path_list:
-    - bench-20160330/bench-01-zk-1-monitor.csv
-    - bench-20160330/bench-01-zk-2-monitor.csv
-    - bench-20160330/bench-01-zk-3-monitor.csv
-    data_benchmark_path: bench-20160330/bench-01-zk-timeseries.csv
-    output_path: bench-20160330/bench-01-zk-aggregated.csv
+    - 20160330/01-zk-1-monitor.csv
+    - 20160330/01-zk-2-monitor.csv
+    - 20160330/01-zk-3-monitor.csv
+    data_benchmark_path: 20160330/01-zk-timeseries.csv
+    output_path: 20160330/01-zk-aggregated.csv
   - data_path_list:
-    - bench-20160330/bench-02-etcd-1-monitor.csv
-    - bench-20160330/bench-02-etcd-2-monitor.csv
-    - bench-20160330/bench-02-etcd-3-monitor.csv
-    data_benchmark_path: bench-20160330/bench-02-etcd-timeseries.csv
-    output_path: bench-20160330/bench-02-etcd-aggregated.csv
+    - 20160330/02-etcd-1-monitor.csv
+    - 20160330/02-etcd-2-monitor.csv
+    - 20160330/02-etcd-3-monitor.csv
+    data_benchmark_path: 20160330/02-etcd-timeseries.csv
+    output_path: 20160330/02-etcd-aggregated.csv
   - data_path_list:
-    - bench-20160330/bench-02-zk-1-monitor.csv
-    - bench-20160330/bench-02-zk-2-monitor.csv
-    - bench-20160330/bench-02-zk-3-monitor.csv
-    data_benchmark_path: bench-20160330/bench-02-zk-timeseries.csv
-    output_path: bench-20160330/bench-02-zk-aggregated.csv
+    - 20160330/02-zk-1-monitor.csv
+    - 20160330/02-zk-2-monitor.csv
+    - 20160330/02-zk-3-monitor.csv
+    data_benchmark_path: 20160330/02-zk-timeseries.csv
+    output_path: 20160330/02-zk-aggregated.csv
 
 # aggregate the data of each aggregated from step1
 step2:
   - data_list:
-      - path: bench-20160330/bench-01-etcd-aggregated.csv
+      - path: 20160330/01-etcd-aggregated.csv
         name: etcd_v3
-      - path: bench-20160330/bench-01-zk-aggregated.csv
+      - path: 20160330/01-zk-aggregated.csv
         name: zookeeper_3.4.8
-    output_path: bench-20160330/bench-01-all-aggregated.csv
+    output_path: 20160330/01-all-aggregated.csv
   - data_list:
-      - path: bench-20160330/bench-02-etcd-aggregated.csv
+      - path: 20160330/02-etcd-aggregated.csv
         name: etcd_v3
-      - path: bench-20160330/bench-02-zk-aggregated.csv
+      - path: 20160330/02-zk-aggregated.csv
         name: zookeeper_3.4.8
-    output_path: bench-20160330/bench-02-all-aggregated.csv
+    output_path: 20160330/02-all-aggregated.csv
 
 titles:
     - Write 300K keys, 1 client, key 64 bytes, value 256 bytes
@@ -46,7 +46,7 @@ titles:
 
 # plot graphs
 step3:
-  - data_path: bench-20160330/bench-01-all-aggregated.csv
+  - data_path: 20160330/01-all-aggregated.csv
 
     plot_list:
     - lines:
@@ -57,8 +57,8 @@ step3:
       x_axis: Second
       y_axis: Latency(millisecond)
       output_path_list:
-        - bench-20160330/bench-01-avg-latency-ms.svg
-        - bench-20160330/bench-01-avg-latency-ms.png
+        - 20160330/01-avg-latency-ms.svg
+        - 20160330/01-avg-latency-ms.png
 
     - lines:
       - column: throughput_etcd_v3
@@ -68,8 +68,8 @@ step3:
       x_axis: Second
       y_axis: Throughput
       output_path_list:
-        - bench-20160330/bench-01-throughput.svg
-        - bench-20160330/bench-01-throughput.png
+        - 20160330/01-throughput.svg
+        - 20160330/01-throughput.png
 
     - lines:
       - column: avg_cpu_etcd_v3
@@ -79,8 +79,8 @@ step3:
       x_axis: Second
       y_axis: CPU
       output_path_list:
-        - bench-20160330/bench-01-avg-cpu.svg
-        - bench-20160330/bench-01-avg-cpu.png
+        - 20160330/01-avg-cpu.svg
+        - 20160330/01-avg-cpu.png
 
     - lines:
       - column: avg_memory_mb_etcd_v3
@@ -90,10 +90,10 @@ step3:
       x_axis: Second
       y_axis: Memory(MB)
       output_path_list:
-        - bench-20160330/bench-01-avg-memory.svg
-        - bench-20160330/bench-01-avg-memory.png
+        - 20160330/01-avg-memory.svg
+        - 20160330/01-avg-memory.png
 
-  - data_path: bench-20160330/bench-02-all-aggregated.csv
+  - data_path: 20160330/02-all-aggregated.csv
 
     plot_list:
     - lines:
@@ -104,8 +104,8 @@ step3:
       x_axis: Second
       y_axis: Latency(millisecond)
       output_path_list:
-        - bench-20160330/bench-02-avg-latency-ms.svg
-        - bench-20160330/bench-02-avg-latency-ms.png
+        - 20160330/02-avg-latency-ms.svg
+        - 20160330/02-avg-latency-ms.png
 
     - lines:
       - column: throughput_etcd_v3
@@ -115,8 +115,8 @@ step3:
       x_axis: Second
       y_axis: Throughput
       output_path_list:
-        - bench-20160330/bench-02-throughput.svg
-        - bench-20160330/bench-02-throughput.png
+        - 20160330/02-throughput.svg
+        - 20160330/02-throughput.png
 
     - lines:
       - column: avg_cpu_etcd_v3
@@ -126,8 +126,8 @@ step3:
       x_axis: Second
       y_axis: CPU
       output_path_list:
-        - bench-20160330/bench-02-avg-cpu.svg
-        - bench-20160330/bench-02-avg-cpu.png
+        - 20160330/02-avg-cpu.svg
+        - 20160330/02-avg-cpu.png
 
     - lines:
       - column: avg_memory_mb_etcd_v3
@@ -137,8 +137,8 @@ step3:
       x_axis: Second
       y_axis: Memory(MB)
       output_path_list:
-        - bench-20160330/bench-02-avg-memory.svg
-        - bench-20160330/bench-02-avg-memory.png
+        - 20160330/02-avg-memory.svg
+        - 20160330/02-avg-memory.png
 
 step4:
   preface: |
@@ -152,29 +152,29 @@ step4:
       - Java HotSpot(TM) 64-Bit Server VM (build 25.74-b02, mixed mode)
   results:
     - images:
-        - image_title: bench-01-avg-latency-ms
-          image_path: bench-20160330/bench-01-avg-latency-ms.png
+        - image_title: 01-avg-latency-ms
+          image_path: 20160330/01-avg-latency-ms.png
           image_type: local
-        - image_title: bench-01-throughput
-          image_path: bench-20160330/bench-01-throughput.png
+        - image_title: 01-throughput
+          image_path: 20160330/01-throughput.png
           image_type: local
-        - image_title: bench-01-avg-cpu
-          image_path: bench-20160330/bench-01-avg-cpu.png
+        - image_title: 01-avg-cpu
+          image_path: 20160330/01-avg-cpu.png
           image_type: local
-        - image_title: bench-01-avg-memory
-          image_path: bench-20160330/bench-01-avg-memory.png
+        - image_title: 01-avg-memory
+          image_path: 20160330/01-avg-memory.png
           image_type: local
     - images:
-        - image_title: bench-02-avg-latency-ms
-          image_path: bench-20160330/bench-02-avg-latency-ms.png
+        - image_title: 02-avg-latency-ms
+          image_path: 20160330/02-avg-latency-ms.png
           image_type: local
-        - image_title: bench-02-throughput
-          image_path: bench-20160330/bench-02-throughput.png
+        - image_title: 02-throughput
+          image_path: 20160330/02-throughput.png
           image_type: local
-        - image_title: bench-02-avg-cpu
-          image_path: bench-20160330/bench-02-avg-cpu.png
+        - image_title: 02-avg-cpu
+          image_path: 20160330/02-avg-cpu.png
           image_type: local
-        - image_title: bench-02-avg-memory
-          image_path: bench-20160330/bench-02-avg-memory.png
+        - image_title: 02-avg-memory
+          image_path: 20160330/02-avg-memory.png
           image_type: local
-  output_path: bench-20160330/README.md
+  output_path: 20160330/README.md

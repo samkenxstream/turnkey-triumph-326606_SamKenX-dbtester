@@ -27,7 +27,7 @@ func TestReadConfig(t *testing.T) {
 	if c.Database != "etcdv3" {
 		t.Fatalf("unexpected %s", c.Database)
 	}
-	if c.TestName != "bench-01-etcdv3" {
+	if c.TestName != "01-etcdv3" {
 		t.Fatalf("unexpected %s", c.TestName)
 	}
 	if !reflect.DeepEqual(c.PeerIPs, []string{"10.240.0.13", "10.240.0.14", "10.240.0.15"}) {
@@ -45,17 +45,14 @@ func TestReadConfig(t *testing.T) {
 	if c.GoogleCloudStorageKeyPath != "$HOME/gcloud-key.json" {
 		t.Fatalf("unexpected %s", c.GoogleCloudStorageKeyPath)
 	}
-	if c.GoogleCloudStorageBucketName != "bench-20160411" {
+	if c.GoogleCloudStorageBucketName != "dbtester-results" {
 		t.Fatalf("unexpected %s", c.GoogleCloudStorageBucketName)
+	}
+	if c.GoogleCloudStorageSubDirectory != "2016041501" {
+		t.Fatalf("unexpected %s", c.GoogleCloudStorageSubDirectory)
 	}
 	if c.Step1.Skip {
 		t.Fatalf("unexpected %v", c.Step1.Skip)
-	}
-	if c.Step1.DatabaseLogPath != "database.log" {
-		t.Fatalf("unexpected %s", c.Step1.DatabaseLogPath)
-	}
-	if c.Step1.MonitorLogPath != "monitor.csv" {
-		t.Fatalf("unexpected %s", c.Step1.MonitorLogPath)
 	}
 	if c.Step1.ZookeeperMaxClientCnxns != 5000 {
 		t.Fatalf("unexpected %d", c.Step1.ZookeeperMaxClientCnxns)
@@ -69,7 +66,7 @@ func TestReadConfig(t *testing.T) {
 	if c.Step2.BenchType != "write" {
 		t.Fatalf("unexpected %s", c.Step2.BenchType)
 	}
-	if c.Step2.ResultPath != "bench-01-etcdv3-timeseries.csv" {
+	if c.Step2.ResultPath != "01-etcdv3-timeseries.csv" {
 		t.Fatalf("unexpected %s", c.Step2.ResultPath)
 	}
 	if c.Step2.Connections != 100 {
@@ -83,5 +80,8 @@ func TestReadConfig(t *testing.T) {
 	}
 	if c.Step3.Skip {
 		t.Fatalf("unexpected %v", c.Step3.Skip)
+	}
+	if c.Step3.ResultPath != "dbtester-01-etcdv3-result.log" {
+		t.Fatalf("unexpected %v", c.Step3.ResultPath)
 	}
 }

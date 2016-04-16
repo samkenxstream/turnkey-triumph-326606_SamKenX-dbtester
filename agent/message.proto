@@ -36,32 +36,29 @@ message Request {
 	// TestName prefixes all logs to be generated in agent.
 	string testName = 5;
 
-	// DatabaseLogPath is the file path to store the database logs.
-	string databaseLogPath = 6;
-
-	// MonitorLogPath is the file path to store monitoring results.
-	string monitorLogPath = 7;
-
 	// GoogleCloudProjectName is the project name to use
 	// to upload logs.
-	string googleCloudProjectName = 8;
+	string googleCloudProjectName = 6;
 
 	// GoogleCloudStorageKey is the key to be used to upload
 	// data and logs to Google Cloud Storage and others.
-	string googleCloudStorageKey = 9;
+	string googleCloudStorageKey = 7;
 
 	// GoogleCloudStorageBucketName is the bucket name to store all data and logs.
-	string googleCloudStorageBucketName = 10;
+	string googleCloudStorageBucketName = 8;
+
+	// GoogleCloudStorageSubDirectory is the sub-directory name to store data.
+	string googleCloudStorageSubDirectory = 9;
 
 	// ZookeeperMyID is myid that needs to be stored as a file in the remote machine.
-	uint32 zookeeperMyID   = 11;
+	uint32 zookeeperMyID   = 10;
 
 	// ZookeeperMaxClientCnxns limits the number of concurrent connections
 	// (at the socket level) that a single client, identified by IP address.
-	int64 zookeeperMaxClientCnxns = 12;
+	int64 zookeeperMaxClientCnxns = 11;
 
 	// ZookeeperSnapCount is 100,000 by default.
-	int64 zookeeperSnapCount = 13;
+	int64 zookeeperSnapCount = 12;
 }
 
 message Response {

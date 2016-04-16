@@ -21,12 +21,13 @@ import (
 )
 
 type Config struct {
-	Database                     string `yaml:"database"`
-	TestName                     string `yaml:"test_name"`
-	GoogleCloudProjectName       string `yaml:"google_cloud_project_name"`
-	GoogleCloudStorageKey        string
-	GoogleCloudStorageKeyPath    string `yaml:"google_cloud_storage_key_path"`
-	GoogleCloudStorageBucketName string `yaml:"google_cloud_storage_bucket_name"`
+	Database                       string `yaml:"database"`
+	TestName                       string `yaml:"test_name"`
+	GoogleCloudProjectName         string `yaml:"google_cloud_project_name"`
+	GoogleCloudStorageKey          string
+	GoogleCloudStorageKeyPath      string `yaml:"google_cloud_storage_key_path"`
+	GoogleCloudStorageBucketName   string `yaml:"google_cloud_storage_bucket_name"`
+	GoogleCloudStorageSubDirectory string `yaml:"google_cloud_storage_sub_directory"`
 
 	PeerIPs      []string `yaml:"peer_ips"`
 	PeerIPString string
@@ -37,9 +38,7 @@ type Config struct {
 	DatabaseEndpoints []string
 
 	Step1 struct {
-		Skip            bool   `yaml:"skip"`
-		DatabaseLogPath string `yaml:"database_log_path"`
-		MonitorLogPath  string `yaml:"monitor_log_path"`
+		Skip bool `yaml:"skip"`
 
 		ZookeeperMaxClientCnxns int64 `yaml:"zookeeper_max_client_connections"`
 		ZookeeperSnapCount      int64 `yaml:"zookeeper_snap_count"`
@@ -59,7 +58,8 @@ type Config struct {
 	} `yaml:"step2"`
 
 	Step3 struct {
-		Skip bool `yaml:"skip"`
+		Skip       bool   `yaml:"skip"`
+		ResultPath string `yaml:"result_path"`
 	}
 }
 

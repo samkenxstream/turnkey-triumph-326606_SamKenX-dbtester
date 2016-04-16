@@ -62,7 +62,9 @@ type (
 var (
 	shell = os.Getenv("SHELL")
 
-	agentLogPath = "agent.log"
+	agentLogPath    = "agent.log"
+	databaseLogPath = "database.log"
+	monitorLogPath  = "monitor.csv"
 
 	etcdBinaryPath   = filepath.Join(os.Getenv("GOPATH"), "bin/etcd")
 	consulBinaryPath = filepath.Join(os.Getenv("GOPATH"), "bin/consul")
@@ -172,11 +174,11 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		if !filepath.HasPrefix(zkDataDir, globalFlags.WorkingDirectory) {
 			zkDataDir = filepath.Join(globalFlags.WorkingDirectory, zkDataDir)
 		}
-		if !filepath.HasPrefix(r.DatabaseLogPath, globalFlags.WorkingDirectory) {
-			r.DatabaseLogPath = filepath.Join(globalFlags.WorkingDirectory, r.DatabaseLogPath)
+		if !filepath.HasPrefix(databaseLogPath, globalFlags.WorkingDirectory) {
+			databaseLogPath = filepath.Join(globalFlags.WorkingDirectory, databaseLogPath)
 		}
-		if !filepath.HasPrefix(r.MonitorLogPath, globalFlags.WorkingDirectory) {
-			r.MonitorLogPath = filepath.Join(globalFlags.WorkingDirectory, r.MonitorLogPath)
+		if !filepath.HasPrefix(monitorLogPath, globalFlags.WorkingDirectory) {
+			monitorLogPath = filepath.Join(globalFlags.WorkingDirectory, monitorLogPath)
 		}
 
 		log.Printf("Working directory: %s", globalFlags.WorkingDirectory)
@@ -184,8 +186,8 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		log.Printf("Consul data directory: %s", consulDataDir)
 		log.Printf("Zookeeper working directory: %s", zkWorkingDir)
 		log.Printf("Zookeeper data directory: %s", zkDataDir)
-		log.Printf("Database log path: %s", r.DatabaseLogPath)
-		log.Printf("Monitor result path: %s", r.MonitorLogPath)
+		log.Printf("Database log path: %s", databaseLogPath)
+		log.Printf("Monitor result path: %s", monitorLogPath)
 	}
 	if r.Operation == Request_Start {
 		t.req = *r
@@ -209,7 +211,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			if err := os.RemoveAll(etcdDataDir); err != nil {
 				return nil, err
 			}
-			f, err := openToAppend(t.req.DatabaseLogPath)
+			f, err := openToAppend(databaseLogPath)
 			if err != nil {
 				return nil, err
 			}
@@ -307,7 +309,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				return nil, err
 			}
 
-			f, err := openToAppend(t.req.DatabaseLogPath)
+			f, err := openToAppend(databaseLogPath)
 			if err != nil {
 				return nil, err
 			}
@@ -344,7 +346,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			if err := os.RemoveAll(consulDataDir); err != nil {
 				return nil, err
 			}
-			f, err := openToAppend(t.req.DatabaseLogPath)
+			f, err := openToAppend(databaseLogPath)
 			if err != nil {
 				return nil, err
 			}
@@ -409,7 +411,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			}
 		}
 
-		f, err := openToAppend(t.req.DatabaseLogPath)
+		f, err := openToAppend(databaseLogPath)
 		if err != nil {
 			return nil, err
 		}
@@ -464,7 +466,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					return err
 				}
 
-				f, err := openToAppend(t.req.MonitorLogPath)
+				f, err := openToAppend(monitorLogPath)
 				if err != nil {
 					return err
 				}
@@ -473,7 +475,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				return ps.WriteToCSV(f, pss...)
 			}
 
-			log.Printf("%s monitor saved at %s", t.req.Database, t.req.MonitorLogPath)
+			log.Printf("%s monitor saved at %s", t.req.Database, monitorLogPath)
 			var err error
 			if err = rFunc(); err != nil {
 				log.Warningln("error:", err)
@@ -502,11 +504,12 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					}
 
 					// set up file names
-					srcDatabaseLogPath := t.req.DatabaseLogPath
-					dstDatabaseLogPath := filepath.Base(t.req.DatabaseLogPath)
-					if !strings.HasPrefix(filepath.Base(t.req.DatabaseLogPath), t.req.TestName) {
-						dstDatabaseLogPath = fmt.Sprintf("%s-%d-%s", t.req.TestName, t.req.ServerIndex+1, filepath.Base(t.req.DatabaseLogPath))
+					srcDatabaseLogPath := databaseLogPath
+					dstDatabaseLogPath := filepath.Base(databaseLogPath)
+					if !strings.HasPrefix(filepath.Base(databaseLogPath), t.req.TestName) {
+						dstDatabaseLogPath = fmt.Sprintf("%s-%d-%s", t.req.TestName, t.req.ServerIndex+1, filepath.Base(databaseLogPath))
 					}
+					dstDatabaseLogPath = filepath.Join(t.req.GoogleCloudStorageSubDirectory, dstDatabaseLogPath)
 					log.Printf("Uploading %s to %s", srcDatabaseLogPath, dstDatabaseLogPath)
 					var uerr error
 					for k := 0; k < 30; k++ {
@@ -519,11 +522,12 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 						}
 					}
 
-					srcMonitorResultPath := t.req.MonitorLogPath
-					dstMonitorResultPath := filepath.Base(t.req.MonitorLogPath)
-					if !strings.HasPrefix(filepath.Base(t.req.MonitorLogPath), t.req.TestName) {
-						dstMonitorResultPath = fmt.Sprintf("%s-%d-%s", t.req.TestName, t.req.ServerIndex+1, filepath.Base(t.req.MonitorLogPath))
+					srcMonitorResultPath := monitorLogPath
+					dstMonitorResultPath := filepath.Base(monitorLogPath)
+					if !strings.HasPrefix(filepath.Base(monitorLogPath), t.req.TestName) {
+						dstMonitorResultPath = fmt.Sprintf("%s-%d-%s", t.req.TestName, t.req.ServerIndex+1, filepath.Base(monitorLogPath))
 					}
+					dstMonitorResultPath = filepath.Join(t.req.GoogleCloudStorageSubDirectory, dstMonitorResultPath)
 					log.Printf("Uploading %s to %s", srcMonitorResultPath, dstMonitorResultPath)
 					for k := 0; k < 30; k++ {
 						if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcMonitorResultPath, dstMonitorResultPath); uerr != nil {
@@ -540,6 +544,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					if !strings.HasPrefix(filepath.Base(agentLogPath), t.req.TestName) {
 						dstAgentLogPath = fmt.Sprintf("%s-%d-%s", t.req.TestName, t.req.ServerIndex+1, filepath.Base(agentLogPath))
 					}
+					dstAgentLogPath = filepath.Join(t.req.GoogleCloudStorageSubDirectory, dstAgentLogPath)
 					log.Printf("Uploading %s to %s", srcAgentLogPath, dstAgentLogPath)
 					for k := 0; k < 30; k++ {
 						if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcAgentLogPath, dstAgentLogPath); uerr != nil {
