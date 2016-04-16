@@ -154,7 +154,7 @@ step2:
     output_path: 2016041601/03-all-aggregated.csv
 
   - data_list:
-      - path: 2016041601/04-etcdv3-go1.6--aggregated.csv
+      - path: 2016041601/04-etcdv3-go1.6-aggregated.csv
         name: etcd_v3_go1.6
       - path: 2016041601/04-etcdv3-go1.7-aggregated.csv
         name: etcd_v3_go1.7
@@ -182,22 +182,22 @@ step2:
 
   - data_list:
       - path: 2016041601/09-consul-aggregated.csv
-        name: etcd_v2
+        name: consul_v0.6.4
     output_path: 2016041601/09-all-aggregated.csv
 
   - data_list:
       - path: 2016041601/10-consul-aggregated.csv
-        name: etcd_v2
+        name: consul_v0.6.4
     output_path: 2016041601/10-all-aggregated.csv
 
   - data_list:
       - path: 2016041601/11-consul-aggregated.csv
-        name: etcd_v2
+        name: consul_v0.6.4
     output_path: 2016041601/11-all-aggregated.csv
 
   - data_list:
       - path: 2016041601/12-consul-aggregated.csv
-        name: etcd_v2
+        name: consul_v0.6.4
     output_path: 2016041601/12-all-aggregated.csv
 
 
@@ -347,9 +347,9 @@ step3:
 
     plot_list:
     - lines:
-      - column: avg_latency_etcd_v3_go1.6
+      - column: avg_latency_ms_etcd_v3_go1.6
         legend: etcd v3 (Go 1.6)
-      - column: avg_latency_etcd_v3_go1.7
+      - column: avg_latency_ms_etcd_v3_go1.7
         legend: etcd v3 (Go 1.7)
       x_axis: Second
       y_axis: Latency(millisecond)
