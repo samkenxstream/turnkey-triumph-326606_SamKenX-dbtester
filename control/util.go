@@ -21,6 +21,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"strconv"
@@ -104,9 +105,18 @@ func mustCreateClientsEtcdv2(endpoints []string, total int) []clientv2.KeysAPI {
 		if !strings.HasPrefix(endpoint, "http://") {
 			endpoint = "http://" + endpoint
 		}
+
+		tr := &http.Transport{
+			Proxy: http.ProxyFromEnvironment,
+			Dial: (&net.Dialer{
+				Timeout:   30 * time.Second,
+				KeepAlive: 30 * time.Second,
+			}).Dial,
+			TLSHandshakeTimeout: 10 * time.Second,
+		}
 		cfg := clientv2.Config{
 			Endpoints:               []string{endpoint},
-			Transport:               clientv2.DefaultTransport,
+			Transport:               tr,
 			HeaderTimeoutPerRequest: time.Second,
 		}
 		c, err := clientv2.New(cfg)
