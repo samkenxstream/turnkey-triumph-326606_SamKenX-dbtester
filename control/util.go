@@ -151,6 +151,9 @@ func mustCreateConnsConsul(endpoints []string, total int) []*consulapi.KV {
 		dialTotal++
 
 		dcfg := consulapi.DefaultConfig()
+		tr, _ := dcfg.HttpClient.Transport.(*http.Transport)
+		tr.DisableKeepAlives = false
+
 		dcfg.Address = endpoint // x.x.x.x:8500
 		cli, err := consulapi.NewClient(dcfg)
 		if err != nil {
