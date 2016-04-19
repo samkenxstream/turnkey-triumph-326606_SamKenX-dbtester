@@ -437,6 +437,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		}()
 
 	case Request_Stop:
+		time.Sleep(3 * time.Second) // wait a few more seconds to collect more monitoring data
 		if t.cmd == nil {
 			return nil, fmt.Errorf("nil command")
 		}
@@ -482,13 +483,12 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				return
 			}
 
-		escape:
 			for {
 				select {
 				case <-time.After(time.Second):
 					if err = rFunc(); err != nil {
 						log.Warnf("Monitoring error %v", err)
-						break escape
+						continue
 					}
 
 				case sig := <-notifier:

@@ -1,5 +1,5 @@
-database: etcdv2
-test_name: 01-etcdv2
+database: consul
+test_name: 05-consul
 
 google_cloud_project_name: etcd-development
 google_cloud_storage_key_path: /home/gyuho/gcloud-key.json
@@ -9,10 +9,10 @@ google_cloud_storage_sub_directory: 2016041801
 peer_ips:
     - 10.240.0.7
     - 10.240.0.13
-    - 10.240.0.15
+    - 10.240.0.14
 
 agent_port: 3500
-database_port: 2379
+database_port: 8500
 
 # start database by sending RPC calls to agents
 step1:
