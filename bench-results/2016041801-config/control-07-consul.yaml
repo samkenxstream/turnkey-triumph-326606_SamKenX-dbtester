@@ -26,8 +26,8 @@ step2:
     bench_type: write
     local_read: true
     result_path: timeseries.csv
-    connections: 1000
-    clients: 1000
+    connections: 1
+    clients: 1
     key_size: 8
     value_size: 256
     total_requests: 500000

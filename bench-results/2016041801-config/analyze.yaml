@@ -3,11 +3,13 @@ titles:
   - Write 200K keys, 1000-client, 8-byte key, 256-byte value (etcd v2)
   - Write 500K keys, 1-client, 8-byte key, 256-byte value (etcd v2)
   - Write 500K keys, 1000-client, 8-byte key, 256-byte value (etcd v2)
-  - Write 1M keys, 1000-client, 8-byte key, 256-byte value (etcd v2)
+  - Write 1M keys, 1000-client, 8-byte key, 256-byte value (etcd v2, Test 1)
+  - Write 1M keys, 1000-client, 8-byte key, 256-byte value (etcd v2, Test 2)
   - Write 200K keys, 1000-client, 8-byte key, 256-byte value (Consul v0.6.4)
   - Write 500K keys, 1-client, 8-byte key, 256-byte value (Consul v0.6.4)
   - Write 500K keys, 1000-client, 8-byte key, 256-byte value (Consul v0.6.4)
-  - Write 1M keys, 1000-client, 8-byte key, 256-byte value (Consul v0.6.4)
+  - Write 1M keys, 1000-client, 8-byte key, 256-byte value (Consul v0.6.4, Test 1)
+  - Write 1M keys, 1000-client, 8-byte key, 256-byte value (Consul v0.6.4, Test 2)
 
 step1:
   - data_path_list:
@@ -39,11 +41,11 @@ step1:
     output_path: 2016041801/04-etcdv2-aggregated.csv
 
   - data_path_list:
-    - 2016041801/05-consul-1-monitor.csv
-    - 2016041801/05-consul-2-monitor.csv
-    - 2016041801/05-consul-3-monitor.csv
-    data_benchmark_path: 2016041801/05-consul-timeseries.csv
-    output_path: 2016041801/05-consul-aggregated.csv
+    - 2016041801/05-etcdv2-1-monitor.csv
+    - 2016041801/05-etcdv2-2-monitor.csv
+    - 2016041801/05-etcdv2-3-monitor.csv
+    data_benchmark_path: 2016041801/05-etcdv2-timeseries.csv
+    output_path: 2016041801/05-etcdv2-aggregated.csv
 
   - data_path_list:
     - 2016041801/06-consul-1-monitor.csv
@@ -65,6 +67,20 @@ step1:
     - 2016041801/08-consul-3-monitor.csv
     data_benchmark_path: 2016041801/08-consul-timeseries.csv
     output_path: 2016041801/08-consul-aggregated.csv
+
+  - data_path_list:
+    - 2016041801/09-consul-1-monitor.csv
+    - 2016041801/09-consul-2-monitor.csv
+    - 2016041801/09-consul-3-monitor.csv
+    data_benchmark_path: 2016041801/09-consul-timeseries.csv
+    output_path: 2016041801/09-consul-aggregated.csv
+
+  - data_path_list:
+    - 2016041801/10-consul-1-monitor.csv
+    - 2016041801/10-consul-2-monitor.csv
+    - 2016041801/10-consul-3-monitor.csv
+    data_benchmark_path: 2016041801/10-consul-timeseries.csv
+    output_path: 2016041801/10-consul-aggregated.csv
 
 step2:
   - data_list:
@@ -88,8 +104,8 @@ step2:
     output_path: 2016041801/04-all-aggregated.csv
 
   - data_list:
-      - path: 2016041801/05-consul-aggregated.csv
-        name: consul_v0.6.4
+      - path: 2016041801/05-etcdv2-aggregated.csv
+        name: etcd_v2
     output_path: 2016041801/05-all-aggregated.csv
 
   - data_list:
@@ -106,6 +122,16 @@ step2:
       - path: 2016041801/08-consul-aggregated.csv
         name: consul_v0.6.4
     output_path: 2016041801/08-all-aggregated.csv
+
+  - data_list:
+      - path: 2016041801/09-consul-aggregated.csv
+        name: consul_v0.6.4
+    output_path: 2016041801/09-all-aggregated.csv
+
+  - data_list:
+      - path: 2016041801/10-consul-aggregated.csv
+        name: consul_v0.6.4
+    output_path: 2016041801/10-all-aggregated.csv
 
 step3:
   - data_path: 2016041801/01-all-aggregated.csv
@@ -268,8 +294,8 @@ step3:
 
     plot_list:
     - lines:
-      - column: avg_latency_ms_consul_v0.6.4
-        legend: Consul v0.6.4
+      - column: avg_latency_ms_etcd_v2
+        legend: etcd v2
       x_axis: Second
       y_axis: Latency(millisecond)
       output_path_list:
@@ -277,8 +303,8 @@ step3:
         - 2016041801/05-avg-latency-ms.png
 
     - lines:
-      - column: throughput_consul_v0.6.4
-        legend: Consul v0.6.4
+      - column: throughput_etcd_v2
+        legend: etcd v2
       x_axis: Second
       y_axis: Throughput
       output_path_list:
@@ -286,8 +312,8 @@ step3:
         - 2016041801/05-throughput.png
 
     - lines:
-      - column: avg_cpu_consul_v0.6.4
-        legend: Consul v0.6.4
+      - column: avg_cpu_etcd_v2
+        legend: etcd v2
       x_axis: Second
       y_axis: CPU
       output_path_list:
@@ -295,8 +321,8 @@ step3:
         - 2016041801/05-avg-cpu.png
 
     - lines:
-      - column: avg_memory_mb_consul_v0.6.4
-        legend: Consul v0.6.4
+      - column: avg_memory_mb_etcd_v2
+        legend: etcd v2
       x_axis: Second
       y_axis: Memory(MB)
       output_path_list:
@@ -341,7 +367,6 @@ step3:
       output_path_list:
         - 2016041801/06-avg-memory.svg
         - 2016041801/06-avg-memory.png
-
 
   - data_path: 2016041801/07-all-aggregated.csv
 
@@ -420,6 +445,84 @@ step3:
       output_path_list:
         - 2016041801/08-avg-memory.svg
         - 2016041801/08-avg-memory.png
+
+  - data_path: 2016041801/09-all-aggregated.csv
+
+    plot_list:
+    - lines:
+      - column: avg_latency_ms_consul_v0.6.4
+        legend: Consul v0.6.4
+      x_axis: Second
+      y_axis: Latency(millisecond)
+      output_path_list:
+        - 2016041801/09-avg-latency-ms.svg
+        - 2016041801/09-avg-latency-ms.png
+
+    - lines:
+      - column: throughput_consul_v0.6.4
+        legend: Consul v0.6.4
+      x_axis: Second
+      y_axis: Throughput
+      output_path_list:
+        - 2016041801/09-throughput.svg
+        - 2016041801/09-throughput.png
+
+    - lines:
+      - column: avg_cpu_consul_v0.6.4
+        legend: Consul v0.6.4
+      x_axis: Second
+      y_axis: CPU
+      output_path_list:
+        - 2016041801/09-avg-cpu.svg
+        - 2016041801/09-avg-cpu.png
+
+    - lines:
+      - column: avg_memory_mb_consul_v0.6.4
+        legend: Consul v0.6.4
+      x_axis: Second
+      y_axis: Memory(MB)
+      output_path_list:
+        - 2016041801/09-avg-memory.svg
+        - 2016041801/09-avg-memory.png
+
+  - data_path: 2016041801/10-all-aggregated.csv
+
+    plot_list:
+    - lines:
+      - column: avg_latency_ms_consul_v0.6.4
+        legend: Consul v0.6.4
+      x_axis: Second
+      y_axis: Latency(millisecond)
+      output_path_list:
+        - 2016041801/10-avg-latency-ms.svg
+        - 2016041801/10-avg-latency-ms.png
+
+    - lines:
+      - column: throughput_consul_v0.6.4
+        legend: Consul v0.6.4
+      x_axis: Second
+      y_axis: Throughput
+      output_path_list:
+        - 2016041801/10-throughput.svg
+        - 2016041801/10-throughput.png
+
+    - lines:
+      - column: avg_cpu_consul_v0.6.4
+        legend: Consul v0.6.4
+      x_axis: Second
+      y_axis: CPU
+      output_path_list:
+        - 2016041801/10-avg-cpu.svg
+        - 2016041801/10-avg-cpu.png
+
+    - lines:
+      - column: avg_memory_mb_consul_v0.6.4
+        legend: Consul v0.6.4
+      x_axis: Second
+      y_axis: Memory(MB)
+      output_path_list:
+        - 2016041801/10-avg-memory.svg
+        - 2016041801/10-avg-memory.png
 
 step4:
   preface: |
@@ -546,6 +649,34 @@ step4:
           image_type: remote
         - image_title: 2016041801/08-avg-memory
           image_path: https://storage.googleapis.com/dbtester-results/2016041801/08-avg-memory.svg
+          image_type: remote
+
+    - images:
+        - image_title: 2016041801/09-avg-latency-ms
+          image_path: https://storage.googleapis.com/dbtester-results/2016041801/09-avg-latency-ms.svg
+          image_type: remote
+        - image_title: 2016041801/09-throughput
+          image_path: https://storage.googleapis.com/dbtester-results/2016041801/09-throughput.svg
+          image_type: remote
+        - image_title: 2016041801/09-avg-cpu
+          image_path: https://storage.googleapis.com/dbtester-results/2016041801/09-avg-cpu.svg
+          image_type: remote
+        - image_title: 2016041801/09-avg-memory
+          image_path: https://storage.googleapis.com/dbtester-results/2016041801/09-avg-memory.svg
+          image_type: remote
+
+    - images:
+        - image_title: 2016041801/10-avg-latency-ms
+          image_path: https://storage.googleapis.com/dbtester-results/2016041801/10-avg-latency-ms.svg
+          image_type: remote
+        - image_title: 2016041801/10-throughput
+          image_path: https://storage.googleapis.com/dbtester-results/2016041801/10-throughput.svg
+          image_type: remote
+        - image_title: 2016041801/10-avg-cpu
+          image_path: https://storage.googleapis.com/dbtester-results/2016041801/10-avg-cpu.svg
+          image_type: remote
+        - image_title: 2016041801/10-avg-memory
+          image_path: https://storage.googleapis.com/dbtester-results/2016041801/10-avg-memory.svg
           image_type: remote
 
   output_path: 2016041801/README.md
