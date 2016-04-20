@@ -29,48 +29,48 @@
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/auth/authpb",
-			"Comment": "v2.3.0-423-gcfbb8a7",
-			"Rev": "cfbb8a71db5b5c38664a5d6406e15bd296b97808"
+			"Comment": "v2.3.0-479-g32a486b",
+			"Rev": "32a486b4628df701f172595d3397e6402ff776df"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/client",
-			"Comment": "v2.3.0-423-gcfbb8a7",
-			"Rev": "cfbb8a71db5b5c38664a5d6406e15bd296b97808"
+			"Comment": "v2.3.0-479-g32a486b",
+			"Rev": "32a486b4628df701f172595d3397e6402ff776df"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/clientv3",
-			"Comment": "v2.3.0-423-gcfbb8a7",
-			"Rev": "cfbb8a71db5b5c38664a5d6406e15bd296b97808"
+			"Comment": "v2.3.0-479-g32a486b",
+			"Rev": "32a486b4628df701f172595d3397e6402ff776df"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes",
-			"Comment": "v2.3.0-423-gcfbb8a7",
-			"Rev": "cfbb8a71db5b5c38664a5d6406e15bd296b97808"
+			"Comment": "v2.3.0-479-g32a486b",
+			"Rev": "32a486b4628df701f172595d3397e6402ff776df"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/etcdserverpb",
-			"Comment": "v2.3.0-423-gcfbb8a7",
-			"Rev": "cfbb8a71db5b5c38664a5d6406e15bd296b97808"
+			"Comment": "v2.3.0-479-g32a486b",
+			"Rev": "32a486b4628df701f172595d3397e6402ff776df"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/pathutil",
-			"Comment": "v2.3.0-423-gcfbb8a7",
-			"Rev": "cfbb8a71db5b5c38664a5d6406e15bd296b97808"
+			"Comment": "v2.3.0-479-g32a486b",
+			"Rev": "32a486b4628df701f172595d3397e6402ff776df"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/tlsutil",
-			"Comment": "v2.3.0-423-gcfbb8a7",
-			"Rev": "cfbb8a71db5b5c38664a5d6406e15bd296b97808"
+			"Comment": "v2.3.0-479-g32a486b",
+			"Rev": "32a486b4628df701f172595d3397e6402ff776df"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/types",
-			"Comment": "v2.3.0-423-gcfbb8a7",
-			"Rev": "cfbb8a71db5b5c38664a5d6406e15bd296b97808"
+			"Comment": "v2.3.0-479-g32a486b",
+			"Rev": "32a486b4628df701f172595d3397e6402ff776df"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/storage/storagepb",
-			"Comment": "v2.3.0-423-gcfbb8a7",
-			"Rev": "cfbb8a71db5b5c38664a5d6406e15bd296b97808"
+			"Comment": "v2.3.0-479-g32a486b",
+			"Rev": "32a486b4628df701f172595d3397e6402ff776df"
 		},
 		{
 			"ImportPath": "github.com/dustin/go-humanize",
@@ -87,18 +87,18 @@
 		},
 		{
 			"ImportPath": "github.com/gogo/protobuf/gogoproto",
-			"Comment": "v0.2-10-g74b6e9d",
-			"Rev": "74b6e9deaff6ba6da1389ec97351d337f0d08b06"
+			"Comment": "v0.2-11-g4f262e4",
+			"Rev": "4f262e4b0f3a6cea646e15798109335551e21756"
 		},
 		{
 			"ImportPath": "github.com/gogo/protobuf/proto",
-			"Comment": "v0.2-10-g74b6e9d",
-			"Rev": "74b6e9deaff6ba6da1389ec97351d337f0d08b06"
+			"Comment": "v0.2-11-g4f262e4",
+			"Rev": "4f262e4b0f3a6cea646e15798109335551e21756"
 		},
 		{
 			"ImportPath": "github.com/gogo/protobuf/protoc-gen-gogo/descriptor",
-			"Comment": "v0.2-10-g74b6e9d",
-			"Rev": "74b6e9deaff6ba6da1389ec97351d337f0d08b06"
+			"Comment": "v0.2-11-g4f262e4",
+			"Rev": "4f262e4b0f3a6cea646e15798109335551e21756"
 		},
 		{
 			"ImportPath": "github.com/golang/freetype",
