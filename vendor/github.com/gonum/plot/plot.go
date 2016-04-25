@@ -148,7 +148,7 @@ func (p *Plot) Draw(c draw.Canvas) {
 		c.Fill(c.Rectangle.Path())
 	}
 	if p.Title.Text != "" {
-		c.FillText(p.Title.TextStyle, c.Center().X, c.Max.Y, -0.5, -1, p.Title.Text)
+		c.FillText(p.Title.TextStyle, vg.Point{c.Center().X, c.Max.Y}, -0.5, -1, p.Title.Text)
 		c.Max.Y -= p.Title.Height(p.Title.Text) - p.Title.Font.Extents().Descent
 		c.Max.Y -= p.Title.Padding
 	}
@@ -214,9 +214,9 @@ func padX(p *Plot, c draw.Canvas) draw.Canvas {
 	m := ((lx-1)*maxx - rx*minx + minx) / (lx - rx)
 	return draw.Canvas{
 		Canvas: vg.Canvas(c),
-		Rectangle: draw.Rectangle{
-			Min: draw.Point{X: n, Y: c.Min.Y},
-			Max: draw.Point{X: m, Y: c.Max.Y},
+		Rectangle: vg.Rectangle{
+			Min: vg.Point{X: n, Y: c.Min.Y},
+			Max: vg.Point{X: m, Y: c.Max.Y},
 		},
 	}
 }
@@ -270,9 +270,9 @@ func padY(p *Plot, c draw.Canvas) draw.Canvas {
 	m := ((by-1)*maxy - ty*miny + miny) / (by - ty)
 	return draw.Canvas{
 		Canvas: vg.Canvas(c),
-		Rectangle: draw.Rectangle{
-			Min: draw.Point{Y: n, X: c.Min.X},
-			Max: draw.Point{Y: m, X: c.Max.X},
+		Rectangle: vg.Rectangle{
+			Min: vg.Point{Y: n, X: c.Min.X},
+			Max: vg.Point{Y: m, X: c.Max.X},
 		},
 	}
 }
@@ -358,7 +358,7 @@ type GlyphBox struct {
 
 	// Rectangle is the offset of the glyph's minimum drawing
 	// point relative to the glyph location and its size.
-	draw.Rectangle
+	vg.Rectangle
 }
 
 // GlyphBoxes returns the GlyphBoxes for all plot

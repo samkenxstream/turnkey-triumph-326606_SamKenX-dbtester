@@ -102,9 +102,9 @@ func (l *Legend) draw(c draw.Canvas) {
 
 	icon := &draw.Canvas{
 		Canvas: c.Canvas,
-		Rectangle: draw.Rectangle{
-			Min: draw.Point{iconx, y},
-			Max: draw.Point{iconx + l.ThumbnailWidth, y + enth},
+		Rectangle: vg.Rectangle{
+			Min: vg.Point{iconx, y},
+			Max: vg.Point{iconx + l.ThumbnailWidth, y + enth},
 		},
 	}
 	for _, e := range l.entries {
@@ -112,7 +112,7 @@ func (l *Legend) draw(c draw.Canvas) {
 			t.Thumbnail(icon)
 		}
 		yoffs := (enth - l.TextStyle.Height(e.text)) / 2
-		c.FillText(l.TextStyle, textx, icon.Min.Y+yoffs, xalign, 0, e.text)
+		c.FillText(l.TextStyle, vg.Point{textx, icon.Min.Y + yoffs}, xalign, 0, e.text)
 		icon.Min.Y -= enth + l.Padding
 		icon.Max.Y -= enth + l.Padding
 	}

@@ -142,14 +142,14 @@ func (h *HeatMap) Plot(c draw.Canvas, plt *plot.Plot) {
 			x, y := trX(h.GridXYZ.X(i)+left), trY(h.GridXYZ.Y(j)+down)
 			dx, dy := trX(h.GridXYZ.X(i)+right), trY(h.GridXYZ.Y(j)+up)
 
-			if !c.Contains(draw.Point{x, y}) || !c.Contains(draw.Point{dx, dy}) {
+			if !c.Contains(vg.Point{x, y}) || !c.Contains(vg.Point{dx, dy}) {
 				continue
 			}
 
-			pa.Move(x, y)
-			pa.Line(dx, y)
-			pa.Line(dx, dy)
-			pa.Line(x, dy)
+			pa.Move(vg.Point{x, y})
+			pa.Line(vg.Point{dx, y})
+			pa.Line(vg.Point{dx, dy})
+			pa.Line(vg.Point{x, dy})
 			pa.Close()
 
 			var col color.Color
@@ -202,9 +202,9 @@ func (h *HeatMap) GlyphBoxes(plt *plot.Plot) []plot.GlyphBox {
 			b = append(b, plot.GlyphBox{
 				X: plt.X.Norm(h.GridXYZ.X(i)),
 				Y: plt.Y.Norm(h.GridXYZ.Y(j)),
-				Rectangle: draw.Rectangle{
-					Min: draw.Point{-5, -5},
-					Max: draw.Point{+5, +5},
+				Rectangle: vg.Rectangle{
+					Min: vg.Point{-5, -5},
+					Max: vg.Point{+5, +5},
 				},
 			})
 		}

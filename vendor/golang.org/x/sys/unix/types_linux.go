@@ -50,18 +50,11 @@ package unix
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
 #include <linux/icmpv6.h>
-#include <asm/termbits.h>
+#include <termios.h>
 #include <time.h>
 #include <unistd.h>
 #include <ustat.h>
 #include <utime.h>
-
-#ifdef TCSETS2
-// On systems that have "struct termios2" use this as type Termios.
-typedef struct termios2 termios_t;
-#else
-typedef struct termios termios_t;
-#endif
 
 enum {
 	sizeofPtr = sizeof(void*),
@@ -98,8 +91,6 @@ typedef struct user_regs PtraceRegs;
 typedef struct user_pt_regs PtraceRegs;
 #elif defined(__powerpc64__)
 typedef struct pt_regs PtraceRegs;
-#elif defined(__mips__)
-typedef struct user PtraceRegs;
 #else
 typedef struct user_regs_struct PtraceRegs;
 #endif
@@ -400,10 +391,9 @@ type EpollEvent C.struct_my_epoll_event
 const (
 	AT_FDCWD            = C.AT_FDCWD
 	AT_REMOVEDIR        = C.AT_REMOVEDIR
-	AT_SYMLINK_FOLLOW   = C.AT_SYMLINK_FOLLOW
 	AT_SYMLINK_NOFOLLOW = C.AT_SYMLINK_NOFOLLOW
 )
 
 // Terminal handling
 
-type Termios C.termios_t
+type Termios C.struct_termios

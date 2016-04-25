@@ -47,14 +47,12 @@ import (
 	"google.golang.org/grpc/transport"
 )
 
-// StreamHandler defines the handler called by gRPC server to complete the
-// execution of a streaming RPC.
-type StreamHandler func(srv interface{}, stream ServerStream) error
+type streamHandler func(srv interface{}, stream ServerStream) error
 
 // StreamDesc represents a streaming RPC service's method specification.
 type StreamDesc struct {
 	StreamName string
-	Handler    StreamHandler
+	Handler    streamHandler
 
 	// At least one of these is true.
 	ServerStreams bool

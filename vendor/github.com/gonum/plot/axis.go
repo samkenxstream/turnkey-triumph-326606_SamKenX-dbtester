@@ -8,6 +8,7 @@ import (
 	"image/color"
 	"math"
 	"strconv"
+	"time"
 
 	"github.com/gonum/floats"
 	"github.com/gonum/plot/vg"
@@ -204,7 +205,7 @@ func (a *horizontalAxis) draw(c draw.Canvas) {
 	y := c.Min.Y
 	if a.Label.Text != "" {
 		y -= a.Label.Font.Extents().Descent
-		c.FillText(a.Label.TextStyle, c.Center().X, y, -0.5, 0, a.Label.Text)
+		c.FillText(a.Label.TextStyle, vg.Point{c.Center().X, y}, -0.5, 0, a.Label.Text)
 		y += a.Label.Height(a.Label.Text)
 	}
 
@@ -214,7 +215,7 @@ func (a *horizontalAxis) draw(c draw.Canvas) {
 		if !c.ContainsX(x) || t.IsMinor() {
 			continue
 		}
-		c.FillText(a.Tick.Label, x, y, -0.5, 0, t.Label)
+		c.FillText(a.Tick.Label, vg.Point{x, y}, -0.5, 0, t.Label)
 	}
 
 	if len(marks) > 0 {
@@ -248,9 +249,9 @@ func (a *horizontalAxis) GlyphBoxes(*Plot) (boxes []GlyphBox) {
 		w := a.Tick.Label.Width(t.Label)
 		box := GlyphBox{
 			X: a.Norm(t.Value),
-			Rectangle: draw.Rectangle{
-				Min: draw.Point{X: -w / 2},
-				Max: draw.Point{X: w / 2},
+			Rectangle: vg.Rectangle{
+				Min: vg.Point{X: -w / 2},
+				Max: vg.Point{X: w / 2},
 			},
 		}
 		boxes = append(boxes, box)
@@ -290,7 +291,7 @@ func (a *verticalAxis) draw(c draw.Canvas) {
 		x += a.Label.Height(a.Label.Text)
 		c.Push()
 		c.Rotate(math.Pi / 2)
-		c.FillText(a.Label.TextStyle, c.Center().Y, -x, -0.5, 0, a.Label.Text)
+		c.FillText(a.Label.TextStyle, vg.Point{c.Center().Y, -x}, -0.5, 0, a.Label.Text)
 		c.Pop()
 		x += -a.Label.Font.Extents().Descent
 	}
@@ -304,7 +305,7 @@ func (a *verticalAxis) draw(c draw.Canvas) {
 		if !c.ContainsY(y) || t.IsMinor() {
 			continue
 		}
-		c.FillText(a.Tick.Label, x, y, -1, -0.5, t.Label)
+		c.FillText(a.Tick.Label, vg.Point{x, y}, -1, -0.5, t.Label)
 		major = true
 	}
 	if major {
@@ -334,9 +335,9 @@ func (a *verticalAxis) GlyphBoxes(*Plot) (boxes []GlyphBox) {
 		h := a.Tick.Label.Height(t.Label)
 		box := GlyphBox{
 			Y: a.Norm(t.Value),
-			Rectangle: draw.Rectangle{
-				Min: draw.Point{Y: -h / 2},
-				Max: draw.Point{Y: h / 2},
+			Rectangle: vg.Rectangle{
+				Min: vg.Point{Y: -h / 2},
+				Max: vg.Point{Y: h / 2},
 			},
 		}
 		boxes = append(boxes, box)
@@ -448,6 +449,41 @@ var _ Ticker = ConstantTicks{}
 // Ticks returns Ticks in a specified range
 func (ts ConstantTicks) Ticks(float64, float64) []Tick {
 	return ts
+}
+
+// UnixTimeTicks is suitable for axes representing time values.
+// UnixTimeTicks expects values in Unix time seconds.
+type UnixTimeTicks struct {
+	// Ticker is used to generate a set of ticks.
+	// If nil, DefaultTicks will be used.
+	Ticker Ticker
+
+	// Format is the textual representation of the time value.
+	// If empty, time.RFC3339 will be used
+	Format string
+}
+
+var _ Ticker = UnixTimeTicks{}
+
+// Ticks implements plot.Ticker.
+func (utt UnixTimeTicks) Ticks(min, max float64) []Tick {
+	if utt.Ticker == nil {
+		utt.Ticker = DefaultTicks{}
+	}
+	if utt.Format == "" {
+		utt.Format = time.RFC3339
+	}
+
+	ticks := utt.Ticker.Ticks(min, max)
+	for i := range ticks {
+		tick := &ticks[i]
+		if tick.Label == "" {
+			continue
+		}
+		t := time.Unix(int64(tick.Value), 0)
+		tick.Label = t.Format(utt.Format)
+	}
+	return ticks
 }
 
 // A Tick is a single tick mark on an axis.

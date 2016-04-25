@@ -194,8 +194,8 @@ func (c *Canvas) Rotate(t float64) {
 	c.gc.Rotate(t)
 }
 
-func (c *Canvas) Translate(x, y vg.Length) {
-	c.gc.Translate(x.Dots(c.DPI()), y.Dots(c.DPI()))
+func (c *Canvas) Translate(pt vg.Point) {
+	c.gc.Translate(pt.X.Dots(c.DPI()), pt.Y.Dots(c.DPI()))
 }
 
 func (c *Canvas) Scale(x, y float64) {
@@ -230,13 +230,13 @@ func (c *Canvas) outline(p vg.Path) {
 	for _, comp := range p {
 		switch comp.Type {
 		case vg.MoveComp:
-			c.gc.MoveTo(comp.X.Dots(c.DPI()), comp.Y.Dots(c.DPI()))
+			c.gc.MoveTo(comp.Pos.X.Dots(c.DPI()), comp.Pos.Y.Dots(c.DPI()))
 
 		case vg.LineComp:
-			c.gc.LineTo(comp.X.Dots(c.DPI()), comp.Y.Dots(c.DPI()))
+			c.gc.LineTo(comp.Pos.X.Dots(c.DPI()), comp.Pos.Y.Dots(c.DPI()))
 
 		case vg.ArcComp:
-			c.gc.ArcTo(comp.X.Dots(c.DPI()), comp.Y.Dots(c.DPI()),
+			c.gc.ArcTo(comp.Pos.X.Dots(c.DPI()), comp.Pos.Y.Dots(c.DPI()),
 				comp.Radius.Dots(c.DPI()), comp.Radius.Dots(c.DPI()),
 				comp.Start, comp.Angle)
 
@@ -253,7 +253,7 @@ func (c *Canvas) DPI() float64 {
 	return float64(c.gc.GetDPI())
 }
 
-func (c *Canvas) FillString(font vg.Font, x, y vg.Length, str string) {
+func (c *Canvas) FillString(font vg.Font, pt vg.Point, str string) {
 	c.gc.Save()
 	defer c.gc.Restore()
 
@@ -267,9 +267,30 @@ func (c *Canvas) FillString(font vg.Font, x, y vg.Length, str string) {
 	}
 	c.gc.SetFontData(data)
 	c.gc.SetFontSize(font.Size.Points())
-	c.gc.Translate(x.Dots(c.DPI()), y.Dots(c.DPI()))
+	c.gc.Translate(pt.X.Dots(c.DPI()), pt.Y.Dots(c.DPI()))
 	c.gc.Scale(1, -1)
 	c.gc.FillString(str)
+}
+
+// DrawImage implements the vg.Canvas.DrawImage method.
+func (c *Canvas) DrawImage(rect vg.Rectangle, img image.Image) {
+	var (
+		dpi    = c.DPI()
+		min    = rect.Min
+		xmin   = min.X.Dots(dpi)
+		ymin   = min.Y.Dots(dpi)
+		rsz    = rect.Size()
+		width  = rsz.X.Dots(dpi)
+		height = rsz.Y.Dots(dpi)
+		dx     = float64(img.Bounds().Dx())
+		dy     = float64(img.Bounds().Dy())
+	)
+	c.gc.Save()
+	c.gc.Scale(1, -1)
+	c.gc.Translate(xmin, -ymin-height)
+	c.gc.Scale(width/dx, height/dy)
+	c.gc.DrawImage(img)
+	c.gc.Restore()
 }
 
 var (
@@ -283,62 +304,62 @@ var (
 	// draw2d.
 	fontMap = map[string]draw2d.FontData{
 		"Courier": draw2d.FontData{
-			Name:   "Nimbus",
+			Name:   "Liberation",
 			Family: draw2d.FontFamilyMono,
 			Style:  draw2d.FontStyleNormal,
 		},
 		"Courier-Bold": draw2d.FontData{
-			Name:   "Nimbus",
+			Name:   "Liberation",
 			Family: draw2d.FontFamilyMono,
 			Style:  draw2d.FontStyleBold,
 		},
 		"Courier-Oblique": draw2d.FontData{
-			Name:   "Nimbus",
+			Name:   "Liberation",
 			Family: draw2d.FontFamilyMono,
 			Style:  draw2d.FontStyleItalic,
 		},
 		"Courier-BoldOblique": draw2d.FontData{
-			Name:   "Nimbus",
+			Name:   "Liberation",
 			Family: draw2d.FontFamilyMono,
 			Style:  draw2d.FontStyleItalic | draw2d.FontStyleBold,
 		},
 		"Helvetica": draw2d.FontData{
-			Name:   "Nimbus",
+			Name:   "Liberation",
 			Family: draw2d.FontFamilySans,
 			Style:  draw2d.FontStyleNormal,
 		},
 		"Helvetica-Bold": draw2d.FontData{
-			Name:   "Nimbus",
+			Name:   "Liberation",
 			Family: draw2d.FontFamilySans,
 			Style:  draw2d.FontStyleBold,
 		},
 		"Helvetica-Oblique": draw2d.FontData{
-			Name:   "Nimbus",
+			Name:   "Liberation",
 			Family: draw2d.FontFamilySans,
 			Style:  draw2d.FontStyleItalic,
 		},
 		"Helvetica-BoldOblique": draw2d.FontData{
-			Name:   "Nimbus",
+			Name:   "Liberation",
 			Family: draw2d.FontFamilySans,
 			Style:  draw2d.FontStyleItalic | draw2d.FontStyleBold,
 		},
 		"Times-Roman": draw2d.FontData{
-			Name:   "Nimbus",
+			Name:   "Liberation",
 			Family: draw2d.FontFamilySerif,
 			Style:  draw2d.FontStyleNormal,
 		},
 		"Times-Bold": draw2d.FontData{
-			Name:   "Nimbus",
+			Name:   "Liberation",
 			Family: draw2d.FontFamilySerif,
 			Style:  draw2d.FontStyleBold,
 		},
 		"Times-Italic": draw2d.FontData{
-			Name:   "Nimbus",
+			Name:   "Liberation",
 			Family: draw2d.FontFamilySerif,
 			Style:  draw2d.FontStyleItalic,
 		},
 		"Times-BoldItalic": draw2d.FontData{
-			Name:   "Nimbus",
+			Name:   "Liberation",
 			Family: draw2d.FontFamilySerif,
 			Style:  draw2d.FontStyleItalic | draw2d.FontStyleBold,
 		},
