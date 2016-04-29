@@ -1,4 +1,6 @@
 This is an experimental project. Project/code is subject to change anytime.
+This is mainly for comparing etcd with other databases. For etcd, we recommend
+to just run [etcd benchmark tool](https://github.com/coreos/etcd/tree/master/tools/benchmark).
 
 # dbtester
 
