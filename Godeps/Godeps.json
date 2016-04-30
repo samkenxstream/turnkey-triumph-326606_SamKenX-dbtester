@@ -10,8 +10,8 @@
 		},
 		{
 			"ImportPath": "github.com/Sirupsen/logrus",
-			"Comment": "v0.10.0-14-g081307d",
-			"Rev": "081307d9bc1364753142d5962fc1d795c742baaf"
+			"Comment": "v0.10.0-16-gcd7d1bb",
+			"Rev": "cd7d1bbe41066b6c1f19780f895901052150a575"
 		},
 		{
 			"ImportPath": "github.com/ajstarks/svgo",
@@ -25,48 +25,48 @@
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/auth/authpb",
-			"Comment": "v2.3.0-571-g81ac766",
-			"Rev": "81ac766bb4a287a6c34b7a88772c07aff373a6bd"
+			"Comment": "v2.3.0-633-gb58f8dd",
+			"Rev": "b58f8dd64b0ad0bd614698e8d6457ed726573fa6"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/client",
-			"Comment": "v2.3.0-571-g81ac766",
-			"Rev": "81ac766bb4a287a6c34b7a88772c07aff373a6bd"
+			"Comment": "v2.3.0-633-gb58f8dd",
+			"Rev": "b58f8dd64b0ad0bd614698e8d6457ed726573fa6"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/clientv3",
-			"Comment": "v2.3.0-571-g81ac766",
-			"Rev": "81ac766bb4a287a6c34b7a88772c07aff373a6bd"
+			"Comment": "v2.3.0-633-gb58f8dd",
+			"Rev": "b58f8dd64b0ad0bd614698e8d6457ed726573fa6"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes",
-			"Comment": "v2.3.0-571-g81ac766",
-			"Rev": "81ac766bb4a287a6c34b7a88772c07aff373a6bd"
+			"Comment": "v2.3.0-633-gb58f8dd",
+			"Rev": "b58f8dd64b0ad0bd614698e8d6457ed726573fa6"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/etcdserverpb",
-			"Comment": "v2.3.0-571-g81ac766",
-			"Rev": "81ac766bb4a287a6c34b7a88772c07aff373a6bd"
+			"Comment": "v2.3.0-633-gb58f8dd",
+			"Rev": "b58f8dd64b0ad0bd614698e8d6457ed726573fa6"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/mvcc/mvccpb",
-			"Comment": "v2.3.0-571-g81ac766",
-			"Rev": "81ac766bb4a287a6c34b7a88772c07aff373a6bd"
+			"Comment": "v2.3.0-633-gb58f8dd",
+			"Rev": "b58f8dd64b0ad0bd614698e8d6457ed726573fa6"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/pathutil",
-			"Comment": "v2.3.0-571-g81ac766",
-			"Rev": "81ac766bb4a287a6c34b7a88772c07aff373a6bd"
+			"Comment": "v2.3.0-633-gb58f8dd",
+			"Rev": "b58f8dd64b0ad0bd614698e8d6457ed726573fa6"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/tlsutil",
-			"Comment": "v2.3.0-571-g81ac766",
-			"Rev": "81ac766bb4a287a6c34b7a88772c07aff373a6bd"
+			"Comment": "v2.3.0-633-gb58f8dd",
+			"Rev": "b58f8dd64b0ad0bd614698e8d6457ed726573fa6"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/types",
-			"Comment": "v2.3.0-571-g81ac766",
-			"Rev": "81ac766bb4a287a6c34b7a88772c07aff373a6bd"
+			"Comment": "v2.3.0-633-gb58f8dd",
+			"Rev": "b58f8dd64b0ad0bd614698e8d6457ed726573fa6"
 		},
 		{
 			"ImportPath": "github.com/cpuguy83/go-md2man/md2man",
@@ -182,8 +182,8 @@
 		},
 		{
 			"ImportPath": "github.com/hashicorp/consul/api",
-			"Comment": "v0.6.4-256-gadcf935",
-			"Rev": "adcf93535058234780f9aaffb40497ba194f60a0"
+			"Comment": "v0.6.4-266-g0c5a487",
+			"Rev": "0c5a48783867f6eccefd72b734e28e7efa69d17b"
 		},
 		{
 			"ImportPath": "github.com/hashicorp/go-cleanhttp",
@@ -200,18 +200,18 @@
 		},
 		{
 			"ImportPath": "github.com/llgcode/draw2d",
-			"Comment": "v1-69-g0545b30",
-			"Rev": "0545b30698e15720d228aa99e3b48151ee7e0943"
+			"Comment": "v1-71-g5e675a3",
+			"Rev": "5e675a3055a6f81f9b014b1dc2d5bb5fb8890618"
 		},
 		{
 			"ImportPath": "github.com/llgcode/draw2d/draw2dbase",
-			"Comment": "v1-69-g0545b30",
-			"Rev": "0545b30698e15720d228aa99e3b48151ee7e0943"
+			"Comment": "v1-71-g5e675a3",
+			"Rev": "5e675a3055a6f81f9b014b1dc2d5bb5fb8890618"
 		},
 		{
 			"ImportPath": "github.com/llgcode/draw2d/draw2dimg",
-			"Comment": "v1-69-g0545b30",
-			"Rev": "0545b30698e15720d228aa99e3b48151ee7e0943"
+			"Comment": "v1-71-g5e675a3",
+			"Rev": "5e675a3055a6f81f9b014b1dc2d5bb5fb8890618"
 		},
 		{
 			"ImportPath": "github.com/mattn/go-colorable",
@@ -306,23 +306,23 @@
 		},
 		{
 			"ImportPath": "golang.org/x/oauth2",
-			"Rev": "7e9cd5d59563851383f8f81a7fbb01213709387c"
+			"Rev": "9ef2eddcc6774e42f998940fe1167216d36a7424"
 		},
 		{
 			"ImportPath": "golang.org/x/oauth2/google",
-			"Rev": "7e9cd5d59563851383f8f81a7fbb01213709387c"
+			"Rev": "9ef2eddcc6774e42f998940fe1167216d36a7424"
 		},
 		{
 			"ImportPath": "golang.org/x/oauth2/internal",
-			"Rev": "7e9cd5d59563851383f8f81a7fbb01213709387c"
+			"Rev": "9ef2eddcc6774e42f998940fe1167216d36a7424"
 		},
 		{
 			"ImportPath": "golang.org/x/oauth2/jws",
-			"Rev": "7e9cd5d59563851383f8f81a7fbb01213709387c"
+			"Rev": "9ef2eddcc6774e42f998940fe1167216d36a7424"
 		},
 		{
 			"ImportPath": "golang.org/x/oauth2/jwt",
-			"Rev": "7e9cd5d59563851383f8f81a7fbb01213709387c"
+			"Rev": "9ef2eddcc6774e42f998940fe1167216d36a7424"
 		},
 		{
 			"ImportPath": "golang.org/x/sys/unix",
@@ -378,27 +378,27 @@
 		},
 		{
 			"ImportPath": "google.golang.org/cloud",
-			"Rev": "90d95c0fd227ee148e2753691c9b16f0ba5c870d"
+			"Rev": "5c2ed224e55f2b5919cee83c91034682bf86f9e4"
 		},
 		{
 			"ImportPath": "google.golang.org/cloud/compute/metadata",
-			"Rev": "90d95c0fd227ee148e2753691c9b16f0ba5c870d"
+			"Rev": "5c2ed224e55f2b5919cee83c91034682bf86f9e4"
 		},
 		{
 			"ImportPath": "google.golang.org/cloud/internal",
-			"Rev": "90d95c0fd227ee148e2753691c9b16f0ba5c870d"
+			"Rev": "5c2ed224e55f2b5919cee83c91034682bf86f9e4"
 		},
 		{
 			"ImportPath": "google.golang.org/cloud/internal/opts",
-			"Rev": "90d95c0fd227ee148e2753691c9b16f0ba5c870d"
+			"Rev": "5c2ed224e55f2b5919cee83c91034682bf86f9e4"
 		},
 		{
 			"ImportPath": "google.golang.org/cloud/internal/transport",
-			"Rev": "90d95c0fd227ee148e2753691c9b16f0ba5c870d"
+			"Rev": "5c2ed224e55f2b5919cee83c91034682bf86f9e4"
 		},
 		{
 			"ImportPath": "google.golang.org/cloud/storage",
-			"Rev": "90d95c0fd227ee148e2753691c9b16f0ba5c870d"
+			"Rev": "5c2ed224e55f2b5919cee83c91034682bf86f9e4"
 		},
 		{
 			"ImportPath": "google.golang.org/grpc",

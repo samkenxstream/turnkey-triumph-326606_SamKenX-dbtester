@@ -7,10 +7,10 @@ if ! [[ $(protoc --version) =~ "3.0.0" ]]; then
 	exit 255
 fi
 
-go get -v -u -f github.com/gogo/protobuf/proto;
-go get -v -u -f github.com/gogo/protobuf/protoc-gen-gogo;
-go get -v -u -f github.com/gogo/protobuf/gogoproto;
-go get -v -u -f github.com/gogo/protobuf/protoc-gen-gofast;
+go get -v github.com/gogo/protobuf/proto;
+go get -v github.com/gogo/protobuf/protoc-gen-gogo;
+go get -v github.com/gogo/protobuf/gogoproto;
+go get -v github.com/gogo/protobuf/protoc-gen-gofast;
 
 protoc \
 	--gofast_out=plugins=grpc:. \
