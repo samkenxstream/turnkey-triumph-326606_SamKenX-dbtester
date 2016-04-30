@@ -1,6 +1,6 @@
 
 titles:
-  - Write 1M keys, 1000-client, 100-conn, 8-byte key, 256-byte value (etcd v3)
+  - Write 2M keys, 1000-client, 100-conn, 8-byte key, 256-byte value (etcd v3)
 
 step1:
   - data_path_list:
@@ -78,7 +78,7 @@ step4:
     - Google Cloud Compute Engine
     - 8 vCPUs + 16GB Memory + 50GB SSD
     - 1 machine(client) of 16 vCPUs + 30GB Memory + 50GB SSD
-    - Ubuntu 16.04
+    - Ubuntu 15.10
     - Go master branch on 2016-04-30
     - etcd v3
 
