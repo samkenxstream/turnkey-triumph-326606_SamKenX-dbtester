@@ -1,7 +1,7 @@
 
 titles:
-  - Write 2K keys, 1-client, 1-conn, 16-byte key with random texts(<1MB) (etcd v3)
-  - Write 4K keys, 1-client, 1-conn, 16-byte key with random texts(<1MB) (etcd v3)
+  - Write 2K keys, 1-client, 1-conn, 8-byte key with random texts(<1MB) (etcd v3)
+  - Write 2K keys, 1-client, 1-conn, 8-byte key with random texts(<1MB) (etcd v3)
 
 step1:
   - data_path_list:
