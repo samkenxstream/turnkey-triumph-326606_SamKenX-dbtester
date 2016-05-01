@@ -30,10 +30,11 @@ step2:
     result_path: timeseries.csv
     connections: 1
     clients: 1
-    key_size: 64
+    key_size: 32
     value_size: 1
     value_testdata_path: /home/gyuho/testdata
-    total_requests: 100000
+    total_requests: 7000
+    request_interval_ms: 200
     etcdv3_compaction_cycle: 0
 
 # after benchmark

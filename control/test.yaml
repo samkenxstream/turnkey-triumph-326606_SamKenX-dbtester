@@ -34,6 +34,7 @@ step2:
     value_size: 256
     value_testdata_path: /home/gyuho/testdata  # overwrites value_size
     total_requests: 3000000
+    request_interval_ms: 100
     etcdv3_compaction_cycle: 0
 
 # after benchmark

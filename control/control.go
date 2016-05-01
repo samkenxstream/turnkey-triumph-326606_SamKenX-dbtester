@@ -309,6 +309,9 @@ func step2(cfg Config) error {
 				case "consul":
 					requests <- request{consulOp: consulOp{key: k, value: v}}
 				}
+				if cfg.Step2.RequestIntervalMs > 0 {
+					time.Sleep(time.Duration(cfg.Step2.RequestIntervalMs) * time.Millisecond)
+				}
 			}
 			close(requests)
 		}()
@@ -498,6 +501,9 @@ func step2(cfg Config) error {
 				case "consul":
 					// serializable read by default
 					requests <- request{consulOp: consulOp{key: key}}
+				}
+				if cfg.Step2.RequestIntervalMs > 0 {
+					time.Sleep(time.Duration(cfg.Step2.RequestIntervalMs) * time.Millisecond)
 				}
 			}
 			close(requests)

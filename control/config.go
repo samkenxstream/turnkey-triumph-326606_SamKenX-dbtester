@@ -58,6 +58,7 @@ type Config struct {
 		ValueSize             int    `yaml:"value_size"`
 		ValueTestDataPath     string `yaml:"value_testdata_path"`
 		TotalRequests         int    `yaml:"total_requests"`
+		RequestIntervalMs     int    `yaml:"request_interval_ms"`
 		Etcdv3CompactionCycle int    `yaml:"etcdv3_compaction_cycle"`
 	} `yaml:"step2"`
 
