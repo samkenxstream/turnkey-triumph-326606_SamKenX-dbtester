@@ -1,5 +1,5 @@
 database: etcdv3
-test_name: 01-etcdv3-original
+test_name: 02-etcdv3-original
 
 google_cloud_project_name: etcd-development
 google_cloud_storage_key_path: /home/gyuho/gcloud-key.json
@@ -30,11 +30,11 @@ step2:
     result_path: timeseries.csv
     connections: 1
     clients: 1
-    key_size: 32
+    key_size: 8
     value_size: 1
     value_testdata_path: /home/gyuho/testdata
-    total_requests: 7000
-    request_interval_ms: 200
+    total_requests: 4000
+    request_interval_ms: 0
     etcdv3_compaction_cycle: 0
 
 # after benchmark
