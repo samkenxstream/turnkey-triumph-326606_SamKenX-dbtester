@@ -205,6 +205,27 @@ var (
 )
 
 func step2(cfg Config) error {
+	var (
+		valuesBytes     [][]byte
+		valuesString    []string
+		valueSampleSize int
+	)
+	if cfg.Step2.ValueTestDataPath != "" {
+		fs, err := walkDir(cfg.Step2.ValueTestDataPath)
+		if err != nil {
+			return err
+		}
+		for _, elem := range fs {
+			bts, err := ioutil.ReadFile(elem.path)
+			if err != nil {
+				return err
+			}
+			valuesBytes = append(valuesBytes, bts)
+			valuesString = append(valuesString, string(bts))
+		}
+		valueSampleSize = len(valuesString)
+	}
+
 	switch cfg.Step2.BenchType {
 	case "write":
 		results = make(chan result)
@@ -270,6 +291,10 @@ func step2(cfg Config) error {
 				}
 
 				k := sequentialKey(cfg.Step2.KeySize, i)
+				if cfg.Step2.ValueTestDataPath != "" {
+					v = valuesBytes[i%valueSampleSize]
+					vs = valuesString[i%valueSampleSize]
+				}
 
 				switch cfg.Database {
 				case "etcdv2":

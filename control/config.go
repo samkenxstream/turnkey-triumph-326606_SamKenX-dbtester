@@ -56,6 +56,7 @@ type Config struct {
 		Clients               int    `yaml:"clients"`
 		KeySize               int    `yaml:"key_size"`
 		ValueSize             int    `yaml:"value_size"`
+		ValueTestDataPath     string `yaml:"value_testdata_path"`
 		TotalRequests         int    `yaml:"total_requests"`
 		Etcdv3CompactionCycle int    `yaml:"etcdv3_compaction_cycle"`
 	} `yaml:"step2"`

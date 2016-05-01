@@ -25,48 +25,48 @@
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/auth/authpb",
-			"Comment": "v2.3.0-633-gb58f8dd",
-			"Rev": "b58f8dd64b0ad0bd614698e8d6457ed726573fa6"
+			"Comment": "v2.3.0-635-g262de75",
+			"Rev": "262de75a7ec6a224333337ad54a9671483ebbcaa"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/client",
-			"Comment": "v2.3.0-633-gb58f8dd",
-			"Rev": "b58f8dd64b0ad0bd614698e8d6457ed726573fa6"
+			"Comment": "v2.3.0-635-g262de75",
+			"Rev": "262de75a7ec6a224333337ad54a9671483ebbcaa"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/clientv3",
-			"Comment": "v2.3.0-633-gb58f8dd",
-			"Rev": "b58f8dd64b0ad0bd614698e8d6457ed726573fa6"
+			"Comment": "v2.3.0-635-g262de75",
+			"Rev": "262de75a7ec6a224333337ad54a9671483ebbcaa"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes",
-			"Comment": "v2.3.0-633-gb58f8dd",
-			"Rev": "b58f8dd64b0ad0bd614698e8d6457ed726573fa6"
+			"Comment": "v2.3.0-635-g262de75",
+			"Rev": "262de75a7ec6a224333337ad54a9671483ebbcaa"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/etcdserverpb",
-			"Comment": "v2.3.0-633-gb58f8dd",
-			"Rev": "b58f8dd64b0ad0bd614698e8d6457ed726573fa6"
+			"Comment": "v2.3.0-635-g262de75",
+			"Rev": "262de75a7ec6a224333337ad54a9671483ebbcaa"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/mvcc/mvccpb",
-			"Comment": "v2.3.0-633-gb58f8dd",
-			"Rev": "b58f8dd64b0ad0bd614698e8d6457ed726573fa6"
+			"Comment": "v2.3.0-635-g262de75",
+			"Rev": "262de75a7ec6a224333337ad54a9671483ebbcaa"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/pathutil",
-			"Comment": "v2.3.0-633-gb58f8dd",
-			"Rev": "b58f8dd64b0ad0bd614698e8d6457ed726573fa6"
+			"Comment": "v2.3.0-635-g262de75",
+			"Rev": "262de75a7ec6a224333337ad54a9671483ebbcaa"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/tlsutil",
-			"Comment": "v2.3.0-633-gb58f8dd",
-			"Rev": "b58f8dd64b0ad0bd614698e8d6457ed726573fa6"
+			"Comment": "v2.3.0-635-g262de75",
+			"Rev": "262de75a7ec6a224333337ad54a9671483ebbcaa"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/types",
-			"Comment": "v2.3.0-633-gb58f8dd",
-			"Rev": "b58f8dd64b0ad0bd614698e8d6457ed726573fa6"
+			"Comment": "v2.3.0-635-g262de75",
+			"Rev": "262de75a7ec6a224333337ad54a9671483ebbcaa"
 		},
 		{
 			"ImportPath": "github.com/cpuguy83/go-md2man/md2man",

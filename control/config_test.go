@@ -72,6 +72,9 @@ func TestReadConfig(t *testing.T) {
 	if c.Step2.ResultPath != "timeseries.csv" {
 		t.Fatalf("unexpected %s", c.Step2.ResultPath)
 	}
+	if c.Step2.ValueTestDataPath != "/home/gyuho/testdata" {
+		t.Fatalf("unexpected %s", c.Step2.ValueTestDataPath)
+	}
 	if c.Step2.Connections != 100 {
 		t.Fatalf("unexpected %d", c.Step2.Connections)
 	}

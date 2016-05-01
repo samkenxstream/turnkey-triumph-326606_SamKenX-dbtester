@@ -32,6 +32,7 @@ step2:
     clients: 100
     key_size: 64
     value_size: 256
+    value_testdata_path: /home/gyuho/testdata  # overwrites value_size
     total_requests: 3000000
     etcdv3_compaction_cycle: 0
 
