@@ -33,7 +33,7 @@ step2:
     key_size: 64
     value_size: 1
     value_testdata_path: /home/gyuho/testdata
-    total_requests: 50000
+    total_requests: 100000
     etcdv3_compaction_cycle: 0
 
 # after benchmark

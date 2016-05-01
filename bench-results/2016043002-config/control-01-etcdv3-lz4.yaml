@@ -1,5 +1,5 @@
 database: etcdv3
-test_name: 01-etcdv3-snappy
+test_name: 01-etcdv3-lz4
 
 google_cloud_project_name: etcd-development
 google_cloud_storage_key_path: /home/gyuho/gcloud-key.json
@@ -14,7 +14,7 @@ peer_ips:
 agent_port: 3500
 database_port: 2379
 
-etcd_compression: snappy
+etcd_compression: lz4
 
 # start database by sending RPC calls to agents
 step1:

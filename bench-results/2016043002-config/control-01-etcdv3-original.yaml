@@ -14,7 +14,6 @@ peer_ips:
 agent_port: 3500
 database_port: 2379
 
-# no compression
 etcd_compression: ""
 
 # start database by sending RPC calls to agents
@@ -29,12 +28,12 @@ step2:
     bench_type: write
     local_read: true
     result_path: timeseries.csv
-    connections: 100
-    clients: 1000
+    connections: 1
+    clients: 1
     key_size: 64
     value_size: 1
-    value_testdata_path: /home/gyuho/go/src/github.com/coreos/dbtester/testdata
-    total_requests: 500000
+    value_testdata_path: /home/gyuho/testdata
+    total_requests: 50000
     etcdv3_compaction_cycle: 0
 
 # after benchmark
