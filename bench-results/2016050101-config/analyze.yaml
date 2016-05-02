@@ -1,7 +1,7 @@
 
 titles:
   - Write 2K keys, 1-client, 1-conn, 8-byte key with random texts(<300KB) (etcd v3)
-  - Write 2K keys, 1-client, 1-conn, 8-byte key with random texts(<300KB) (etcd v3)
+  - Write 3K keys, 1-client, 1-conn, 8-byte key with random texts(<300KB) (etcd v3)
 
 step1:
   - data_path_list:
@@ -136,8 +136,6 @@ step3:
         legend: etcd v3
       - column: avg_memory_mb_etcd_v3_snappy
         legend: etcd v3 (with Snappy)
-      - column: avg_memory_mb_etcd_v3_lz4
-        legend: etcd v3 (with Lz4)
       x_axis: Second
       y_axis: Memory(MB)
       output_path_list:
