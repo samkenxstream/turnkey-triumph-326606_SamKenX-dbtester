@@ -37,7 +37,7 @@ type Config struct {
 	AgentEndpoints    []string
 	DatabaseEndpoints []string
 
-	// cgzip, cgzip-lv2, gzip, snappy, snappy-cpp
+	// snappy
 	EtcdCompression string `yaml:"etcd_compression"`
 
 	Step1 struct {

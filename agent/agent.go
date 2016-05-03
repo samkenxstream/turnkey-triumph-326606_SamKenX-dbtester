@@ -29,7 +29,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/coreos/dbtester/remotestorage"
-	"github.com/coreos/etcd/pkg/compress"
+	// "github.com/coreos/etcd/pkg/compress"
 	"github.com/gyuho/psn/ps"
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
@@ -244,13 +244,13 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				"--initial-cluster", clusterStr,
 				"--initial-cluster-state", "new",
 			}
-			if t.req.EtcdCompression != "" {
-				if compress.ParseType(t.req.EtcdCompression) != compress.NoCompress {
-					flags = append(flags,
-						"--experimental-compression", t.req.EtcdCompression,
-					)
-				}
-			}
+			// if t.req.EtcdCompression != "" {
+			// 	if compress.ParseType(t.req.EtcdCompression) != compress.NoCompress {
+			// 		flags = append(flags,
+			// 			"--experimental-compression", t.req.EtcdCompression,
+			// 		)
+			// 	}
+			// }
 			flagString := strings.Join(flags, " ")
 
 			cmd := exec.Command(etcdBinaryPath, flags...)
