@@ -272,7 +272,7 @@ func doPutZk(conn *zk.Conn, requests <-chan request, sameKey bool) {
 		if !sameKey || idx == 0 {
 			_, err = conn.Create(op.key, op.value, zkCreateFlags, zkCreateAcl)
 		} else {
-			_, err = conn.Set(op.key, op.value, 0)
+			_, err = conn.Set(op.key, op.value, int32(-1))
 		}
 
 		var errStr string
