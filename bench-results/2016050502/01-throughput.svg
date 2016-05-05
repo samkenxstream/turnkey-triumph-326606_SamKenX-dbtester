@@ -32,32 +32,20 @@
 <text x="336.05" y="14.399" transform="scale(1, -1)"
 	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:12pt">Throughput</text>
 </g>
-<text x="19.248" y="-137.31" transform="scale(1, -1)"
+<text x="19.248" y="-131.92" transform="scale(1, -1)"
 	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:10pt">2e+04</text>
-<text x="19.248" y="-246.95" transform="scale(1, -1)"
-	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:10pt">3e+04</text>
-<text x="19.248" y="-356.6" transform="scale(1, -1)"
+<text x="19.248" y="-345.95" transform="scale(1, -1)"
 	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:10pt">4e+04</text>
-<text x="19.248" y="-466.25" transform="scale(1, -1)"
-	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:10pt">5e+04</text>
-<text x="19.248" y="-575.9" transform="scale(1, -1)"
+<text x="19.248" y="-559.97" transform="scale(1, -1)"
 	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:10pt">6e+04</text>
-<text x="19.248" y="-685.55" transform="scale(1, -1)"
-	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:10pt">7e+04</text>
-<path d="M57.828,143.18L67.828,143.18" style="fill:none;stroke:#000000;stroke-width:0.625" />
-<path d="M57.828,252.83L67.828,252.83" style="fill:none;stroke:#000000;stroke-width:0.625" />
-<path d="M57.828,362.48L67.828,362.48" style="fill:none;stroke:#000000;stroke-width:0.625" />
-<path d="M57.828,472.12L67.828,472.12" style="fill:none;stroke:#000000;stroke-width:0.625" />
-<path d="M57.828,581.77L67.828,581.77" style="fill:none;stroke:#000000;stroke-width:0.625" />
-<path d="M57.828,691.42L67.828,691.42" style="fill:none;stroke:#000000;stroke-width:0.625" />
-<path d="M62.828,88.356L67.828,88.356" style="fill:none;stroke:#000000;stroke-width:0.625" />
-<path d="M62.828,198L67.828,198" style="fill:none;stroke:#000000;stroke-width:0.625" />
-<path d="M62.828,307.65L67.828,307.65" style="fill:none;stroke:#000000;stroke-width:0.625" />
-<path d="M62.828,417.3L67.828,417.3" style="fill:none;stroke:#000000;stroke-width:0.625" />
-<path d="M62.828,526.95L67.828,526.95" style="fill:none;stroke:#000000;stroke-width:0.625" />
-<path d="M62.828,636.6L67.828,636.6" style="fill:none;stroke:#000000;stroke-width:0.625" />
+<path d="M57.828,137.79L67.828,137.79" style="fill:none;stroke:#000000;stroke-width:0.625" />
+<path d="M57.828,351.82L67.828,351.82" style="fill:none;stroke:#000000;stroke-width:0.625" />
+<path d="M57.828,565.85L67.828,565.85" style="fill:none;stroke:#000000;stroke-width:0.625" />
+<path d="M62.828,244.81L67.828,244.81" style="fill:none;stroke:#000000;stroke-width:0.625" />
+<path d="M62.828,458.84L67.828,458.84" style="fill:none;stroke:#000000;stroke-width:0.625" />
+<path d="M62.828,672.86L67.828,672.86" style="fill:none;stroke:#000000;stroke-width:0.625" />
 <path d="M67.828,48.06L67.828,700.75" style="fill:none;stroke:#000000;stroke-width:0.625" />
-<path d="M75.085,48.06L186.36,230.58L297.63,173.32L408.9,629.05L520.17,681.54L631.44,663.88L742.71,686.8L853.98,677.82L965.25,700.75L1076.5,663.04" style="fill:none;stroke:#F15A60;stroke-width:1.875" />
+<path d="M75.085,48.06L186.36,387.86L297.63,457.83L408.9,636.41L520.17,663.79L631.44,680.32L742.71,700.75L853.98,665.53L965.25,674.76L1076.5,681.52" style="fill:none;stroke:#F15A60;stroke-width:1.875" />
 <path d="M1055,693.4L1080,693.4" style="fill:none;stroke:#F15A60;stroke-width:1.875" />
 <text x="934.09" y="-686.35" transform="scale(1, -1)"
 	style="font-family:Helvetica;font-weight:normal;font-style:normal;font-size:12pt">Zookeeper v3.4.8</text>
