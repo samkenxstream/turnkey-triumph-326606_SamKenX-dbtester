@@ -80,10 +80,7 @@ func wrapReport(f func()) <-chan struct{} {
 func (r *report) finalize() {
 	log.Printf("finalize has started")
 	st := time.Now()
-	i := 0
 	for res := range r.results {
-		i++
-		fmt.Println("finalize from results:", i, res)
 		if res.errStr != "" {
 			r.errorDist[res.errStr]++
 		} else {

@@ -269,7 +269,7 @@ func step2(cfg Config) error {
 			}()
 			for i := range conns {
 				wg.Add(1)
-				go doPutZk(conns[i], requests)
+				go doPutZk(conns[i], requests, cfg.Step2.SameKey)
 			}
 
 		case "consul":
