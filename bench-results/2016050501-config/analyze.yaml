@@ -62,7 +62,7 @@ step4:
     - 8 vCPUs + 16GB Memory + 50GB SSD
     - 1 machine(client) of 16 vCPUs + 30GB Memory + 50GB SSD
     - Ubuntu 15.10
-    - Go master branch on 2016-05-03
+    - Go 1.6.2
     - etcd v2
 
   results:
