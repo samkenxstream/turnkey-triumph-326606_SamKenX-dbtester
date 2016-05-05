@@ -263,13 +263,12 @@ func getTotalKeysEtcdv3(endpoints []string) map[string]int64 {
 func doPutZk(conn *zk.Conn, requests <-chan request, sameKey bool) {
 	defer wg.Done()
 
-	var idx int32
 	for req := range requests {
 		op := req.zkOp
 		st := time.Now()
 
 		var err error
-		if !sameKey || idx == 0 {
+		if !sameKey {
 			_, err = conn.Create(op.key, op.value, zkCreateFlags, zkCreateAcl)
 		} else {
 			_, err = conn.Set(op.key, op.value, int32(-1))
@@ -282,8 +281,6 @@ func doPutZk(conn *zk.Conn, requests <-chan request, sameKey bool) {
 		}
 		results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
 		bar.Increment()
-
-		idx++
 	}
 }
 

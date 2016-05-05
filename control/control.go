@@ -261,6 +261,29 @@ func step2(cfg Config) error {
 			}()
 
 		case "zk", "zookeeper":
+			if cfg.Step2.SameKey {
+				key := sameKey(cfg.Step2.KeySize)
+				valueBts := randBytes(cfg.Step2.ValueSize)
+				log.Printf("PUT '/%s' to Zookeeper", key)
+				var err error
+				for i := 0; i < 7; i++ {
+					conns := mustCreateConnsZk(cfg.DatabaseEndpoints, cfg.Step2.Connections)
+					_, err = conns[0].Create("/"+key, valueBts, zkCreateFlags, zkCreateAcl)
+					if err != nil {
+						continue
+					}
+					for j := range conns {
+						conns[j].Close()
+					}
+					log.Printf("Done with PUT '/%s' to Zookeeper", key)
+					break
+				}
+				if err != nil {
+					fmt.Fprintln(os.Stderr, err)
+					os.Exit(1)
+				}
+			}
+
 			conns := mustCreateConnsZk(cfg.DatabaseEndpoints, cfg.Step2.Connections)
 			defer func() {
 				for i := range conns {
@@ -367,7 +390,7 @@ func step2(cfg Config) error {
 		case "etcdv2":
 			log.Printf("PUT '%s' to etcdv2", key)
 			var err error
-			for i := 0; i < 5; i++ {
+			for i := 0; i < 7; i++ {
 				clients := mustCreateClientsEtcdv2(cfg.DatabaseEndpoints, cfg.Step2.Connections)
 				_, err = clients[0].Set(context.Background(), key, value, nil)
 				if err != nil {
@@ -384,7 +407,7 @@ func step2(cfg Config) error {
 		case "etcdv3":
 			log.Printf("PUT '%s' to etcd", key)
 			var err error
-			for i := 0; i < 5; i++ {
+			for i := 0; i < 7; i++ {
 				// clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, 1, 1, cfg.EtcdCompression)
 				clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, 1, 1)
 				_, err = clients[0].Do(context.Background(), clientv3.OpPut(key, value))
@@ -402,11 +425,14 @@ func step2(cfg Config) error {
 		case "zk", "zookeeper":
 			log.Printf("PUT '/%s' to Zookeeper", key)
 			var err error
-			for i := 0; i < 5; i++ {
+			for i := 0; i < 7; i++ {
 				conns := mustCreateConnsZk(cfg.DatabaseEndpoints, cfg.Step2.Connections)
 				_, err = conns[0].Create("/"+key, valueBts, zkCreateFlags, zkCreateAcl)
 				if err != nil {
 					continue
+				}
+				for j := range conns {
+					conns[j].Close()
 				}
 				log.Printf("Done with PUT '/%s' to Zookeeper", key)
 				break
@@ -419,7 +445,7 @@ func step2(cfg Config) error {
 		case "consul":
 			log.Printf("PUT '%s' to Consul", key)
 			var err error
-			for i := 0; i < 5; i++ {
+			for i := 0; i < 7; i++ {
 				clients := mustCreateConnsConsul(cfg.DatabaseEndpoints, cfg.Step2.Connections)
 				_, err = clients[0].Put(&consulapi.KVPair{Key: key, Value: valueBts}, nil)
 				if err != nil {
