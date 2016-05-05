@@ -263,7 +263,9 @@ func getTotalKeysEtcdv3(endpoints []string) map[string]int64 {
 func doPutZk(conn *zk.Conn, requests <-chan request) {
 	defer wg.Done()
 
+	i := 0
 	for req := range requests {
+		i++
 		op := req.zkOp
 		st := time.Now()
 
@@ -273,6 +275,7 @@ func doPutZk(conn *zk.Conn, requests <-chan request) {
 		if err != nil {
 			errStr = err.Error()
 		}
+		fmt.Println("sent to results:", i, errStr, op.key, op.value)
 		results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
 		bar.Increment()
 	}
