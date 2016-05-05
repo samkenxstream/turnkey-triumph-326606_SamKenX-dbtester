@@ -496,6 +496,10 @@ func sequentialKey(size, num int) string {
 	return strings.Repeat("0", delta) + txt
 }
 
+func sameKey(size int) string {
+	return strings.Repeat("a", size)
+}
+
 func walk(targetDir string) (map[string]os.FileInfo, error) {
 	rm := make(map[string]os.FileInfo)
 	visit := func(path string, f os.FileInfo, err error) error {

@@ -291,6 +291,9 @@ func step2(cfg Config) error {
 				}
 
 				k := sequentialKey(cfg.Step2.KeySize, i)
+				if cfg.Step2.SameKey {
+					k = sameKey(cfg.Step2.KeySize)
+				}
 				if cfg.Step2.ValueTestDataPath != "" {
 					v = valuesBytes[i%valueSampleSize]
 					vs = valuesString[i%valueSampleSize]

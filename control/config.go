@@ -55,6 +55,7 @@ type Config struct {
 		Connections           int    `yaml:"connections"`
 		Clients               int    `yaml:"clients"`
 		KeySize               int    `yaml:"key_size"`
+		SameKey               bool   `yaml:"same_key"`
 		ValueSize             int    `yaml:"value_size"`
 		ValueTestDataPath     string `yaml:"value_testdata_path"`
 		TotalRequests         int    `yaml:"total_requests"`

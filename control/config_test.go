@@ -72,6 +72,12 @@ func TestReadConfig(t *testing.T) {
 	if c.Step2.ResultPath != "timeseries.csv" {
 		t.Fatalf("unexpected %s", c.Step2.ResultPath)
 	}
+	if c.Step2.KeySize != 8 {
+		t.Fatalf("unexpected %d", c.Step2.KeySize)
+	}
+	if !c.Step2.SameKey {
+		t.Fatalf("unexpected %v", c.Step2.SameKey)
+	}
 	if c.Step2.ValueTestDataPath != "/home/gyuho/testdata" {
 		t.Fatalf("unexpected %s", c.Step2.ValueTestDataPath)
 	}
