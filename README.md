@@ -19,6 +19,7 @@ We keep full logs here and cloud storage(when it's over 1MB):
 
 Test results:
 
+- https://github.com/coreos/dbtester/tree/master/bench-results/2016050504/README.md
 - https://github.com/coreos/dbtester/tree/master/bench-results/2016050503/README.md
 - https://github.com/coreos/dbtester/tree/master/bench-results/2016050502/README.md
 - https://github.com/coreos/dbtester/tree/master/bench-results/2016050501/README.md
