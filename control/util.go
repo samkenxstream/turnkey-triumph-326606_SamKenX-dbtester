@@ -278,6 +278,7 @@ func doPutZk(conn *zk.Conn, requests <-chan request, sameKey bool) {
 		var errStr string
 		if err != nil {
 			errStr = err.Error()
+			fmt.Println("doPutZk err:", err)
 		}
 		results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
 		bar.Increment()
