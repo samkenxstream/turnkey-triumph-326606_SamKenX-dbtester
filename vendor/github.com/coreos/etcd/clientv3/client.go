@@ -24,6 +24,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/coreos/etcd/pkg/compress"
+
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -50,6 +52,14 @@ type Client struct {
 
 	ctx    context.Context
 	cancel context.CancelFunc
+
+	// fields below are managed by connMonitor
+
+	// reconnc accepts writes which signal the client should reconnect
+	reconnc chan error
+	// newconnc is closed on successful connect and set to a fresh channel
+	newconnc    chan struct{}
+	lastConnErr error
 }
 
 // New creates a new etcdv3 client from a given configuration.
@@ -87,10 +97,13 @@ func (c *Client) Close() error {
 	}
 	c.cancel()
 	c.cancel = nil
+	err := c.conn.Close()
+	connc := c.newconnc
 	c.mu.Unlock()
 	c.Watcher.Close()
 	c.Lease.Close()
-	return c.conn.Close()
+	<-connc
+	return err
 }
 
 // Ctx is a context for "out of band" messages (e.g., for sending
@@ -138,6 +151,13 @@ func (c *Client) Dial(endpoint string) (*grpc.ClientConn, error) {
 	}
 	opts = append(opts, grpc.WithDialer(f))
 
+	switch c.cfg.CompressType {
+	case compress.Snappy:
+		opts = append(opts,
+			grpc.WithCompressor(compress.NewSnappyCompressor()),
+			grpc.WithDecompressor(compress.NewSnappyDecompressor()))
+	}
+
 	conn, err := grpc.Dial(endpoint, opts...)
 	if err != nil {
 		return nil, err
@@ -161,12 +181,17 @@ func newClient(cfg *Config) (*Client, error) {
 		return nil, err
 	}
 	client := &Client{
-		conn:   conn,
-		cfg:    *cfg,
-		creds:  creds,
-		ctx:    ctx,
-		cancel: cancel,
+		conn:     conn,
+		cfg:      *cfg,
+		creds:    creds,
+		ctx:      ctx,
+		cancel:   cancel,
+		reconnc:  make(chan error),
+		newconnc: make(chan struct{}),
 	}
+
+	go client.connMonitor()
+
 	client.Cluster = NewCluster(client)
 	client.KV = NewKV(client)
 	client.Lease = NewLease(client)
@@ -191,7 +216,7 @@ func (c *Client) ActiveConnection() *grpc.ClientConn {
 }
 
 // retryConnection establishes a new connection
-func (c *Client) retryConnection(oldConn *grpc.ClientConn, err error) (*grpc.ClientConn, error) {
+func (c *Client) retryConnection(err error) (newConn *grpc.ClientConn, dialErr error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if err != nil {
@@ -200,24 +225,66 @@ func (c *Client) retryConnection(oldConn *grpc.ClientConn, err error) (*grpc.Cli
 	if c.cancel == nil {
 		return nil, c.ctx.Err()
 	}
-	if oldConn != c.conn {
-		// conn has already been updated
-		return c.conn, nil
+	if c.conn != nil {
+		c.conn.Close()
+		if st, _ := c.conn.State(); st != grpc.Shutdown {
+			// wait so grpc doesn't leak sleeping goroutines
+			c.conn.WaitForStateChange(c.ctx, st)
+		}
 	}
 
-	oldConn.Close()
-	if st, _ := oldConn.State(); st != grpc.Shutdown {
-		// wait for shutdown so grpc doesn't leak sleeping goroutines
-		oldConn.WaitForStateChange(c.ctx, st)
-	}
-
-	conn, dialErr := c.cfg.RetryDialer(c)
+	c.conn, dialErr = c.cfg.RetryDialer(c)
 	if dialErr != nil {
 		c.errors = append(c.errors, dialErr)
-		return nil, dialErr
 	}
-	c.conn = conn
-	return c.conn, nil
+	return c.conn, dialErr
+}
+
+// connStartRetry schedules a reconnect if one is not already running
+func (c *Client) connStartRetry(err error) {
+	select {
+	case c.reconnc <- err:
+	default:
+	}
+}
+
+// connWait waits for a reconnect to be processed
+func (c *Client) connWait(ctx context.Context, err error) (*grpc.ClientConn, error) {
+	c.mu.Lock()
+	ch := c.newconnc
+	c.mu.Unlock()
+	c.connStartRetry(err)
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case <-ch:
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.conn, c.lastConnErr
+}
+
+// connMonitor monitors the connection and handles retries
+func (c *Client) connMonitor() {
+	var err error
+	for {
+		select {
+		case err = <-c.reconnc:
+		case <-c.ctx.Done():
+			c.mu.Lock()
+			c.lastConnErr = c.ctx.Err()
+			close(c.newconnc)
+			c.mu.Unlock()
+			return
+		}
+		conn, connErr := c.retryConnection(err)
+		c.mu.Lock()
+		c.lastConnErr = connErr
+		c.conn = conn
+		close(c.newconnc)
+		c.newconnc = make(chan struct{})
+		c.mu.Unlock()
+	}
 }
 
 // dialEndpointList attempts to connect to each endpoint in order until a

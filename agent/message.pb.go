@@ -112,7 +112,7 @@ type Request struct {
 	ZookeeperMaxClientCnxns int64 `protobuf:"varint,11,opt,name=zookeeperMaxClientCnxns,proto3" json:"zookeeperMaxClientCnxns,omitempty"`
 	// ZookeeperSnapCount is 100,000 by default.
 	ZookeeperSnapCount int64 `protobuf:"varint,12,opt,name=zookeeperSnapCount,proto3" json:"zookeeperSnapCount,omitempty"`
-	// Etcdv3Compression specifies etcd compression algorithm.
+	// EtcdCompression specifies etcd compression algorithm.
 	EtcdCompression string `protobuf:"bytes,13,opt,name=etcdCompression,proto3" json:"etcdCompression,omitempty"`
 }
 

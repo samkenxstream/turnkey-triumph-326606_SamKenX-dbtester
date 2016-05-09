@@ -145,7 +145,7 @@ func step1(cfg Config) error {
 
 	req.ZookeeperMaxClientCnxns = cfg.Step1.ZookeeperMaxClientCnxns
 	req.ZookeeperSnapCount = cfg.Step1.ZookeeperSnapCount
-	// req.EtcdCompression = cfg.EtcdCompression
+	req.EtcdCompression = cfg.EtcdCompression
 
 	donec, errc := make(chan struct{}), make(chan error)
 	for i := range cfg.PeerIPs {
@@ -248,8 +248,8 @@ func step2(cfg Config) error {
 			}
 
 		case "etcdv3":
-			// etcdClients = mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, cfg.Step2.Clients, cfg.Step2.Connections, cfg.EtcdCompression)
-			etcdClients = mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, cfg.Step2.Clients, cfg.Step2.Connections)
+			etcdClients = mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, cfg.Step2.Clients, cfg.Step2.Connections, cfg.EtcdCompression)
+			// etcdClients = mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, cfg.Step2.Clients, cfg.Step2.Connections)
 			for i := range etcdClients {
 				wg.Add(1)
 				go doPutEtcdv3(context.Background(), etcdClients[i], requests)
@@ -382,10 +382,14 @@ func step2(cfg Config) error {
 
 	case "read":
 		var (
-			key      = string(randBytes(cfg.Step2.KeySize))
+			key      = sameKey(cfg.Step2.KeySize)
 			valueBts = randBytes(cfg.Step2.ValueSize)
 			value    = string(valueBts)
 		)
+		if cfg.Step2.ValueTestDataPath != "" {
+			valueBts = valuesBytes[0]
+			value = valuesString[0]
+		}
 		switch cfg.Database {
 		case "etcdv2":
 			log.Printf("PUT '%s' to etcdv2", key)
@@ -408,8 +412,8 @@ func step2(cfg Config) error {
 			log.Printf("PUT '%s' to etcd", key)
 			var err error
 			for i := 0; i < 7; i++ {
-				// clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, 1, 1, cfg.EtcdCompression)
-				clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, 1, 1)
+				clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, 1, 1, cfg.EtcdCompression)
+				// clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, 1, 1)
 				_, err = clients[0].Do(context.Background(), clientv3.OpPut(key, value))
 				if err != nil {
 					continue
@@ -476,8 +480,8 @@ func step2(cfg Config) error {
 			}
 
 		case "etcdv3":
-			// clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, cfg.Step2.Clients, cfg.Step2.Connections, cfg.EtcdCompression)
-			clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, cfg.Step2.Clients, cfg.Step2.Connections)
+			clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, cfg.Step2.Clients, cfg.Step2.Connections, cfg.EtcdCompression)
+			// clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, cfg.Step2.Clients, cfg.Step2.Connections)
 			for i := range clients {
 				wg.Add(1)
 				go doRangeEtcdv3(clients[i].KV, requests)
