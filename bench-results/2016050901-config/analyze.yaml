@@ -10,6 +10,13 @@ step1:
     data_benchmark_path: 2016050901/01-etcdv3-nocompression-timeseries.csv
     output_path: 2016050901/01-etcdv3-nocompression-aggregated.csv
 
+  - data_path_list:
+    - 2016050901/01-etcdv3-snappy-1-monitor.csv
+    - 2016050901/01-etcdv3-snappy-2-monitor.csv
+    - 2016050901/01-etcdv3-snappy-3-monitor.csv
+    data_benchmark_path: 2016050901/01-etcdv3-snappy-timeseries.csv
+    output_path: 2016050901/01-etcdv3-snappy-aggregated.csv
+
 step2:
   - data_list:
       - path: 2016050901/01-etcdv3-nocompression-aggregated.csv

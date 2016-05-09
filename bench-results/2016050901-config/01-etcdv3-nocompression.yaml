@@ -1,5 +1,5 @@
 database: etcdv3
-test_name: 01-etcdv3
+test_name: 01-etcdv3-nocompression
 
 google_cloud_project_name: etcd-development
 google_cloud_storage_key_path: /home/gyuho/gcloud-key.json
