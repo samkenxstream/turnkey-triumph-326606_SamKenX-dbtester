@@ -19,8 +19,8 @@ We keep full logs here and cloud storage(when it's over 1MB):
 
 Test results:
 
-- https://github.com/coreos/dbtester/tree/master/bench-results/2016051001/README.md
-- https://github.com/coreos/dbtester/tree/master/bench-results/2016050901/README.md
+- Compression experiment: https://github.com/coreos/dbtester/tree/master/bench-results/2016051001/README.md
+- Compression experiment: https://github.com/coreos/dbtester/tree/master/bench-results/2016050901/README.md
 - https://github.com/coreos/dbtester/tree/master/bench-results/2016050504/README.md
 - https://github.com/coreos/dbtester/tree/master/bench-results/2016050503/README.md
 - https://github.com/coreos/dbtester/tree/master/bench-results/2016050502/README.md
@@ -42,4 +42,3 @@ Test results:
 
 [cistat]: https://travis-ci.org/coreos/dbtester
 [dbtester-godoc]: https://godoc.org/github.com/coreos/dbtester
-
