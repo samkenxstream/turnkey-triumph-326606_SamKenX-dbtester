@@ -25,53 +25,48 @@
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/auth/authpb",
-			"Comment": "v3.0.0-beta.0-12-g7c185af",
-			"Rev": "7c185afbc2ad968cb8608aa5f669b266aabb72d4"
+			"Comment": "v3.0.0-beta.0-17-gfa66704",
+			"Rev": "fa6670488d90627d6ed9957ae4e23de99b5540fc"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/client",
-			"Comment": "v3.0.0-beta.0-12-g7c185af",
-			"Rev": "7c185afbc2ad968cb8608aa5f669b266aabb72d4"
+			"Comment": "v3.0.0-beta.0-17-gfa66704",
+			"Rev": "fa6670488d90627d6ed9957ae4e23de99b5540fc"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/clientv3",
-			"Comment": "v3.0.0-beta.0-12-g7c185af",
-			"Rev": "7c185afbc2ad968cb8608aa5f669b266aabb72d4"
+			"Comment": "v3.0.0-beta.0-17-gfa66704",
+			"Rev": "fa6670488d90627d6ed9957ae4e23de99b5540fc"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes",
-			"Comment": "v3.0.0-beta.0-12-g7c185af",
-			"Rev": "7c185afbc2ad968cb8608aa5f669b266aabb72d4"
+			"Comment": "v3.0.0-beta.0-17-gfa66704",
+			"Rev": "fa6670488d90627d6ed9957ae4e23de99b5540fc"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/etcdserverpb",
-			"Comment": "v3.0.0-beta.0-12-g7c185af",
-			"Rev": "7c185afbc2ad968cb8608aa5f669b266aabb72d4"
+			"Comment": "v3.0.0-beta.0-17-gfa66704",
+			"Rev": "fa6670488d90627d6ed9957ae4e23de99b5540fc"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/mvcc/mvccpb",
-			"Comment": "v3.0.0-beta.0-12-g7c185af",
-			"Rev": "7c185afbc2ad968cb8608aa5f669b266aabb72d4"
-		},
-		{
-			"ImportPath": "github.com/coreos/etcd/pkg/compress",
-			"Comment": "v3.0.0-beta.0-12-g7c185af",
-			"Rev": "7c185afbc2ad968cb8608aa5f669b266aabb72d4"
+			"Comment": "v3.0.0-beta.0-17-gfa66704",
+			"Rev": "fa6670488d90627d6ed9957ae4e23de99b5540fc"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/pathutil",
-			"Comment": "v3.0.0-beta.0-12-g7c185af",
-			"Rev": "7c185afbc2ad968cb8608aa5f669b266aabb72d4"
+			"Comment": "v3.0.0-beta.0-17-gfa66704",
+			"Rev": "fa6670488d90627d6ed9957ae4e23de99b5540fc"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/tlsutil",
-			"Comment": "v3.0.0-beta.0-12-g7c185af",
-			"Rev": "7c185afbc2ad968cb8608aa5f669b266aabb72d4"
+			"Comment": "v3.0.0-beta.0-17-gfa66704",
+			"Rev": "fa6670488d90627d6ed9957ae4e23de99b5540fc"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/types",
-			"Comment": "v3.0.0-beta.0-12-g7c185af",
-			"Rev": "7c185afbc2ad968cb8608aa5f669b266aabb72d4"
+			"Comment": "v3.0.0-beta.0-17-gfa66704",
+			"Rev": "fa6670488d90627d6ed9957ae4e23de99b5540fc"
 		},
 		{
 			"ImportPath": "github.com/cpuguy83/go-md2man/md2man",
@@ -124,10 +119,6 @@
 		{
 			"ImportPath": "github.com/golang/protobuf/proto",
 			"Rev": "6aaa8d47701fa6cf07e914ec01fde3d4a1fe79c3"
-		},
-		{
-			"ImportPath": "github.com/golang/snappy",
-			"Rev": "d7b1e156f50d3c4664f683603af70e3e47fa0aa2"
 		},
 		{
 			"ImportPath": "github.com/gonum/floats",
@@ -451,7 +442,7 @@
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
-			"Rev": "53feefa2559fb8dfa8d81baad31be332c97d6c77"
+			"Rev": "a83829b6f1293c91addabc89d0571c246397bbf4"
 		}
 	]
 }

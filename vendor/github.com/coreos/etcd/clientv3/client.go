@@ -24,8 +24,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/coreos/etcd/pkg/compress"
-
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -150,13 +148,6 @@ func (c *Client) Dial(endpoint string) (*grpc.ClientConn, error) {
 		return net.DialTimeout(proto, a, t)
 	}
 	opts = append(opts, grpc.WithDialer(f))
-
-	switch c.cfg.CompressType {
-	case compress.Snappy:
-		opts = append(opts,
-			grpc.WithCompressor(compress.NewSnappyCompressor()),
-			grpc.WithDecompressor(compress.NewSnappyDecompressor()))
-	}
 
 	conn, err := grpc.Dial(endpoint, opts...)
 	if err != nil {
