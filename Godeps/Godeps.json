@@ -25,48 +25,48 @@
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/auth/authpb",
-			"Comment": "v3.0.0-beta.0-17-gfa66704",
-			"Rev": "fa6670488d90627d6ed9957ae4e23de99b5540fc"
+			"Comment": "v3.0.0-beta.0-104-g46481b1",
+			"Rev": "46481b17fc745cb3b7aa682a24220e782d9ce6dd"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/client",
-			"Comment": "v3.0.0-beta.0-17-gfa66704",
-			"Rev": "fa6670488d90627d6ed9957ae4e23de99b5540fc"
+			"Comment": "v3.0.0-beta.0-104-g46481b1",
+			"Rev": "46481b17fc745cb3b7aa682a24220e782d9ce6dd"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/clientv3",
-			"Comment": "v3.0.0-beta.0-17-gfa66704",
-			"Rev": "fa6670488d90627d6ed9957ae4e23de99b5540fc"
+			"Comment": "v3.0.0-beta.0-104-g46481b1",
+			"Rev": "46481b17fc745cb3b7aa682a24220e782d9ce6dd"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes",
-			"Comment": "v3.0.0-beta.0-17-gfa66704",
-			"Rev": "fa6670488d90627d6ed9957ae4e23de99b5540fc"
+			"Comment": "v3.0.0-beta.0-104-g46481b1",
+			"Rev": "46481b17fc745cb3b7aa682a24220e782d9ce6dd"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/etcdserver/etcdserverpb",
-			"Comment": "v3.0.0-beta.0-17-gfa66704",
-			"Rev": "fa6670488d90627d6ed9957ae4e23de99b5540fc"
+			"Comment": "v3.0.0-beta.0-104-g46481b1",
+			"Rev": "46481b17fc745cb3b7aa682a24220e782d9ce6dd"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/mvcc/mvccpb",
-			"Comment": "v3.0.0-beta.0-17-gfa66704",
-			"Rev": "fa6670488d90627d6ed9957ae4e23de99b5540fc"
+			"Comment": "v3.0.0-beta.0-104-g46481b1",
+			"Rev": "46481b17fc745cb3b7aa682a24220e782d9ce6dd"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/pathutil",
-			"Comment": "v3.0.0-beta.0-17-gfa66704",
-			"Rev": "fa6670488d90627d6ed9957ae4e23de99b5540fc"
+			"Comment": "v3.0.0-beta.0-104-g46481b1",
+			"Rev": "46481b17fc745cb3b7aa682a24220e782d9ce6dd"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/tlsutil",
-			"Comment": "v3.0.0-beta.0-17-gfa66704",
-			"Rev": "fa6670488d90627d6ed9957ae4e23de99b5540fc"
+			"Comment": "v3.0.0-beta.0-104-g46481b1",
+			"Rev": "46481b17fc745cb3b7aa682a24220e782d9ce6dd"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/types",
-			"Comment": "v3.0.0-beta.0-17-gfa66704",
-			"Rev": "fa6670488d90627d6ed9957ae4e23de99b5540fc"
+			"Comment": "v3.0.0-beta.0-104-g46481b1",
+			"Rev": "46481b17fc745cb3b7aa682a24220e782d9ce6dd"
 		},
 		{
 			"ImportPath": "github.com/cpuguy83/go-md2man/md2man",
@@ -402,47 +402,47 @@
 		},
 		{
 			"ImportPath": "google.golang.org/grpc",
-			"Rev": "b062a3c003c22bfef58fa99d689e6a892b408f9d"
+			"Rev": "15e50a43c679d14f4f83a83d3177864cfd751cdd"
 		},
 		{
 			"ImportPath": "google.golang.org/grpc/codes",
-			"Rev": "b062a3c003c22bfef58fa99d689e6a892b408f9d"
+			"Rev": "15e50a43c679d14f4f83a83d3177864cfd751cdd"
 		},
 		{
 			"ImportPath": "google.golang.org/grpc/credentials",
-			"Rev": "b062a3c003c22bfef58fa99d689e6a892b408f9d"
+			"Rev": "15e50a43c679d14f4f83a83d3177864cfd751cdd"
 		},
 		{
 			"ImportPath": "google.golang.org/grpc/credentials/oauth",
-			"Rev": "b062a3c003c22bfef58fa99d689e6a892b408f9d"
+			"Rev": "15e50a43c679d14f4f83a83d3177864cfd751cdd"
 		},
 		{
 			"ImportPath": "google.golang.org/grpc/grpclog",
-			"Rev": "b062a3c003c22bfef58fa99d689e6a892b408f9d"
+			"Rev": "15e50a43c679d14f4f83a83d3177864cfd751cdd"
 		},
 		{
 			"ImportPath": "google.golang.org/grpc/internal",
-			"Rev": "b062a3c003c22bfef58fa99d689e6a892b408f9d"
+			"Rev": "15e50a43c679d14f4f83a83d3177864cfd751cdd"
 		},
 		{
 			"ImportPath": "google.golang.org/grpc/metadata",
-			"Rev": "b062a3c003c22bfef58fa99d689e6a892b408f9d"
+			"Rev": "15e50a43c679d14f4f83a83d3177864cfd751cdd"
 		},
 		{
 			"ImportPath": "google.golang.org/grpc/naming",
-			"Rev": "b062a3c003c22bfef58fa99d689e6a892b408f9d"
+			"Rev": "15e50a43c679d14f4f83a83d3177864cfd751cdd"
 		},
 		{
 			"ImportPath": "google.golang.org/grpc/peer",
-			"Rev": "b062a3c003c22bfef58fa99d689e6a892b408f9d"
+			"Rev": "15e50a43c679d14f4f83a83d3177864cfd751cdd"
 		},
 		{
 			"ImportPath": "google.golang.org/grpc/transport",
-			"Rev": "b062a3c003c22bfef58fa99d689e6a892b408f9d"
+			"Rev": "15e50a43c679d14f4f83a83d3177864cfd751cdd"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
-			"Rev": "a83829b6f1293c91addabc89d0571c246397bbf4"
+			"Rev": "53feefa2559fb8dfa8d81baad31be332c97d6c77"
 		}
 	]
 }

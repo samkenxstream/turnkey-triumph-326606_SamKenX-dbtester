@@ -1,4 +1,4 @@
-// Copyright 2015 CoreOS, Inc.
+// Copyright 2015 The etcd Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -72,6 +72,10 @@ type OpResponse struct {
 	get *GetResponse
 	del *DeleteResponse
 }
+
+func (op OpResponse) Put() *PutResponse    { return op.put }
+func (op OpResponse) Get() *GetResponse    { return op.get }
+func (op OpResponse) Del() *DeleteResponse { return op.del }
 
 type kv struct {
 	rc     *remoteClient
