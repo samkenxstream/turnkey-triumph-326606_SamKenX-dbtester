@@ -125,6 +125,10 @@ func (r *report) print() {
 
 // Prints percentile latencies.
 func (r *report) printLatencies() {
+	fmt.Printf("\n\nAll latencies (in Seconds):\n")
+	fmt.Println(strings.Join(r.lats, "\n"))
+	fmt.Printf("\nDone\n")
+
 	pctls := []int{10, 25, 50, 75, 90, 95, 99}
 	data := make([]float64, len(pctls))
 	j := 0
