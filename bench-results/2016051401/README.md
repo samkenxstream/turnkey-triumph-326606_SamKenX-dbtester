@@ -67,3 +67,16 @@
 
 
 
+<br><br><hr>
+##### Write 2M keys, 1000-client (etcd v3 100-conn), 8-byte key, 256-byte value
+
+<img src="https://storage.googleapis.com/dbtester-results/2016051401/05-avg-latency-ms.svg" alt="2016051401/05-avg-latency-ms">
+
+<img src="https://storage.googleapis.com/dbtester-results/2016051401/05-throughput.svg" alt="2016051401/05-throughput">
+
+<img src="https://storage.googleapis.com/dbtester-results/2016051401/05-avg-cpu.svg" alt="2016051401/05-avg-cpu">
+
+<img src="https://storage.googleapis.com/dbtester-results/2016051401/05-avg-memory.svg" alt="2016051401/05-avg-memory">
+
+
+
