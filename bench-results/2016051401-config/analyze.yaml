@@ -8,11 +8,18 @@ titles:
 
 step1:
   - data_path_list:
-    - 2016051401/01-zk-1-monitor.csv
-    - 2016051401/01-zk-2-monitor.csv
-    - 2016051401/01-zk-3-monitor.csv
-    data_benchmark_path: 2016051401/01-zk-timeseries.csv
-    output_path: 2016051401/01-zk-aggregated.csv
+    - 2016051401/01-zk-snap10k-1-monitor.csv
+    - 2016051401/01-zk-snap10k-2-monitor.csv
+    - 2016051401/01-zk-snap10k-3-monitor.csv
+    data_benchmark_path: 2016051401/01-zk-snap10k-timeseries.csv
+    output_path: 2016051401/01-zk-snap10k-aggregated.csv
+
+  - data_path_list:
+    - 2016051401/01-zk-snap100k-1-monitor.csv
+    - 2016051401/01-zk-snap100k-2-monitor.csv
+    - 2016051401/01-zk-snap100k-3-monitor.csv
+    data_benchmark_path: 2016051401/01-zk-snap100k-timeseries.csv
+    output_path: 2016051401/01-zk-snap100k-aggregated.csv
 
   - data_path_list:
     - 2016051401/01-etcdv3-gotip-1-monitor.csv
@@ -51,8 +58,10 @@ step1:
 
 step2:
   - data_list:
-      - path: 2016051401/01-zk-aggregated.csv
-        name: zookeeper_v3.4.8
+      - path: 2016051401/01-zk-snap10k-aggregated.csv
+        name: zookeeper_v3.4.8_snap10k
+      - path: 2016051401/01-zk-snap100k-aggregated.csv
+        name: zookeeper_v3.4.8_snap100k
       - path: 2016051401/01-etcdv3-gotip-aggregated.csv
         name: etcdv3_gotip
       - path: 2016051401/01-etcdv3-go1.6-aggregated.csv
@@ -66,8 +75,8 @@ step2:
     output_path: 2016051401/01-all-aggregated.csv
 
   - data_list:
-      - path: 2016051401/01-zk-aggregated.csv
-        name: zookeeper_v3.4.8
+      - path: 2016051401/01-zk-snap100k-aggregated.csv
+        name: zookeeper_v3.4.8_snap100k
       - path: 2016051401/01-etcdv3-gotip-aggregated.csv
         name: etcdv3_gotip
       - path: 2016051401/01-etcdv2-go1.4-aggregated.csv
@@ -75,21 +84,19 @@ step2:
     output_path: 2016051401/02-zk-vs-etcd-aggregated.csv
 
   - data_list:
-      - path: 2016051401/01-zk-aggregated.csv
-        name: zookeeper_v3.4.8
+      - path: 2016051401/01-zk-snap10k-aggregated.csv
+        name: zookeeper_v3.4.8_snap10k
+      - path: 2016051401/01-zk-snap100k-aggregated.csv
+        name: zookeeper_v3.4.8_snap100k
       - path: 2016051401/01-etcdv3-gotip-aggregated.csv
         name: etcdv3_gotip
-      - path: 2016051401/01-etcdv3-go1.6-aggregated.csv
-        name: etcdv3_go1.6
     output_path: 2016051401/03-zk-vs-etcd-aggregated.csv
 
   - data_list:
-      - path: 2016051401/01-zk-aggregated.csv
-        name: zookeeper_v3.4.8
+      - path: 2016051401/01-zk-snap100k-aggregated.csv
+        name: zookeeper_v3.4.8_snap100k
       - path: 2016051401/01-etcdv3-gotip-aggregated.csv
         name: etcdv3_gotip
-      - path: 2016051401/01-etcdv3-go1.6-aggregated.csv
-        name: etcdv3_go1.6
     output_path: 2016051401/04-zk-vs-etcd-aggregated.csv
 
   - data_list:
@@ -106,8 +113,10 @@ step3:
 
     plot_list:
     - lines:
-      - column: avg_latency_ms_zookeeper_v3.4.8
-        legend: Zookeeper v3.4.8 (Java 8)
+      - column: avg_latency_ms_zookeeper_v3.4.8_snap10k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 10k)
+      - column: avg_latency_ms_zookeeper_v3.4.8_snap100k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 100k)
       - column: avg_latency_ms_etcdv3_gotip
         legend: etcd v3 (Go Tip)
       - column: avg_latency_ms_etcdv3_go1.6
@@ -125,8 +134,10 @@ step3:
         - 2016051401/01-avg-latency-ms.png
 
     - lines:
-      - column: throughput_zookeeper_v3.4.8
-        legend: Zookeeper v3.4.8 (Java 8)
+      - column: throughput_zookeeper_v3.4.8_snap10k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 10k)
+      - column: throughput_zookeeper_v3.4.8_snap100k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 100k)
       - column: throughput_etcdv3_gotip
         legend: etcd v3 (Go Tip)
       - column: throughput_etcdv3_go1.6
@@ -144,8 +155,10 @@ step3:
         - 2016051401/01-throughput.png
 
     - lines:
-      - column: avg_cpu_zookeeper_v3.4.8
-        legend: Zookeeper v3.4.8 (Java 8)
+      - column: avg_cpu_zookeeper_v3.4.8_snap10k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 10k)
+      - column: avg_cpu_zookeeper_v3.4.8_snap100k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 100k)
       - column: avg_cpu_etcdv3_gotip
         legend: etcd v3 (Go Tip)
       - column: avg_cpu_etcdv3_go1.6
@@ -163,8 +176,10 @@ step3:
         - 2016051401/01-avg-cpu.png
 
     - lines:
-      - column: avg_memory_mb_zookeeper_v3.4.8
-        legend: Zookeeper v3.4.8 (Java 8)
+      - column: avg_memory_mb_zookeeper_v3.4.8_snap10k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 10k)
+      - column: avg_memory_mb_zookeeper_v3.4.8_snap100k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 100k)
       - column: avg_memory_mb_etcdv3_gotip
         legend: etcd v3 (Go Tip)
       - column: avg_memory_mb_etcdv3_go1.6
@@ -185,8 +200,8 @@ step3:
 
     plot_list:
     - lines:
-      - column: avg_latency_ms_zookeeper_v3.4.8
-        legend: Zookeeper v3.4.8 (Java 8)
+      - column: avg_latency_ms_zookeeper_v3.4.8_snap100k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 100k)
       - column: avg_latency_ms_etcdv3_gotip
         legend: etcd v3 (Go Tip)
       - column: avg_latency_ms_etcdv2_go1.4
@@ -198,8 +213,8 @@ step3:
         - 2016051401/02-avg-latency-ms.png
 
     - lines:
-      - column: throughput_zookeeper_v3.4.8
-        legend: Zookeeper v3.4.8 (Java 8)
+      - column: throughput_zookeeper_v3.4.8_snap100k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 100k)
       - column: throughput_etcdv3_gotip
         legend: etcd v3 (Go Tip)
       - column: throughput_etcdv2_go1.4
@@ -211,8 +226,8 @@ step3:
         - 2016051401/02-throughput.png
 
     - lines:
-      - column: avg_cpu_zookeeper_v3.4.8
-        legend: Zookeeper v3.4.8 (Java 8)
+      - column: avg_cpu_zookeeper_v3.4.8_snap100k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 100k)
       - column: avg_cpu_etcdv3_gotip
         legend: etcd v3 (Go Tip)
       - column: avg_cpu_etcdv2_go1.4
@@ -224,8 +239,8 @@ step3:
         - 2016051401/02-avg-cpu.png
 
     - lines:
-      - column: avg_memory_mb_zookeeper_v3.4.8
-        legend: Zookeeper v3.4.8 (Java 8)
+      - column: avg_memory_mb_zookeeper_v3.4.8_snap100k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 100k)
       - column: avg_memory_mb_etcdv3_gotip
         legend: etcd v3 (Go Tip)
       - column: avg_memory_mb_etcdv2_go1.4
@@ -240,12 +255,12 @@ step3:
 
     plot_list:
     - lines:
-      - column: avg_latency_ms_zookeeper_v3.4.8
-        legend: Zookeeper v3.4.8 (Java 8)
+      - column: avg_latency_ms_zookeeper_v3.4.8_snap10k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 10k)
+      - column: avg_latency_ms_zookeeper_v3.4.8_snap100k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 100k)
       - column: avg_latency_ms_etcdv3_gotip
         legend: etcd v3 (Go Tip)
-      - column: avg_latency_ms_etcdv3_go1.6
-        legend: etcd v3 (Go 1.6)
       x_axis: Second
       y_axis: Latency(millisecond)
       output_path_list:
@@ -253,12 +268,12 @@ step3:
         - 2016051401/03-avg-latency-ms.png
 
     - lines:
-      - column: throughput_zookeeper_v3.4.8
-        legend: Zookeeper v3.4.8 (Java 8)
+      - column: throughput_zookeeper_v3.4.8_snap10k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 10k)
+      - column: throughput_zookeeper_v3.4.8_snap100k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 100k)
       - column: throughput_etcdv3_gotip
         legend: etcd v3 (Go Tip)
-      - column: throughput_etcdv3_go1.6
-        legend: etcd v3 (Go 1.6)
       x_axis: Second
       y_axis: Throughput
       output_path_list:
@@ -266,12 +281,12 @@ step3:
         - 2016051401/03-throughput.png
 
     - lines:
-      - column: avg_cpu_zookeeper_v3.4.8
-        legend: Zookeeper v3.4.8 (Java 8)
+      - column: avg_cpu_zookeeper_v3.4.8_snap10k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 10k)
+      - column: avg_cpu_zookeeper_v3.4.8_snap100k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 100k)
       - column: avg_cpu_etcdv3_gotip
         legend: etcd v3 (Go Tip)
-      - column: avg_cpu_etcdv3_go1.6
-        legend: etcd v3 (Go 1.6)
       x_axis: Second
       y_axis: CPU
       output_path_list:
@@ -279,12 +294,12 @@ step3:
         - 2016051401/03-avg-cpu.png
 
     - lines:
-      - column: avg_memory_mb_zookeeper_v3.4.8
-        legend: Zookeeper v3.4.8 (Java 8)
+      - column: avg_memory_mb_zookeeper_v3.4.8_snap10k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 10k)
+      - column: avg_memory_mb_zookeeper_v3.4.8_snap100k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 100k)
       - column: avg_memory_mb_etcdv3_gotip
         legend: etcd v3 (Go Tip)
-      - column: avg_memory_mb_etcdv3_go1.6
-        legend: etcd v3 (Go 1.6)
       x_axis: Second
       y_axis: Memory(MB)
       output_path_list:
@@ -295,8 +310,8 @@ step3:
 
     plot_list:
     - lines:
-      - column: avg_latency_ms_zookeeper_v3.4.8
-        legend: Zookeeper v3.4.8 (Java 8)
+      - column: avg_latency_ms_zookeeper_v3.4.8_snap100k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 100k)
       - column: avg_latency_ms_etcdv3_gotip
         legend: etcd v3 (Go Tip)
       x_axis: Second
@@ -306,8 +321,8 @@ step3:
         - 2016051401/04-avg-latency-ms.png
 
     - lines:
-      - column: throughput_zookeeper_v3.4.8
-        legend: Zookeeper v3.4.8 (Java 8)
+      - column: throughput_zookeeper_v3.4.8_snap100k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 100k)
       - column: throughput_etcdv3_gotip
         legend: etcd v3 (Go Tip)
       x_axis: Second
@@ -317,8 +332,8 @@ step3:
         - 2016051401/04-throughput.png
 
     - lines:
-      - column: avg_cpu_zookeeper_v3.4.8
-        legend: Zookeeper v3.4.8 (Java 8)
+      - column: avg_cpu_zookeeper_v3.4.8_snap100k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 100k)
       - column: avg_cpu_etcdv3_gotip
         legend: etcd v3 (Go Tip)
       x_axis: Second
@@ -328,8 +343,8 @@ step3:
         - 2016051401/04-avg-cpu.png
 
     - lines:
-      - column: avg_memory_mb_zookeeper_v3.4.8
-        legend: Zookeeper v3.4.8 (Java 8)
+      - column: avg_memory_mb_zookeeper_v3.4.8_snap100k
+        legend: Zookeeper v3.4.8 (Java 8, Snap 100k)
       - column: avg_memory_mb_etcdv3_gotip
         legend: etcd v3 (Go Tip)
       x_axis: Second
