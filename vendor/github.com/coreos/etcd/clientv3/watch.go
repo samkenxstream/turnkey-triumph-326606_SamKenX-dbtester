@@ -39,7 +39,7 @@ type Watcher interface {
 	// through the returned channel.
 	// If the watch is slow or the required rev is compacted, the watch request
 	// might be canceled from the server-side and the chan will be closed.
-	// 'opts' can be: 'WithRev' and/or 'WitchPrefix'.
+	// 'opts' can be: 'WithRev' and/or 'WithPrefix'.
 	Watch(ctx context.Context, key string, opts ...OpOption) WatchChan
 
 	// Close closes the watcher and cancels all watch requests.
@@ -520,8 +520,8 @@ func (w *watcher) openWatchClient() (ws pb.Watch_WatchClient, err error) {
 
 // resumeWatchers rebuilds every registered watcher on a new client
 func (w *watcher) resumeWatchers(wc pb.Watch_WatchClient) error {
-	streams := []*watcherStream{}
 	w.mu.RLock()
+	streams := make([]*watcherStream, 0, len(w.streams))
 	for _, ws := range w.streams {
 		streams = append(streams, ws)
 	}

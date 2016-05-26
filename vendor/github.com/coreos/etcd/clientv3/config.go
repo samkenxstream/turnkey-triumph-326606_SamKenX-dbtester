@@ -43,6 +43,12 @@ type Config struct {
 
 	// Logger is the logger used by client library.
 	Logger Logger
+
+	// Username is a username for authentication
+	Username string
+
+	// Password is a password for authentication
+	Password string
 }
 
 type yamlConfig struct {

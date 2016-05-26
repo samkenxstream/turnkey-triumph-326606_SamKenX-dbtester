@@ -20,7 +20,7 @@ const (
 )
 
 const (
-	CENTRE = "+"
+	CENTER = "+"
 	ROW    = "-"
 	COLUMN = "|"
 	SPACE  = " "
@@ -28,7 +28,7 @@ const (
 
 const (
 	ALIGN_DEFAULT = iota
-	ALIGN_CENTRE
+	ALIGN_CENTER
 	ALIGN_RIGHT
 	ALIGN_LEFT
 )
@@ -54,6 +54,8 @@ type Table struct {
 	pColumn  string
 	tColumn  int
 	tRow     int
+	hAlign   int
+	fAlign   int
 	align    int
 	rowLine  bool
 	hdrLine  bool
@@ -75,11 +77,13 @@ func NewWriter(writer io.Writer) *Table {
 		autoFmt:  true,
 		autoWrap: true,
 		mW:       MAX_ROW_WIDTH,
-		pCenter:  CENTRE,
+		pCenter:  CENTER,
 		pRow:     ROW,
 		pColumn:  COLUMN,
 		tColumn:  -1,
 		tRow:     -1,
+		hAlign:   ALIGN_DEFAULT,
+		fAlign:   ALIGN_DEFAULT,
 		align:    ALIGN_DEFAULT,
 		rowLine:  false,
 		hdrLine:  true,
@@ -151,6 +155,16 @@ func (t *Table) SetCenterSeparator(sep string) {
 	t.pCenter = sep
 }
 
+// Set Header Alignment
+func (t *Table) SetHeaderAlignment(hAlign int) {
+	t.hAlign = hAlign
+}
+
+// Set Footer Alignment
+func (t *Table) SetFooterAlignment(fAlign int) {
+	t.fAlign = fAlign
+}
+
 // Set Table Alignment
 func (t *Table) SetAlignment(align int) {
 	t.align = align
@@ -220,6 +234,19 @@ func (t Table) printLine(nl bool) {
 	}
 }
 
+// Return the PadRight function if align is left, PadLeft if align is right,
+// and Pad by default
+func pad(align int) func(string, string, int) string {
+	padFunc := Pad
+	switch align {
+	case ALIGN_LEFT:
+		padFunc = PadRight
+	case ALIGN_RIGHT:
+		padFunc = PadLeft
+	}
+	return padFunc
+}
+
 // Print heading information
 func (t Table) printHeading() {
 	// Check if headers is available
@@ -234,6 +261,9 @@ func (t Table) printHeading() {
 	// Identify last column
 	end := len(t.cs) - 1
 
+	// Get pad function
+	padFunc := pad(t.hAlign)
+
 	// Print Heading column
 	for i := 0; i <= end; i++ {
 		v := t.cs[i]
@@ -243,7 +273,7 @@ func (t Table) printHeading() {
 		}
 		pad := ConditionString((i == end && !t.border), SPACE, t.pColumn)
 		fmt.Fprintf(t.out, " %s %s",
-			Pad(h, SPACE, v),
+			padFunc(h, SPACE, v),
 			pad)
 	}
 	// Next line
@@ -271,6 +301,9 @@ func (t Table) printFooter() {
 	// Identify last column
 	end := len(t.cs) - 1
 
+	// Get pad function
+	padFunc := pad(t.fAlign)
+
 	// Print Heading column
 	for i := 0; i <= end; i++ {
 		v := t.cs[i]
@@ -284,7 +317,7 @@ func (t Table) printFooter() {
 			pad = SPACE
 		}
 		fmt.Fprintf(t.out, " %s %s",
-			Pad(f, SPACE, v),
+			padFunc(f, SPACE, v),
 			pad)
 	}
 	// Next line
@@ -391,7 +424,7 @@ func (t Table) printRow(columns [][]string, colKey int) {
 			// This would print alignment
 			// Default alignment  would use multiple configuration
 			switch t.align {
-			case ALIGN_CENTRE: //
+			case ALIGN_CENTER: //
 				fmt.Fprintf(t.out, "%s", Pad(str, SPACE, t.cs[y]))
 			case ALIGN_RIGHT:
 				fmt.Fprintf(t.out, "%s", PadLeft(str, SPACE, t.cs[y]))
