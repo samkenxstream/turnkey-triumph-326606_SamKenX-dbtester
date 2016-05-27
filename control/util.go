@@ -36,6 +36,7 @@ import (
 
 	clientv2 "github.com/coreos/etcd/client"
 	"github.com/coreos/etcd/clientv3"
+	"github.com/coreos/etcd/pkg/compress"
 	"github.com/dustin/go-humanize"
 	consulapi "github.com/hashicorp/consul/api"
 	"github.com/samuel/go-zookeeper/zk"
@@ -74,8 +75,8 @@ var (
 	dialTotal int
 )
 
-// func mustCreateConnEtcdv3(endpoints []string, compressType compress.Type) *clientv3.Client {
-func mustCreateConnEtcdv3(endpoints []string) *clientv3.Client {
+func mustCreateConnEtcdv3(endpoints []string, compressType compress.Type) *clientv3.Client {
+	// func mustCreateConnEtcdv3(endpoints []string) *clientv3.Client {
 	endpoint := endpoints[dialTotal%len(endpoints)]
 	dialTotal++
 	cfg := clientv3.Config{
@@ -90,17 +91,22 @@ func mustCreateConnEtcdv3(endpoints []string) *clientv3.Client {
 	return client
 }
 
-// func mustCreateClientsEtcdv3(endpoints []string, totalClients, totalConns int, compressionTypeTxt string) []*clientv3.Client {
-func mustCreateClientsEtcdv3(endpoints []string, totalClients, totalConns int) []*clientv3.Client {
-	conns := make([]*clientv3.Client, totalConns)
+type etcdv3ClientCfg struct {
+	totalConns         int
+	totalClients       int
+	compressionTypeTxt string
+}
+
+func mustCreateClientsEtcdv3(endpoints []string, cfg etcdv3ClientCfg) []*clientv3.Client {
+	conns := make([]*clientv3.Client, cfg.totalConns)
 	for i := range conns {
-		// conns[i] = mustCreateConnEtcdv3(endpoints, compress.ParseType(compressionTypeTxt))
-		conns[i] = mustCreateConnEtcdv3(endpoints)
+		conns[i] = mustCreateConnEtcdv3(endpoints, compress.ParseType(cfg.compressionTypeTxt))
+		// conns[i] = mustCreateConnEtcdv3(endpoints)
 	}
 
-	clients := make([]*clientv3.Client, totalClients)
+	clients := make([]*clientv3.Client, cfg.totalClients)
 	for i := range clients {
-		clients[i] = conns[i%int(totalConns)]
+		clients[i] = conns[i%int(cfg.totalConns)]
 	}
 	return clients
 }
