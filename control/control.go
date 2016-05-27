@@ -145,7 +145,7 @@ func step1(cfg Config) error {
 
 	req.ZookeeperMaxClientCnxns = cfg.Step1.ZookeeperMaxClientCnxns
 	req.ZookeeperSnapCount = cfg.Step1.ZookeeperSnapCount
-	// req.EtcdCompression = cfg.EtcdCompression
+	req.EtcdCompression = cfg.EtcdCompression
 
 	donec, errc := make(chan struct{}), make(chan error)
 	for i := range cfg.PeerIPs {
