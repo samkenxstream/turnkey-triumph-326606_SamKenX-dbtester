@@ -1,6 +1,6 @@
 
 titles:
-  - Read 170 keys, 3-conn, 5-clients, 8-byte key, 3MB value
+  - Read 200 keys, 1-conn, 1-client, 8-byte key, 3MB value
 
 step1:
   - data_path_list:

@@ -80,8 +80,8 @@ func mustCreateConnEtcdv3(endpoints []string, compressType compress.Type) *clien
 	endpoint := endpoints[dialTotal%len(endpoints)]
 	dialTotal++
 	cfg := clientv3.Config{
-		Endpoints: []string{endpoint},
-		// CompressType: compressType,
+		Endpoints:    []string{endpoint},
+		CompressType: compressType,
 	}
 	client, err := clientv3.New(cfg)
 	if err != nil {
