@@ -27,7 +27,6 @@ import (
 	"time"
 
 	"github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes"
-	"github.com/coreos/etcd/pkg/compress"
 
 	"golang.org/x/net/context"
 	"golang.org/x/time/rate"
@@ -210,13 +209,6 @@ func (c *Client) Dial(endpoint string) (*grpc.ClientConn, error) {
 		}
 
 		opts = append(opts, grpc.WithPerRPCCredentials(authTokenCredential{token: resp.Token}))
-	}
-
-	switch c.cfg.CompressType {
-	case compress.Snappy:
-		opts = append(opts,
-			grpc.WithCompressor(compress.NewSnappyCompressor()),
-			grpc.WithDecompressor(compress.NewSnappyDecompressor()))
 	}
 
 	conn, err := grpc.Dial(endpoint, opts...)

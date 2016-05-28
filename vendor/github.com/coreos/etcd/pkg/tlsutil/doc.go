@@ -12,5 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package compress wraps compression algorithms.
-package compress
+// Package tlsutil provides utility functions for handling TLS.
+package tlsutil

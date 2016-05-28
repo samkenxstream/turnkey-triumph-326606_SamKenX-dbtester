@@ -145,7 +145,7 @@ func step1(cfg Config) error {
 
 	req.ZookeeperMaxClientCnxns = cfg.Step1.ZookeeperMaxClientCnxns
 	req.ZookeeperSnapCount = cfg.Step1.ZookeeperSnapCount
-	req.EtcdCompression = cfg.EtcdCompression
+	// req.EtcdCompression = cfg.EtcdCompression
 
 	donec, errc := make(chan struct{}), make(chan error)
 	for i := range cfg.PeerIPs {
@@ -249,9 +249,9 @@ func step2(cfg Config) error {
 
 		case "etcdv3":
 			etcdClients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, etcdv3ClientCfg{
-				totalConns:         cfg.Step2.Connections,
-				totalClients:       cfg.Step2.Clients,
-				compressionTypeTxt: cfg.EtcdCompression,
+				totalConns:   cfg.Step2.Connections,
+				totalClients: cfg.Step2.Clients,
+				// compressionTypeTxt: cfg.EtcdCompression,
 			})
 			for i := range etcdClients {
 				wg.Add(1)
@@ -416,9 +416,9 @@ func step2(cfg Config) error {
 			var err error
 			for i := 0; i < 7; i++ {
 				clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, etcdv3ClientCfg{
-					totalConns:         1,
-					totalClients:       1,
-					compressionTypeTxt: cfg.EtcdCompression,
+					totalConns:   1,
+					totalClients: 1,
+					// compressionTypeTxt: cfg.EtcdCompression,
 				})
 				_, err = clients[0].Do(context.Background(), clientv3.OpPut(key, value))
 				if err != nil {
@@ -487,9 +487,9 @@ func step2(cfg Config) error {
 
 		case "etcdv3":
 			clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, etcdv3ClientCfg{
-				totalConns:         cfg.Step2.Connections,
-				totalClients:       cfg.Step2.Clients,
-				compressionTypeTxt: cfg.EtcdCompression,
+				totalConns:   cfg.Step2.Connections,
+				totalClients: cfg.Step2.Clients,
+				// compressionTypeTxt: cfg.EtcdCompression,
 			})
 			for i := range clients {
 				wg.Add(1)

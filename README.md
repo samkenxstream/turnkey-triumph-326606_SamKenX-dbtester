@@ -19,7 +19,7 @@ We keep full logs here and cloud storage(when it's over 1MB):
 
 Test results:
 
-- Read 150 keys, 5-conn, 10-clients, 8-byte key, 3MB value (etcd v3, compression): [2016052701](https://github.com/coreos/dbtester/tree/master/bench-results/2016052701/README.md)
+- Read 200 keys, 1-conn, 1-client, 8-byte key, 3MB value (etcd v3, compression): [2016052701](https://github.com/coreos/dbtester/tree/master/bench-results/2016052701/README.md)
 - Write 2M keys, 1000-client (100-conn), 8-byte key, 256-byte value (Zookeeper v3.4.8, etcd v2, v3, Go, Consul v0.6.4): [2016051401](https://github.com/coreos/dbtester/tree/master/bench-results/2016051401/README.md)
 - Snappy compression experiment (etcd v3, 1.3MB text value READ): [2016051001](https://github.com/coreos/dbtester/tree/master/bench-results/2016051001/README.md)
 - Snappy compression experiment (etcd v3, 0.3MB text value READ): [2016050901](https://github.com/coreos/dbtester/tree/master/bench-results/2016050901/README.md)
