@@ -29,6 +29,7 @@ import:
   subpackages:
   - zk
 - package: github.com/spf13/cobra
+- package: github.com/uber-go/zap
 - package: golang.org/x/net
   subpackages:
   - context

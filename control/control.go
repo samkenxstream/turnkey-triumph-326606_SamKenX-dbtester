@@ -17,7 +17,6 @@ package control
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"strings"
 	"sync"
@@ -25,6 +24,7 @@ import (
 
 	"github.com/coreos/dbtester/agent"
 	"github.com/spf13/cobra"
+	"github.com/uber-go/zap"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
@@ -86,8 +86,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 
 	println()
 	if !cfg.Step1.Skip {
-		log.Println("Step 1: starting databases...")
-
+		logger.Info("step 1: starting databases...")
 		if err = step1(cfg); err != nil {
 			return err
 		}
@@ -96,8 +95,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 	if !cfg.Step2.Skip {
 		println()
 		time.Sleep(5 * time.Second)
-		log.Println("Step 2: starting tests...")
-
+		logger.Info("step 2: starting tests...")
 		if err = step2(cfg); err != nil {
 			return err
 		}
@@ -106,8 +104,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 	if !cfg.Step3.Skip {
 		println()
 		time.Sleep(5 * time.Second)
-		log.Println("Step 3: stopping databases...")
-
+		logger.Info("step 3: stopping databases...")
 		if err = step3(cfg); err != nil {
 			return err
 		}
@@ -157,11 +154,20 @@ func step1(cfg Config) error {
 			nreq.ZookeeperMyID = uint32(i + 1)
 			ep := cfg.AgentEndpoints[nreq.ServerIndex]
 
-			log.Printf("[%d] %s %s at %s", i, req.Operation, req.Database, ep)
+			logger.Info("sending message",
+				zap.Int("index", i),
+				zap.String("operation", req.Operation.String()),
+				zap.String("database", req.Database.String()),
+				zap.String("endpoint", ep),
+			)
 
 			conn, err := grpc.Dial(ep, grpc.WithInsecure())
 			if err != nil {
-				log.Printf("[%d] error %v when connecting to %s", i, err, ep)
+				logger.Error("grpc.Dial connecting error",
+					zap.Int("index", i),
+					zap.String("endpoint", ep),
+					zap.Err(err),
+				)
 				errc <- err
 				return
 			}
@@ -173,12 +179,20 @@ func step1(cfg Config) error {
 			resp, err := cli.Transfer(ctx, &nreq)
 			cancel()
 			if err != nil {
-				log.Printf("[%d] error %v when transferring to %s", i, err, ep)
+				logger.Error("cli.Transfer error",
+					zap.Int("index", i),
+					zap.String("endpoint", ep),
+					zap.Err(err),
+				)
 				errc <- err
 				return
 			}
 
-			log.Printf("[%d] Response from %s (%+v)", i, ep, resp)
+			logger.Info("response",
+				zap.Int("index", i),
+				zap.String("endpoint", ep),
+				zap.String("response", fmt.Sprintf("%+v", resp)),
+			)
 			donec <- struct{}{}
 		}(i)
 
@@ -267,7 +281,11 @@ func step2(cfg Config) error {
 			if cfg.Step2.SameKey {
 				key := sameKey(cfg.Step2.KeySize)
 				valueBts := randBytes(cfg.Step2.ValueSize)
-				log.Printf("PUT '/%s' to Zookeeper", key)
+				logger.Info("write started",
+					zap.String("request", "PUT"),
+					zap.String("key", key),
+					zap.String("database", "zookeeper"),
+				)
 				var err error
 				for i := 0; i < 7; i++ {
 					conns := mustCreateConnsZk(cfg.DatabaseEndpoints, cfg.Step2.Connections)
@@ -278,11 +296,20 @@ func step2(cfg Config) error {
 					for j := range conns {
 						conns[j].Close()
 					}
-					log.Printf("Done with PUT '/%s' to Zookeeper", key)
+					logger.Info("write done",
+						zap.String("request", "PUT"),
+						zap.String("key", key),
+						zap.String("database", "zookeeper"),
+					)
 					break
 				}
 				if err != nil {
-					fmt.Fprintln(os.Stderr, err)
+					logger.Error("write error",
+						zap.String("request", "PUT"),
+						zap.String("key", key),
+						zap.String("database", "zookeeper"),
+						zap.Err(err),
+					)
 					os.Exit(1)
 				}
 			}
@@ -310,7 +337,10 @@ func step2(cfg Config) error {
 		go func() {
 			for i := 0; i < cfg.Step2.TotalRequests; i++ {
 				if cfg.Database == "etcdv3" && cfg.Step2.Etcdv3CompactionCycle > 0 && i%cfg.Step2.Etcdv3CompactionCycle == 0 {
-					log.Printf("etcdv3 starting compaction at %d put request", i)
+					logger.Info("starting compaction",
+						zap.Int("index", i),
+						zap.String("database", "etcdv3"),
+					)
 					go func() {
 						compactKV(etcdClients)
 					}()
@@ -352,34 +382,45 @@ func step2(cfg Config) error {
 		close(results)
 		<-pdoneC
 
-		log.Println("Expected Write Total:", cfg.Step2.TotalRequests)
 		switch cfg.Database {
 		case "etcdv2":
 			for k, v := range getTotalKeysEtcdv2(cfg.DatabaseEndpoints) {
-				fmt.Println("Endpoint      :", k)
-				fmt.Println("Number of Keys:", v)
-				fmt.Println()
+				logger.Info("expected write total results",
+					zap.Int("expected_total", cfg.Step2.TotalRequests),
+					zap.String("database", "etcdv2"),
+					zap.String("endpoint", k),
+					zap.Int64("number_of_keys", v),
+				)
 			}
 
 		case "etcdv3":
 			for k, v := range getTotalKeysEtcdv3(cfg.DatabaseEndpoints) {
-				fmt.Println("Endpoint      :", k)
-				fmt.Println("Number of Keys:", v)
-				fmt.Println()
+				logger.Info("expected write total results",
+					zap.Int("expected_total", cfg.Step2.TotalRequests),
+					zap.String("database", "etcdv3"),
+					zap.String("endpoint", k),
+					zap.Int64("number_of_keys", v),
+				)
 			}
 
 		case "zk", "zookeeper":
 			for k, v := range getTotalKeysZk(cfg.DatabaseEndpoints) {
-				fmt.Println("Endpoint      :", k)
-				fmt.Println("Number of Keys:", v)
-				fmt.Println()
+				logger.Info("expected write total results",
+					zap.Int("expected_total", cfg.Step2.TotalRequests),
+					zap.String("database", "zookeeper"),
+					zap.String("endpoint", k),
+					zap.Int64("number_of_keys", v),
+				)
 			}
 
 		case "consul":
 			for k, v := range getTotalKeysConsul(cfg.DatabaseEndpoints) {
-				fmt.Println("Endpoint      :", k)
-				fmt.Println("Number of Keys:", v)
-				fmt.Println()
+				logger.Info("expected write total results",
+					zap.Int("expected_total", cfg.Step2.TotalRequests),
+					zap.String("database", "consul"),
+					zap.String("endpoint", k),
+					zap.Int64("number_of_keys", v),
+				)
 			}
 		}
 
@@ -395,7 +436,11 @@ func step2(cfg Config) error {
 		}
 		switch cfg.Database {
 		case "etcdv2":
-			log.Printf("PUT '%s' to etcdv2", key)
+			logger.Info("write started",
+				zap.String("request", "PUT"),
+				zap.String("key", key),
+				zap.String("database", "etcdv2"),
+			)
 			var err error
 			for i := 0; i < 7; i++ {
 				clients := mustCreateClientsEtcdv2(cfg.DatabaseEndpoints, cfg.Step2.Connections)
@@ -403,16 +448,29 @@ func step2(cfg Config) error {
 				if err != nil {
 					continue
 				}
-				log.Printf("Done with PUT '%s' to etcdv2", key)
+				logger.Info("write done",
+					zap.String("request", "PUT"),
+					zap.String("key", key),
+					zap.String("database", "etcdv2"),
+				)
 				break
 			}
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
+				logger.Info("write error",
+					zap.String("request", "PUT"),
+					zap.String("key", key),
+					zap.String("database", "etcdv2"),
+					zap.Err(err),
+				)
 				os.Exit(1)
 			}
 
 		case "etcdv3":
-			log.Printf("PUT '%s' to etcd", key)
+			logger.Info("write started",
+				zap.String("request", "PUT"),
+				zap.String("key", key),
+				zap.String("database", "etcdv3"),
+			)
 			var err error
 			for i := 0; i < 7; i++ {
 				clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, etcdv3ClientCfg{
@@ -424,16 +482,29 @@ func step2(cfg Config) error {
 				if err != nil {
 					continue
 				}
-				log.Printf("Done with PUT '%s' to etcd", key)
+				logger.Info("write done",
+					zap.String("request", "PUT"),
+					zap.String("key", key),
+					zap.String("database", "etcdv3"),
+				)
 				break
 			}
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
+				logger.Error("write error",
+					zap.String("request", "PUT"),
+					zap.String("key", key),
+					zap.String("database", "etcdv3"),
+					zap.Err(err),
+				)
 				os.Exit(1)
 			}
 
 		case "zk", "zookeeper":
-			log.Printf("PUT '/%s' to Zookeeper", key)
+			logger.Info("write started",
+				zap.String("request", "PUT"),
+				zap.String("key", key),
+				zap.String("database", "zookeeper"),
+			)
 			var err error
 			for i := 0; i < 7; i++ {
 				conns := mustCreateConnsZk(cfg.DatabaseEndpoints, cfg.Step2.Connections)
@@ -444,16 +515,29 @@ func step2(cfg Config) error {
 				for j := range conns {
 					conns[j].Close()
 				}
-				log.Printf("Done with PUT '/%s' to Zookeeper", key)
+				logger.Info("write done",
+					zap.String("request", "PUT"),
+					zap.String("key", key),
+					zap.String("database", "zookeeper"),
+				)
 				break
 			}
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
+				logger.Error("write error",
+					zap.String("request", "PUT"),
+					zap.String("key", key),
+					zap.String("database", "zookeeper"),
+					zap.Err(err),
+				)
 				os.Exit(1)
 			}
 
 		case "consul":
-			log.Printf("PUT '%s' to Consul", key)
+			logger.Info("write started",
+				zap.String("request", "PUT"),
+				zap.String("key", key),
+				zap.String("database", "consul"),
+			)
 			var err error
 			for i := 0; i < 7; i++ {
 				clients := mustCreateConnsConsul(cfg.DatabaseEndpoints, cfg.Step2.Connections)
@@ -461,11 +545,20 @@ func step2(cfg Config) error {
 				if err != nil {
 					continue
 				}
-				log.Printf("Done with PUT '%s' to Consul", key)
+				logger.Info("write done",
+					zap.String("request", "PUT"),
+					zap.String("key", key),
+					zap.String("database", "consul"),
+				)
 				break
 			}
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
+				logger.Error("write error",
+					zap.String("request", "PUT"),
+					zap.String("key", key),
+					zap.String("database", "consul"),
+					zap.Err(err),
+				)
 				os.Exit(1)
 			}
 		}
@@ -589,11 +682,21 @@ func step3(cfg Config) error {
 
 		go func(i int) {
 			ep := cfg.AgentEndpoints[i]
-			log.Printf("[%d] %s %s at %s", i, req.Operation, req.Database, ep)
+
+			logger.Info("sending message",
+				zap.Int("index", i),
+				zap.String("operation", req.Operation.String()),
+				zap.String("database", req.Database.String()),
+				zap.String("endpoint", ep),
+			)
 
 			conn, err := grpc.Dial(ep, grpc.WithInsecure())
 			if err != nil {
-				log.Printf("[%d] error %v when connecting to %s", i, err, ep)
+				logger.Error("grpc.Dial connecting error",
+					zap.Int("index", i),
+					zap.String("endpoint", ep),
+					zap.Err(err),
+				)
 				errc <- err
 				return
 			}
@@ -605,12 +708,20 @@ func step3(cfg Config) error {
 			resp, err := cli.Transfer(ctx, &req)
 			cancel()
 			if err != nil {
-				log.Printf("[%d] error %v when transferring to %s", i, err, ep)
+				logger.Error("cli.Transfer error",
+					zap.Int("index", i),
+					zap.String("endpoint", ep),
+					zap.Err(err),
+				)
 				errc <- err
 				return
 			}
 
-			log.Printf("[%d] Response from %s (%+v)", i, ep, resp)
+			logger.Info("response",
+				zap.Int("index", i),
+				zap.String("endpoint", ep),
+				zap.String("response", fmt.Sprintf("%+v", resp)),
+			)
 			donec <- struct{}{}
 		}(i)
 

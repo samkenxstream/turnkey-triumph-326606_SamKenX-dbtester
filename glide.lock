@@ -1,5 +1,5 @@
-hash: 5d55e960cf32753438f359a810a38dc01a952faa491ec376f51cb6ea2e47ef0d
-updated: 2016-05-29T11:48:49.670861703-07:00
+hash: 3b76f3244e852a3fec658954651740f03fb4354b98b60c439871549941e6ed03
+updated: 2016-05-29T13:38:09.097589593-07:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -106,6 +106,8 @@ imports:
   version: f368244301305f414206f889b1735a54cfc8bde8
 - name: github.com/spf13/pflag
   version: cb88ea77998c3f024757528e3305022ab50b43be
+- name: github.com/uber-go/zap
+  version: 1392e24b604fdb23ef846186bcf4ae349482c558
 - name: github.com/ugorji/go
   version: a396ed22fc049df733440d90efe17475e3929ccb
   subpackages:
@@ -137,7 +139,7 @@ imports:
   - internal
   - jws
 - name: golang.org/x/sys
-  version: d4feaf1a7e61e1d9e79e6c4e76c6349e9cab0a03
+  version: 20457ee8ea8546920d3f4e19e405da45250dc5a5
   subpackages:
   - unix
 - name: golang.org/x/time
