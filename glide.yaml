@@ -1,0 +1,43 @@
+package: github.com/coreos/dbtester
+import:
+- package: github.com/Sirupsen/logrus
+- package: github.com/cheggaaa/pb
+- package: github.com/coreos/etcd
+  subpackages:
+  - client
+  - clientv3
+- package: github.com/dustin/go-humanize
+- package: github.com/gogo/protobuf
+  subpackages:
+  - gogoproto
+- package: github.com/golang/protobuf
+  subpackages:
+  - proto
+- package: github.com/gonum/plot
+  subpackages:
+  - plotter
+  - plotutil
+  - vg
+- package: github.com/gyuho/dataframe
+- package: github.com/gyuho/psn
+  subpackages:
+  - ps
+- package: github.com/hashicorp/consul
+  subpackages:
+  - api
+- package: github.com/samuel/go-zookeeper
+  subpackages:
+  - zk
+- package: github.com/spf13/cobra
+- package: golang.org/x/net
+  subpackages:
+  - context
+- package: golang.org/x/oauth2
+  subpackages:
+  - google
+  - jwt
+- package: google.golang.org/cloud
+  subpackages:
+  - storage
+- package: google.golang.org/grpc
+- package: gopkg.in/yaml.v2

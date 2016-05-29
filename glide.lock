@@ -1,0 +1,187 @@
+hash: 5d55e960cf32753438f359a810a38dc01a952faa491ec376f51cb6ea2e47ef0d
+updated: 2016-05-29T11:48:49.670861703-07:00
+imports:
+- name: bitbucket.org/zombiezen/gopdf
+  version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
+  subpackages:
+  - pdf
+- name: github.com/ajstarks/svgo
+  version: 672fe547df4e49efc6db67a74391368bcb149b37
+- name: github.com/cheggaaa/pb
+  version: c1f48d5ce4f292dfb775ef52aaedd15be323510d
+- name: github.com/cloudfoundry-incubator/candiedyaml
+  version: 99c3df83b51532e3615f851d8c2dbb638f5313bf
+- name: github.com/coreos/etcd
+  version: 84e7fa149e37272899e495a357c580fc5feddec9
+  subpackages:
+  - client
+  - clientv3
+  - pkg/pathutil
+  - pkg/types
+  - auth/authpb
+  - etcdserver/api/v3rpc/rpctypes
+  - etcdserver/etcdserverpb
+  - mvcc/mvccpb
+  - pkg/tlsutil
+- name: github.com/dustin/go-humanize
+  version: 9436b7a0ebd4b3a35fb30aa244f8f85244088bfa
+- name: github.com/fatih/color
+  version: 533cd7fd8a85905f67a1753afb4deddc85ea174f
+- name: github.com/ghodss/yaml
+  version: e8e0db9016175449df0e9c4b6e6995a9433a395c
+- name: github.com/gogo/protobuf
+  version: c18eea6ad611eecf94a9ba38471f59706199409e
+  subpackages:
+  - gogoproto
+  - proto
+  - protoc-gen-gogo/descriptor
+- name: github.com/golang/freetype
+  version: a31d0146dac6f09aa27eda40995aeca7d7adc293
+  subpackages:
+  - truetype
+  - raster
+- name: github.com/golang/protobuf
+  version: 9e6977f30c91c78396e719e164e57f9287fff42c
+  subpackages:
+  - proto
+- name: github.com/gonum/floats
+  version: 856ee8119ad91596c5394fa0a5c0470b6f16e676
+- name: github.com/gonum/internal
+  version: b5df70d76416ba52f34f94cb3bfbab2a3d958e4e
+  subpackages:
+  - asm
+- name: github.com/gonum/plot
+  version: 15005ec89f739168a773c3571bc1b852eb94bf8b
+  subpackages:
+  - plotter
+  - plotutil
+  - vg
+  - vg/draw
+  - palette
+  - vg/fonts
+  - vg/vgeps
+  - vg/vgimg
+  - vg/vgpdf
+  - vg/vgsvg
+- name: github.com/gyuho/dataframe
+  version: 573cd728a011e5473510a6a1df0f39023c305e04
+- name: github.com/gyuho/psn
+  version: 88c9e2a3a8857e3be57fe67694db47bb23f29c31
+  subpackages:
+  - ps
+- name: github.com/hashicorp/consul
+  version: b43f900766ad92eebbd5a8f931fe0fe244f9969d
+  subpackages:
+  - api
+- name: github.com/hashicorp/go-cleanhttp
+  version: 875fb671b3ddc66f8e2f0acc33829c8cb989a38d
+- name: github.com/hashicorp/serf
+  version: e4ec8cc423bbe20d26584b96efbeb9102e16d05f
+  subpackages:
+  - coordinate
+  - serf
+- name: github.com/inconshreveable/mousetrap
+  version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/llgcode/draw2d
+  version: 5e675a3055a6f81f9b014b1dc2d5bb5fb8890618
+  subpackages:
+  - draw2dimg
+  - draw2dbase
+- name: github.com/mattn/go-colorable
+  version: 9cbef7c35391cca05f15f8181dc0b18bc9736dbb
+  repo: https://github.com/mattn/go-colorable
+- name: github.com/mattn/go-isatty
+  version: 56b76bdf51f7708750eac80fa38b952bb9f32639
+- name: github.com/mattn/go-runewidth
+  version: d6bea18f789704b5f83375793155289da36a3c7f
+- name: github.com/olekukonko/tablewriter
+  version: 8d0265a48283795806b872b4728c67bf5c777f20
+- name: github.com/samuel/go-zookeeper
+  version: 6eb1b09c6ce23f305f4c81bf748b22fbc6f3f9e9
+  subpackages:
+  - zk
+- name: github.com/Sirupsen/logrus
+  version: 6d9ae300aaf85d6acd2e5424081c7fcddb21dab8
+- name: github.com/spf13/cobra
+  version: f368244301305f414206f889b1735a54cfc8bde8
+- name: github.com/spf13/pflag
+  version: cb88ea77998c3f024757528e3305022ab50b43be
+- name: github.com/ugorji/go
+  version: a396ed22fc049df733440d90efe17475e3929ccb
+  subpackages:
+  - codec
+- name: golang.org/x/image
+  version: 97680175a5267bb8b31f1923e7a66df98013b11a
+  subpackages:
+  - math/fixed
+  - font
+  - tiff
+  - draw
+  - math/f64
+  - tiff/lzw
+- name: golang.org/x/net
+  version: 30db96677b74e24b967e23f911eb3364fc61a011
+  subpackages:
+  - context
+  - http2
+  - trace
+  - http2/hpack
+  - lex/httplex
+  - internal/timeseries
+  - context/ctxhttp
+- name: golang.org/x/oauth2
+  version: c406a4cc4ba462e5dc2f16225c5bd9488f9cbe10
+  subpackages:
+  - google
+  - jwt
+  - internal
+  - jws
+- name: golang.org/x/sys
+  version: d4feaf1a7e61e1d9e79e6c4e76c6349e9cab0a03
+  subpackages:
+  - unix
+- name: golang.org/x/time
+  version: a4bde12657593d5e90d0533a3e4fd95e635124cb
+  subpackages:
+  - rate
+- name: google.golang.org/api
+  version: aa89374d6f4a7f9ab85dcb3b01c95d2d3bd7f10a
+  subpackages:
+  - googleapi
+  - storage/v1
+  - googleapi/internal/uritemplates
+  - gensupport
+- name: google.golang.org/appengine
+  version: 7f59a8c76b8594d06044bfe0bcbe475cb2020482
+  subpackages:
+  - urlfetch
+  - internal
+  - internal/app_identity
+  - internal/modules
+  - internal/urlfetch
+  - internal/base
+  - internal/datastore
+  - internal/remote_api
+- name: google.golang.org/cloud
+  version: 4da660f59adf463f364fca03a6f8422758101a84
+  subpackages:
+  - storage
+  - compute/metadata
+  - internal
+  - internal/opts
+  - internal/transport
+- name: google.golang.org/grpc
+  version: 8213ee577a465c1f314d85748fb29e4eeed59baf
+  subpackages:
+  - codes
+  - credentials
+  - grpclog
+  - internal
+  - metadata
+  - naming
+  - transport
+  - peer
+  - credentials/oauth
+- name: gopkg.in/yaml.v2
+  version: a83829b6f1293c91addabc89d0571c246397bbf4
+devImports: []
