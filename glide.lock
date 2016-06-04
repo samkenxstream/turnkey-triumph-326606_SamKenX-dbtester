@@ -107,7 +107,7 @@ imports:
 - name: github.com/spf13/pflag
   version: cb88ea77998c3f024757528e3305022ab50b43be
 - name: github.com/uber-go/zap
-  version: 1392e24b604fdb23ef846186bcf4ae349482c558
+  version: 6f80dbdd4adb4d9891bffe5f1461dd1b94f28719
 - name: github.com/ugorji/go
   version: a396ed22fc049df733440d90efe17475e3929ccb
   subpackages:
