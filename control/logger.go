@@ -14,8 +14,6 @@
 
 package control
 
-import "github.com/uber-go/zap"
+import "github.com/coreos/pkg/capnslog"
 
-var logger = zap.NewJSON(
-	zap.Fields(zap.String("package", "dbtester/control")),
-)
+var logger = capnslog.NewPackageLogger("github.com/coreos/dbtester", "control")

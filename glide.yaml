@@ -1,11 +1,13 @@
 package: github.com/coreos/dbtester
 import:
-- package: github.com/Sirupsen/logrus
 - package: github.com/cheggaaa/pb
 - package: github.com/coreos/etcd
   subpackages:
   - client
   - clientv3
+- package: github.com/coreos/pkg
+  subpackages:
+  - capnslog
 - package: github.com/dustin/go-humanize
 - package: github.com/gogo/protobuf
   subpackages:
@@ -29,7 +31,6 @@ import:
   subpackages:
   - zk
 - package: github.com/spf13/cobra
-- package: github.com/uber-go/zap
 - package: golang.org/x/net
   subpackages:
   - context

@@ -28,9 +28,9 @@ import (
 	"time"
 
 	"github.com/coreos/dbtester/remotestorage"
+	"github.com/coreos/pkg/capnslog"
 	"github.com/gyuho/psn/ps"
 	"github.com/spf13/cobra"
-	"github.com/uber-go/zap"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
@@ -131,13 +131,9 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 	}
 	defer f.Close()
 
-	logger = zap.NewJSON(
-		zap.Fields(zap.String("package", "dbtester/agent")),
-		zap.Output(zap.AddSync(f)),
-	)
-	logger.Info("started serving gRPC",
-		zap.String("port", globalFlags.GRPCPort),
-	)
+	capnslog.SetFormatter(capnslog.NewPrettyFormatter(f, false))
+
+	logger.Infof("started serving gRPC %s", globalFlags.GRPCPort)
 
 	var (
 		grpcServer = grpc.NewServer()
@@ -184,15 +180,14 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			monitorLogPath = filepath.Join(globalFlags.WorkingDirectory, monitorLogPath)
 		}
 
-		logger.Info("received gRPC request",
-			zap.String("working_directory", globalFlags.WorkingDirectory),
-			zap.String("working_directory_zookeeper", zkWorkingDir),
-			zap.String("data_directory_etcd", etcdDataDir),
-			zap.String("data_directory_consul", consulDataDir),
-			zap.String("data_directory_zookeeper", zkDataDir),
-			zap.String("database_log_path", databaseLogPath),
-			zap.String("monitor_log_path", monitorLogPath),
-		)
+		logger.Info("received gRPC request")
+		logger.Infof("working_directory: %q", globalFlags.WorkingDirectory)
+		logger.Infof("working_directory_zookeeper: %q", zkWorkingDir)
+		logger.Infof("data_directory_etcd: %q", etcdDataDir)
+		logger.Infof("data_directory_consul: %q", consulDataDir)
+		logger.Infof("data_directory_zookeeper: %q", zkDataDir)
+		logger.Infof("database_log_path: %q", databaseLogPath)
+		logger.Infof("monitor_log_path: %q", monitorLogPath)
 	}
 	if r.Operation == Request_Start {
 		t.req = *r
@@ -262,20 +257,20 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			cmd.Stderr = f
 
 			cmdString := fmt.Sprintf("%s %s", cmd.Path, flagString)
-			logger.Info("starting binary", zap.String("command", cmdString))
+			logger.Infof("starting binary %q", cmdString)
 			if err := cmd.Start(); err != nil {
 				return nil, err
 			}
 			t.cmd = cmd
 			t.pid = cmd.Process.Pid
-			logger.Info("started binary", zap.String("command", cmdString), zap.Int("pid", t.pid))
+			logger.Infof("started binary %q [PID: %d]", cmdString, t.pid)
 			processPID = t.pid
 			go func() {
 				if err := cmd.Wait(); err != nil {
-					logger.Error("cmd.Wait returned error", zap.String("command", cmdString), zap.Err(err))
+					logger.Error("cmd.Wait %q returned error %v", cmdString, err)
 					return
 				}
-				logger.Info("exiting", zap.String("command", cmdString))
+				logger.Infof("exiting %q", cmdString)
 			}()
 
 		case Request_ZooKeeper:
@@ -284,18 +279,18 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				return nil, err
 			}
 
-			logger.Info("os.Chdir", zap.String("path", zkWorkingDir))
+			logger.Infof("os.Chdir %q", zkWorkingDir)
 			if err := os.Chdir(zkWorkingDir); err != nil {
 				return nil, err
 			}
 
-			logger.Info("os.MkdirAll", zap.String("path", zkDataDir))
+			logger.Infof("os.MkdirAll %q", zkDataDir)
 			if err := os.MkdirAll(zkDataDir, 0777); err != nil {
 				return nil, err
 			}
 
 			idFilePath := filepath.Join(zkDataDir, "myid")
-			logger.Info("writing zk myid file", zap.Int("myid", int(t.req.ZookeeperMyID)), zap.String("path", idFilePath))
+			logger.Infof("writing zk myid file %d in %s", t.req.ZookeeperMyID, idFilePath)
 			if err := toFile(fmt.Sprintf("%d", t.req.ZookeeperMyID), idFilePath); err != nil {
 				return nil, err
 			}
@@ -318,7 +313,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			zc := buf.String()
 
 			configFilePath := filepath.Join(zkWorkingDir, zkConfigPath)
-			logger.Info("writing zk config file", zap.String("path", configFilePath), zap.String("config", zc))
+			logger.Infof("writing zk config file %q (config %q)", configFilePath, zc)
 			if err := toFile(zc, configFilePath); err != nil {
 				return nil, err
 			}
@@ -338,20 +333,20 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			cmd.Stderr = f
 
 			cmdString := fmt.Sprintf("%s %s", cmd.Path, strings.Join(args[1:], " "))
-			logger.Info("starting binary", zap.String("command", cmdString))
+			logger.Infof("starting binary %q", cmdString)
 			if err := cmd.Start(); err != nil {
 				return nil, err
 			}
 			t.cmd = cmd
 			t.pid = cmd.Process.Pid
-			logger.Info("started binary", zap.Int("pid", t.pid), zap.String("command", cmdString))
+			logger.Infof("started binary %q [PID: %d]", cmdString, t.pid)
 			processPID = t.pid
 			go func() {
 				if err := cmd.Wait(); err != nil {
-					logger.Error("cmd.Wait returned error", zap.String("command", cmdString), zap.Err(err))
+					logger.Error("cmd.Wait returned error", cmdString, err)
 					return
 				}
-				logger.Info("exiting", zap.String("command", cmdString), zap.Err(err))
+				logger.Infof("exiting %q (%v)", cmdString, err)
 			}()
 
 		case Request_Consul:
@@ -397,24 +392,24 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			cmd.Stderr = f
 
 			cmdString := fmt.Sprintf("%s %s", cmd.Path, flagString)
-			logger.Info("starting binary", zap.String("command", cmdString))
+			logger.Infof("starting binary %q", cmdString)
 			if err := cmd.Start(); err != nil {
 				return nil, err
 			}
 			t.cmd = cmd
 			t.pid = cmd.Process.Pid
-			logger.Info("started binary", zap.Int("pid", t.pid), zap.String("command", cmdString))
+			logger.Infof("started binary %q [PID: %d]", cmdString, t.pid)
 			processPID = t.pid
 			go func() {
 				if err := cmd.Wait(); err != nil {
-					logger.Error("cmd.Wait returned error", zap.String("command", cmdString), zap.Err(err))
+					logger.Error("cmd.Wait returned error", cmdString, err)
 					return
 				}
-				logger.Info("exiting", zap.String("command", cmdString), zap.Err(err))
+				logger.Infof("exiting", cmdString, err)
 			}()
 
 		default:
-			return nil, fmt.Errorf("unknown database (%q)", r.Database)
+			return nil, fmt.Errorf("unknown database %q", r.Database)
 		}
 
 	case Request_Restart:
@@ -422,7 +417,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			return nil, fmt.Errorf("nil command")
 		}
 
-		logger.Info("restarting database", zap.String("database", t.req.Database.String()))
+		logger.Infof("restarting database %q", t.req.Database.String())
 		if r.Database == Request_ZooKeeper {
 			if err := os.Chdir(zkWorkingDir); err != nil {
 				return nil, err
@@ -440,20 +435,20 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		cmd.Stderr = f
 
 		cmdString := strings.Join(t.cmd.Args, " ")
-		logger.Info("restarting binary", zap.String("command", cmdString))
+		logger.Infof("restarting binary %q", cmdString)
 		if err := cmd.Start(); err != nil {
 			return nil, err
 		}
 		t.cmd = cmd
 		t.pid = cmd.Process.Pid
-		logger.Info("restarted binary", zap.Int("pid", t.pid), zap.String("command", cmdString))
+		logger.Infof("restarted binary %q [PID: %d]", cmdString, t.pid)
 		processPID = t.pid
 		go func() {
 			if err := cmd.Wait(); err != nil {
-				logger.Error("cmd.Wait returned error", zap.String("command", cmdString), zap.Err(err))
+				logger.Errorf("cmd.Wait %q returned error (%v)", cmdString, err)
 				return
 			}
-			logger.Info("exiting", zap.String("command", cmdString))
+			logger.Infof("exiting %q", cmdString)
 		}()
 
 	case Request_Stop:
@@ -461,14 +456,14 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		if t.cmd == nil {
 			return nil, fmt.Errorf("nil command")
 		}
-		logger.Info("stopping binary", zap.String("database", t.req.Database.String()), zap.Int("pid", t.pid))
+		logger.Infof("stopping binary %q [PID: %d]", t.req.Database.String(), t.pid)
 		if err := syscall.Kill(t.pid, syscall.SIGTERM); err != nil {
 			return nil, err
 		}
 		if t.logfile != nil {
 			t.logfile.Close()
 		}
-		logger.Info("stopped binary", zap.String("database", t.req.Database.String()), zap.Int("pid", t.pid))
+		logger.Infof("stopped binary %q [PID: %d]", t.req.Database.String(), t.pid)
 		processPID = t.pid
 		databaseStopped <- struct{}{}
 
@@ -496,10 +491,10 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				return ps.WriteToCSV(f, pss...)
 			}
 
-			logger.Info("saving monitoring results", zap.String("database", t.req.Database.String()), zap.String("path", monitorLogPath))
+			logger.Infof("saving monitoring results for %q in %q", t.req.Database.String(), monitorLogPath)
 			var err error
 			if err = rFunc(); err != nil {
-				logger.Error("monitoring error", zap.Err(err))
+				logger.Errorf("monitoring error (%v)", err)
 				return
 			}
 
@@ -507,19 +502,19 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				select {
 				case <-time.After(time.Second):
 					if err = rFunc(); err != nil {
-						logger.Error("monitoring error", zap.Err(err))
+						logger.Errorf("monitoring error (%v)", err)
 						continue
 					}
 
 				case sig := <-notifier:
-					logger.Info("signal received", zap.String("signal", sig.String()))
+					logger.Infof("signal received %q", sig.String())
 					return
 
 				case <-databaseStopped:
-					logger.Info("stopped monitoring, uploading to storage", zap.String("name", t.req.GoogleCloudProjectName))
+					logger.Infof("stopped monitoring, uploading to storage %q", t.req.GoogleCloudProjectName)
 					u, err := remotestorage.NewGoogleCloudStorage([]byte(t.req.GoogleCloudStorageKey), t.req.GoogleCloudProjectName)
 					if err != nil {
-						logger.Error("remotestorage.NewGoogleCloudStorage error", zap.Err(err))
+						logger.Errorf("remotestorage.NewGoogleCloudStorage error (%v)", err)
 						return
 					}
 
@@ -531,11 +526,11 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					}
 					dstDatabaseLogPath = filepath.Join(t.req.GoogleCloudStorageSubDirectory, dstDatabaseLogPath)
 
-					logger.Info("uploading database log", zap.String("src", srcDatabaseLogPath), zap.String("dst", dstDatabaseLogPath))
+					logger.Infof("uploading database log [%q -> %q]", srcDatabaseLogPath, dstDatabaseLogPath)
 					var uerr error
 					for k := 0; k < 30; k++ {
 						if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcDatabaseLogPath, dstDatabaseLogPath); uerr != nil {
-							logger.Error("u.UploadFile error... sleep and retry...", zap.Err(uerr))
+							logger.Errorf("u.UploadFile error... sleep and retry... (%v)", uerr)
 							time.Sleep(2 * time.Second)
 							continue
 						} else {
@@ -550,10 +545,10 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					}
 					dstMonitorResultPath = filepath.Join(t.req.GoogleCloudStorageSubDirectory, dstMonitorResultPath)
 
-					logger.Info("uploading monitor results", zap.String("src", srcMonitorResultPath), zap.String("dst", dstMonitorResultPath))
+					logger.Infof("uploading monitor results [%q -> %q]", srcMonitorResultPath, dstMonitorResultPath)
 					for k := 0; k < 30; k++ {
 						if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcMonitorResultPath, dstMonitorResultPath); uerr != nil {
-							logger.Error("u.UploadFile error... sleep and retry...", zap.Err(uerr))
+							logger.Errorf("u.UploadFile error... sleep and retry... (%v)", uerr)
 							time.Sleep(2 * time.Second)
 							continue
 						} else {
@@ -568,10 +563,10 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					}
 					dstAgentLogPath = filepath.Join(t.req.GoogleCloudStorageSubDirectory, dstAgentLogPath)
 
-					logger.Info("uploading agent logs", zap.String("src", srcAgentLogPath), zap.String("dst", dstAgentLogPath))
+					logger.Infof("uploading agent logs [%q -> %q]", srcAgentLogPath, dstAgentLogPath)
 					for k := 0; k < 30; k++ {
 						if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcAgentLogPath, dstAgentLogPath); uerr != nil {
-							logger.Error("u.UploadFile error... sleep and retry...", zap.Err(uerr))
+							logger.Error("u.UploadFile error... sleep and retry... (%v)", uerr)
 							time.Sleep(2 * time.Second)
 							continue
 						} else {
@@ -585,7 +580,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		}(processPID)
 	}
 
-	logger.Info("transfer success", zap.Time("time", time.Now()))
+	logger.Info("transfer success")
 	return &Response{Success: true}, nil
 }
 
