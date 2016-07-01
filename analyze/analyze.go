@@ -28,7 +28,7 @@ import (
 	"github.com/gonum/plot/plotutil"
 	"github.com/gonum/plot/vg"
 	"github.com/gyuho/dataframe"
-	"github.com/gyuho/psn/ps"
+	"github.com/gyuho/psn/process"
 	"github.com/spf13/cobra"
 )
 
@@ -63,7 +63,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 			log.Printf("Step 1-%d-%d: creating dataframe from %s", step1Idx, i, monitorPath)
 
 			// fill in missing timestamps
-			tb, err := ps.ReadCSVFillIn(monitorPath)
+			tb, err := process.ReadCSVFillIn(monitorPath)
 			if err != nil {
 				return err
 			}

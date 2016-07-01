@@ -29,7 +29,7 @@ import (
 
 	"github.com/coreos/dbtester/remotestorage"
 	"github.com/coreos/pkg/capnslog"
-	"github.com/gyuho/psn/ps"
+	"github.com/gyuho/psn/process"
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -477,7 +477,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			signal.Notify(notifier, syscall.SIGINT, syscall.SIGTERM)
 
 			rFunc := func() error {
-				pss, err := ps.List(&ps.Process{Stat: ps.Stat{Pid: int64(processPID)}})
+				pss, err := process.List(&process.Process{Stat: process.Stat{Pid: int64(processPID)}})
 				if err != nil {
 					return err
 				}
@@ -488,7 +488,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				}
 				defer f.Close()
 
-				return ps.WriteToCSV(f, pss...)
+				return process.WriteToCSV(f, pss...)
 			}
 
 			logger.Infof("saving monitoring results for %q in %q", t.req.Database.String(), monitorLogPath)

@@ -1,5 +1,5 @@
-hash: 899cf0cc8fe75956e38ad46350724245f8d593c906f41981c573229c262a946e
-updated: 2016-06-26T10:38:34.458889325-07:00
+hash: 6ac0ebb0f8853fa18c2be5b1b550eb3f96b4ea1deb3a0d4ff5390af768e16a22
+updated: 2016-06-30T21:13:02.498119547-07:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -12,7 +12,7 @@ imports:
 - name: github.com/cloudfoundry-incubator/candiedyaml
   version: 99c3df83b51532e3615f851d8c2dbb638f5313bf
 - name: github.com/coreos/etcd
-  version: aab905f7ccd12733b16931953677bef7e8ce5400
+  version: 581f847e06a97dade895301d18714c50e70165cf
   subpackages:
   - client
   - clientv3
@@ -33,8 +33,6 @@ imports:
   - capnslog
 - name: github.com/dustin/go-humanize
   version: fef948f2d241bd1fd0631108ecc2c9553bae60bf
-- name: github.com/fatih/color
-  version: 87d4004f2ab62d0d255e0a38f1680aa534549fe3
 - name: github.com/gengo/grpc-gateway
   version: 04d03d2c0176f9060cc3da4945a71abc759648bc
   subpackages:
@@ -55,7 +53,7 @@ imports:
   - truetype
   - raster
 - name: github.com/golang/protobuf
-  version: 0c1f6d65b5a189c2250d10e71a5506f06f9fa0a0
+  version: 3852dcfda249c2097355a6aabb199a28d97b30df
   subpackages:
   - proto
   - jsonpb
@@ -81,11 +79,11 @@ imports:
 - name: github.com/gyuho/dataframe
   version: 573cd728a011e5473510a6a1df0f39023c305e04
 - name: github.com/gyuho/psn
-  version: 88c9e2a3a8857e3be57fe67694db47bb23f29c31
+  version: 415d7423cced5ca6bf6dbf81c5cbe37605f1dfaa
   subpackages:
-  - ps
+  - process
 - name: github.com/hashicorp/consul
-  version: 09cfda47ed103910a8e1af76fa378a7e6acd5310
+  version: 56eb3bbe352c098914910c95affe123341684e3c
   subpackages:
   - api
 - name: github.com/hashicorp/go-cleanhttp
@@ -98,14 +96,10 @@ imports:
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/llgcode/draw2d
-  version: 5e675a3055a6f81f9b014b1dc2d5bb5fb8890618
+  version: 3f01cfe277a813f87884f0ff9430d9998d058576
   subpackages:
   - draw2dimg
   - draw2dbase
-- name: github.com/mattn/go-colorable
-  version: 9056b7a9f2d1f2d96498d6d146acd1f9d5ed3d59
-- name: github.com/mattn/go-isatty
-  version: 56b76bdf51f7708750eac80fa38b952bb9f32639
 - name: github.com/mattn/go-runewidth
   version: d6bea18f789704b5f83375793155289da36a3c7f
 - name: github.com/olekukonko/tablewriter
@@ -123,7 +117,7 @@ imports:
   subpackages:
   - codec
 - name: golang.org/x/image
-  version: 97680175a5267bb8b31f1923e7a66df98013b11a
+  version: 8550bb53808b49e6f655a27cbb293b1f90c56a24
   subpackages:
   - math/fixed
   - font
@@ -132,7 +126,7 @@ imports:
   - math/f64
   - tiff/lzw
 - name: golang.org/x/net
-  version: e445b19913b9d40fdbdfe19ac5e3d314aafd6f63
+  version: b400c2eff1badec7022a8c8f5bea058b6315eed7
   subpackages:
   - context
   - http2
@@ -148,12 +142,8 @@ imports:
   - jwt
   - internal
   - jws
-- name: golang.org/x/sys
-  version: 20457ee8ea8546920d3f4e19e405da45250dc5a5
-  subpackages:
-  - unix
 - name: google.golang.org/api
-  version: 63ade871fd3aec1225809d496e81ec91ab76ea29
+  version: 57212573ccf9e4f69f4caa0336831697e29adcd6
   subpackages:
   - googleapi
   - storage/v1
@@ -166,13 +156,15 @@ imports:
   - internal
   - internal/app_identity
   - internal/modules
+  - socket
   - internal/urlfetch
   - internal/base
   - internal/datastore
   - internal/log
   - internal/remote_api
+  - internal/socket
 - name: google.golang.org/cloud
-  version: a4c7c3139dc2772ad6c3bb73d0a9236a79063f8c
+  version: f1ae21c8f86d456623bddb78ff91d38a3010b35f
   subpackages:
   - storage
   - compute/metadata
@@ -180,7 +172,7 @@ imports:
   - internal/opts
   - internal/transport
 - name: google.golang.org/grpc
-  version: 0eb7c5dcd059d77bde1eb5bc7d953940170d0d18
+  version: a0ff1e78a98cd140c2d18a0210ab0a2a183a2b4c
   subpackages:
   - codes
   - credentials
