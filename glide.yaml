@@ -23,7 +23,7 @@ import:
 - package: github.com/gyuho/dataframe
 - package: github.com/gyuho/psn
   subpackages:
-  - ps
+  - process
 - package: github.com/hashicorp/consul
   subpackages:
   - api
