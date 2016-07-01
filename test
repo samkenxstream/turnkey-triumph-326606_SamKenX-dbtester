@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-TEST=./...;
-FMT="*.go"
+TEST="./agent ./analyze ./control ./remotestorage ./upload"
+FMT="./agent/*.go ./analyze/*.go ./control/*.go ./remotestorage/*.go ./upload/*.go"
 
 echo "Running tests...";
 go test -v -cover -cpu 1,2,4 $TEST;
