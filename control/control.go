@@ -274,11 +274,11 @@ func step2(cfg Config) error {
 					for j := range conns {
 						conns[j].Close()
 					}
-					logger.Info("write done [request: PUT | key: %q | database: %q]", key, "zookeeper")
+					logger.Infof("write done [request: PUT | key: %q | database: %q]", key, "zookeeper")
 					break
 				}
 				if err != nil {
-					logger.Error("write error [request: PUT | key: %q | database: %q]", key, "zookeeper")
+					logger.Errorf("write error [request: PUT | key: %q | database: %q]", key, "zookeeper")
 					os.Exit(1)
 				}
 			}
