@@ -177,11 +177,10 @@ func (r *report) printSecondSample() {
 		for k := 0; k < 15; k++ {
 			if uerr = u.UploadFile(cfg.GoogleCloudStorageBucketName, srcCSVResultPath, dstCSVResultPath); uerr != nil {
 				log.Println(uerr)
+				time.Sleep(2 * time.Second)
 				continue
-			} else {
-				break
 			}
-			time.Sleep(2 * time.Second)
+			break
 		}
 	}
 
@@ -203,11 +202,10 @@ func (r *report) printSecondSample() {
 		for k := 0; k < 15; k++ {
 			if uerr = u.UploadFile(cfg.GoogleCloudStorageBucketName, srcCSVResultPath, dstCSVResultPath); uerr != nil {
 				log.Println(uerr)
+				time.Sleep(2 * time.Second)
 				continue
-			} else {
-				break
 			}
-			time.Sleep(2 * time.Second)
+			break
 		}
 	}
 }
