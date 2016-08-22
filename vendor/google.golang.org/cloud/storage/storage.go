@@ -18,6 +18,7 @@
 package storage // import "google.golang.org/cloud/storage"
 
 import (
+	"bytes"
 	"crypto"
 	"crypto/rand"
 	"crypto/rsa"
@@ -48,6 +49,9 @@ import (
 var (
 	ErrBucketNotExist = errors.New("storage: bucket doesn't exist")
 	ErrObjectNotExist = errors.New("storage: object doesn't exist")
+
+	// Done is returned by iterators in this package when they have no more items.
+	Done = errors.New("storage: no more results")
 )
 
 const userAgent = "gcloud-golang-storage/20151204"
@@ -68,50 +72,45 @@ const (
 
 // AdminClient is a client type for performing admin operations on a project's
 // buckets.
+//
+// Deprecated: Client has all of AdminClient's methods.
 type AdminClient struct {
-	hc        *http.Client
-	raw       *raw.Service
+	c         *Client
 	projectID string
 }
 
 // NewAdminClient creates a new AdminClient for a given project.
+//
+// Deprecated: use NewClient instead.
 func NewAdminClient(ctx context.Context, projectID string, opts ...cloud.ClientOption) (*AdminClient, error) {
 	c, err := NewClient(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return &AdminClient{
-		hc:        c.hc,
-		raw:       c.raw,
+		c:         c,
 		projectID: projectID,
 	}, nil
 }
 
 // Close closes the AdminClient.
 func (c *AdminClient) Close() error {
-	c.hc = nil
-	return nil
+	return c.c.Close()
 }
 
 // Create creates a Bucket in the project.
 // If attrs is nil the API defaults will be used.
+//
+// Deprecated: use BucketHandle.Create instead.
 func (c *AdminClient) CreateBucket(ctx context.Context, bucketName string, attrs *BucketAttrs) error {
-	var bkt *raw.Bucket
-	if attrs != nil {
-		bkt = attrs.toRawBucket()
-	} else {
-		bkt = &raw.Bucket{}
-	}
-	bkt.Name = bucketName
-	req := c.raw.Buckets.Insert(c.projectID, bkt)
-	_, err := req.Context(ctx).Do()
-	return err
+	return c.c.Bucket(bucketName).Create(ctx, c.projectID, attrs)
 }
 
 // Delete deletes a Bucket in the project.
+//
+// Deprecated: use BucketHandle.Delete instead.
 func (c *AdminClient) DeleteBucket(ctx context.Context, bucketName string) error {
-	req := c.raw.Buckets.Delete(bucketName)
-	return req.Context(ctx).Do()
+	return c.c.Bucket(bucketName).Delete(ctx)
 }
 
 // Client is a client for interacting with Google Cloud Storage.
@@ -180,6 +179,27 @@ func (c *Client) Bucket(name string) *BucketHandle {
 	}
 }
 
+// Create creates the Bucket in the project.
+// If attrs is nil the API defaults will be used.
+func (b *BucketHandle) Create(ctx context.Context, projectID string, attrs *BucketAttrs) error {
+	var bkt *raw.Bucket
+	if attrs != nil {
+		bkt = attrs.toRawBucket()
+	} else {
+		bkt = &raw.Bucket{}
+	}
+	bkt.Name = b.name
+	req := b.c.raw.Buckets.Insert(projectID, bkt)
+	_, err := req.Context(ctx).Do()
+	return err
+}
+
+// Delete deletes the Bucket.
+func (b *BucketHandle) Delete(ctx context.Context) error {
+	req := b.c.raw.Buckets.Delete(b.name)
+	return req.Context(ctx).Do()
+}
+
 // ACL returns an ACLHandle, which provides access to the bucket's access control list.
 // This controls who can list, create or overwrite the objects in a bucket.
 // This call does not perform any network operations.
@@ -232,43 +252,162 @@ func (b *BucketHandle) Attrs(ctx context.Context) (*BucketAttrs, error) {
 
 // List lists objects from the bucket. You can specify a query
 // to filter the results. If q is nil, no filtering is applied.
+//
+// Deprecated. Use BucketHandle.Objects instead.
 func (b *BucketHandle) List(ctx context.Context, q *Query) (*ObjectList, error) {
-	req := b.c.raw.Objects.List(b.name)
-	req.Projection("full")
-	if q != nil {
-		req.Delimiter(q.Delimiter)
-		req.Prefix(q.Prefix)
-		req.Versions(q.Versions)
-		req.PageToken(q.Cursor)
-		if q.MaxResults > 0 {
-			req.MaxResults(int64(q.MaxResults))
-		}
-	}
-	resp, err := req.Context(ctx).Do()
-	if err != nil {
+	it := b.Objects(ctx, q)
+	attrs, pres, err := it.NextPage()
+	if err != nil && err != Done {
 		return nil, err
 	}
 	objects := &ObjectList{
-		Results:  make([]*ObjectAttrs, len(resp.Items)),
-		Prefixes: make([]string, len(resp.Prefixes)),
+		Results:  attrs,
+		Prefixes: pres,
 	}
-	for i, item := range resp.Items {
-		objects.Results[i] = newObject(item)
-	}
-	for i, prefix := range resp.Prefixes {
-		objects.Prefixes[i] = prefix
-	}
-	if resp.NextPageToken != "" {
-		next := Query{}
-		if q != nil {
-			// keep the other filtering
-			// criteria if there is a query
-			next = *q
-		}
-		next.Cursor = resp.NextPageToken
-		objects.Next = &next
+	if it.NextPageToken() != "" {
+		objects.Next = &it.query
 	}
 	return objects, nil
+}
+
+func (b *BucketHandle) Objects(ctx context.Context, q *Query) *ObjectIterator {
+	it := &ObjectIterator{
+		ctx:    ctx,
+		bucket: b,
+	}
+	if q != nil {
+		it.query = *q
+	}
+	return it
+}
+
+type ObjectIterator struct {
+	ctx      context.Context
+	bucket   *BucketHandle
+	query    Query
+	pageSize int32
+	objs     []*ObjectAttrs
+	prefixes []string
+	err      error
+}
+
+// Next returns the next result. Its second return value is Done if there are
+// no more results. Once Next returns Done, all subsequent calls will return
+// Done.
+//
+// Internally, Next retrieves results in bulk. You can call SetPageSize as a
+// performance hint to affect how many results are retrieved in a single RPC.
+//
+// SetPageToken should not be called when using Next.
+//
+// Next and NextPage should not be used with the same iterator.
+//
+// If Query.Delimiter is non-empty, Next returns an error. Use NextPage when using delimiters.
+func (it *ObjectIterator) Next() (*ObjectAttrs, error) {
+	if it.query.Delimiter != "" {
+		return nil, errors.New("cannot use ObjectIterator.Next with a delimiter")
+	}
+	for len(it.objs) == 0 { // "for", not "if", to handle empty pages
+		if it.err != nil {
+			return nil, it.err
+		}
+		it.nextPage()
+		if it.err != nil {
+			it.objs = nil
+			return nil, it.err
+		}
+		if it.query.Cursor == "" {
+			it.err = Done
+		}
+	}
+	o := it.objs[0]
+	it.objs = it.objs[1:]
+	return o, nil
+}
+
+const DefaultPageSize = 1000
+
+// NextPage returns the next page of results, both objects (as *ObjectAttrs)
+// and prefixes. Prefixes will be nil if query.Delimiter is empty.
+//
+// NextPage will return exactly the number of results (the total of objects and
+// prefixes) specified by the last call to SetPageSize, unless there are not
+// enough results available. If no page size was specified, it uses
+// DefaultPageSize.
+//
+// NextPage may return a second return value of Done along with the last page
+// of results.
+//
+// After NextPage returns Done, all subsequent calls to NextPage will return
+// (nil, Done).
+//
+// Next and NextPage should not be used with the same iterator.
+func (it *ObjectIterator) NextPage() (objs []*ObjectAttrs, prefixes []string, err error) {
+	defer it.SetPageSize(it.pageSize) // restore value at entry
+	if it.pageSize <= 0 {
+		it.pageSize = DefaultPageSize
+	}
+	for len(objs)+len(prefixes) < int(it.pageSize) {
+		it.pageSize -= int32(len(objs) + len(prefixes))
+		it.nextPage()
+		if it.err != nil {
+			return nil, nil, it.err
+		}
+		objs = append(objs, it.objs...)
+		prefixes = append(prefixes, it.prefixes...)
+		if it.query.Cursor == "" {
+			it.err = Done
+			return objs, prefixes, it.err
+		}
+	}
+	return objs, prefixes, it.err
+}
+
+// nextPage gets the next page of results by making a single call to the underlying method.
+// It sets it.objs, it.prefixes, it.query.Cursor, and it.err. It never sets it.err to Done.
+func (it *ObjectIterator) nextPage() {
+	if it.err != nil {
+		return
+	}
+	req := it.bucket.c.raw.Objects.List(it.bucket.name)
+	req.Projection("full")
+	req.Delimiter(it.query.Delimiter)
+	req.Prefix(it.query.Prefix)
+	req.Versions(it.query.Versions)
+	req.PageToken(it.query.Cursor)
+	if it.pageSize > 0 {
+		req.MaxResults(int64(it.pageSize))
+	}
+	resp, err := req.Context(it.ctx).Do()
+	if err != nil {
+		it.err = err
+		return
+	}
+	it.query.Cursor = resp.NextPageToken
+	it.objs = nil
+	for _, item := range resp.Items {
+		it.objs = append(it.objs, newObject(item))
+	}
+	it.prefixes = resp.Prefixes
+}
+
+// SetPageSize sets the page size for all subsequent calls to NextPage.
+// NextPage will return exactly this many items if they are present.
+func (it *ObjectIterator) SetPageSize(pageSize int32) {
+	it.pageSize = pageSize
+}
+
+// SetPageToken sets the page token for the next call to NextPage, to resume
+// the iteration from a previous point.
+func (it *ObjectIterator) SetPageToken(t string) {
+	it.query.Cursor = t
+}
+
+// NextPageToken returns a page token that can be used with SetPageToken to
+// resume iteration from the next page. It returns the empty string if there
+// are no more pages. For an example, see SetPageToken.
+func (it *ObjectIterator) NextPageToken() string {
+	return it.query.Cursor
 }
 
 // SignedURLOptions allows you to restrict the access to the signed URL.
@@ -290,8 +429,24 @@ type SignedURLOptions struct {
 	//    $ openssl pkcs12 -in key.p12 -passin pass:notasecret -out key.pem -nodes
 	//
 	// Provide the contents of the PEM file as a byte slice.
-	// Required.
+	// Exactly one of PrivateKey or SignBytes must be non-nil.
 	PrivateKey []byte
+
+	// SignBytes is a function for implementing custom signing.
+	// If your application is running on Google App Engine, you can use appengine's internal signing function:
+	//     ctx := appengine.NewContext(request)
+	//     acc, _ := appengine.ServiceAccount(ctx)
+	//     url, err := SignedURL("bucket", "object", &SignedURLOptions{
+	//     	GoogleAccessID: acc,
+	//     	SignBytes: func(b []byte) ([]byte, error) {
+	//     		_, signedBytes, err := appengine.SignBytes(ctx, b)
+	//     		return signedBytes, err
+	//     	},
+	//     	// etc.
+	//     })
+	//
+	// Exactly one of PrivateKey or SignBytes must be non-nil.
+	SignBytes func([]byte) ([]byte, error)
 
 	// Method is the HTTP method to be used with the signed URL.
 	// Signed URLs can be used with GET, HEAD, PUT, and DELETE requests.
@@ -328,8 +483,11 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 	if opts == nil {
 		return "", errors.New("storage: missing required SignedURLOptions")
 	}
-	if opts.GoogleAccessID == "" || opts.PrivateKey == nil {
-		return "", errors.New("storage: missing required credentials to generate a signed URL")
+	if opts.GoogleAccessID == "" {
+		return "", errors.New("storage: missing required GoogleAccessID")
+	}
+	if (opts.PrivateKey == nil) == (opts.SignBytes == nil) {
+		return "", errors.New("storage: exactly one of PrivateKey or SignedBytes must be set")
 	}
 	if opts.Method == "" {
 		return "", errors.New("storage: missing required method option")
@@ -337,26 +495,39 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 	if opts.Expires.IsZero() {
 		return "", errors.New("storage: missing required expires option")
 	}
-	key, err := parseKey(opts.PrivateKey)
-	if err != nil {
-		return "", err
+
+	signBytes := opts.SignBytes
+	if opts.PrivateKey != nil {
+		key, err := parseKey(opts.PrivateKey)
+		if err != nil {
+			return "", err
+		}
+		signBytes = func(b []byte) ([]byte, error) {
+			sum := sha256.Sum256(b)
+			return rsa.SignPKCS1v15(
+				rand.Reader,
+				key,
+				crypto.SHA256,
+				sum[:],
+			)
+		}
+	} else {
+		signBytes = opts.SignBytes
 	}
+
 	u := &url.URL{
 		Path: fmt.Sprintf("/%s/%s", bucket, name),
 	}
-	h := sha256.New()
-	fmt.Fprintf(h, "%s\n", opts.Method)
-	fmt.Fprintf(h, "%s\n", opts.MD5)
-	fmt.Fprintf(h, "%s\n", opts.ContentType)
-	fmt.Fprintf(h, "%d\n", opts.Expires.Unix())
-	fmt.Fprintf(h, "%s", strings.Join(opts.Headers, "\n"))
-	fmt.Fprintf(h, "%s", u.String())
-	b, err := rsa.SignPKCS1v15(
-		rand.Reader,
-		key,
-		crypto.SHA256,
-		h.Sum(nil),
-	)
+
+	buf := &bytes.Buffer{}
+	fmt.Fprintf(buf, "%s\n", opts.Method)
+	fmt.Fprintf(buf, "%s\n", opts.MD5)
+	fmt.Fprintf(buf, "%s\n", opts.ContentType)
+	fmt.Fprintf(buf, "%d\n", opts.Expires.Unix())
+	fmt.Fprintf(buf, "%s", strings.Join(opts.Headers, "\n"))
+	fmt.Fprintf(buf, "%s", u.String())
+
+	b, err := signBytes(buf.Bytes())
 	if err != nil {
 		return "", err
 	}
@@ -899,6 +1070,8 @@ type Query struct {
 	// to return. As duplicate prefixes are omitted,
 	// fewer total results may be returned than requested.
 	// The default page limit is used if it is negative or zero.
+	//
+	// Deprecated. Use ObjectIterator.SetPageSize.
 	MaxResults int
 }
 
