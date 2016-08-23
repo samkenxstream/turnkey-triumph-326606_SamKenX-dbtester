@@ -4,11 +4,11 @@ titles:
 
 step1:
   - data_path_list:
-    - 2016082301/01-consul-0.7.0-rc1-1-monitor.csv
-    - 2016082301/01-consul-0.7.0-rc1-2-monitor.csv
-    - 2016082301/01-consul-0.7.0-rc1-3-monitor.csv
-    data_benchmark_path: 2016082301/01-consul-0.7.0-rc1-timeseries.csv
-    output_path: 2016082301/01-consul-0.7.0-rc1-aggregated.csv
+    - 2016082301/01-consul-v0.6.4-1-monitor.csv
+    - 2016082301/01-consul-v0.6.4-2-monitor.csv
+    - 2016082301/01-consul-v0.6.4-3-monitor.csv
+    data_benchmark_path: 2016082301/01-consul-v0.6.4-timeseries.csv
+    output_path: 2016082301/01-consul-v0.6.4-aggregated.csv
 
   - data_path_list:
     - 2016082301/01-etcdv3-go1.7-1-monitor.csv
@@ -25,11 +25,11 @@ step1:
     output_path: 2016082301/01-zk-snap10k-aggregated.csv
 
   - data_path_list:
-    - 2016082301/02-consul-0.7.0-rc1-1-monitor.csv
-    - 2016082301/02-consul-0.7.0-rc1-2-monitor.csv
-    - 2016082301/02-consul-0.7.0-rc1-3-monitor.csv
-    data_benchmark_path: 2016082301/02-consul-0.7.0-rc1-timeseries.csv
-    output_path: 2016082301/02-consul-0.7.0-rc1-aggregated.csv
+    - 2016082301/02-consul-v0.6.4-1-monitor.csv
+    - 2016082301/02-consul-v0.6.4-2-monitor.csv
+    - 2016082301/02-consul-v0.6.4-3-monitor.csv
+    data_benchmark_path: 2016082301/02-consul-v0.6.4-timeseries.csv
+    output_path: 2016082301/02-consul-v0.6.4-aggregated.csv
 
   - data_path_list:
     - 2016082301/02-etcdv3-go1.7-1-monitor.csv
@@ -47,8 +47,8 @@ step1:
 
 step2:
   - data_list:
-      - path: 2016082301/01-consul-0.7.0-rc1-aggregated.csv
-        name: consul_v0.7.0-rc1
+      - path: 2016082301/01-consul-v0.6.4-aggregated.csv
+        name: consul_v0.6.4
       - path: 2016082301/01-etcdv3-go1.7-aggregated.csv
         name: etcdv3_go1.7
       - path: 2016082301/01-zk-snap10k-aggregated.csv
@@ -56,8 +56,8 @@ step2:
     output_path: 2016082301/01-all-aggregated.csv
 
   - data_list:
-      - path: 2016082301/02-consul-0.7.0-rc1-aggregated.csv
-        name: consul_v0.7.0-rc1
+      - path: 2016082301/02-consul-v0.6.4-aggregated.csv
+        name: consul_v0.6.4
       - path: 2016082301/02-etcdv3-go1.7-aggregated.csv
         name: etcdv3_go1.7
       - path: 2016082301/02-zk-snap10k-aggregated.csv
@@ -69,8 +69,8 @@ step3:
 
     plot_list:
     - lines:
-      - column: avg_latency_ms_consul_v0.7.0-rc1
-        legend: Consul v0.7.0-rc1
+      - column: avg_latency_ms_consul_v0.6.4
+        legend: Consul v0.6.4
       - column: avg_latency_ms_etcdv3_go1.7
         legend: etcd v3 (Go 1.7)
       - column: avg_latency_ms_zookeeper_v3.4.8_snap10k
@@ -82,8 +82,8 @@ step3:
         - 2016082301/01-avg-latency-ms.png
 
     - lines:
-      - column: throughput_consul_v0.7.0-rc1
-        legend: Consul v0.7.0-rc1
+      - column: throughput_consul_v0.6.4
+        legend: Consul v0.6.4
       - column: throughput_etcdv3_go1.7
         legend: etcd v3 (Go 1.7)
       - column: throughput_zookeeper_v3.4.8_snap10k
@@ -95,8 +95,8 @@ step3:
         - 2016082301/01-throughput.png
 
     - lines:
-      - column: avg_cpu_consul_v0.7.0-rc1
-        legend: Consul v0.7.0-rc1
+      - column: avg_cpu_consul_v0.6.4
+        legend: Consul v0.6.4
       - column: avg_cpu_etcdv3_go1.7
         legend: etcd v3 (Go 1.7)
       - column: avg_cpu_zookeeper_v3.4.8_snap10k
@@ -108,8 +108,8 @@ step3:
         - 2016082301/01-avg-cpu.png
 
     - lines:
-      - column: avg_memory_mb_consul_v0.7.0-rc1
-        legend: Consul v0.7.0-rc1
+      - column: avg_memory_mb_consul_v0.6.4
+        legend: Consul v0.6.4
       - column: avg_memory_mb_etcdv3_go1.7
         legend: etcd v3 (Go 1.7)
       - column: avg_memory_mb_zookeeper_v3.4.8_snap10k
@@ -124,8 +124,8 @@ step3:
 
     plot_list:
     - lines:
-      - column: avg_latency_ms_consul_v0.7.0-rc1
-        legend: Consul v0.7.0-rc1
+      - column: avg_latency_ms_consul_v0.6.4
+        legend: Consul v0.6.4
       - column: avg_latency_ms_etcdv3_go1.7
         legend: etcd v3 (Go 1.7)
       - column: avg_latency_ms_zookeeper_v3.4.8_snap10k
@@ -137,8 +137,8 @@ step3:
         - 2016082301/02-avg-latency-ms.png
 
     - lines:
-      - column: throughput_consul_v0.7.0-rc1
-        legend: Consul v0.7.0-rc1
+      - column: throughput_consul_v0.6.4
+        legend: Consul v0.6.4
       - column: throughput_etcdv3_go1.7
         legend: etcd v3 (Go 1.7)
       - column: throughput_zookeeper_v3.4.8_snap10k
@@ -150,8 +150,8 @@ step3:
         - 2016082301/02-throughput.png
 
     - lines:
-      - column: avg_cpu_consul_v0.7.0-rc1
-        legend: Consul v0.7.0-rc1
+      - column: avg_cpu_consul_v0.6.4
+        legend: Consul v0.6.4
       - column: avg_cpu_etcdv3_go1.7
         legend: etcd v3 (Go 1.7)
       - column: avg_cpu_zookeeper_v3.4.8_snap10k
@@ -163,8 +163,8 @@ step3:
         - 2016082301/02-avg-cpu.png
 
     - lines:
-      - column: avg_memory_mb_consul_v0.7.0-rc1
-        legend: Consul v0.7.0-rc1
+      - column: avg_memory_mb_consul_v0.6.4
+        legend: Consul v0.6.4
       - column: avg_memory_mb_etcdv3_go1.7
         legend: etcd v3 (Go 1.7)
       - column: avg_memory_mb_zookeeper_v3.4.8_snap10k
@@ -187,7 +187,7 @@ step4:
       - Java HotSpot(TM) 64-Bit Server VM (build 25.91-b14, mixed mode)
       - javac 1.8.0_91
     - etcd v3 (Go 1.7)
-    - Consul v0.7.0-rc1
+    - Consul v0.6.4
 
   results:
     - images:
