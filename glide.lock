@@ -1,12 +1,12 @@
 hash: 6ac0ebb0f8853fa18c2be5b1b550eb3f96b4ea1deb3a0d4ff5390af768e16a22
-updated: 2016-08-22T00:21:40.925646049-07:00
+updated: 2016-08-23T01:11:14.985312526-07:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
   subpackages:
   - pdf
 - name: cloud.google.com/go
-  version: e977e3911f5ba211c715d40c30fc81abfa9400ae
+  version: 242ed68074e53cbb6f78a90c28d9a48bfa2d1093
   subpackages:
   - compute/metadata
   - internal
@@ -17,7 +17,7 @@ imports:
 - name: github.com/cloudfoundry-incubator/candiedyaml
   version: 99c3df83b51532e3615f851d8c2dbb638f5313bf
 - name: github.com/coreos/etcd
-  version: 0504b277b65a5f236f41ad661abc3123167fb8cf
+  version: 959f860a4053f66a2602a5795a9ebc04eed20f0a
   subpackages:
   - auth/authpb
   - client
@@ -41,7 +41,7 @@ imports:
 - name: github.com/ghodss/yaml
   version: aa0c862057666179de291b67d9f093d12b5a8473
 - name: github.com/gogo/protobuf
-  version: 9bfc0de29f915455c7a130de65a479ee1cb49316
+  version: 330d6892d1d39fcd6cff0b4240821bdaf30c3a3c
   subpackages:
   - gogoproto
   - proto
@@ -113,7 +113,7 @@ imports:
   subpackages:
   - zk
 - name: github.com/spf13/cobra
-  version: 7c674d9e72017ed25f6d2b5e497a1368086b6a6f
+  version: 1f4717172e07e12150feb061b2ab847c3054f53f
 - name: github.com/spf13/pflag
   version: 103ce5cd2042f2fe629c1957abb64ab3e7f50235
 - name: github.com/ugorji/go
@@ -147,7 +147,7 @@ imports:
   - jws
   - jwt
 - name: google.golang.org/api
-  version: 71d10c782fc13eb9f2e2c9af553da218c941851f
+  version: 7b2847ee16541b59d2a5004bb75794ebdc2246c4
   subpackages:
   - gensupport
   - googleapi
@@ -157,7 +157,7 @@ imports:
   - storage/v1
   - transport
 - name: google.golang.org/appengine
-  version: e951d3868b377b14f4e60efa3a301532ee3c1ebf
+  version: 4f7eeb5305a4ba1966344836ba4af9996b7b4e05
   subpackages:
   - internal
   - internal/app_identity
