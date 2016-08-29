@@ -1,0 +1,187 @@
+package: github.com/coreos/dbtester
+import:
+- package: bitbucket.org/zombiezen/gopdf
+  version: '''1c63dc69751bc45441c2ce1f56b631c55294b4d5'''
+  subpackages:
+  - pdf
+- package: cloud.google.com/go
+  version: 242ed68074e53cbb6f78a90c28d9a48bfa2d1093
+  subpackages:
+  - compute/metadata
+  - internal
+- package: github.com/ajstarks/svgo
+  version: 672fe547df4e49efc6db67a74391368bcb149b37
+- package: github.com/cheggaaa/pb
+  version: 6e9d17711bb763b26b68b3931d47f24c1323abab
+- package: github.com/cloudfoundry-incubator/candiedyaml
+  version: 99c3df83b51532e3615f851d8c2dbb638f5313bf
+- package: github.com/coreos/etcd
+  version: e53b99588a05d1f4ef172c178d4ed8e8106b8be4
+  subpackages:
+  - auth/authpb
+  - client
+  - clientv3
+  - etcdserver/api/v3rpc/rpctypes
+  - etcdserver/etcdserverpb
+  - mvcc/mvccpb
+  - pkg/pathutil
+  - pkg/tlsutil
+  - pkg/types
+- package: github.com/coreos/go-systemd
+  version: 5c49e4850c879a0ddc061e8f4adcf307de8a8bc2
+  subpackages:
+  - journal
+- package: github.com/coreos/pkg
+  version: 3ac0863d7acf3bc44daf49afef8919af12f704ef
+  subpackages:
+  - capnslog
+- package: github.com/dustin/go-humanize
+  version: 2fcb5204cdc65b4bec9fd0a87606bb0d0e3c54e8
+- package: github.com/ghodss/yaml
+  version: aa0c862057666179de291b67d9f093d12b5a8473
+- package: github.com/gogo/protobuf
+  version: 966a6f4b3274f2692aa2f30df2ea5c7172c832ca
+  subpackages:
+  - gogoproto
+  - proto
+  - protoc-gen-gogo/descriptor
+- package: github.com/golang/freetype
+  version: 38b4c392adc5eed94207994c4848fff99f4ac234
+  subpackages:
+  - raster
+  - truetype
+- package: github.com/golang/protobuf
+  version: f592bd283e9ef86337a432eb50e592278c3d534d
+  subpackages:
+  - jsonpb
+  - proto
+- package: github.com/gonum/floats
+  version: e7dfbda930c8a40d6d1ba9107762aae3e6e47591
+- package: github.com/gonum/internal
+  version: 495c8ab446bf60264be32be6973302faac6a5695
+  subpackages:
+  - asm
+- package: github.com/gonum/plot
+  version: c1e68bf98c6ed50599f84747f929f684d49807b9
+  subpackages:
+  - palette
+  - plotter
+  - plotutil
+  - vg
+  - vg/draw
+  - vg/fonts
+  - vg/vgeps
+  - vg/vgimg
+  - vg/vgpdf
+  - vg/vgsvg
+- package: github.com/grpc-ecosystem/grpc-gateway
+  version: 5e0e028ba0a015710eaebf6e47af18812c9f2767
+  subpackages:
+  - runtime
+  - runtime/internal
+  - utilities
+- package: github.com/gyuho/dataframe
+  version: 573cd728a011e5473510a6a1df0f39023c305e04
+- package: github.com/gyuho/psn
+  version: 415d7423cced5ca6bf6dbf81c5cbe37605f1dfaa
+  subpackages:
+  - process
+- package: github.com/hashicorp/consul
+  version: 36dc9201f2e006d4b5db1f0446b17357811297bf
+  subpackages:
+  - api
+- package: github.com/hashicorp/go-cleanhttp
+  version: ad28ea4487f05916463e2423a55166280e8254b5
+- package: github.com/hashicorp/serf
+  version: 9432bc08aa8d486e497e27f84878ebbe8c1eab66
+  subpackages:
+  - coordinate
+- package: github.com/inconshreveable/mousetrap
+  version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- package: github.com/llgcode/draw2d
+  version: 13548be874707c45a83f9c2c282d76d671c7acf8
+  subpackages:
+  - draw2dbase
+  - draw2dimg
+- package: github.com/mattn/go-runewidth
+  version: d6bea18f789704b5f83375793155289da36a3c7f
+- package: github.com/olekukonko/tablewriter
+  version: daf2955e742cf123959884fdff4685aa79b63135
+- package: github.com/samuel/go-zookeeper
+  version: e64db453f3512cade908163702045e0f31137843
+  subpackages:
+  - zk
+- package: github.com/spf13/cobra
+  version: 1f4717172e07e12150feb061b2ab847c3054f53f
+- package: github.com/spf13/pflag
+  version: 103ce5cd2042f2fe629c1957abb64ab3e7f50235
+- package: github.com/ugorji/go
+  version: 4a1cb5252a6951f715a85d0e4be334c2a2dbf2a2
+  subpackages:
+  - codec
+- package: golang.org/x/image
+  version: 9f8d0d45877da31f672995d10677ae6a586e31a5
+  subpackages:
+  - draw
+  - font
+  - math/f64
+  - math/fixed
+  - tiff
+  - tiff/lzw
+- package: golang.org/x/net
+  version: 7394c112eae4dba7e96bfcfe738e6373d61772b4
+  subpackages:
+  - context
+  - context/ctxhttp
+  - http2
+  - http2/hpack
+  - internal/timeseries
+  - lex/httplex
+  - trace
+- package: golang.org/x/oauth2
+  version: 3b966c7f301c0c71c53d94dc632a62df0a682cd7
+  subpackages:
+  - google
+  - internal
+  - jws
+  - jwt
+- package: google.golang.org/api
+  version: 7b2847ee16541b59d2a5004bb75794ebdc2246c4
+  subpackages:
+  - gensupport
+  - googleapi
+  - googleapi/internal/uritemplates
+  - internal
+  - option
+  - storage/v1
+  - transport
+- package: google.golang.org/appengine
+  version: 4f7eeb5305a4ba1966344836ba4af9996b7b4e05
+  subpackages:
+  - internal
+  - internal/app_identity
+  - internal/base
+  - internal/datastore
+  - internal/log
+  - internal/modules
+  - internal/remote_api
+- package: google.golang.org/cloud
+  version: 12aa462581208c155e498dc13e14cabe6da24dc3
+  subpackages:
+  - internal
+  - internal/transport
+  - storage
+- package: google.golang.org/grpc
+  version: 0032a855ba5c8a3c8e0d71c2deef354b70af1584
+  subpackages:
+  - codes
+  - credentials
+  - credentials/oauth
+  - grpclog
+  - internal
+  - metadata
+  - naming
+  - peer
+  - transport
+- package: gopkg.in/yaml.v2
+  version: e4d366fc3c7938e2958e662b4258c7a89e1f0e3e
