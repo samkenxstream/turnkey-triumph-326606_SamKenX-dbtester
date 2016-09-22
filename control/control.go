@@ -112,60 +112,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func step1(cfg Config) error {
-	req := cfg.Request()
-	req.Operation = agent.Request_Start
-
-	donec, errc := make(chan struct{}), make(chan error)
-	for i := range cfg.PeerIPs {
-
-		go func(i int) {
-			nreq := req
-
-			nreq.ServerIndex = uint32(i)
-			nreq.ZookeeperMyID = uint32(i + 1)
-			ep := cfg.AgentEndpoints[nreq.ServerIndex]
-
-			logger.Infof("sending message [index: %d | operation: %q | database: %q | endpoint: %q]", i, req.Operation.String(), req.Database.String(), ep)
-
-			conn, err := grpc.Dial(ep, grpc.WithInsecure())
-			if err != nil {
-				logger.Errorf("grpc.Dial connecting error (%v) [index: %d | endpoint: %q]", err, i, ep)
-				errc <- err
-				return
-			}
-
-			defer conn.Close()
-
-			cli := agent.NewTransporterClient(conn)
-			ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second) // Consul takes longer
-			resp, err := cli.Transfer(ctx, &nreq)
-			cancel()
-			if err != nil {
-				logger.Errorf("cli.Transfer error (%v) [index: %d | endpoint: %q]", err, i, ep)
-				errc <- err
-				return
-			}
-
-			logger.Infof("got response [index: %d | endpoint: %q | response: %+v]", i, ep, resp)
-			donec <- struct{}{}
-		}(i)
-
-		time.Sleep(time.Second)
-	}
-
-	cnt := 0
-	for cnt != len(cfg.PeerIPs) {
-		select {
-		case <-donec:
-		case err := <-errc:
-			return err
-		}
-		cnt++
-	}
-
-	return nil
-}
+func step1(cfg Config) error { return bcastReq(cfg, agent.Request_Start) }
 
 var (
 	bar     *pb.ProgressBar
@@ -522,53 +469,62 @@ func step2(cfg Config) error {
 	return nil
 }
 
-func step3(cfg Config) error {
+func step3(cfg Config) error { return bcastReq(cfg, agent.Request_Stop) }
+
+func bcastReq(cfg Config, op agent.Request_Operation) error {
 	req := cfg.Request()
-	req.Operation = agent.Request_Stop
+	req.Operation = op
 
 	donec, errc := make(chan struct{}), make(chan error)
 	for i := range cfg.PeerIPs {
-
 		go func(i int) {
-			ep := cfg.AgentEndpoints[i]
-
-			logger.Infof("sending message [index: %d | operation: %q | database: %q | endpoint: %q]", i, req.Operation.String(), req.Database.String(), ep)
-
-			conn, err := grpc.Dial(ep, grpc.WithInsecure())
-			if err != nil {
-				logger.Errorf("grpc.Dial connecting error (%v) [index: %d | endpoint: %q]", err, i, ep)
+			if err := sendReq(cfg.AgentEndpoints[i], req, i); err != nil {
 				errc <- err
-				return
+			} else {
+				donec <- struct{}{}
 			}
-
-			defer conn.Close()
-
-			cli := agent.NewTransporterClient(conn)
-			ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second) // Consul takes longer
-			resp, err := cli.Transfer(ctx, &req)
-			cancel()
-			if err != nil {
-				logger.Errorf("cli.Transfer error (%v) [index: %d | endpoint: %q]", err, i, ep)
-				errc <- err
-				return
-			}
-
-			logger.Infof("got response [index: %d | endpoint: %q | response: %+v]", i, ep, resp)
-			donec <- struct{}{}
 		}(i)
-
 		time.Sleep(time.Second)
 	}
 
-	cnt := 0
-	for cnt != len(cfg.PeerIPs) {
+	var errs []error
+	for cnt := 0; cnt != len(cfg.PeerIPs); cnt++ {
 		select {
 		case <-donec:
 		case err := <-errc:
-			return err
+			errs = append(errs, err)
 		}
-		cnt++
+	}
+	if len(errs) > 0 {
+		return errs[0]
 	}
 
+	return nil
+}
+
+func sendReq(ep string, req agent.Request, i int) error {
+	req.ServerIndex = uint32(i)
+	req.ZookeeperMyID = uint32(i + 1)
+
+	logger.Infof("sending message [index: %d | operation: %q | database: %q | endpoint: %q]", i, req.Operation.String(), req.Database.String(), ep)
+
+	conn, err := grpc.Dial(ep, grpc.WithInsecure())
+	if err != nil {
+		logger.Errorf("grpc.Dial connecting error (%v) [index: %d | endpoint: %q]", err, i, ep)
+		return err
+	}
+
+	defer conn.Close()
+
+	cli := agent.NewTransporterClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second) // Consul takes longer
+	resp, err := cli.Transfer(ctx, &req)
+	cancel()
+	if err != nil {
+		logger.Errorf("cli.Transfer error (%v) [index: %d | endpoint: %q]", err, i, ep)
+		return err
+	}
+
+	logger.Infof("got response [index: %d | endpoint: %q | response: %+v]", i, ep, resp)
 	return nil
 }
