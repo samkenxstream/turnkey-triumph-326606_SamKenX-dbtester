@@ -17,6 +17,8 @@ package control
 import (
 	"io/ioutil"
 
+	"github.com/coreos/dbtester/agent"
+
 	"gopkg.in/yaml.v2"
 )
 
@@ -79,4 +81,37 @@ func ReadConfig(fpath string) (Config, error) {
 		return Config{}, err
 	}
 	return rs, nil
+}
+
+func (cfg *Config) Request() agent.Request {
+	req := agent.Request{}
+
+	req.TestName = cfg.TestName
+	req.GoogleCloudProjectName = cfg.GoogleCloudProjectName
+	req.GoogleCloudStorageKey = cfg.GoogleCloudStorageKey
+	req.GoogleCloudStorageBucketName = cfg.GoogleCloudStorageBucketName
+	req.GoogleCloudStorageSubDirectory = cfg.GoogleCloudStorageSubDirectory
+
+	switch cfg.Database {
+	case "etcdv2":
+		req.Database = agent.Request_etcdv2
+
+	case "etcdv3":
+		req.Database = agent.Request_etcdv3
+
+	case "zk", "zookeeper":
+		cfg.Database = "zookeeper"
+		req.Database = agent.Request_ZooKeeper
+
+	case "consul":
+		req.Database = agent.Request_Consul
+	}
+
+	req.PeerIPString = cfg.PeerIPString
+
+	req.ZookeeperMaxClientCnxns = cfg.Step1.ZookeeperMaxClientCnxns
+	req.ZookeeperSnapCount = cfg.Step1.ZookeeperSnapCount
+	// req.EtcdCompression = cfg.EtcdCompression
+
+	return req
 }
