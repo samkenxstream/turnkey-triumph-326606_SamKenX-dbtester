@@ -113,35 +113,8 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 }
 
 func step1(cfg Config) error {
-	req := agent.Request{}
-
+	req := cfg.Request()
 	req.Operation = agent.Request_Start
-	req.TestName = cfg.TestName
-	req.GoogleCloudProjectName = cfg.GoogleCloudProjectName
-	req.GoogleCloudStorageKey = cfg.GoogleCloudStorageKey
-	req.GoogleCloudStorageBucketName = cfg.GoogleCloudStorageBucketName
-	req.GoogleCloudStorageSubDirectory = cfg.GoogleCloudStorageSubDirectory
-
-	switch cfg.Database {
-	case "etcdv2":
-		req.Database = agent.Request_etcdv2
-
-	case "etcdv3":
-		req.Database = agent.Request_etcdv3
-
-	case "zk", "zookeeper":
-		cfg.Database = "zookeeper"
-		req.Database = agent.Request_ZooKeeper
-
-	case "consul":
-		req.Database = agent.Request_Consul
-	}
-
-	req.PeerIPString = cfg.PeerIPString
-
-	req.ZookeeperMaxClientCnxns = cfg.Step1.ZookeeperMaxClientCnxns
-	req.ZookeeperSnapCount = cfg.Step1.ZookeeperSnapCount
-	// req.EtcdCompression = cfg.EtcdCompression
 
 	donec, errc := make(chan struct{}), make(chan error)
 	for i := range cfg.PeerIPs {
@@ -550,26 +523,8 @@ func step2(cfg Config) error {
 }
 
 func step3(cfg Config) error {
-	req := agent.Request{}
+	req := cfg.Request()
 	req.Operation = agent.Request_Stop
-
-	switch cfg.Database {
-	case "etcdv2":
-		req.Database = agent.Request_etcdv2
-
-	case "etcdv3":
-		req.Database = agent.Request_etcdv3
-
-	case "zk":
-		cfg.Database = "zookeeper"
-		req.Database = agent.Request_ZooKeeper
-
-	case "zookeeper":
-		req.Database = agent.Request_ZooKeeper
-
-	case "consul":
-		req.Database = agent.Request_Consul
-	}
 
 	donec, errc := make(chan struct{}), make(chan error)
 	for i := range cfg.PeerIPs {
