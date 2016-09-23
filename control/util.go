@@ -186,15 +186,10 @@ func mustRandBytes(n int) []byte {
 	return rb
 }
 
-func doPutEtcdv2(ctx context.Context, conn clientv2.KeysAPI, requests <-chan request) {
-	defer wg.Done()
-
+func doHandler(ctx context.Context, f ReqHandler, requests <-chan request) {
 	for req := range requests {
-		op := req.etcdv2Op
 		st := time.Now()
-
-		_, err := conn.Set(context.Background(), op.key, op.value, nil)
-
+		err := f(ctx, &req)
 		var errStr string
 		if err != nil {
 			errStr = err.Error()
@@ -210,23 +205,6 @@ func getTotalKeysEtcdv2(endpoints []string) map[string]int64 {
 		rs[ep] = 0 // not supported in metrics
 	}
 	return rs
-}
-
-func doPutEtcdv3(ctx context.Context, client clientv3.KV, requests <-chan request) {
-	defer wg.Done()
-
-	for req := range requests {
-		op := req.etcdv3Op
-		st := time.Now()
-		_, err := client.Do(ctx, op)
-
-		var errStr string
-		if err != nil {
-			errStr = err.Error()
-		}
-		results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
-		bar.Increment()
-	}
 }
 
 func getTotalKeysEtcdv3(endpoints []string) map[string]int64 {
@@ -264,30 +242,6 @@ func getTotalKeysEtcdv3(endpoints []string) map[string]int64 {
 	return rs
 }
 
-func doPutZk(conn *zk.Conn, requests <-chan request, sameKey bool) {
-	defer wg.Done()
-
-	for req := range requests {
-		op := req.zkOp
-		st := time.Now()
-
-		var err error
-		if !sameKey {
-			_, err = conn.Create(op.key, op.value, zkCreateFlags, zkCreateAcl)
-		} else {
-			_, err = conn.Set(op.key, op.value, int32(-1))
-		}
-
-		var errStr string
-		if err != nil {
-			errStr = err.Error()
-			log.Println("doPutZk err:", err)
-		}
-		results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
-		bar.Increment()
-	}
-}
-
 func getTotalKeysZk(endpoints []string) map[string]int64 {
 	rs := make(map[string]int64)
 	stats, ok := zk.FLWSrvr(endpoints, 5*time.Second)
@@ -302,24 +256,6 @@ func getTotalKeysZk(endpoints []string) map[string]int64 {
 		rs[endpoints[i]] = s.NodeCount
 	}
 	return rs
-}
-
-func doPutConsul(conn *consulapi.KV, requests <-chan request) {
-	defer wg.Done()
-
-	for req := range requests {
-		op := req.consulOp
-		st := time.Now()
-
-		_, err := conn.Put(&consulapi.KVPair{Key: op.key, Value: op.value}, nil)
-
-		var errStr string
-		if err != nil {
-			errStr = err.Error()
-		}
-		results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
-		bar.Increment()
-	}
 }
 
 func getTotalKeysConsul(endpoints []string) map[string]int64 {
@@ -351,78 +287,6 @@ func compactKV(clients []*clientv3.Client) {
 			panic(err)
 		}
 		break
-	}
-}
-
-func doRangeEtcdv2(conn clientv2.KeysAPI, requests <-chan request) {
-	defer wg.Done()
-
-	for req := range requests {
-		op := req.etcdv2Op
-
-		st := time.Now()
-		_, err := conn.Get(context.Background(), op.key, nil)
-
-		var errStr string
-		if err != nil {
-			errStr = err.Error()
-		}
-		results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
-		bar.Increment()
-	}
-}
-
-func doRangeEtcdv3(client clientv3.KV, requests <-chan request) {
-	defer wg.Done()
-
-	for req := range requests {
-		op := req.etcdv3Op
-
-		st := time.Now()
-		_, err := client.Do(context.Background(), op)
-
-		var errStr string
-		if err != nil {
-			errStr = err.Error()
-		}
-		results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
-		bar.Increment()
-	}
-}
-
-func doRangeZk(conn *zk.Conn, requests <-chan request) {
-	defer wg.Done()
-
-	for req := range requests {
-		op := req.zkOp
-
-		st := time.Now()
-		_, _, err := conn.Get(op.key)
-
-		var errStr string
-		if err != nil {
-			errStr = err.Error()
-		}
-		results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
-		bar.Increment()
-	}
-}
-
-func doRangeConsul(conn *consulapi.KV, requests <-chan request) {
-	defer wg.Done()
-
-	for req := range requests {
-		op := req.consulOp
-
-		st := time.Now()
-		_, _, err := conn.Get(op.key, &consulapi.QueryOptions{AllowStale: true})
-
-		var errStr string
-		if err != nil {
-			errStr = err.Error()
-		}
-		results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
-		bar.Increment()
 	}
 }
 
