@@ -120,186 +120,91 @@ var (
 	wg      sync.WaitGroup
 )
 
-func step2(cfg Config) error {
-	var (
-		valuesBytes     [][]byte
-		valuesString    []string
-		valueSampleSize int
-	)
-	if cfg.Step2.ValueTestDataPath != "" {
-		fs, err := walkDir(cfg.Step2.ValueTestDataPath)
-		if err != nil {
-			return err
-		}
-		for _, elem := range fs {
-			bts, err := ioutil.ReadFile(elem.path)
-			if err != nil {
-				return err
-			}
-			valuesBytes = append(valuesBytes, bts)
-			valuesString = append(valuesString, string(bts))
-		}
-		valueSampleSize = len(valuesString)
+type values struct {
+	bytes      [][]byte
+	strings    []string
+	sampleSize int
+}
+
+func newValues(cfg Config) (v values, rerr error) {
+	if cfg.Step2.ValueTestDataPath == "" {
+		v.bytes = [][]byte{randBytes(cfg.Step2.ValueSize)}
+		v.strings = []string{string(v.bytes[0])}
+		v.sampleSize = 1
+		return
 	}
 
+	fs, err := walkDir(cfg.Step2.ValueTestDataPath)
+	if err != nil {
+		rerr = err
+		return
+	}
+	for _, elem := range fs {
+		bts, err := ioutil.ReadFile(elem.path)
+		if err != nil {
+			rerr = err
+			return
+		}
+		v.bytes = append(v.bytes, bts)
+		v.strings = append(v.strings, string(bts))
+	}
+	v.sampleSize = len(v.strings)
+	return
+}
+
+func step2(cfg Config) error {
+	vals, err := newValues(cfg)
+	if err != nil {
+		return err
+	}
 	switch cfg.Step2.BenchType {
 	case "write":
 		results = make(chan result)
 		requests := make(chan request, cfg.Step2.Clients)
 		bar = pb.New(cfg.Step2.TotalRequests)
 
-		v := randBytes(cfg.Step2.ValueSize)
-		vs := string(v)
-
-		bar.Format("Bom !")
-		bar.Start()
-
-		var etcdClients []*clientv3.Client
-		switch cfg.Database {
-		case "etcdv2":
-			conns := mustCreateClientsEtcdv2(cfg.DatabaseEndpoints, cfg.Step2.Connections)
-			for i := range conns {
-				wg.Add(1)
-				go doPutEtcdv2(context.Background(), conns[i], requests)
-			}
-
-		case "etcdv3":
-			etcdClients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, etcdv3ClientCfg{
-				totalConns:   cfg.Step2.Connections,
-				totalClients: cfg.Step2.Clients,
-				// compressionTypeTxt: cfg.EtcdCompression,
-			})
-			for i := range etcdClients {
-				wg.Add(1)
-				go doPutEtcdv3(context.Background(), etcdClients[i], requests)
-			}
-			defer func() {
-				for i := range etcdClients {
-					etcdClients[i].Close()
-				}
-			}()
-
-		case "zk", "zookeeper":
-			if cfg.Step2.SameKey {
-				key := sameKey(cfg.Step2.KeySize)
-				valueBts := randBytes(cfg.Step2.ValueSize)
-				logger.Infof("write started [request: PUT | key: %q | database: %q]", key, "zookeeper")
-				var err error
-				for i := 0; i < 7; i++ {
-					conns := mustCreateConnsZk(cfg.DatabaseEndpoints, cfg.Step2.Connections)
-					_, err = conns[0].Create("/"+key, valueBts, zkCreateFlags, zkCreateAcl)
-					if err != nil {
-						continue
-					}
-					for j := range conns {
-						conns[j].Close()
-					}
-					logger.Infof("write done [request: PUT | key: %q | database: %q]", key, "zookeeper")
-					break
-				}
-				if err != nil {
-					logger.Errorf("write error [request: PUT | key: %q | database: %q]", key, "zookeeper")
-					os.Exit(1)
-				}
-			}
-
-			conns := mustCreateConnsZk(cfg.DatabaseEndpoints, cfg.Step2.Connections)
-			defer func() {
-				for i := range conns {
-					conns[i].Close()
-				}
-			}()
-			for i := range conns {
-				wg.Add(1)
-				go doPutZk(conns[i], requests, cfg.Step2.SameKey)
-			}
-
-		case "consul":
-			conns := mustCreateConnsConsul(cfg.DatabaseEndpoints, cfg.Step2.Connections)
-			for i := range conns {
-				wg.Add(1)
-				go doPutConsul(conns[i], requests)
-			}
+		h, done := newWriteHandlers(cfg)
+		if done != nil {
+			defer done()
 		}
 
 		pdoneC := printReport(results, cfg)
-		go func() {
-			for i := 0; i < cfg.Step2.TotalRequests; i++ {
-				if cfg.Database == "etcdv3" && cfg.Step2.Etcdv3CompactionCycle > 0 && i%cfg.Step2.Etcdv3CompactionCycle == 0 {
-					logger.Infof("starting compaction [index: %d | database: %q]", i, "etcdv3")
-					go func() {
-						compactKV(etcdClients)
-					}()
-				}
 
-				k := sequentialKey(cfg.Step2.KeySize, i)
-				if cfg.Step2.SameKey {
-					k = sameKey(cfg.Step2.KeySize)
-				}
-				if cfg.Step2.ValueTestDataPath != "" {
-					v = valuesBytes[i%valueSampleSize]
-					vs = valuesString[i%valueSampleSize]
-				}
-
-				switch cfg.Database {
-				case "etcdv2":
-					requests <- request{etcdv2Op: etcdv2Op{key: k, value: vs}}
-
-				case "etcdv3":
-					requests <- request{etcdv3Op: clientv3.OpPut(k, vs)}
-
-				case "zk", "zookeeper":
-					requests <- request{zkOp: zkOp{key: "/" + k, value: v}}
-
-				case "consul":
-					requests <- request{consulOp: consulOp{key: k, value: v}}
-				}
-				if cfg.Step2.RequestIntervalMs > 0 {
-					time.Sleep(time.Duration(cfg.Step2.RequestIntervalMs) * time.Millisecond)
-				}
-			}
-			close(requests)
-		}()
-
+		bar.Format("Bom !")
+		bar.Start()
+		for i := range h {
+			wg.Add(1)
+			go func(rh ReqHandler) {
+				defer wg.Done()
+				doHandler(context.Background(), rh, requests)
+			}(h[i])
+		}
+		go generateWrites(cfg, vals, requests)
 		wg.Wait()
-
 		bar.Finish()
 
 		close(results)
 		<-pdoneC
 
+		var totalKeysFunc func([]string) map[string]int64
 		switch cfg.Database {
 		case "etcdv2":
-			for k, v := range getTotalKeysEtcdv2(cfg.DatabaseEndpoints) {
-				logger.Infof("expected write total results [expected_total: %d | database: %q | endpoint: %q | number_of_keys: %d]", cfg.Step2.TotalRequests, "etcdv2", k, v)
-			}
-
+			totalKeysFunc = getTotalKeysEtcdv2
 		case "etcdv3":
-			for k, v := range getTotalKeysEtcdv3(cfg.DatabaseEndpoints) {
-				logger.Infof("expected write total results [expected_total: %d | database: %q | endpoint: %q | number_of_keys: %d]", cfg.Step2.TotalRequests, "etcdv3", k, v)
-			}
-
+			totalKeysFunc = getTotalKeysEtcdv3
 		case "zk", "zookeeper":
-			for k, v := range getTotalKeysZk(cfg.DatabaseEndpoints) {
-				logger.Infof("expected write total results [expected_total: %d | database: %q | endpoint: %q | number_of_keys: %d]", cfg.Step2.TotalRequests, "zookeeper", k, v)
-			}
-
+			totalKeysFunc = getTotalKeysZk
 		case "consul":
-			for k, v := range getTotalKeysConsul(cfg.DatabaseEndpoints) {
-				logger.Infof("expected write total results [expected_total: %d | database: %q | endpoint: %q | number_of_keys: %d]", cfg.Step2.TotalRequests, "consul", k, v)
-			}
+			totalKeysFunc = getTotalKeysConsul
+		}
+
+		for k, v := range totalKeysFunc(cfg.DatabaseEndpoints) {
+			logger.Infof("expected write total results [expected_total: %d | database: %q | endpoint: %q | number_of_keys: %d]", cfg.Step2.TotalRequests, cfg.Database, k, v)
 		}
 
 	case "read":
-		var (
-			key      = sameKey(cfg.Step2.KeySize)
-			valueBts = randBytes(cfg.Step2.ValueSize)
-			value    = string(valueBts)
-		)
-		if cfg.Step2.ValueTestDataPath != "" {
-			valueBts = valuesBytes[0]
-			value = valuesString[0]
-		}
+		key, value := sameKey(cfg.Step2.KeySize), vals.strings[0]
+
 		switch cfg.Database {
 		case "etcdv2":
 			logger.Infof("write started [request: PUT | key: %q | database: %q]", key, "etcdv2")
@@ -344,7 +249,7 @@ func step2(cfg Config) error {
 			var err error
 			for i := 0; i < 7; i++ {
 				conns := mustCreateConnsZk(cfg.DatabaseEndpoints, cfg.Step2.Connections)
-				_, err = conns[0].Create("/"+key, valueBts, zkCreateFlags, zkCreateAcl)
+				_, err = conns[0].Create("/"+key, vals.bytes[0], zkCreateFlags, zkCreateAcl)
 				if err != nil {
 					continue
 				}
@@ -364,7 +269,7 @@ func step2(cfg Config) error {
 			var err error
 			for i := 0; i < 7; i++ {
 				clients := mustCreateConnsConsul(cfg.DatabaseEndpoints, cfg.Step2.Connections)
-				_, err = clients[0].Put(&consulapi.KVPair{Key: key, Value: valueBts}, nil)
+				_, err = clients[0].Put(&consulapi.KVPair{Key: key, Value: vals.bytes[0]}, nil)
 				if err != nil {
 					continue
 				}
@@ -379,85 +284,26 @@ func step2(cfg Config) error {
 
 		results = make(chan result)
 		requests := make(chan request, cfg.Step2.Clients)
-		bar = pb.New(cfg.Step2.TotalRequests)
 
+		h, done := newReadHandlers(cfg)
+		if done != nil {
+			defer done()
+		}
+
+		bar = pb.New(cfg.Step2.TotalRequests)
 		bar.Format("Bom !")
 		bar.Start()
 
-		switch cfg.Database {
-		case "etcdv2":
-			conns := mustCreateClientsEtcdv2(cfg.DatabaseEndpoints, cfg.Step2.Connections)
-			for i := range conns {
-				wg.Add(1)
-				go doRangeEtcdv2(conns[i], requests)
-			}
-
-		case "etcdv3":
-			clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, etcdv3ClientCfg{
-				totalConns:   cfg.Step2.Connections,
-				totalClients: cfg.Step2.Clients,
-				// compressionTypeTxt: cfg.EtcdCompression,
-			})
-			for i := range clients {
-				wg.Add(1)
-				go doRangeEtcdv3(clients[i].KV, requests)
-			}
-			defer func() {
-				for i := range clients {
-					clients[i].Close()
-				}
-			}()
-
-		case "zk", "zookeeper":
-			conns := mustCreateConnsZk(cfg.DatabaseEndpoints, cfg.Step2.Connections)
-			defer func() {
-				for i := range conns {
-					conns[i].Close()
-				}
-			}()
-			for i := range conns {
-				wg.Add(1)
-				go doRangeZk(conns[i], requests)
-			}
-
-		case "consul":
-			conns := mustCreateConnsConsul(cfg.DatabaseEndpoints, cfg.Step2.Connections)
-			for i := range conns {
-				wg.Add(1)
-				go doRangeConsul(conns[i], requests)
-			}
+		for i := range h {
+			wg.Add(1)
+			go func(rh ReqHandler) {
+				defer wg.Done()
+				doHandler(context.Background(), rh, requests)
+			}(h[i])
 		}
 
 		pdoneC := printReport(results, cfg)
-		go func() {
-			for i := 0; i < cfg.Step2.TotalRequests; i++ {
-				switch cfg.Database {
-				case "etcdv2":
-					// serializable read by default
-					requests <- request{etcdv2Op: etcdv2Op{key: key}}
-
-				case "etcdv3":
-					opts := []clientv3.OpOption{clientv3.WithRange("")}
-					if cfg.Step2.LocalRead {
-						opts = append(opts, clientv3.WithSerializable())
-					}
-					requests <- request{etcdv3Op: clientv3.OpGet(key, opts...)}
-
-				case "zk", "zookeeper":
-					// serializable read by default
-					requests <- request{zkOp: zkOp{key: key}}
-
-				case "consul":
-					// serializable read by default
-					requests <- request{consulOp: consulOp{key: key}}
-				}
-				if cfg.Step2.RequestIntervalMs > 0 {
-					time.Sleep(time.Duration(cfg.Step2.RequestIntervalMs) * time.Millisecond)
-				}
-			}
-			close(requests)
-		}()
-
+		go generateReads(cfg, key, requests)
 		wg.Wait()
 
 		bar.Finish()
@@ -527,4 +373,184 @@ func sendReq(ep string, req agent.Request, i int) error {
 
 	logger.Infof("got response [index: %d | endpoint: %q | response: %+v]", i, ep, resp)
 	return nil
+}
+
+func newReadHandlers(cfg Config) (rhs []ReqHandler, done func()) {
+	rhs = make([]ReqHandler, cfg.Step2.Clients)
+
+	switch cfg.Database {
+	case "etcdv2":
+		conns := mustCreateClientsEtcdv2(cfg.DatabaseEndpoints, cfg.Step2.Connections)
+		for i := range conns {
+			rhs[i] = newGetEtcd2(conns[i])
+		}
+	case "etcdv3":
+		clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, etcdv3ClientCfg{
+			totalConns:   cfg.Step2.Connections,
+			totalClients: cfg.Step2.Clients,
+			// compressionTypeTxt: cfg.EtcdCompression,
+		})
+		for i := range clients {
+			rhs[i] = newGetEtcd3(clients[i].KV)
+		}
+		done = func() {
+			for i := range clients {
+				clients[i].Close()
+			}
+		}
+	case "zk", "zookeeper":
+		conns := mustCreateConnsZk(cfg.DatabaseEndpoints, cfg.Step2.Connections)
+		for i := range conns {
+			rhs[i] = newGetZK(conns[i])
+		}
+		done = func() {
+			for i := range conns {
+				conns[i].Close()
+			}
+		}
+	case "consul":
+		conns := mustCreateConnsConsul(cfg.DatabaseEndpoints, cfg.Step2.Connections)
+		for i := range conns {
+			rhs[i] = newGetConsul(conns[i])
+		}
+	}
+	return
+}
+
+func newWriteHandlers(cfg Config) (rhs []ReqHandler, done func()) {
+	rhs = make([]ReqHandler, cfg.Step2.Clients)
+	switch cfg.Database {
+	case "etcdv2":
+		conns := mustCreateClientsEtcdv2(cfg.DatabaseEndpoints, cfg.Step2.Connections)
+		for i := range conns {
+			rhs[i] = newPutEtcd2(conns[i])
+		}
+	case "etcdv3":
+		etcdClients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, etcdv3ClientCfg{
+			totalConns:   cfg.Step2.Connections,
+			totalClients: cfg.Step2.Clients,
+			// compressionTypeTxt: cfg.EtcdCompression,
+		})
+		for i := range etcdClients {
+			rhs[i] = newPutEtcd3(etcdClients[i])
+		}
+		done = func() {
+			for i := range etcdClients {
+				etcdClients[i].Close()
+			}
+		}
+	case "zk", "zookeeper":
+		if cfg.Step2.SameKey {
+			key := sameKey(cfg.Step2.KeySize)
+			valueBts := randBytes(cfg.Step2.ValueSize)
+			logger.Infof("write started [request: PUT | key: %q | database: %q]", key, "zookeeper")
+			var err error
+			for i := 0; i < 7; i++ {
+				conns := mustCreateConnsZk(cfg.DatabaseEndpoints, cfg.Step2.Connections)
+				_, err = conns[0].Create("/"+key, valueBts, zkCreateFlags, zkCreateAcl)
+				if err != nil {
+					continue
+				}
+				for j := range conns {
+					conns[j].Close()
+				}
+				logger.Infof("write done [request: PUT | key: %q | database: %q]", key, "zookeeper")
+				break
+			}
+			if err != nil {
+				logger.Errorf("write error [request: PUT | key: %q | database: %q]", key, "zookeeper")
+				os.Exit(1)
+			}
+		}
+
+		conns := mustCreateConnsZk(cfg.DatabaseEndpoints, cfg.Step2.Connections)
+		for i := range conns {
+			if cfg.Step2.SameKey {
+				rhs[i] = newPutOverwriteZK(conns[i])
+			} else {
+				rhs[i] = newPutCreateZK(conns[i])
+			}
+		}
+		done = func() {
+			for i := range conns {
+				conns[i].Close()
+			}
+		}
+	case "consul":
+		conns := mustCreateConnsConsul(cfg.DatabaseEndpoints, cfg.Step2.Connections)
+		for i := range conns {
+			rhs[i] = newPutConsul(conns[i])
+		}
+	}
+	return
+}
+
+func generateReads(cfg Config, key string, requests chan request) {
+	defer close(requests)
+
+	for i := 0; i < cfg.Step2.TotalRequests; i++ {
+		switch cfg.Database {
+		case "etcdv2":
+			// serializable read by default
+			requests <- request{etcdv2Op: etcdv2Op{key: key}}
+
+		case "etcdv3":
+			opts := []clientv3.OpOption{clientv3.WithRange("")}
+			if cfg.Step2.LocalRead {
+				opts = append(opts, clientv3.WithSerializable())
+			}
+			requests <- request{etcdv3Op: clientv3.OpGet(key, opts...)}
+
+		case "zk", "zookeeper":
+			// serializable read by default
+			requests <- request{zkOp: zkOp{key: key}}
+
+		case "consul":
+			// serializable read by default
+			requests <- request{consulOp: consulOp{key: key}}
+		}
+		if cfg.Step2.RequestIntervalMs > 0 {
+			time.Sleep(time.Duration(cfg.Step2.RequestIntervalMs) * time.Millisecond)
+		}
+	}
+}
+
+
+func generateWrites(cfg Config, vals values, requests chan request) {
+	defer close(requests)
+
+	for i := 0; i < cfg.Step2.TotalRequests; i++ {
+		if cfg.Database == "etcdv3" && cfg.Step2.Etcdv3CompactionCycle > 0 && i%cfg.Step2.Etcdv3CompactionCycle == 0 {
+			logger.Infof("starting compaction [index: %d | database: %q]", i, "etcdv3")
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				ccfg := etcdv3ClientCfg{1, 1}
+				c := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, ccfg)
+				compactKV(c)
+			}()
+		}
+
+		k := sequentialKey(cfg.Step2.KeySize, i)
+		if cfg.Step2.SameKey {
+			k = sameKey(cfg.Step2.KeySize)
+		}
+
+		v := vals.bytes[i%vals.sampleSize]
+		vs := vals.strings[i%vals.sampleSize]
+
+		switch cfg.Database {
+		case "etcdv2":
+			requests <- request{etcdv2Op: etcdv2Op{key: k, value: vs}}
+		case "etcdv3":
+			requests <- request{etcdv3Op: clientv3.OpPut(k, vs)}
+		case "zk", "zookeeper":
+			requests <- request{zkOp: zkOp{key: "/" + k, value: v}}
+		case "consul":
+			requests <- request{consulOp: consulOp{key: k, value: v}}
+		}
+		if cfg.Step2.RequestIntervalMs > 0 {
+			time.Sleep(time.Duration(cfg.Step2.RequestIntervalMs) * time.Millisecond)
+		}
+	}
 }
