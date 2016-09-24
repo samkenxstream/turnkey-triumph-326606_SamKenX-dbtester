@@ -16,7 +16,7 @@ import:
 - package: github.com/cloudfoundry-incubator/candiedyaml
   version: 99c3df83b51532e3615f851d8c2dbb638f5313bf
 - package: github.com/coreos/etcd
-  version: e53b99588a05d1f4ef172c178d4ed8e8106b8be4
+  version: f5b9238a3c9f10e5bad42626896182451e34a1a9
   subpackages:
   - auth/authpb
   - client
@@ -87,7 +87,7 @@ import:
   subpackages:
   - process
 - package: github.com/hashicorp/consul
-  version: 36dc9201f2e006d4b5db1f0446b17357811297bf
+  version: 75256a158bf74e1daed19052aafbca6e697eaa8c
   subpackages:
   - api
 - package: github.com/hashicorp/go-cleanhttp
@@ -108,13 +108,13 @@ import:
 - package: github.com/olekukonko/tablewriter
   version: daf2955e742cf123959884fdff4685aa79b63135
 - package: github.com/samuel/go-zookeeper
-  version: e64db453f3512cade908163702045e0f31137843
+  version: 87e1bca4477a3cc767ca71be023ced183d74e538
   subpackages:
   - zk
 - package: github.com/spf13/cobra
-  version: 1f4717172e07e12150feb061b2ab847c3054f53f
+  version: 9c28e4bbd74e5c3ed7aacbc552b2cab7cfdfe744
 - package: github.com/spf13/pflag
-  version: 103ce5cd2042f2fe629c1957abb64ab3e7f50235
+  version: c7e63cf4530bcd3ba943729cee0efeff2ebea63f
 - package: github.com/ugorji/go
   version: 4a1cb5252a6951f715a85d0e4be334c2a2dbf2a2
   subpackages:
@@ -172,7 +172,7 @@ import:
   - internal/transport
   - storage
 - package: google.golang.org/grpc
-  version: 0032a855ba5c8a3c8e0d71c2deef354b70af1584
+  version: 231b4cfea0e79843053a33f5fe90bd4d84b23cd3
   subpackages:
   - codes
   - credentials
