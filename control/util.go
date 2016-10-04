@@ -186,19 +186,6 @@ func mustRandBytes(n int) []byte {
 	return rb
 }
 
-func doHandler(ctx context.Context, f ReqHandler, requests <-chan request) {
-	for req := range requests {
-		st := time.Now()
-		err := f(ctx, &req)
-		var errStr string
-		if err != nil {
-			errStr = err.Error()
-		}
-		results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
-		bar.Increment()
-	}
-}
-
 func getTotalKeysEtcdv2(endpoints []string) map[string]int64 {
 	rs := make(map[string]int64)
 	for _, ep := range endpoints {

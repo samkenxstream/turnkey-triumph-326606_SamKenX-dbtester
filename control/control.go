@@ -114,12 +114,6 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 
 func step1(cfg Config) error { return bcastReq(cfg, agent.Request_Start) }
 
-var (
-	bar     *pb.ProgressBar
-	results chan result
-	wg      sync.WaitGroup
-)
-
 type values struct {
 	bytes      [][]byte
 	strings    []string
@@ -152,6 +146,38 @@ func newValues(cfg Config) (v values, rerr error) {
 	return
 }
 
+func generateReport(cfg Config, h []ReqHandler, reqGen func(chan<- request)) {
+	var wg sync.WaitGroup
+	results := make(chan result)
+	requests := make(chan request, cfg.Step2.Clients)
+	bar := pb.New(cfg.Step2.TotalRequests)
+	pdoneC := printReport(results, cfg)
+	bar.Format("Bom !")
+	bar.Start()
+	for i := range h {
+		wg.Add(1)
+		go func(rh ReqHandler) {
+			defer wg.Done()
+			for req := range requests {
+				st := time.Now()
+				err := rh(context.Background(), &req)
+				var errStr string
+				if err != nil {
+					errStr = err.Error()
+				}
+				results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
+				bar.Increment()
+			}
+		}(h[i])
+	}
+	go reqGen(requests)
+	wg.Wait()
+	bar.Finish()
+
+	close(results)
+	<-pdoneC
+}
+
 func step2(cfg Config) error {
 	vals, err := newValues(cfg)
 	if err != nil {
@@ -159,32 +185,12 @@ func step2(cfg Config) error {
 	}
 	switch cfg.Step2.BenchType {
 	case "write":
-		results = make(chan result)
-		requests := make(chan request, cfg.Step2.Clients)
-		bar = pb.New(cfg.Step2.TotalRequests)
-
 		h, done := newWriteHandlers(cfg)
 		if done != nil {
 			defer done()
 		}
-
-		pdoneC := printReport(results, cfg)
-
-		bar.Format("Bom !")
-		bar.Start()
-		for i := range h {
-			wg.Add(1)
-			go func(rh ReqHandler) {
-				defer wg.Done()
-				doHandler(context.Background(), rh, requests)
-			}(h[i])
-		}
-		go generateWrites(cfg, vals, requests)
-		wg.Wait()
-		bar.Finish()
-
-		close(results)
-		<-pdoneC
+		reqGen := func(reqs chan<- request) { generateWrites(cfg, vals, reqs) }
+		generateReport(cfg, h, reqGen)
 
 		var totalKeysFunc func([]string) map[string]int64
 		switch cfg.Database {
@@ -282,34 +288,12 @@ func step2(cfg Config) error {
 			}
 		}
 
-		results = make(chan result)
-		requests := make(chan request, cfg.Step2.Clients)
-
 		h, done := newReadHandlers(cfg)
 		if done != nil {
 			defer done()
 		}
-
-		bar = pb.New(cfg.Step2.TotalRequests)
-		bar.Format("Bom !")
-		bar.Start()
-
-		for i := range h {
-			wg.Add(1)
-			go func(rh ReqHandler) {
-				defer wg.Done()
-				doHandler(context.Background(), rh, requests)
-			}(h[i])
-		}
-
-		pdoneC := printReport(results, cfg)
-		go generateReads(cfg, key, requests)
-		wg.Wait()
-
-		bar.Finish()
-
-		close(results)
-		<-pdoneC
+		reqGen := func(reqs chan<- request) { generateReads(cfg, key, reqs) }
+		generateReport(cfg, h, reqGen)
 	}
 
 	return nil
@@ -414,7 +398,7 @@ func newReadHandlers(cfg Config) (rhs []ReqHandler, done func()) {
 			rhs[i] = newGetConsul(conns[i])
 		}
 	}
-	return
+	return rhs, done
 }
 
 func newWriteHandlers(cfg Config) (rhs []ReqHandler, done func()) {
@@ -485,7 +469,7 @@ func newWriteHandlers(cfg Config) (rhs []ReqHandler, done func()) {
 	return
 }
 
-func generateReads(cfg Config, key string, requests chan request) {
+func generateReads(cfg Config, key string, requests chan<- request) {
 	defer close(requests)
 
 	for i := 0; i < cfg.Step2.TotalRequests; i++ {
@@ -515,10 +499,12 @@ func generateReads(cfg Config, key string, requests chan request) {
 	}
 }
 
-
-func generateWrites(cfg Config, vals values, requests chan request) {
-	defer close(requests)
-
+func generateWrites(cfg Config, vals values, requests chan<- request) {
+	var wg sync.WaitGroup
+	defer func() {
+		close(requests)
+		wg.Wait()
+	}()
 	for i := 0; i < cfg.Step2.TotalRequests; i++ {
 		if cfg.Database == "etcdv3" && cfg.Step2.Etcdv3CompactionCycle > 0 && i%cfg.Step2.Etcdv3CompactionCycle == 0 {
 			logger.Infof("starting compaction [index: %d | database: %q]", i, "etcdv3")
