@@ -62,6 +62,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		switch cfg.Step2.BenchType {
 		case "write":
 		case "read":
+		case "read-oneshot":
 		default:
 			return fmt.Errorf("%q is not supported", cfg.Step2.BenchType)
 		}
@@ -294,6 +295,37 @@ func step2(cfg Config) error {
 		}
 		reqGen := func(reqs chan<- request) { generateReads(cfg, key, reqs) }
 		generateReport(cfg, h, reqGen)
+	case "read-oneshot":
+		key, value := sameKey(cfg.Step2.KeySize), vals.strings[0]
+		logger.Infof("writing key for read-oneshot [key: %q | database: %q]", key, cfg.Database)
+		var err error
+		switch cfg.Database {
+		case "etcdv2":
+			clients := mustCreateClientsEtcdv2(cfg.DatabaseEndpoints, 1)
+			_, err = clients[0].Set(context.Background(), key, value, nil)
+		case "etcdv3":
+			clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, etcdv3ClientCfg{
+				totalConns:   1,
+				totalClients: 1,
+			})
+			_, err = clients[0].Do(context.Background(), clientv3.OpPut(key, value))
+			clients[0].Close()
+		case "zk", "zookeeper":
+			conns := mustCreateConnsZk(cfg.DatabaseEndpoints, 1)
+			_, err = conns[0].Create("/"+key, vals.bytes[0], zkCreateFlags, zkCreateAcl)
+			conns[0].Close()
+		case "consul":
+			clients := mustCreateConnsConsul(cfg.DatabaseEndpoints, 1)
+			_, err = clients[0].Put(&consulapi.KVPair{Key: key, Value: vals.bytes[0]}, nil)
+		}
+		if err != nil {
+			logger.Errorf("write error on read-oneshot (%v)", err)
+			os.Exit(1)
+		}
+
+		h := newReadOneshotHandlers(cfg)
+		reqGen := func(reqs chan<- request) { generateReads(cfg, key, reqs) }
+		generateReport(cfg, h, reqGen)
 	}
 
 	return nil
@@ -361,7 +393,6 @@ func sendReq(ep string, req agent.Request, i int) error {
 
 func newReadHandlers(cfg Config) (rhs []ReqHandler, done func()) {
 	rhs = make([]ReqHandler, cfg.Step2.Clients)
-
 	switch cfg.Database {
 	case "etcdv2":
 		conns := mustCreateClientsEtcdv2(cfg.DatabaseEndpoints, cfg.Step2.Connections)
@@ -467,6 +498,46 @@ func newWriteHandlers(cfg Config) (rhs []ReqHandler, done func()) {
 		}
 	}
 	return
+}
+
+func newReadOneshotHandlers(cfg Config) []ReqHandler {
+	rhs := make([]ReqHandler, cfg.Step2.Clients)
+	switch cfg.Database {
+	case "etcdv2":
+		for i := range rhs {
+			rhs[i] = func(ctx context.Context, req *request) error {
+				conns := mustCreateClientsEtcdv2(cfg.DatabaseEndpoints, 1)
+				return newGetEtcd2(conns[0])(ctx, req)
+			}
+		}
+	case "etcdv3":
+		for i := range rhs {
+			rhs[i] = func(ctx context.Context, req *request) error {
+				conns := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, etcdv3ClientCfg{
+					totalConns:   1,
+					totalClients: 1,
+				})
+				defer conns[0].Close()
+				return newGetEtcd3(conns[0])(ctx, req)
+			}
+		}
+	case "zk", "zookeeper":
+		for i := range rhs {
+			rhs[i] = func(ctx context.Context, req *request) error {
+				conns := mustCreateConnsZk(cfg.DatabaseEndpoints, cfg.Step2.Connections)
+				defer conns[0].Close()
+				return newGetZK(conns[0])(ctx, req)
+			}
+		}
+	case "consul":
+		for i := range rhs {
+			rhs[i] = func(ctx context.Context, req *request) error {
+				conns := mustCreateConnsConsul(cfg.DatabaseEndpoints, 1)
+				return newGetConsul(conns[0])(ctx, req)
+			}
+		}
+	}
+	return rhs
 }
 
 func generateReads(cfg Config, key string, requests chan<- request) {
