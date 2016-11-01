@@ -1,5 +1,5 @@
-hash: 08d405c0ee123a271c5f6e06676d450f48f89becaebea18514e87f4d49b0d937
-updated: 2016-10-31T21:02:43.335772536-07:00
+hash: 72c2ad340e762aeec0c60ea427d9addcd8b832c9d250fed389c2da0b3c8887ed
+updated: 2016-10-31T21:34:33.603355127-07:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -19,10 +19,12 @@ imports:
   version: b965b613227fddccbfffe13eae360ed3fa822f8d
   subpackages:
   - quantile
+- name: github.com/biogo/graphics
+  version: ee9e4a4ad8d5c6c55688ec8da3f96f8bd3f09b85
+  subpackages:
+  - bezier
 - name: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
-- name: github.com/cloudfoundry-incubator/candiedyaml
-  version: 99c3df83b51532e3615f851d8c2dbb638f5313bf
 - name: github.com/coreos/etcd
   version: 136c02da71430e60fc9e04a1e033b95e7c3376c8
   subpackages:
@@ -74,7 +76,7 @@ imports:
   subpackages:
   - asm
 - name: github.com/gonum/plot
-  version: c1e68bf98c6ed50599f84747f929f684d49807b9
+  version: 77d5bbeef5b4e55dcae10b22922e6e8a28d9cc57
   subpackages:
   - palette
   - plotter

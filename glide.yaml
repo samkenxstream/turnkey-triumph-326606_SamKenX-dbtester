@@ -1,21 +1,13 @@
 package: github.com/coreos/dbtester
 import:
-- package: bitbucket.org/zombiezen/gopdf
-  version: '''1c63dc69751bc45441c2ce1f56b631c55294b4d5'''
-  subpackages:
-  - pdf
 - package: cloud.google.com/go
   version: 242ed68074e53cbb6f78a90c28d9a48bfa2d1093
   subpackages:
   - compute/metadata
   - internal
   - storage
-- package: github.com/ajstarks/svgo
-  version: 672fe547df4e49efc6db67a74391368bcb149b37
 - package: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
-- package: github.com/cloudfoundry-incubator/candiedyaml
-  version: 99c3df83b51532e3615f851d8c2dbb638f5313bf
 - package: github.com/coreos/etcd
   version: 136c02da71430e60fc9e04a1e033b95e7c3376c8
   subpackages:
@@ -28,42 +20,25 @@ import:
   - pkg/pathutil
   - pkg/tlsutil
   - pkg/types
-- package: github.com/coreos/go-systemd
-  version: bfdc81d0d7e0fb19447b08571f63b774495251ce
-  subpackages:
-  - journal
 - package: github.com/coreos/pkg
   version: fa29b1d70f0beaddd4c7021607cc3c3be8ce94b8
   subpackages:
   - capnslog
 - package: github.com/dustin/go-humanize
   version: 8929fe90cee4b2cb9deb468b51fb34eba64d1bf0
-- package: github.com/ghodss/yaml
-  version: 73d445a93680fa1a78ae23a5839bad48f32ba1ee
 - package: github.com/gogo/protobuf
   version: e18d7aa8f8c624c915db340349aad4c49b10d173
   subpackages:
   - gogoproto
   - proto
   - protoc-gen-gogo/descriptor
-- package: github.com/golang/freetype
-  version: 38b4c392adc5eed94207994c4848fff99f4ac234
-  subpackages:
-  - raster
-  - truetype
 - package: github.com/golang/protobuf
   version: 8616e8ee5e20a1704615e6c8d7afcdac06087a67
   subpackages:
   - jsonpb
   - proto
-- package: github.com/gonum/floats
-  version: e7dfbda930c8a40d6d1ba9107762aae3e6e47591
-- package: github.com/gonum/internal
-  version: 495c8ab446bf60264be32be6973302faac6a5695
-  subpackages:
-  - asm
 - package: github.com/gonum/plot
-  version: c1e68bf98c6ed50599f84747f929f684d49807b9
+  version: 77d5bbeef5b4e55dcae10b22922e6e8a28d9cc57
   subpackages:
   - palette
   - plotter
@@ -75,12 +50,6 @@ import:
   - vg/vgimg
   - vg/vgpdf
   - vg/vgsvg
-- package: github.com/grpc-ecosystem/grpc-gateway
-  version: f52d055dc48aec25854ed7d31862f78913cf17d1
-  subpackages:
-  - runtime
-  - runtime/internal
-  - utilities
 - package: github.com/gyuho/dataframe
   version: 573cd728a011e5473510a6a1df0f39023c305e04
 - package: github.com/gyuho/psn
@@ -91,44 +60,12 @@ import:
   version: 75256a158bf74e1daed19052aafbca6e697eaa8c
   subpackages:
   - api
-- package: github.com/hashicorp/go-cleanhttp
-  version: ad28ea4487f05916463e2423a55166280e8254b5
-- package: github.com/hashicorp/serf
-  version: 9432bc08aa8d486e497e27f84878ebbe8c1eab66
-  subpackages:
-  - coordinate
-- package: github.com/inconshreveable/mousetrap
-  version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
-- package: github.com/llgcode/draw2d
-  version: 13548be874707c45a83f9c2c282d76d671c7acf8
-  subpackages:
-  - draw2dbase
-  - draw2dimg
-- package: github.com/mattn/go-runewidth
-  version: d6bea18f789704b5f83375793155289da36a3c7f
-- package: github.com/olekukonko/tablewriter
-  version: daf2955e742cf123959884fdff4685aa79b63135
 - package: github.com/samuel/go-zookeeper
   version: 87e1bca4477a3cc767ca71be023ced183d74e538
   subpackages:
   - zk
 - package: github.com/spf13/cobra
   version: 1c44ec8d3f1552cac48999f9306da23c4d8a288b
-- package: github.com/spf13/pflag
-  version: 08b1a584251b5b62f458943640fc8ebd4d50aaa5
-- package: github.com/ugorji/go
-  version: f1f1a805ed361a0e078bb537e4ea78cd37dcf065
-  subpackages:
-  - codec
-- package: golang.org/x/image
-  version: 9f8d0d45877da31f672995d10677ae6a586e31a5
-  subpackages:
-  - draw
-  - font
-  - math/f64
-  - math/fixed
-  - tiff
-  - tiff/lzw
 - package: golang.org/x/net
   version: 6acef71eb69611914f7a30939ea9f6e194c78172
   subpackages:
@@ -149,23 +86,7 @@ import:
 - package: google.golang.org/api
   version: 7b2847ee16541b59d2a5004bb75794ebdc2246c4
   subpackages:
-  - gensupport
-  - googleapi
-  - googleapi/internal/uritemplates
-  - internal
   - option
-  - storage/v1
-  - transport
-- package: google.golang.org/appengine
-  version: 4f7eeb5305a4ba1966344836ba4af9996b7b4e05
-  subpackages:
-  - internal
-  - internal/app_identity
-  - internal/base
-  - internal/datastore
-  - internal/log
-  - internal/modules
-  - internal/remote_api
 - package: google.golang.org/grpc
   version: v1.0.2
   subpackages:
