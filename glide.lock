@@ -1,5 +1,5 @@
-hash: 72c2ad340e762aeec0c60ea427d9addcd8b832c9d250fed389c2da0b3c8887ed
-updated: 2016-10-31T21:34:33.603355127-07:00
+hash: 828a59db8a647b0df3244acbb86dcdeba099b1cdf1aa6bd92a20a00169d4a600
+updated: 2016-10-31T21:37:32.429347809-07:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -103,7 +103,7 @@ imports:
   subpackages:
   - process
 - name: github.com/hashicorp/consul
-  version: 75256a158bf74e1daed19052aafbca6e697eaa8c
+  version: 6a135c52d64bf705419669715bf278b68a981c07
   subpackages:
   - api
 - name: github.com/hashicorp/go-cleanhttp

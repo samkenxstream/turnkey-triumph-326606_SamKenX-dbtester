@@ -57,7 +57,7 @@ import:
   subpackages:
   - process
 - package: github.com/hashicorp/consul
-  version: 75256a158bf74e1daed19052aafbca6e697eaa8c
+  version: 6a135c52d64bf705419669715bf278b68a981c07
   subpackages:
   - api
 - package: github.com/samuel/go-zookeeper
