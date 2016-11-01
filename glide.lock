@@ -1,5 +1,5 @@
-hash: 08d405c0ee123a271c5f6e06676d450f48f89becaebea18514e87f4d49b0d937
-updated: 2016-10-31T21:02:43.335772536-07:00
+hash: cda4bd784d2d5ebc3f103e6a1b44510be08aa538bb0b0844b28e912329cc7859
+updated: 2016-10-31T21:40:01.090940241-07:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -19,10 +19,12 @@ imports:
   version: b965b613227fddccbfffe13eae360ed3fa822f8d
   subpackages:
   - quantile
+- name: github.com/biogo/graphics
+  version: ee9e4a4ad8d5c6c55688ec8da3f96f8bd3f09b85
+  subpackages:
+  - bezier
 - name: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
-- name: github.com/cloudfoundry-incubator/candiedyaml
-  version: 99c3df83b51532e3615f851d8c2dbb638f5313bf
 - name: github.com/coreos/etcd
   version: 136c02da71430e60fc9e04a1e033b95e7c3376c8
   subpackages:
@@ -74,7 +76,7 @@ imports:
   subpackages:
   - asm
 - name: github.com/gonum/plot
-  version: c1e68bf98c6ed50599f84747f929f684d49807b9
+  version: 77d5bbeef5b4e55dcae10b22922e6e8a28d9cc57
   subpackages:
   - palette
   - plotter
@@ -101,7 +103,7 @@ imports:
   subpackages:
   - process
 - name: github.com/hashicorp/consul
-  version: 75256a158bf74e1daed19052aafbca6e697eaa8c
+  version: 6a135c52d64bf705419669715bf278b68a981c07
   subpackages:
   - api
 - name: github.com/hashicorp/go-cleanhttp
@@ -143,7 +145,7 @@ imports:
 - name: github.com/russross/blackfriday
   version: 300106c228d52c8941d4b3de6054a6062a86dda3
 - name: github.com/samuel/go-zookeeper
-  version: 87e1bca4477a3cc767ca71be023ced183d74e538
+  version: 1d7be4effb13d2d908342d349d71a284a7542693
   subpackages:
   - zk
 - name: github.com/shurcooL/sanitized_anchor_name
