@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net"
 	"net/http"
 	"os"
@@ -135,7 +134,7 @@ func mustCreateClientsEtcdv2(endpoints []string, total int) []clientv2.KeysAPI {
 		}
 		c, err := clientv2.New(cfg)
 		if err != nil {
-			log.Fatal(err)
+			plog.Fatal(err)
 		}
 		kapi := clientv2.NewKeysAPI(c)
 
@@ -151,7 +150,7 @@ func mustCreateConnsZk(endpoints []string, total int) []*zk.Conn {
 		dialTotal++
 		conn, _, err := zk.Connect([]string{endpoint}, time.Second)
 		if err != nil {
-			log.Fatal(err)
+			plog.Fatal(err)
 		}
 		zks[i] = conn
 	}
@@ -168,7 +167,7 @@ func mustCreateConnsConsul(endpoints []string, total int) []*consulapi.KV {
 		dcfg.Address = endpoint // x.x.x.x:8500
 		cli, err := consulapi.NewClient(dcfg)
 		if err != nil {
-			log.Fatal(err)
+			plog.Fatal(err)
 		}
 
 		css[i] = cli.KV()
@@ -202,7 +201,7 @@ func getTotalKeysEtcdv3(endpoints []string) map[string]int64 {
 		}
 		resp, err := http.Get(ep + "/metrics")
 		if err != nil {
-			log.Println(err)
+			plog.Println(err)
 			rs[ep] = 0
 		}
 		scanner := bufio.NewScanner(resp.Body)
@@ -233,7 +232,7 @@ func getTotalKeysZk(endpoints []string) map[string]int64 {
 	rs := make(map[string]int64)
 	stats, ok := zk.FLWSrvr(endpoints, 5*time.Second)
 	if !ok {
-		log.Printf("getTotalKeysZk failed with %+v", stats)
+		plog.Printf("getTotalKeysZk failed with %+v", stats)
 		for _, ep := range endpoints {
 			rs[ep] = 0
 		}

@@ -17,7 +17,6 @@ package analyze
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -52,7 +51,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 	}
 
 	println()
-	log.Println("Step 1: aggregating each database...")
+	plog.Println("Step 1: aggregating each database...")
 	for step1Idx, elem := range cfg.Step1 {
 		var (
 			frames               = []dataframe.Frame{}
@@ -60,7 +59,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 			maxCommonMaxUnixTime int64
 		)
 		for i, monitorPath := range elem.DataPathList {
-			log.Printf("Step 1-%d-%d: creating dataframe from %s", step1Idx, i, monitorPath)
+			plog.Printf("Step 1-%d-%d: creating dataframe from %s", step1Idx, i, monitorPath)
 
 			// fill in missing timestamps
 			tb, err := process.ReadCSVFillIn(monitorPath)
@@ -199,7 +198,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 			}
 		}
 
-		log.Printf("Step 1-%d-%d: creating dataframe from %s", step1Idx, len(elem.DataPathList), elem.DataBenchmarkPath)
+		plog.Printf("Step 1-%d-%d: creating dataframe from %s", step1Idx, len(elem.DataPathList), elem.DataBenchmarkPath)
 		colMonitorUnixTs, err := frMonitor.GetColumn("unix_ts")
 		if err != nil {
 			return err
@@ -265,7 +264,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 			}
 		}
 
-		log.Printf("Step 1-%d-%d: calculating average values", step1Idx, len(elem.DataPathList)+1)
+		plog.Printf("Step 1-%d-%d: calculating average values", step1Idx, len(elem.DataPathList)+1)
 		var (
 			sampleSize              = float64(len(elem.DataPathList))
 			cumulativeThroughputCol = dataframe.NewColumn("cumulative_throughput")
@@ -300,7 +299,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 			avgMemCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", memoryTotal/sampleSize)))
 		}
 
-		log.Printf("Step 1-%d-%d: combine %s and %q", step1Idx, len(elem.DataPathList)+2, elem.DataBenchmarkPath, elem.DataPathList)
+		plog.Printf("Step 1-%d-%d: combine %s and %q", step1Idx, len(elem.DataPathList)+2, elem.DataBenchmarkPath, elem.DataPathList)
 		unixTsCol, err := frBench.GetColumn("unix_ts")
 		if err != nil {
 			return err
@@ -334,7 +333,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		aggFr.AddColumn(avgCpuCol)
 		aggFr.AddColumn(avgMemCol)
 
-		log.Printf("Step 1-%d-%d: saving to %s", step1Idx, len(elem.DataPathList)+3, elem.OutputPath)
+		plog.Printf("Step 1-%d-%d: saving to %s", step1Idx, len(elem.DataPathList)+3, elem.OutputPath)
 		if err := aggFr.ToCSV(elem.OutputPath); err != nil {
 			return err
 		}
@@ -342,14 +341,14 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 	}
 
 	println()
-	log.Println("Step 2: aggregating aggregates...")
+	plog.Println("Step 2: aggregating aggregates...")
 	for step2Idx, elem := range cfg.Step2 {
 		var (
 			frames  = []dataframe.Frame{}
 			maxSize int
 		)
 		for i, data := range elem.DataList {
-			log.Printf("Step 2-%d-%d: creating dataframe from %s...", step2Idx, i, data.Path)
+			plog.Printf("Step 2-%d-%d: creating dataframe from %s...", step2Idx, i, data.Path)
 			fr, err := dataframe.NewFromCSV(nil, data.Path)
 			if err != nil {
 				return err
@@ -375,7 +374,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		colsToKeep := []string{"avg_latency_ms", "throughput", "cumulative_throughput", "avg_cpu", "avg_memory_mb"}
 		for i, fr := range frames {
 			dbID := elem.DataList[i].Name
-			log.Printf("Step 2-%d-%d: cleaning up %s...", step2Idx, i, dbID)
+			plog.Printf("Step 2-%d-%d: cleaning up %s...", step2Idx, i, dbID)
 			for _, col := range fr.GetColumns() {
 				toSkip := true
 				for _, cv := range colsToKeep {
@@ -395,14 +394,14 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 			}
 		}
 
-		log.Printf("Step 2-%d: saving to %s...", step2Idx, elem.OutputPath)
+		plog.Printf("Step 2-%d: saving to %s...", step2Idx, elem.OutputPath)
 		if err := nf.ToCSV(elem.OutputPath); err != nil {
 			return err
 		}
 	}
 
 	println()
-	log.Println("Step 3: plotting...")
+	plog.Println("Step 3: plotting...")
 
 	plot.DefaultFont = "Helvetica"
 	plotter.DefaultLineStyle.Width = vg.Points(1.5)
@@ -416,10 +415,10 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
-		log.Printf("Step 3-%d: %s with %q", step3Idx, elem.DataPath, fr.GetHeader())
+		plog.Printf("Step 3-%d: %s with %q", step3Idx, elem.DataPath, fr.GetHeader())
 
 		for i, pelem := range elem.PlotList {
-			log.Printf("Step 3-%d-%d: %s at %q", step3Idx, i, pelem.YAxis, pelem.OutputPathList)
+			plog.Printf("Step 3-%d-%d: %s at %q", step3Idx, i, pelem.YAxis, pelem.OutputPathList)
 			pl, err := plot.New()
 			if err != nil {
 				return err
@@ -454,7 +453,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 	}
 
 	println()
-	log.Println("Step 4: writing README...")
+	plog.Println("Step 4: writing README...")
 	rdBuf := new(bytes.Buffer)
 	rdBuf.WriteString("\n\n")
 	rdBuf.WriteString(cfg.Step4.Preface)
@@ -482,7 +481,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 	}
 
 	println()
-	log.Println("FINISHED!")
+	plog.Println("FINISHED!")
 	return nil
 }
 
