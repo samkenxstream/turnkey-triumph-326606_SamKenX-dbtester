@@ -1,5 +1,5 @@
-hash: 828a59db8a647b0df3244acbb86dcdeba099b1cdf1aa6bd92a20a00169d4a600
-updated: 2016-10-31T21:37:32.429347809-07:00
+hash: cda4bd784d2d5ebc3f103e6a1b44510be08aa538bb0b0844b28e912329cc7859
+updated: 2016-10-31T21:40:01.090940241-07:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -145,7 +145,7 @@ imports:
 - name: github.com/russross/blackfriday
   version: 300106c228d52c8941d4b3de6054a6062a86dda3
 - name: github.com/samuel/go-zookeeper
-  version: 87e1bca4477a3cc767ca71be023ced183d74e538
+  version: 1d7be4effb13d2d908342d349d71a284a7542693
   subpackages:
   - zk
 - name: github.com/shurcooL/sanitized_anchor_name

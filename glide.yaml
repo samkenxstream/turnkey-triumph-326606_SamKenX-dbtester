@@ -61,7 +61,7 @@ import:
   subpackages:
   - api
 - package: github.com/samuel/go-zookeeper
-  version: 87e1bca4477a3cc767ca71be023ced183d74e538
+  version: 1d7be4effb13d2d908342d349d71a284a7542693
   subpackages:
   - zk
 - package: github.com/spf13/cobra
