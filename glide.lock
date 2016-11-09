@@ -1,5 +1,5 @@
-hash: cda4bd784d2d5ebc3f103e6a1b44510be08aa538bb0b0844b28e912329cc7859
-updated: 2016-10-31T21:40:01.090940241-07:00
+hash: b4cda15a1fdf34ae8833ffcef8200fab6fd1300930a8f87aca11292bfe869fb6
+updated: 2016-11-08T19:59:54.043067507-08:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -26,7 +26,7 @@ imports:
 - name: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - name: github.com/coreos/etcd
-  version: 136c02da71430e60fc9e04a1e033b95e7c3376c8
+  version: dbb692e50fb0a1a844af64d9d17a09545a6077cd
   subpackages:
   - auth/authpb
   - client
@@ -103,7 +103,7 @@ imports:
   subpackages:
   - process
 - name: github.com/hashicorp/consul
-  version: 6a135c52d64bf705419669715bf278b68a981c07
+  version: 207c500712e5ed314cf76f0d2021524ded5510a7
   subpackages:
   - api
 - name: github.com/hashicorp/go-cleanhttp
@@ -126,7 +126,7 @@ imports:
   subpackages:
   - pbutil
 - name: github.com/olekukonko/tablewriter
-  version: daf2955e742cf123959884fdff4685aa79b63135
+  version: cca8bbc0798408af109aaaa239cbd2634846b340
 - name: github.com/prometheus/client_golang
   version: e51041b3fa41cece0dca035740ba6411905be473
   subpackages:
@@ -178,7 +178,7 @@ imports:
   - lex/httplex
   - trace
 - name: golang.org/x/oauth2
-  version: 3b966c7f301c0c71c53d94dc632a62df0a682cd7
+  version: d5040cddfc0da40b408c9a1da4728662435176a9
   subpackages:
   - google
   - internal

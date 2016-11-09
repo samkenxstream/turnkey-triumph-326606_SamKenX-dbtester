@@ -9,7 +9,7 @@ import:
 - package: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - package: github.com/coreos/etcd
-  version: 136c02da71430e60fc9e04a1e033b95e7c3376c8
+  version: dbb692e50fb0a1a844af64d9d17a09545a6077cd
   subpackages:
   - auth/authpb
   - client
@@ -57,7 +57,7 @@ import:
   subpackages:
   - process
 - package: github.com/hashicorp/consul
-  version: 6a135c52d64bf705419669715bf278b68a981c07
+  version: 207c500712e5ed314cf76f0d2021524ded5510a7
   subpackages:
   - api
 - package: github.com/samuel/go-zookeeper
@@ -77,7 +77,7 @@ import:
   - lex/httplex
   - trace
 - package: golang.org/x/oauth2
-  version: 3b966c7f301c0c71c53d94dc632a62df0a682cd7
+  version: d5040cddfc0da40b408c9a1da4728662435176a9
   subpackages:
   - google
   - internal
