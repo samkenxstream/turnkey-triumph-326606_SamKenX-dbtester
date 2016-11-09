@@ -20,7 +20,7 @@ const (
 )
 
 const (
-	CENTER = "+"
+	CENTRE = "+"
 	ROW    = "-"
 	COLUMN = "|"
 	SPACE  = " "
@@ -28,22 +28,15 @@ const (
 
 const (
 	ALIGN_DEFAULT = iota
-	ALIGN_CENTER
+	ALIGN_CENTRE
 	ALIGN_RIGHT
 	ALIGN_LEFT
 )
 
 var (
-	decimal = regexp.MustCompile(`^-*\d*\.?\d*$`)
-	percent = regexp.MustCompile(`^-*\d*\.?\d*$%$`)
+	decimal = regexp.MustCompile(`^\d*\.?\d*$`)
+	percent = regexp.MustCompile(`^\d*\.?\d*$%$`)
 )
-
-type Border struct {
-	Left   bool
-	Right  bool
-	Top    bool
-	Bottom bool
-}
 
 type Table struct {
 	out      io.Writer
@@ -61,12 +54,10 @@ type Table struct {
 	pColumn  string
 	tColumn  int
 	tRow     int
-	hAlign   int
-	fAlign   int
 	align    int
 	rowLine  bool
 	hdrLine  bool
-	borders  Border
+	border   bool
 	colSize  int
 }
 
@@ -84,30 +75,28 @@ func NewWriter(writer io.Writer) *Table {
 		autoFmt:  true,
 		autoWrap: true,
 		mW:       MAX_ROW_WIDTH,
-		pCenter:  CENTER,
+		pCenter:  CENTRE,
 		pRow:     ROW,
 		pColumn:  COLUMN,
 		tColumn:  -1,
 		tRow:     -1,
-		hAlign:   ALIGN_DEFAULT,
-		fAlign:   ALIGN_DEFAULT,
 		align:    ALIGN_DEFAULT,
 		rowLine:  false,
 		hdrLine:  true,
-		borders:  Border{Left: true, Right: true, Bottom: true, Top: true},
+		border:   true,
 		colSize:  -1}
 	return t
 }
 
 // Render table output
 func (t Table) Render() {
-	if t.borders.Top {
+	if t.border {
 		t.printLine(true)
 	}
 	t.printHeading()
 	t.printRows()
 
-	if !t.rowLine && t.borders.Bottom {
+	if !t.rowLine && t.border {
 		t.printLine(true)
 	}
 	t.printFooter()
@@ -162,16 +151,6 @@ func (t *Table) SetCenterSeparator(sep string) {
 	t.pCenter = sep
 }
 
-// Set Header Alignment
-func (t *Table) SetHeaderAlignment(hAlign int) {
-	t.hAlign = hAlign
-}
-
-// Set Footer Alignment
-func (t *Table) SetFooterAlignment(fAlign int) {
-	t.fAlign = fAlign
-}
-
 // Set Table Alignment
 func (t *Table) SetAlignment(align int) {
 	t.align = align
@@ -192,11 +171,7 @@ func (t *Table) SetRowLine(line bool) {
 // Set Table Border
 // This would enable / disable line around the table
 func (t *Table) SetBorder(border bool) {
-	t.SetBorders(Border{border, border, border, border})
-}
-
-func (t *Table) SetBorders(border Border) {
-	t.borders = border
+	t.border = border
 }
 
 // Append row to table
@@ -245,19 +220,6 @@ func (t Table) printLine(nl bool) {
 	}
 }
 
-// Return the PadRight function if align is left, PadLeft if align is right,
-// and Pad by default
-func pad(align int) func(string, string, int) string {
-	padFunc := Pad
-	switch align {
-	case ALIGN_LEFT:
-		padFunc = PadRight
-	case ALIGN_RIGHT:
-		padFunc = PadLeft
-	}
-	return padFunc
-}
-
 // Print heading information
 func (t Table) printHeading() {
 	// Check if headers is available
@@ -267,13 +229,10 @@ func (t Table) printHeading() {
 
 	// Check if border is set
 	// Replace with space if not set
-	fmt.Fprint(t.out, ConditionString(t.borders.Left, t.pColumn, SPACE))
+	fmt.Fprint(t.out, ConditionString(t.border, t.pColumn, SPACE))
 
 	// Identify last column
 	end := len(t.cs) - 1
-
-	// Get pad function
-	padFunc := pad(t.hAlign)
 
 	// Print Heading column
 	for i := 0; i <= end; i++ {
@@ -282,9 +241,9 @@ func (t Table) printHeading() {
 		if t.autoFmt {
 			h = Title(h)
 		}
-		pad := ConditionString((i == end && !t.borders.Left), SPACE, t.pColumn)
+		pad := ConditionString((i == end && !t.border), SPACE, t.pColumn)
 		fmt.Fprintf(t.out, " %s %s",
-			padFunc(h, SPACE, v),
+			Pad(h, SPACE, v),
 			pad)
 	}
 	// Next line
@@ -302,18 +261,15 @@ func (t Table) printFooter() {
 	}
 
 	// Only print line if border is not set
-	if !t.borders.Bottom {
+	if !t.border {
 		t.printLine(true)
 	}
 	// Check if border is set
 	// Replace with space if not set
-	fmt.Fprint(t.out, ConditionString(t.borders.Bottom, t.pColumn, SPACE))
+	fmt.Fprint(t.out, ConditionString(t.border, t.pColumn, SPACE))
 
 	// Identify last column
 	end := len(t.cs) - 1
-
-	// Get pad function
-	padFunc := pad(t.fAlign)
 
 	// Print Heading column
 	for i := 0; i <= end; i++ {
@@ -322,13 +278,13 @@ func (t Table) printFooter() {
 		if t.autoFmt {
 			f = Title(f)
 		}
-		pad := ConditionString((i == end && !t.borders.Top), SPACE, t.pColumn)
+		pad := ConditionString((i == end && !t.border), SPACE, t.pColumn)
 
 		if len(t.footers[i]) == 0 {
 			pad = SPACE
 		}
 		fmt.Fprintf(t.out, " %s %s",
-			padFunc(f, SPACE, v),
+			Pad(f, SPACE, v),
 			pad)
 	}
 	// Next line
@@ -348,7 +304,7 @@ func (t Table) printFooter() {
 		}
 
 		// Set center to be space if length is 0
-		if length == 0 && !t.borders.Right {
+		if length == 0 && !t.border {
 			center = SPACE
 		}
 
@@ -362,7 +318,7 @@ func (t Table) printFooter() {
 			pad = SPACE
 		}
 		// Ignore left space of it has printed before
-		if hasPrinted || t.borders.Left {
+		if hasPrinted || t.border {
 			pad = t.pRow
 			center = t.pCenter
 		}
@@ -427,7 +383,7 @@ func (t Table) printRow(columns [][]string, colKey int) {
 		for y := 0; y < total; y++ {
 
 			// Check if border is set
-			fmt.Fprint(t.out, ConditionString((!t.borders.Left && y == 0), SPACE, t.pColumn))
+			fmt.Fprint(t.out, ConditionString((!t.border && y == 0), SPACE, t.pColumn))
 
 			fmt.Fprintf(t.out, SPACE)
 			str := columns[y][x]
@@ -435,7 +391,7 @@ func (t Table) printRow(columns [][]string, colKey int) {
 			// This would print alignment
 			// Default alignment  would use multiple configuration
 			switch t.align {
-			case ALIGN_CENTER: //
+			case ALIGN_CENTRE: //
 				fmt.Fprintf(t.out, "%s", Pad(str, SPACE, t.cs[y]))
 			case ALIGN_RIGHT:
 				fmt.Fprintf(t.out, "%s", PadLeft(str, SPACE, t.cs[y]))
@@ -460,7 +416,7 @@ func (t Table) printRow(columns [][]string, colKey int) {
 		}
 		// Check if border is set
 		// Replace with space if not set
-		fmt.Fprint(t.out, ConditionString(t.borders.Left, t.pColumn, SPACE))
+		fmt.Fprint(t.out, ConditionString(t.border, t.pColumn, SPACE))
 		fmt.Fprintln(t.out)
 	}
 
