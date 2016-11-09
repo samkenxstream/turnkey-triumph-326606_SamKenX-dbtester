@@ -15,6 +15,8 @@
 package control
 
 import (
+	"errors"
+
 	clientv2 "github.com/coreos/etcd/client"
 	"github.com/coreos/etcd/clientv3"
 	consulapi "github.com/hashicorp/consul/api"
@@ -80,14 +82,27 @@ func newGetEtcd3(conn clientv3.KV) ReqHandler {
 
 func newGetZK(conn *zk.Conn) ReqHandler {
 	return func(ctx context.Context, req *request) error {
+		errt := ""
+		if !req.zkOp.staleRead {
+			_, err := conn.Sync(req.zkOp.key)
+			if err != nil {
+				errt += err.Error()
+			}
+		}
 		_, _, err := conn.Get(req.zkOp.key)
-		return err
+		if err != nil {
+			errt += ";" + err.Error()
+		}
+		if errt != "" {
+			return errors.New(errt)
+		}
+		return nil
 	}
 }
 
 func newGetConsul(conn *consulapi.KV) ReqHandler {
 	return func(ctx context.Context, req *request) error {
-		_, _, err := conn.Get(req.consulOp.key, &consulapi.QueryOptions{AllowStale: true})
+		_, _, err := conn.Get(req.consulOp.key, &consulapi.QueryOptions{AllowStale: req.consulOp.staleRead})
 		return err
 	}
 }

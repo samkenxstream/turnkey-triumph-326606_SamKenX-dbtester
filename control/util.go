@@ -58,13 +58,15 @@ type etcdv2Op struct {
 }
 
 type zkOp struct {
-	key   string
-	value []byte
+	key       string
+	value     []byte
+	staleRead bool
 }
 
 type consulOp struct {
-	key   string
-	value []byte
+	key       string
+	value     []byte
+	staleRead bool
 }
 
 var (
