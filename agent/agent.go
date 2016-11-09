@@ -267,7 +267,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			processPID = t.pid
 			go func() {
 				if err := cmd.Wait(); err != nil {
-					plog.Error("cmd.Wait %q returned error %v", cmdString, err)
+					plog.Errorf("cmd.Wait %q returned error %v", cmdString, err)
 					return
 				}
 				plog.Infof("exiting %q", cmdString)
