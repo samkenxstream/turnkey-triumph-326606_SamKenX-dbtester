@@ -119,10 +119,9 @@ func (r *report) print() {
 		r.printSecondSample()
 	}
 
+	fmt.Println("ERROR COUNT:", len(r.errorDist))
 	if len(r.errorDist) > 0 {
 		r.printErrors()
-	} else {
-		plog.Println("no error in benchmarks")
 	}
 }
 
