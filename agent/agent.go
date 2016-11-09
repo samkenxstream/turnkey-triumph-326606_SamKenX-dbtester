@@ -325,6 +325,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			t.logfile = f
 
 			// TODO: change for different releases
+			// https://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html
 			flagString := `-cp zookeeper-3.4.9.jar:lib/slf4j-api-1.6.1.jar:lib/slf4j-log4j12-1.6.1.jar:lib/log4j-1.2.16.jar:conf org.apache.zookeeper.server.quorum.QuorumPeerMain`
 			args := []string{shell, "-c", javaBinaryPath + " " + flagString + " " + configFilePath}
 
