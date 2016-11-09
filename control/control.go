@@ -557,12 +557,18 @@ func generateReads(cfg Config, key string, requests chan<- request) {
 			requests <- request{etcdv3Op: clientv3.OpGet(key, opts...)}
 
 		case "zk", "zookeeper":
-			// serializable read by default
-			requests <- request{zkOp: zkOp{key: key}}
+			op := zkOp{key: key}
+			if cfg.Step2.LocalRead {
+				op.staleRead = true
+			}
+			requests <- request{zkOp: op}
 
 		case "consul":
-			// serializable read by default
-			requests <- request{consulOp: consulOp{key: key}}
+			op := consulOp{key: key}
+			if cfg.Step2.LocalRead {
+				op.staleRead = true
+			}
+			requests <- request{consulOp: op}
 		}
 		if cfg.Step2.RequestIntervalMs > 0 {
 			time.Sleep(time.Duration(cfg.Step2.RequestIntervalMs) * time.Millisecond)

@@ -324,8 +324,9 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			}
 			t.logfile = f
 
-			// this changes for different releases
-			flagString := `-cp zookeeper-3.4.8.jar:lib/slf4j-api-1.6.1.jar:lib/slf4j-log4j12-1.6.1.jar:lib/log4j-1.2.16.jar:conf org.apache.zookeeper.server.quorum.QuorumPeerMain`
+			// TODO: change for different releases
+			// https://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html
+			flagString := `-cp zookeeper-3.4.9.jar:lib/slf4j-api-1.6.1.jar:lib/slf4j-log4j12-1.6.1.jar:lib/log4j-1.2.16.jar:conf org.apache.zookeeper.server.quorum.QuorumPeerMain`
 			args := []string{shell, "-c", javaBinaryPath + " " + flagString + " " + configFilePath}
 
 			cmd := exec.Command(args[0], args[1:]...)
@@ -566,7 +567,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					plog.Infof("uploading agent logs [%q -> %q]", srcAgentLogPath, dstAgentLogPath)
 					for k := 0; k < 30; k++ {
 						if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcAgentLogPath, dstAgentLogPath); uerr != nil {
-							plog.Error("u.UploadFile error... sleep and retry... (%v)", uerr)
+							plog.Errorf("u.UploadFile error... sleep and retry... (%v)", uerr)
 							time.Sleep(2 * time.Second)
 							continue
 						} else {
