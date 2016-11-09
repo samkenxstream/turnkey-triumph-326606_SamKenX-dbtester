@@ -97,9 +97,11 @@ func (r *report) finalize() {
 		r.stddev += dev * dev
 	}
 	r.stddev = math.Sqrt(r.stddev / float64(len(r.lats)))
+	plog.Printf("finalize has finished")
 }
 
 func (r *report) print() {
+	plog.Println("printing", len(r.lats), "results")
 	sort.Float64s(r.lats)
 
 	if len(r.lats) > 0 {
@@ -119,6 +121,8 @@ func (r *report) print() {
 
 	if len(r.errorDist) > 0 {
 		r.printErrors()
+	} else {
+		plog.Println("no error in benchmarks")
 	}
 }
 
@@ -151,7 +155,9 @@ func (r *report) printLatencies() {
 func (r *report) printSecondSample() {
 	cfg := r.cfg
 	{
+		plog.Println("getTimeSeries starts for", len(r.sps.tm), "points")
 		txt := r.sps.getTimeSeries().String()
+		plog.Println("getTimeSeries finished for", len(r.sps.tm), "points")
 		fmt.Println(txt)
 
 		if err := toFile(txt, cfg.Step2.ResultPath); err != nil {
