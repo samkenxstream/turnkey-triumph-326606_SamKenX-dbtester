@@ -77,7 +77,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 				return err
 			}
 			nf := dataframe.New()
-			c1, err := fr.GetColumn("unix_ts")
+			c1, err := fr.GetColumn("unix-ts")
 			if err != nil {
 				return err
 			}
@@ -137,13 +137,13 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 			}
 		}
 
-		// make all columns have equal row number, based on the column unix_ts
+		// make all columns have equal row number, based on the column unix-ts
 		// truncate all rows before maxCommonMinUnixTime and after maxCommonMinUnixTime
 		minTS := fmt.Sprintf("%d", maxCommonMinUnixTime)
 		maxTS := fmt.Sprintf("%d", maxCommonMaxUnixTime)
 		frMonitor := dataframe.New()
 		for i := range frames {
-			uc, err := frames[i].GetColumn("unix_ts")
+			uc, err := frames[i].GetColumn("unix-ts")
 			if err != nil {
 				return err
 			}
@@ -157,7 +157,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 			}
 
 			for _, hd := range frames[i].GetHeader() {
-				if i > 0 && hd == "unix_ts" {
+				if i > 0 && hd == "unix-ts" {
 					continue
 				}
 				var col dataframe.Column
@@ -168,7 +168,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 				if err = col.KeepRows(j, k+1); err != nil {
 					return err
 				}
-				if hd != "unix_ts" {
+				if hd != "unix-ts" {
 					switch hd {
 					case "CpuUsageFloat64":
 						hd = "cpu"
@@ -199,7 +199,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		}
 
 		plog.Printf("Step 1-%d-%d: creating dataframe from %s", step1Idx, len(elem.DataPathList), elem.DataBenchmarkPath)
-		colMonitorUnixTs, err := frMonitor.GetColumn("unix_ts")
+		colMonitorUnixTs, err := frMonitor.GetColumn("unix-ts")
 		if err != nil {
 			return err
 		}
@@ -208,7 +208,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
-		colBenchUnixTs, err := frBench.GetColumn("unix_ts")
+		colBenchUnixTs, err := frBench.GetColumn("unix-ts")
 		if err != nil {
 			return err
 		}
@@ -248,7 +248,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		}
 
 		for _, hd := range frMonitor.GetHeader() {
-			if hd == "unix_ts" {
+			if hd == "unix-ts" {
 				continue
 			}
 			var col dataframe.Column
@@ -267,10 +267,10 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		plog.Printf("Step 1-%d-%d: calculating average values", step1Idx, len(elem.DataPathList)+1)
 		var (
 			sampleSize              = float64(len(elem.DataPathList))
-			cumulativeThroughputCol = dataframe.NewColumn("cumulative_throughput")
+			cumulativeThroughputCol = dataframe.NewColumn("cumulative-throughput")
 			totalThrougput          int
-			avgCpuCol               = dataframe.NewColumn("avg_cpu")
-			avgMemCol               = dataframe.NewColumn("avg_memory_mb")
+			avgCPUCol               = dataframe.NewColumn("avg-cpu")
+			avgMemCol               = dataframe.NewColumn("avg-memory-mb")
 		)
 		for i := 0; i < benchLastIdx; i++ {
 			var (
@@ -295,12 +295,12 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 					cumulativeThroughputCol.PushBack(dataframe.NewStringValue(totalThrougput))
 				}
 			}
-			avgCpuCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", cpuTotal/sampleSize)))
+			avgCPUCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", cpuTotal/sampleSize)))
 			avgMemCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", memoryTotal/sampleSize)))
 		}
 
 		plog.Printf("Step 1-%d-%d: combine %s and %q", step1Idx, len(elem.DataPathList)+2, elem.DataBenchmarkPath, elem.DataPathList)
-		unixTsCol, err := frBench.GetColumn("unix_ts")
+		unixTsCol, err := frBench.GetColumn("unix-ts")
 		if err != nil {
 			return err
 		}
@@ -330,7 +330,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 				aggFr.AddColumn(col)
 			}
 		}
-		aggFr.AddColumn(avgCpuCol)
+		aggFr.AddColumn(avgCPUCol)
 		aggFr.AddColumn(avgMemCol)
 
 		plog.Printf("Step 1-%d-%d: saving to %s", step1Idx, len(elem.DataPathList)+3, elem.OutputPath)
@@ -355,7 +355,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 			}
 			frames = append(frames, fr)
 
-			col, err := fr.GetColumn("unix_ts")
+			col, err := fr.GetColumn("unix-ts")
 			if err != nil {
 				return err
 			}
@@ -371,7 +371,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 			secondCol.PushBack(dataframe.NewStringValue(i))
 		}
 		nf.AddColumn(secondCol)
-		colsToKeep := []string{"avg_latency_ms", "throughput", "cumulative_throughput", "avg_cpu", "avg_memory_mb"}
+		colsToKeep := []string{"avg_latency_ms", "throughput", "cumulative-throughput", "avg-cpu", "avg-memory-mb"}
 		for i, fr := range frames {
 			dbID := elem.DataList[i].Name
 			plog.Printf("Step 2-%d-%d: cleaning up %s...", step2Idx, i, dbID)
