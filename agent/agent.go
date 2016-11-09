@@ -566,7 +566,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					plog.Infof("uploading agent logs [%q -> %q]", srcAgentLogPath, dstAgentLogPath)
 					for k := 0; k < 30; k++ {
 						if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcAgentLogPath, dstAgentLogPath); uerr != nil {
-							plog.Error("u.UploadFile error... sleep and retry... (%v)", uerr)
+							plog.Errorf("u.UploadFile error... sleep and retry... (%v)", uerr)
 							time.Sleep(2 * time.Second)
 							continue
 						} else {
