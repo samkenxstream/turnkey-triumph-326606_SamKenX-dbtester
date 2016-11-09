@@ -17,6 +17,8 @@ package control
 import (
 	"errors"
 
+	"fmt"
+
 	clientv2 "github.com/coreos/etcd/client"
 	"github.com/coreos/etcd/clientv3"
 	consulapi "github.com/hashicorp/consul/api"
@@ -84,14 +86,17 @@ func newGetZK(conn *zk.Conn) ReqHandler {
 	return func(ctx context.Context, req *request) error {
 		errt := ""
 		if !req.zkOp.staleRead {
-			_, err := conn.Sync(req.zkOp.key)
+			_, err := conn.Sync("/" + req.zkOp.key)
 			if err != nil {
 				errt += err.Error()
 			}
 		}
-		_, _, err := conn.Get(req.zkOp.key)
+		_, _, err := conn.Get("/" + req.zkOp.key)
 		if err != nil {
-			errt += ";" + err.Error()
+			if errt != "" {
+				errt += "; "
+			}
+			errt += fmt.Sprintf("%q while getting %q", err.Error(), "/"+req.zkOp.key)
 		}
 		if errt != "" {
 			return errors.New(errt)
