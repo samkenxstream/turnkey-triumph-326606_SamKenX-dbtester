@@ -39,9 +39,6 @@ func TestReadConfig(t *testing.T) {
 	if c.DatabasePort != 2379 {
 		t.Fatalf("unexpected %d", c.DatabasePort)
 	}
-	if c.EtcdCompression != "snappy" {
-		t.Fatalf("unexpected %q", c.EtcdCompression)
-	}
 	if c.GoogleCloudProjectName != "etcd-development" {
 		t.Fatalf("unexpected %s", c.GoogleCloudProjectName)
 	}
@@ -84,14 +81,17 @@ func TestReadConfig(t *testing.T) {
 	if c.Step2.Connections != 100 {
 		t.Fatalf("unexpected %d", c.Step2.Connections)
 	}
-	if !c.Step2.LocalRead {
-		t.Fatalf("unexpected %v", c.Step2.LocalRead)
+	if !c.Step2.StaleRead {
+		t.Fatalf("unexpected %v", c.Step2.StaleRead)
 	}
 	if c.Step2.TotalRequests != 3000000 {
 		t.Fatalf("unexpected %d", c.Step2.TotalRequests)
 	}
 	if c.Step2.RequestIntervalMs != 100 {
 		t.Fatalf("unexpected %d", c.Step2.RequestIntervalMs)
+	}
+	if c.Step2.Etcdv3CompactionCycle != 100 {
+		t.Fatalf("unexpected %d", c.Step2.Etcdv3CompactionCycle)
 	}
 	if c.Step3.Skip {
 		t.Fatalf("unexpected %v", c.Step3.Skip)

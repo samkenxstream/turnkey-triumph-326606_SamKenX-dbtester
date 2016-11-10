@@ -9,7 +9,7 @@ import:
 - package: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - package: github.com/coreos/etcd
-  version: 9c7a0a68e5aa38ae3917d07234c831b05cbdf914
+  version: 952eb4fadeef3f840bd7557544338c985d4ed0ef
   subpackages:
   - auth/authpb
   - client
@@ -27,13 +27,13 @@ import:
 - package: github.com/dustin/go-humanize
   version: 8929fe90cee4b2cb9deb468b51fb34eba64d1bf0
 - package: github.com/gogo/protobuf
-  version: e18d7aa8f8c624c915db340349aad4c49b10d173
+  version: 8d70fb3182befc465c4a1eac8ad4d38ff49778e2
   subpackages:
   - gogoproto
   - proto
   - protoc-gen-gogo/descriptor
 - package: github.com/golang/protobuf
-  version: 8616e8ee5e20a1704615e6c8d7afcdac06087a67
+  version: 4bd1920723d7b7c925de087aa32e2187708897f7
   subpackages:
   - jsonpb
   - proto
@@ -57,7 +57,7 @@ import:
   subpackages:
   - process
 - package: github.com/hashicorp/consul
-  version: 207c500712e5ed314cf76f0d2021524ded5510a7
+  version: a819fd0e83bdd8286b27e5bc5955f05b66d8d393
   subpackages:
   - api
 - package: github.com/samuel/go-zookeeper
@@ -88,7 +88,7 @@ import:
   subpackages:
   - option
 - package: google.golang.org/grpc
-  version: v1.0.2
+  version: v1.0.4
   subpackages:
   - codes
   - credentials

@@ -39,12 +39,9 @@ type Config struct {
 	AgentEndpoints    []string
 	DatabaseEndpoints []string
 
-	// snappy
-	EtcdCompression string `yaml:"etcd_compression"`
-
+	// https://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html
 	Step1 struct {
-		Skip bool `yaml:"skip"`
-
+		Skip                    bool  `yaml:"skip"`
 		ZookeeperMaxClientCnxns int64 `yaml:"zookeeper_max_client_connections"`
 		ZookeeperSnapCount      int64 `yaml:"zookeeper_snap_count"`
 	} `yaml:"step1"`
@@ -52,7 +49,7 @@ type Config struct {
 	Step2 struct {
 		Skip                  bool   `yaml:"skip"`
 		BenchType             string `yaml:"bench_type"`
-		LocalRead             bool   `yaml:"local_read"`
+		StaleRead             bool   `yaml:"stale_read"`
 		ResultPath            string `yaml:"result_path"`
 		Connections           int    `yaml:"connections"`
 		Clients               int    `yaml:"clients"`
@@ -71,6 +68,12 @@ type Config struct {
 	}
 }
 
+var (
+	defaultZookeeperMaxClientCnxns int64 = 5000
+	defaultZookeeperSnapCount      int64 = 100000
+)
+
+// ReadConfig reads control configuration file.
 func ReadConfig(fpath string) (Config, error) {
 	bts, err := ioutil.ReadFile(fpath)
 	if err != nil {
@@ -80,10 +83,19 @@ func ReadConfig(fpath string) (Config, error) {
 	if err := yaml.Unmarshal(bts, &rs); err != nil {
 		return Config{}, err
 	}
+
+	if rs.Step1.ZookeeperMaxClientCnxns == 0 {
+		rs.Step1.ZookeeperMaxClientCnxns = defaultZookeeperMaxClientCnxns
+	}
+	if rs.Step1.ZookeeperSnapCount == 0 {
+		rs.Step1.ZookeeperSnapCount = defaultZookeeperSnapCount
+	}
+
 	return rs, nil
 }
 
-func (cfg *Config) Request() agent.Request {
+// ToRequest converts control configuration to agent RPC.
+func (cfg *Config) ToRequest() agent.Request {
 	req := agent.Request{}
 
 	req.TestName = cfg.TestName
@@ -111,7 +123,6 @@ func (cfg *Config) Request() agent.Request {
 
 	req.ZookeeperMaxClientCnxns = cfg.Step1.ZookeeperMaxClientCnxns
 	req.ZookeeperSnapCount = cfg.Step1.ZookeeperSnapCount
-	// req.EtcdCompression = cfg.EtcdCompression
 
 	return req
 }

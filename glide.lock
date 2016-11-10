@@ -1,5 +1,5 @@
-hash: d40819f2b47eab3681449f31c70d3e77595eda72a16a440bf743e3e25ba105c7
-updated: 2016-11-09T10:34:16.838795999-08:00
+hash: 6e7cf6be42004723f8765f457467562b012cefdac251b2ecd8d9ee1a61b607a2
+updated: 2016-11-10T13:47:33.046392291-08:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -26,7 +26,7 @@ imports:
 - name: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - name: github.com/coreos/etcd
-  version: 9c7a0a68e5aa38ae3917d07234c831b05cbdf914
+  version: 952eb4fadeef3f840bd7557544338c985d4ed0ef
   subpackages:
   - auth/authpb
   - client
@@ -54,7 +54,7 @@ imports:
 - name: github.com/ghodss/yaml
   version: 73d445a93680fa1a78ae23a5839bad48f32ba1ee
 - name: github.com/gogo/protobuf
-  version: e18d7aa8f8c624c915db340349aad4c49b10d173
+  version: 8d70fb3182befc465c4a1eac8ad4d38ff49778e2
   subpackages:
   - gogoproto
   - proto
@@ -65,7 +65,7 @@ imports:
   - raster
   - truetype
 - name: github.com/golang/protobuf
-  version: 8616e8ee5e20a1704615e6c8d7afcdac06087a67
+  version: 4bd1920723d7b7c925de087aa32e2187708897f7
   subpackages:
   - jsonpb
   - proto
@@ -91,7 +91,7 @@ imports:
 - name: github.com/grpc-ecosystem/go-grpc-prometheus
   version: 6b7015e65d366bf3f19b2b2a000a831940f0f7e0
 - name: github.com/grpc-ecosystem/grpc-gateway
-  version: f52d055dc48aec25854ed7d31862f78913cf17d1
+  version: 84398b94e188ee336f307779b57b3aa91af7063c
   subpackages:
   - runtime
   - runtime/internal
@@ -103,7 +103,7 @@ imports:
   subpackages:
   - process
 - name: github.com/hashicorp/consul
-  version: 207c500712e5ed314cf76f0d2021524ded5510a7
+  version: a819fd0e83bdd8286b27e5bc5955f05b66d8d393
   subpackages:
   - api
 - name: github.com/hashicorp/go-cleanhttp
@@ -209,7 +209,7 @@ imports:
   - socket
   - urlfetch
 - name: google.golang.org/grpc
-  version: b1a2821ca5a4fd6b6e48ddfbb7d6d7584d839d21
+  version: 777daa17ff9b5daef1cfdf915088a2ada3332bf0
   subpackages:
   - codes
   - credentials
