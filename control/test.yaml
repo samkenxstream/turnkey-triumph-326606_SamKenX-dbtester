@@ -14,8 +14,6 @@ peer_ips:
 agent_port: 3500
 database_port: 2379
 
-etcd_compression: snappy
-
 # start database by sending RPC calls to agents
 step1:
     skip: false
@@ -26,7 +24,7 @@ step1:
 step2:
     skip: false
     bench_type: write
-    local_read: true
+    stale_read: true
     result_path: timeseries.csv
     connections: 100
     clients: 100
@@ -36,7 +34,7 @@ step2:
     value_testdata_path: /home/gyuho/testdata  # overwrites value_size
     total_requests: 3000000
     request_interval_ms: 100
-    etcdv3_compaction_cycle: 0
+    etcdv3_compaction_cycle: 100
 
 # after benchmark
 step3:

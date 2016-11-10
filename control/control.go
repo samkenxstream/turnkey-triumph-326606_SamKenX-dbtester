@@ -237,7 +237,6 @@ func step2(cfg Config) error {
 				clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, etcdv3ClientCfg{
 					totalConns:   1,
 					totalClients: 1,
-					// compressionTypeTxt: cfg.EtcdCompression,
 				})
 				_, err = clients[0].Do(context.Background(), clientv3.OpPut(key, value))
 				if err != nil {
@@ -303,6 +302,7 @@ func step2(cfg Config) error {
 		case "etcdv2":
 			clients := mustCreateClientsEtcdv2(cfg.DatabaseEndpoints, 1)
 			_, err = clients[0].Set(context.Background(), key, value, nil)
+
 		case "etcdv3":
 			clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, etcdv3ClientCfg{
 				totalConns:   1,
@@ -310,10 +310,12 @@ func step2(cfg Config) error {
 			})
 			_, err = clients[0].Do(context.Background(), clientv3.OpPut(key, value))
 			clients[0].Close()
+
 		case "zk", "zookeeper":
 			conns := mustCreateConnsZk(cfg.DatabaseEndpoints, 1)
 			_, err = conns[0].Create("/"+key, vals.bytes[0], zkCreateFlags, zkCreateAcl)
 			conns[0].Close()
+
 		case "consul":
 			clients := mustCreateConnsConsul(cfg.DatabaseEndpoints, 1)
 			_, err = clients[0].Put(&consulapi.KVPair{Key: key, Value: vals.bytes[0]}, nil)
@@ -334,7 +336,7 @@ func step2(cfg Config) error {
 func step3(cfg Config) error { return bcastReq(cfg, agent.Request_Stop) }
 
 func bcastReq(cfg Config, op agent.Request_Operation) error {
-	req := cfg.Request()
+	req := cfg.ToRequest()
 	req.Operation = op
 
 	donec, errc := make(chan struct{}), make(chan error)
@@ -403,7 +405,6 @@ func newReadHandlers(cfg Config) (rhs []ReqHandler, done func()) {
 		clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, etcdv3ClientCfg{
 			totalConns:   cfg.Step2.Connections,
 			totalClients: cfg.Step2.Clients,
-			// compressionTypeTxt: cfg.EtcdCompression,
 		})
 		for i := range clients {
 			rhs[i] = newGetEtcd3(clients[i].KV)
@@ -444,7 +445,6 @@ func newWriteHandlers(cfg Config) (rhs []ReqHandler, done func()) {
 		etcdClients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, etcdv3ClientCfg{
 			totalConns:   cfg.Step2.Connections,
 			totalClients: cfg.Step2.Clients,
-			// compressionTypeTxt: cfg.EtcdCompression,
 		})
 		for i := range etcdClients {
 			rhs[i] = newPutEtcd3(etcdClients[i])
@@ -551,21 +551,21 @@ func generateReads(cfg Config, key string, requests chan<- request) {
 
 		case "etcdv3":
 			opts := []clientv3.OpOption{clientv3.WithRange("")}
-			if cfg.Step2.LocalRead {
+			if cfg.Step2.StaleRead {
 				opts = append(opts, clientv3.WithSerializable())
 			}
 			requests <- request{etcdv3Op: clientv3.OpGet(key, opts...)}
 
 		case "zk", "zookeeper":
 			op := zkOp{key: key}
-			if cfg.Step2.LocalRead {
+			if cfg.Step2.StaleRead {
 				op.staleRead = true
 			}
 			requests <- request{zkOp: op}
 
 		case "consul":
 			op := consulOp{key: key}
-			if cfg.Step2.LocalRead {
+			if cfg.Step2.StaleRead {
 				op.staleRead = true
 			}
 			requests <- request{consulOp: op}
