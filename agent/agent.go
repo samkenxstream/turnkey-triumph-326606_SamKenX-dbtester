@@ -35,29 +35,29 @@ import (
 	"google.golang.org/grpc"
 )
 
-type (
-	Flags struct {
-		GRPCPort         string
-		WorkingDirectory string
-	}
+type Flags struct {
+	GRPCPort         string
+	WorkingDirectory string
+}
 
-	// ZookeeperConfig is zookeeper configuration.
-	// http://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html
-	ZookeeperConfig struct {
-		TickTime       int
-		DataDir        string
-		ClientPort     string
-		InitLimit      int
-		SyncLimit      int
-		MaxClientCnxns int64
-		SnapCount      int64
-		Peers          []ZookeeperPeer
-	}
-	ZookeeperPeer struct {
-		MyID int
-		IP   string
-	}
-)
+// ZookeeperConfig is zookeeper configuration.
+// http://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html
+type ZookeeperConfig struct {
+	TickTime       int
+	DataDir        string
+	ClientPort     string
+	InitLimit      int
+	SyncLimit      int
+	MaxClientCnxns int64
+	SnapCount      int64
+	Peers          []ZookeeperPeer
+}
+
+// ZookeeperPeer defines Zookeeper peer configuration.
+type ZookeeperPeer struct {
+	MyID int
+	IP   string
+}
 
 var (
 	shell = os.Getenv("SHELL")
@@ -99,7 +99,9 @@ snapCount={{.SnapCount}}
 			{MyID: 3, IP: ""},
 		},
 	}
+)
 
+var (
 	Command = &cobra.Command{
 		Use:   "agent",
 		Short: "Database agent in remote servers.",
@@ -204,9 +206,8 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 	case Request_Start:
 		switch t.req.Database {
 		case Request_etcdv2, Request_etcdv3:
-			_, err := os.Stat(etcdBinaryPath)
-			if err != nil {
-				return nil, err
+			if !exist(etcdBinaryPath) {
+				return nil, fmt.Errorf("%q does not exist", etcdBinaryPath)
 			}
 			if err := os.RemoveAll(etcdDataDir); err != nil {
 				return nil, err
@@ -243,13 +244,6 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				"--initial-cluster", clusterStr,
 				"--initial-cluster-state", "new",
 			}
-			// if t.req.EtcdCompression != "" {
-			// 	if compress.ParseType(t.req.EtcdCompression) != compress.NoCompress {
-			// 		flags = append(flags,
-			// 			"--experimental-compression", t.req.EtcdCompression,
-			// 		)
-			// 	}
-			// }
 			flagString := strings.Join(flags, " ")
 
 			cmd := exec.Command(etcdBinaryPath, flags...)
@@ -274,9 +268,8 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			}()
 
 		case Request_ZooKeeper:
-			_, err := os.Stat(javaBinaryPath)
-			if err != nil {
-				return nil, err
+			if !exist(javaBinaryPath) {
+				return nil, fmt.Errorf("%q does not exist", javaBinaryPath)
 			}
 
 			plog.Infof("os.Chdir %q", zkWorkingDir)
@@ -351,9 +344,8 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			}()
 
 		case Request_Consul:
-			_, err := os.Stat(consulBinaryPath)
-			if err != nil {
-				return nil, err
+			if !exist(consulBinaryPath) {
+				return nil, fmt.Errorf("%q does not exist", consulBinaryPath)
 			}
 			if err := os.RemoveAll(consulDataDir); err != nil {
 				return nil, err
