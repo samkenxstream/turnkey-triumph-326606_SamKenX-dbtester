@@ -56,7 +56,6 @@ type Config struct {
 		KeySize               int    `yaml:"key_size"`
 		SameKey               bool   `yaml:"same_key"`
 		ValueSize             int    `yaml:"value_size"`
-		ValueTestDataPath     string `yaml:"value_testdata_path"`
 		TotalRequests         int    `yaml:"total_requests"`
 		RequestIntervalMs     int    `yaml:"request_interval_ms"`
 		Etcdv3CompactionCycle int    `yaml:"etcdv3_compaction_cycle"`
