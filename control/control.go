@@ -122,28 +122,9 @@ type values struct {
 }
 
 func newValues(cfg Config) (v values, rerr error) {
-	if cfg.Step2.ValueTestDataPath == "" {
-		v.bytes = [][]byte{randBytes(cfg.Step2.ValueSize)}
-		v.strings = []string{string(v.bytes[0])}
-		v.sampleSize = 1
-		return
-	}
-
-	fs, err := walkDir(cfg.Step2.ValueTestDataPath)
-	if err != nil {
-		rerr = err
-		return
-	}
-	for _, elem := range fs {
-		bts, err := ioutil.ReadFile(elem.path)
-		if err != nil {
-			rerr = err
-			return
-		}
-		v.bytes = append(v.bytes, bts)
-		v.strings = append(v.strings, string(bts))
-	}
-	v.sampleSize = len(v.strings)
+	v.bytes = [][]byte{randBytes(cfg.Step2.ValueSize)}
+	v.strings = []string{string(v.bytes[0])}
+	v.sampleSize = 1
 	return
 }
 

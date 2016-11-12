@@ -119,10 +119,8 @@ func (r *report) print() {
 		r.printSecondSample()
 	}
 
-	fmt.Println("ERROR COUNT:", len(r.errorDist))
-	if len(r.errorDist) > 0 {
-		r.printErrors()
-	}
+	fmt.Println("ERROR COUNT:", r.errorDist)
+	plog.Println("ERROR COUNT:", r.errorDist)
 }
 
 // Prints percentile latencies.
