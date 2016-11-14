@@ -1,5 +1,5 @@
-hash: b1f90d1eb77f138a69cedeb0b6dda626db148473095afe5d3528ceaf388cd380
-updated: 2016-11-11T16:31:30.806036979-08:00
+hash: b8e8cdff4f2cf012905e4951935d4ec38844355fe1872f7e038c0979737fa03e
+updated: 2016-11-14T15:06:17.89225563-08:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -26,7 +26,7 @@ imports:
 - name: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - name: github.com/coreos/etcd
-  version: 45bba11f1229b1fa5931bae8dff09ad1166275c3
+  version: d073512def18784d68ddfdf20ab4d0aa68f17a3c
   subpackages:
   - auth/authpb
   - client
