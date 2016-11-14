@@ -87,9 +87,6 @@ func TestReadConfig(t *testing.T) {
 	if c.Step2.RequestIntervalMs != 100 {
 		t.Fatalf("unexpected %d", c.Step2.RequestIntervalMs)
 	}
-	if c.Step2.Etcdv3CompactionCycle != 100 {
-		t.Fatalf("unexpected %d", c.Step2.Etcdv3CompactionCycle)
-	}
 	if c.Step3.Skip {
 		t.Fatalf("unexpected %v", c.Step3.Skip)
 	}

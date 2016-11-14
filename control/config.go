@@ -47,18 +47,17 @@ type Config struct {
 	} `yaml:"step1"`
 
 	Step2 struct {
-		Skip                  bool   `yaml:"skip"`
-		BenchType             string `yaml:"bench_type"`
-		StaleRead             bool   `yaml:"stale_read"`
-		ResultPath            string `yaml:"result_path"`
-		Connections           int    `yaml:"connections"`
-		Clients               int    `yaml:"clients"`
-		KeySize               int    `yaml:"key_size"`
-		SameKey               bool   `yaml:"same_key"`
-		ValueSize             int    `yaml:"value_size"`
-		TotalRequests         int    `yaml:"total_requests"`
-		RequestIntervalMs     int    `yaml:"request_interval_ms"`
-		Etcdv3CompactionCycle int    `yaml:"etcdv3_compaction_cycle"`
+		Skip              bool   `yaml:"skip"`
+		BenchType         string `yaml:"bench_type"`
+		StaleRead         bool   `yaml:"stale_read"`
+		ResultPath        string `yaml:"result_path"`
+		Connections       int    `yaml:"connections"`
+		Clients           int    `yaml:"clients"`
+		KeySize           int    `yaml:"key_size"`
+		SameKey           bool   `yaml:"same_key"`
+		ValueSize         int    `yaml:"value_size"`
+		TotalRequests     int    `yaml:"total_requests"`
+		RequestIntervalMs int    `yaml:"request_interval_ms"`
 	} `yaml:"step2"`
 
 	Step3 struct {

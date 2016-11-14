@@ -564,17 +564,6 @@ func generateWrites(cfg Config, vals values, requests chan<- request) {
 		wg.Wait()
 	}()
 	for i := 0; i < cfg.Step2.TotalRequests; i++ {
-		if cfg.Database == "etcdv3" && cfg.Step2.Etcdv3CompactionCycle > 0 && i%cfg.Step2.Etcdv3CompactionCycle == 0 {
-			plog.Infof("starting compaction [index: %d | database: %q]", i, "etcdv3")
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
-				ccfg := etcdv3ClientCfg{1, 1}
-				c := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, ccfg)
-				compactKV(c)
-			}()
-		}
-
 		k := sequentialKey(cfg.Step2.KeySize, i)
 		if cfg.Step2.SameKey {
 			k = sameKey(cfg.Step2.KeySize)
