@@ -14,18 +14,20 @@ peer_ips:
 agent_port: 3500
 database_port: 2379
 
+result_path_time_series: timeseries.csv
+result_path_log: result.log
+
 # start database by sending RPC calls to agents
 step1:
-    skip: false
+    skip_start_database: false
     zookeeper_max_client_connections: 5000
     zookeeper_snap_count: 100000
 
 # start benchmark
 step2:
-    skip: false
+    skip_stress_database: false
     bench_type: write
     stale_read: true
-    result_path: timeseries.csv
     connections: 100
     clients: 100
     key_size: 8
@@ -36,5 +38,4 @@ step2:
 
 # after benchmark
 step3:
-    skip: false
-    result_path: result.log
+    skip_stop_database: false

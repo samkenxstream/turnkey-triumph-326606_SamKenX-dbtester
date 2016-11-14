@@ -58,7 +58,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 	default:
 		return fmt.Errorf("%q is not supported", cfg.Database)
 	}
-	if !cfg.Step2.Skip {
+	if !cfg.Step2.SkipStressDatabase {
 		switch cfg.Step2.BenchType {
 		case "write":
 		case "read":
@@ -85,14 +85,14 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 	}
 
 	println()
-	if !cfg.Step1.Skip {
+	if !cfg.Step1.SkipStartDatabase {
 		plog.Info("step 1: starting databases...")
 		if err = step1(cfg); err != nil {
 			return err
 		}
 	}
 
-	if !cfg.Step2.Skip {
+	if !cfg.Step2.SkipStressDatabase {
 		println()
 		time.Sleep(5 * time.Second)
 		plog.Info("step 2: starting tests...")
@@ -101,7 +101,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	if !cfg.Step3.Skip {
+	if !cfg.Step3.SkipStopDatabase {
 		println()
 		time.Sleep(5 * time.Second)
 		plog.Info("step 3: stopping databases...")
