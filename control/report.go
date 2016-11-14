@@ -157,7 +157,7 @@ func (r *report) printSecondSample() {
 		plog.Println("getTimeSeries finished for", len(r.sps.tm), "points")
 		fmt.Println(txt)
 
-		if err := toFile(txt, cfg.Step2.ResultPath); err != nil {
+		if err := toFile(txt, cfg.ResultPathTimeSeries); err != nil {
 			plog.Fatal(err)
 		}
 
@@ -167,8 +167,8 @@ func (r *report) printSecondSample() {
 			plog.Fatal(err)
 		}
 
-		srcCSVResultPath := cfg.Step2.ResultPath
-		dstCSVResultPath := filepath.Base(cfg.Step2.ResultPath)
+		srcCSVResultPath := cfg.ResultPathTimeSeries
+		dstCSVResultPath := filepath.Base(cfg.ResultPathTimeSeries)
 		if !strings.HasPrefix(dstCSVResultPath, cfg.TestName) {
 			dstCSVResultPath = fmt.Sprintf("%s-%s", cfg.TestName, dstCSVResultPath)
 		}
@@ -192,8 +192,8 @@ func (r *report) printSecondSample() {
 			plog.Fatal(err)
 		}
 
-		srcCSVResultPath := cfg.Step3.ResultPath
-		dstCSVResultPath := filepath.Base(cfg.Step3.ResultPath)
+		srcCSVResultPath := cfg.ResultPathLog
+		dstCSVResultPath := filepath.Base(cfg.ResultPathLog)
 		if !strings.HasPrefix(dstCSVResultPath, cfg.TestName) {
 			dstCSVResultPath = fmt.Sprintf("%s-%s", cfg.TestName, dstCSVResultPath)
 		}

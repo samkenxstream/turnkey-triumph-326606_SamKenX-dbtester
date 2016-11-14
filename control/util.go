@@ -29,8 +29,6 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/net/context"
-
 	mrand "math/rand"
 
 	clientv2 "github.com/coreos/etcd/client"
@@ -248,30 +246,6 @@ func getTotalKeysConsul(endpoints []string) map[string]int64 {
 		rs[ep] = 0 // not supported in consul
 	}
 	return rs
-}
-
-func compactKV(clients []*clientv3.Client) {
-	var curRev int64
-	for _, c := range clients {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		resp, err := c.KV.Get(ctx, "foo")
-		cancel()
-		if err != nil {
-			panic(err)
-		}
-		curRev = resp.Header.Revision
-		break
-	}
-	revToCompact := max(0, curRev-1000)
-	for _, c := range clients {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		_, err := c.KV.Compact(ctx, revToCompact)
-		cancel()
-		if err != nil {
-			panic(err)
-		}
-		break
-	}
 }
 
 func max(n1, n2 int64) int64 {

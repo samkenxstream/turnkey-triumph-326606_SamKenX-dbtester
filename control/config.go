@@ -39,31 +39,31 @@ type Config struct {
 	AgentEndpoints    []string
 	DatabaseEndpoints []string
 
+	ResultPathTimeSeries string `yaml:"result_path_time_series"`
+	ResultPathLog        string `yaml:"result_path_log"`
+
 	// https://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html
 	Step1 struct {
-		Skip                    bool  `yaml:"skip"`
+		SkipStartDatabase       bool  `yaml:"skip_start_database"`
 		ZookeeperMaxClientCnxns int64 `yaml:"zookeeper_max_client_connections"`
 		ZookeeperSnapCount      int64 `yaml:"zookeeper_snap_count"`
 	} `yaml:"step1"`
 
 	Step2 struct {
-		Skip                  bool   `yaml:"skip"`
-		BenchType             string `yaml:"bench_type"`
-		StaleRead             bool   `yaml:"stale_read"`
-		ResultPath            string `yaml:"result_path"`
-		Connections           int    `yaml:"connections"`
-		Clients               int    `yaml:"clients"`
-		KeySize               int    `yaml:"key_size"`
-		SameKey               bool   `yaml:"same_key"`
-		ValueSize             int    `yaml:"value_size"`
-		TotalRequests         int    `yaml:"total_requests"`
-		RequestIntervalMs     int    `yaml:"request_interval_ms"`
-		Etcdv3CompactionCycle int    `yaml:"etcdv3_compaction_cycle"`
+		SkipStressDatabase bool   `yaml:"skip_stress_database"`
+		BenchType          string `yaml:"bench_type"`
+		StaleRead          bool   `yaml:"stale_read"`
+		Connections        int    `yaml:"connections"`
+		Clients            int    `yaml:"clients"`
+		KeySize            int    `yaml:"key_size"`
+		SameKey            bool   `yaml:"same_key"`
+		ValueSize          int    `yaml:"value_size"`
+		TotalRequests      int    `yaml:"total_requests"`
+		RequestIntervalMs  int    `yaml:"request_interval_ms"`
 	} `yaml:"step2"`
 
 	Step3 struct {
-		Skip       bool   `yaml:"skip"`
-		ResultPath string `yaml:"result_path"`
+		SkipStopDatabase bool `yaml:"skip_stop_database"`
 	}
 }
 

@@ -58,7 +58,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 	default:
 		return fmt.Errorf("%q is not supported", cfg.Database)
 	}
-	if !cfg.Step2.Skip {
+	if !cfg.Step2.SkipStressDatabase {
 		switch cfg.Step2.BenchType {
 		case "write":
 		case "read":
@@ -85,14 +85,14 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 	}
 
 	println()
-	if !cfg.Step1.Skip {
+	if !cfg.Step1.SkipStartDatabase {
 		plog.Info("step 1: starting databases...")
 		if err = step1(cfg); err != nil {
 			return err
 		}
 	}
 
-	if !cfg.Step2.Skip {
+	if !cfg.Step2.SkipStressDatabase {
 		println()
 		time.Sleep(5 * time.Second)
 		plog.Info("step 2: starting tests...")
@@ -101,7 +101,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	if !cfg.Step3.Skip {
+	if !cfg.Step3.SkipStopDatabase {
 		println()
 		time.Sleep(5 * time.Second)
 		plog.Info("step 3: stopping databases...")
@@ -564,17 +564,6 @@ func generateWrites(cfg Config, vals values, requests chan<- request) {
 		wg.Wait()
 	}()
 	for i := 0; i < cfg.Step2.TotalRequests; i++ {
-		if cfg.Database == "etcdv3" && cfg.Step2.Etcdv3CompactionCycle > 0 && i%cfg.Step2.Etcdv3CompactionCycle == 0 {
-			plog.Infof("starting compaction [index: %d | database: %q]", i, "etcdv3")
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
-				ccfg := etcdv3ClientCfg{1, 1}
-				c := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, ccfg)
-				compactKV(c)
-			}()
-		}
-
 		k := sequentialKey(cfg.Step2.KeySize, i)
 		if cfg.Step2.SameKey {
 			k = sameKey(cfg.Step2.KeySize)

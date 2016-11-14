@@ -51,8 +51,15 @@ func TestReadConfig(t *testing.T) {
 	if c.GoogleCloudStorageSubDirectory != "2016041501" {
 		t.Fatalf("unexpected %s", c.GoogleCloudStorageSubDirectory)
 	}
-	if c.Step1.Skip {
-		t.Fatalf("unexpected %v", c.Step1.Skip)
+	if c.ResultPathTimeSeries != "timeseries.csv" {
+		t.Fatalf("unexpected %s", c.ResultPathTimeSeries)
+	}
+	if c.ResultPathLog != "result.log" {
+		t.Fatalf("unexpected %v", c.ResultPathLog)
+	}
+
+	if c.Step1.SkipStartDatabase {
+		t.Fatalf("unexpected %v", c.Step1.SkipStartDatabase)
 	}
 	if c.Step1.ZookeeperMaxClientCnxns != 5000 {
 		t.Fatalf("unexpected %d", c.Step1.ZookeeperMaxClientCnxns)
@@ -60,14 +67,12 @@ func TestReadConfig(t *testing.T) {
 	if c.Step1.ZookeeperSnapCount != 100000 {
 		t.Fatalf("unexpected %d", c.Step1.ZookeeperSnapCount)
 	}
-	if c.Step2.Skip {
-		t.Fatalf("unexpected %v", c.Step2.Skip)
+
+	if c.Step2.SkipStressDatabase {
+		t.Fatalf("unexpected %v", c.Step2.SkipStressDatabase)
 	}
 	if c.Step2.BenchType != "write" {
 		t.Fatalf("unexpected %s", c.Step2.BenchType)
-	}
-	if c.Step2.ResultPath != "timeseries.csv" {
-		t.Fatalf("unexpected %s", c.Step2.ResultPath)
 	}
 	if c.Step2.KeySize != 8 {
 		t.Fatalf("unexpected %d", c.Step2.KeySize)
@@ -87,13 +92,8 @@ func TestReadConfig(t *testing.T) {
 	if c.Step2.RequestIntervalMs != 100 {
 		t.Fatalf("unexpected %d", c.Step2.RequestIntervalMs)
 	}
-	if c.Step2.Etcdv3CompactionCycle != 100 {
-		t.Fatalf("unexpected %d", c.Step2.Etcdv3CompactionCycle)
-	}
-	if c.Step3.Skip {
-		t.Fatalf("unexpected %v", c.Step3.Skip)
-	}
-	if c.Step3.ResultPath != "result.log" {
-		t.Fatalf("unexpected %v", c.Step3.ResultPath)
+
+	if c.Step3.SkipStopDatabase {
+		t.Fatalf("unexpected %v", c.Step3.SkipStopDatabase)
 	}
 }
