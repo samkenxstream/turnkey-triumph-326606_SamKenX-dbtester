@@ -4,7 +4,7 @@ test_name: etcd-v3.1-go1.7.3
 google_cloud_project_name: etcd-development
 google_cloud_storage_key_path: /home/gyuho/gcloud-key.json
 google_cloud_storage_bucket_name: dbtester-results
-google_cloud_storage_sub_directory: 2016Q4-etcd-zk-consul/read-oneshot-2M-keys-linearizable-oneshot
+google_cloud_storage_sub_directory: 2016Q401-etcd-zk-consul/read-oneshot-2M-keys-linearizable-oneshot
 
 peer_ips:
     - 10.240.0.36
@@ -19,7 +19,7 @@ result_path_log: result.log
 
 # start database by sending RPC calls to agents
 step1:
-    skip_start_database: true
+    skip_start_database: false
     zookeeper_max_client_connections: 5000
     zookeeper_snap_count: 100000
 
@@ -38,4 +38,4 @@ step2:
 
 # after benchmark
 step3:
-    action: only-upload-log
+    action: stop
