@@ -38,4 +38,5 @@ step2:
 
 # after benchmark
 step3:
-    skip_stop_database: false
+    action: stop # OR 'only-upload-log'
+

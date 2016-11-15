@@ -63,7 +63,7 @@ type Config struct {
 	} `yaml:"step2"`
 
 	Step3 struct {
-		SkipStopDatabase bool `yaml:"skip_stop_database"`
+		Action string `yaml:"action"`
 	}
 }
 

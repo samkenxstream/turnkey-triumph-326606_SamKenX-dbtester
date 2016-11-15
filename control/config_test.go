@@ -93,7 +93,7 @@ func TestReadConfig(t *testing.T) {
 		t.Fatalf("unexpected %d", c.Step2.RequestIntervalMs)
 	}
 
-	if c.Step3.SkipStopDatabase {
-		t.Fatalf("unexpected %v", c.Step3.SkipStopDatabase)
+	if c.Step3.Action != "stop" {
+		t.Fatalf("unexpected %v", c.Step3.Action)
 	}
 }

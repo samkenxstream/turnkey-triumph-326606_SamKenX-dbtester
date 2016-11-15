@@ -158,7 +158,7 @@ type transporterServer struct { // satisfy TransporterServer
 	pid     int
 }
 
-var databaseStopped = make(chan struct{})
+var uploadCh = make(chan struct{}, 1)
 
 func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response, error) {
 	peerIPs := strings.Split(r.PeerIPString, "___")
@@ -458,7 +458,16 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		}
 		plog.Infof("stopped binary %q [PID: %d]", t.req.Database.String(), t.pid)
 		processPID = t.pid
-		databaseStopped <- struct{}{}
+
+		uploadCh <- struct{}{}
+
+	case Request_UploadLog:
+		time.Sleep(3 * time.Second) // wait a few more seconds to collect more monitoring data
+		plog.Infof("just uploading logs without stoppping %q [PID: %d]", t.req.Database.String(), t.pid)
+		if t.logfile != nil {
+			t.logfile.Sync()
+		}
+		uploadCh <- struct{}{}
 
 	default:
 		return nil, fmt.Errorf("Not implemented %v", r.Operation)
@@ -503,7 +512,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					plog.Infof("signal received %q", sig.String())
 					return
 
-				case <-databaseStopped:
+				case <-uploadCh:
 					plog.Infof("stopped monitoring, uploading to storage %q", t.req.GoogleCloudProjectName)
 					u, err := remotestorage.NewGoogleCloudStorage([]byte(t.req.GoogleCloudStorageKey), t.req.GoogleCloudProjectName)
 					if err != nil {
