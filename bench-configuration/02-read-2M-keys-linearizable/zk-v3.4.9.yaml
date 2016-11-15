@@ -19,7 +19,7 @@ result_path_log: result.log
 
 # start database by sending RPC calls to agents
 step1:
-    skip_start_database: true
+    skip_start_database: false
     zookeeper_max_client_connections: 5000
     zookeeper_snap_count: 100000
 
@@ -38,4 +38,4 @@ step2:
 
 # after benchmark
 step3:
-    action: only-upload-log
+    action: stop
