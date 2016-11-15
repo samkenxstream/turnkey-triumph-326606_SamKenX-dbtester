@@ -38,4 +38,4 @@ step2:
 
 # after benchmark
 step3:
-    action: stop # OR 'only-upload-log'
+    action: only-upload-log

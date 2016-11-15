@@ -38,4 +38,4 @@ step2:
 
 # after benchmark
 step3:
-    action: only-upload-log
+    action: stop
