@@ -1,7 +1,7 @@
 package: github.com/coreos/dbtester
 import:
 - package: cloud.google.com/go
-  version: 242ed68074e53cbb6f78a90c28d9a48bfa2d1093
+  version: 30b36efdf5c81a1d3f9fac38e1496c29e8adc420
   subpackages:
   - compute/metadata
   - internal
@@ -9,7 +9,7 @@ import:
 - package: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - package: github.com/coreos/etcd
-  version: 677606da7ddcf030fe48acc64db0c84231e52d7e
+  version: 7c8f13aed7fe251e7066ed6fc1a090699c2cae0e
   subpackages:
   - auth/authpb
   - client
@@ -38,7 +38,7 @@ import:
   - jsonpb
   - proto
 - package: github.com/gonum/plot
-  version: 77d5bbeef5b4e55dcae10b22922e6e8a28d9cc57
+  version: e1023e3931006c9a7e793133a75587c6bc296cfb
   subpackages:
   - palette
   - plotter
@@ -57,7 +57,7 @@ import:
   subpackages:
   - process
 - package: github.com/hashicorp/consul
-  version: a819fd0e83bdd8286b27e5bc5955f05b66d8d393
+  version: 8ef76ec85131c9fdde6f6da26431fb40b68881f4
   subpackages:
   - api
 - package: github.com/samuel/go-zookeeper
@@ -65,7 +65,7 @@ import:
   subpackages:
   - zk
 - package: github.com/spf13/cobra
-  version: 6e91dded25d73176bf7f60b40dd7aa1f0bf9be8d
+  version: 6b74a60562f5c1c920299b8f02d153e16f4897fc
 - package: golang.org/x/net
   version: 6acef71eb69611914f7a30939ea9f6e194c78172
   subpackages:
@@ -84,7 +84,7 @@ import:
   - jws
   - jwt
 - package: google.golang.org/api
-  version: 7b2847ee16541b59d2a5004bb75794ebdc2246c4
+  version: a53f28dc539c26b08a77fc5ae954e02917686ef4
   subpackages:
   - option
 - package: google.golang.org/grpc

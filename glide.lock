@@ -1,5 +1,5 @@
-hash: 7b18adc4c2ce08d4448c93d38a78783526c0a9acd2796c211acfdb311fac3e42
-updated: 2016-11-14T16:30:27.790240113-08:00
+hash: 45930312f618c29bc6404c2181ce3a7877607f61b74fe84ed15aae93d16938a3
+updated: 2016-11-15T13:35:09.20154356-08:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -8,10 +8,11 @@ imports:
   subpackages:
   - pdf
 - name: cloud.google.com/go
-  version: 242ed68074e53cbb6f78a90c28d9a48bfa2d1093
+  version: 30b36efdf5c81a1d3f9fac38e1496c29e8adc420
   subpackages:
   - compute/metadata
   - internal
+  - internal/optional
   - storage
 - name: github.com/ajstarks/svgo
   version: 672fe547df4e49efc6db67a74391368bcb149b37
@@ -26,7 +27,7 @@ imports:
 - name: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - name: github.com/coreos/etcd
-  version: 677606da7ddcf030fe48acc64db0c84231e52d7e
+  version: 7c8f13aed7fe251e7066ed6fc1a090699c2cae0e
   subpackages:
   - auth/authpb
   - client
@@ -72,7 +73,7 @@ imports:
   subpackages:
   - asm
 - name: github.com/gonum/plot
-  version: 77d5bbeef5b4e55dcae10b22922e6e8a28d9cc57
+  version: e1023e3931006c9a7e793133a75587c6bc296cfb
   subpackages:
   - palette
   - plotter
@@ -84,6 +85,8 @@ imports:
   - vg/vgimg
   - vg/vgpdf
   - vg/vgsvg
+- name: github.com/googleapis/gax-go
+  version: da06d194a00e19ce00d9011a13931c3f6f6887c7
 - name: github.com/grpc-ecosystem/go-grpc-prometheus
   version: 6b7015e65d366bf3f19b2b2a000a831940f0f7e0
 - name: github.com/grpc-ecosystem/grpc-gateway
@@ -99,7 +102,7 @@ imports:
   subpackages:
   - process
 - name: github.com/hashicorp/consul
-  version: a819fd0e83bdd8286b27e5bc5955f05b66d8d393
+  version: 8ef76ec85131c9fdde6f6da26431fb40b68881f4
   subpackages:
   - api
 - name: github.com/hashicorp/go-cleanhttp
@@ -143,7 +146,7 @@ imports:
   subpackages:
   - zk
 - name: github.com/spf13/cobra
-  version: 6e91dded25d73176bf7f60b40dd7aa1f0bf9be8d
+  version: 6b74a60562f5c1c920299b8f02d153e16f4897fc
 - name: github.com/spf13/pflag
   version: 5ccb023bc27df288a957c5e994cd44fd19619465
 - name: github.com/ugorji/go
@@ -177,12 +180,14 @@ imports:
   - jws
   - jwt
 - name: google.golang.org/api
-  version: 7b2847ee16541b59d2a5004bb75794ebdc2246c4
+  version: a53f28dc539c26b08a77fc5ae954e02917686ef4
   subpackages:
   - gensupport
   - googleapi
   - googleapi/internal/uritemplates
+  - googleapi/transport
   - internal
+  - iterator
   - option
   - storage/v1
   - transport
