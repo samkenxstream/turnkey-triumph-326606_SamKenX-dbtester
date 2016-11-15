@@ -178,7 +178,7 @@ func (r *report) printSecondSample() {
 		var uerr error
 		for k := 0; k < 15; k++ {
 			if uerr = u.UploadFile(cfg.GoogleCloudStorageBucketName, srcCSVResultPath, dstCSVResultPath); uerr != nil {
-				plog.Println(uerr)
+				plog.Println(k, "UploadFile error:", uerr)
 				time.Sleep(2 * time.Second)
 				continue
 			}

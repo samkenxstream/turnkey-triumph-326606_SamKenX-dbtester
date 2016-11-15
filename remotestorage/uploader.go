@@ -44,6 +44,7 @@ type GoogleCloudStorage struct {
 	Config  *jwt.Config
 }
 
+// NewGoogleCloudStorage creates a new uploader.
 func NewGoogleCloudStorage(key []byte, project string) (Uploader, error) {
 	conf, err := google.JWTConfigFromJSON(
 		key,
@@ -59,6 +60,7 @@ func NewGoogleCloudStorage(key []byte, project string) (Uploader, error) {
 	}, nil
 }
 
+// UploadFile uploads a file to Google Cloud Storage.
 func (g *GoogleCloudStorage) UploadFile(bucket, src, dst string, opts ...OpOption) error {
 	if g == nil {
 		return fmt.Errorf("GoogleCloudStorage is nil")
@@ -86,13 +88,7 @@ func (g *GoogleCloudStorage) UploadFile(bucket, src, dst string, opts ...OpOptio
 		wc.ContentType = ret.ContentType
 	}
 
-	fmt.Println("UploadFile:")
-	fmt.Println()
-	fmt.Println(src)
-	fmt.Println("--->")
-	fmt.Println(dst)
-	fmt.Println()
-
+	plog.Printf("uploading %q ---> %q", src, dst)
 	bts, err := ioutil.ReadFile(src)
 	if err != nil {
 		return fmt.Errorf("ioutil.ReadFile(%s) %v", src, err)
@@ -103,13 +99,12 @@ func (g *GoogleCloudStorage) UploadFile(bucket, src, dst string, opts ...OpOptio
 	if err := wc.Close(); err != nil {
 		return err
 	}
+	plog.Printf("finished uploading %q", src)
 
-	fmt.Println()
-	fmt.Println("UploadFile Done!")
-	fmt.Println()
 	return nil
 }
 
+// UploadDir uploads a directory to Google Cloud Storage.
 func (g *GoogleCloudStorage) UploadDir(bucket, src, dst string, opts ...OpOption) error {
 	if g == nil {
 		return fmt.Errorf("GoogleCloudStorage is nil")
@@ -137,17 +132,12 @@ func (g *GoogleCloudStorage) UploadDir(bucket, src, dst string, opts ...OpOption
 		return err
 	}
 
-	fmt.Println("UploadDir:")
 	donec, errc := make(chan struct{}), make(chan error)
 	for fpath := range fmap {
 		go func(fpath string) {
 			targetPath := filepath.Join(dst, strings.Replace(fpath, src, "", -1))
-			fmt.Println()
-			fmt.Println(fpath)
-			fmt.Println("--->")
-			fmt.Println(targetPath)
-			fmt.Println()
 
+			plog.Printf("uploading %q ---> %q", fpath, targetPath)
 			wc := client.Bucket(bucket).Object(targetPath).NewWriter(context.Background())
 			if ret.ContentType != "" {
 				wc.ContentType = ret.ContentType
@@ -165,6 +155,8 @@ func (g *GoogleCloudStorage) UploadDir(bucket, src, dst string, opts ...OpOption
 				errc <- err
 				return
 			}
+			plog.Printf("uploaded %q ---> %q", fpath, targetPath)
+
 			donec <- struct{}{}
 		}(fpath)
 	}
@@ -178,8 +170,7 @@ func (g *GoogleCloudStorage) UploadDir(bucket, src, dst string, opts ...OpOption
 		}
 		cnt++
 	}
-	fmt.Println()
-	fmt.Println("UploadDir Done!")
-	fmt.Println()
+
+	plog.Printf("finished uploading %q", src)
 	return nil
 }
