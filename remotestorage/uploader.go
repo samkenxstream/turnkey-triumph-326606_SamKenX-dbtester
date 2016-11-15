@@ -21,14 +21,19 @@ import (
 	"path/filepath"
 	"strings"
 
-	"cloud.google.com/go/storage"
 	"golang.org/x/oauth2/google"
 	"golang.org/x/oauth2/jwt"
+
+	"cloud.google.com/go/storage"
 	"google.golang.org/api/option"
 )
 
+// Uploader defines storage uploader.
 type Uploader interface {
+	// UploadFile uploads a file.
 	UploadFile(bucket, src, dst string, opts ...OpOption) error
+
+	// UploadDir uploads a directory.
 	UploadDir(bucket, src, dst string, opts ...OpOption) error
 }
 
@@ -62,24 +67,19 @@ func (g *GoogleCloudStorage) UploadFile(bucket, src, dst string, opts ...OpOptio
 	ret.applyOpts(opts)
 
 	ctx := context.Background()
-	admin, err := storage.NewAdminClient(ctx, g.Project, option.WithTokenSource(g.Config.TokenSource(ctx)))
-	if err != nil {
-		return err
-	}
-	defer admin.Close()
 
-	if err := admin.CreateBucket(context.Background(), bucket, nil); err != nil {
-		if !strings.Contains(err.Error(), "You already own this bucket. Please select another name") {
-			return err
-		}
-	}
-
-	sctx := context.Background()
-	client, err := storage.NewClient(sctx, option.WithTokenSource(g.Config.TokenSource(sctx)))
+	client, err := storage.NewClient(ctx, option.WithTokenSource(g.Config.TokenSource(ctx)))
 	if err != nil {
 		return err
 	}
 	defer client.Close()
+
+	bkt := client.Bucket(bucket)
+	if err := bkt.Create(ctx, g.Project, nil); err != nil {
+		if !strings.Contains(err.Error(), "You already own this bucket. Please select another name") {
+			return err
+		}
+	}
 
 	wc := client.Bucket(bucket).Object(dst).NewWriter(context.Background())
 	if ret.ContentType != "" {
@@ -118,24 +118,19 @@ func (g *GoogleCloudStorage) UploadDir(bucket, src, dst string, opts ...OpOption
 	ret.applyOpts(opts)
 
 	ctx := context.Background()
-	admin, err := storage.NewAdminClient(ctx, g.Project, option.WithTokenSource(g.Config.TokenSource(ctx)))
-	if err != nil {
-		return err
-	}
-	defer admin.Close()
 
-	if err := admin.CreateBucket(context.Background(), bucket, nil); err != nil {
-		if !strings.Contains(err.Error(), "You already own this bucket. Please select another name") {
-			return err
-		}
-	}
-
-	sctx := context.Background()
-	client, err := storage.NewClient(sctx, option.WithTokenSource(g.Config.TokenSource(sctx)))
+	client, err := storage.NewClient(ctx, option.WithTokenSource(g.Config.TokenSource(ctx)))
 	if err != nil {
 		return err
 	}
 	defer client.Close()
+
+	bkt := client.Bucket(bucket)
+	if err := bkt.Create(ctx, g.Project, nil); err != nil {
+		if !strings.Contains(err.Error(), "You already own this bucket. Please select another name") {
+			return err
+		}
+	}
 
 	fmap, err := walkRecursive(src)
 	if err != nil {
