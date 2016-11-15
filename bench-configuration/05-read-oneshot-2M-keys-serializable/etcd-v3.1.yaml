@@ -1,18 +1,18 @@
-database: consul
-test_name: consul-v0.7.1-go1.7.3
+database: etcdv3
+test_name: etcd-v3.1-go1.7.3
 
 google_cloud_project_name: etcd-development
 google_cloud_storage_key_path: /home/gyuho/gcloud-key.json
 google_cloud_storage_bucket_name: dbtester-results
-google_cloud_storage_sub_directory: 2016Q4-etcd-zk-consul/read-2M-keys-serializable
+google_cloud_storage_sub_directory: 2016Q4-etcd-zk-consul/read-oneshot-2M-keys-serializable
 
 peer_ips:
-    - 10.240.0.44
-    - 10.240.0.45
-    - 10.240.0.46
+    - 10.240.0.36
+    - 10.240.0.37
+    - 10.240.0.38
 
 agent_port: 3500
-database_port: 8500
+database_port: 2379
 
 result_path_time_series: timeseries.csv
 result_path_log: result.log
@@ -26,7 +26,7 @@ step1:
 # start benchmark
 step2:
     skip_stress_database: false
-    bench_type: read
+    bench_type: read-oneshot
     stale_read: true
     connections: 1000
     clients: 1000
@@ -38,4 +38,4 @@ step2:
 
 # after benchmark
 step3:
-    action: stop # OR 'only-upload-log'
+    action: stop

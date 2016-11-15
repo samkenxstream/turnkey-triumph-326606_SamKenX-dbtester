@@ -1,5 +1,5 @@
-database: etcdv3
-test_name: etcd-v3.1-go1.7.3
+database: zk
+test_name: zk-v3.4.9-java8
 
 google_cloud_project_name: etcd-development
 google_cloud_storage_key_path: /home/gyuho/gcloud-key.json
@@ -7,12 +7,12 @@ google_cloud_storage_bucket_name: dbtester-results
 google_cloud_storage_sub_directory: 2016Q4-etcd-zk-consul/read-2M-keys-serializable
 
 peer_ips:
-    - 10.240.0.36
-    - 10.240.0.37
-    - 10.240.0.38
+    - 10.240.0.40
+    - 10.240.0.41
+    - 10.240.0.42
 
 agent_port: 3500
-database_port: 2379
+database_port: 2181
 
 result_path_time_series: timeseries.csv
 result_path_log: result.log
@@ -28,7 +28,7 @@ step2:
     skip_stress_database: false
     bench_type: read
     stale_read: true
-    connections: 100
+    connections: 1000
     clients: 1000
     key_size: 8
     value_size: 256
@@ -38,4 +38,4 @@ step2:
 
 # after benchmark
 step3:
-    action: stop # OR 'only-upload-log'
+    action: only-upload-log

@@ -4,7 +4,7 @@ test_name: zk-v3.4.9-java8
 google_cloud_project_name: etcd-development
 google_cloud_storage_key_path: /home/gyuho/gcloud-key.json
 google_cloud_storage_bucket_name: dbtester-results
-google_cloud_storage_sub_directory: 2016Q4-etcd-zk-consul/read-2M-keys-serializable
+google_cloud_storage_sub_directory: 2016Q4-etcd-zk-consul/read-oneshot-2M-keys-serializable
 
 peer_ips:
     - 10.240.0.40
@@ -26,7 +26,7 @@ step1:
 # start benchmark
 step2:
     skip_stress_database: false
-    bench_type: read
+    bench_type: read-oneshot
     stale_read: true
     connections: 1000
     clients: 1000
@@ -38,4 +38,4 @@ step2:
 
 # after benchmark
 step3:
-    action: stop # OR 'only-upload-log'
+    action: stop
