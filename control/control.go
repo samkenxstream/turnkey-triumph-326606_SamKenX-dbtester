@@ -101,16 +101,9 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	if !cfg.Step3.SkipStopDatabase {
-		println()
-		time.Sleep(5 * time.Second)
-		plog.Info("step 3: stopping databases...")
-		if err = step3(cfg); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	println()
+	time.Sleep(5 * time.Second)
+	return step3(cfg)
 }
 
 func step1(cfg Config) error { return bcastReq(cfg, agent.Request_Start) }
@@ -314,7 +307,20 @@ func step2(cfg Config) error {
 	return nil
 }
 
-func step3(cfg Config) error { return bcastReq(cfg, agent.Request_Stop) }
+func step3(cfg Config) error {
+	switch cfg.Step3.Action {
+	case "stop":
+		plog.Info("step 3: stopping databases...")
+		return bcastReq(cfg, agent.Request_Stop)
+
+	case "only-upload-log":
+		plog.Info("step 3: uploading logs without stopping databases...")
+		return bcastReq(cfg, agent.Request_UploadLog)
+
+	default:
+		return fmt.Errorf("unknown %q", cfg.Step3.Action)
+	}
+}
 
 func bcastReq(cfg Config, op agent.Request_Operation) error {
 	req := cfg.ToRequest()

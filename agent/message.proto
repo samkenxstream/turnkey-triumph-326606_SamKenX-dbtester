@@ -14,9 +14,10 @@ service Transporter {
 
 message Request {
 	enum Operation {
-		Start   = 0;
-		Stop    = 1;
-		Restart = 2;
+		Start     = 0;
+		Stop      = 1;
+		Restart   = 2;
+		UploadLog = 3;
 	}
 	enum Database {
 		etcdv3    = 0;
