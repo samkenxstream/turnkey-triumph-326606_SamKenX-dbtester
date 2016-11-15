@@ -191,8 +191,14 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		plog.Infof("database_log_path: %q", databaseLogPath)
 		plog.Infof("monitor_log_path: %q", monitorLogPath)
 	}
-	if r.Operation == Request_Start {
+
+	switch r.Operation {
+	case Request_Start:
 		t.req = *r
+	case Request_UploadLog:
+		t.req.GoogleCloudProjectName = r.GoogleCloudProjectName
+		t.req.GoogleCloudStorageBucketName = r.GoogleCloudStorageBucketName
+		t.req.GoogleCloudStorageSubDirectory = r.GoogleCloudStorageSubDirectory
 	}
 
 	if t.req.GoogleCloudStorageKey != "" {
