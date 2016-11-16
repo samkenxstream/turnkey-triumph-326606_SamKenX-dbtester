@@ -17,12 +17,9 @@ package control
 import (
 	"fmt"
 	"math"
-	"path/filepath"
 	"sort"
 	"strings"
 	"time"
-
-	"github.com/coreos/dbtester/remotestorage"
 )
 
 const (
@@ -119,7 +116,6 @@ func (r *report) print() {
 		r.printSecondSample()
 	}
 
-	fmt.Println("ERROR COUNT:", r.errorDist)
 	plog.Println("ERROR COUNT:", r.errorDist)
 }
 
@@ -150,66 +146,16 @@ func (r *report) printLatencies() {
 }
 
 func (r *report) printSecondSample() {
-	cfg := r.cfg
-	{
-		plog.Println("getTimeSeries starts for", len(r.sps.tm), "points")
-		txt := r.sps.getTimeSeries().String()
-		plog.Println("getTimeSeries finished for", len(r.sps.tm), "points")
-		fmt.Println(txt)
+	plog.Println("getTimeSeries starts for", len(r.sps.tm), "points")
+	txt := r.sps.getTimeSeries().String()
+	plog.Println("getTimeSeries finished for", len(r.sps.tm), "points")
+	fmt.Println(txt)
 
-		if err := toFile(txt, cfg.ResultPathTimeSeries); err != nil {
-			plog.Fatal(err)
-		}
-
-		plog.Println("time series saved... Uploading to Google cloud storage...")
-		u, err := remotestorage.NewGoogleCloudStorage([]byte(cfg.GoogleCloudStorageKey), cfg.GoogleCloudProjectName)
-		if err != nil {
-			plog.Fatal(err)
-		}
-
-		srcCSVResultPath := cfg.ResultPathTimeSeries
-		dstCSVResultPath := filepath.Base(cfg.ResultPathTimeSeries)
-		if !strings.HasPrefix(dstCSVResultPath, cfg.TestName) {
-			dstCSVResultPath = fmt.Sprintf("%s-%s", cfg.TestName, dstCSVResultPath)
-		}
-		dstCSVResultPath = filepath.Join(cfg.GoogleCloudStorageSubDirectory, dstCSVResultPath)
-		plog.Printf("Uploading %s to %s", srcCSVResultPath, dstCSVResultPath)
-
-		var uerr error
-		for k := 0; k < 15; k++ {
-			if uerr = u.UploadFile(cfg.GoogleCloudStorageBucketName, srcCSVResultPath, dstCSVResultPath); uerr != nil {
-				plog.Println(k, "UploadFile error:", uerr)
-				time.Sleep(2 * time.Second)
-				continue
-			}
-			break
-		}
+	plog.Println("saving time series at", r.cfg.ResultPathTimeSeries)
+	if err := toFile(txt, r.cfg.ResultPathTimeSeries); err != nil {
+		plog.Fatal(err)
 	}
-
-	{
-		u, err := remotestorage.NewGoogleCloudStorage([]byte(cfg.GoogleCloudStorageKey), cfg.GoogleCloudProjectName)
-		if err != nil {
-			plog.Fatal(err)
-		}
-
-		srcCSVResultPath := cfg.ResultPathLog
-		dstCSVResultPath := filepath.Base(cfg.ResultPathLog)
-		if !strings.HasPrefix(dstCSVResultPath, cfg.TestName) {
-			dstCSVResultPath = fmt.Sprintf("%s-%s", cfg.TestName, dstCSVResultPath)
-		}
-		dstCSVResultPath = filepath.Join(cfg.GoogleCloudStorageSubDirectory, dstCSVResultPath)
-		plog.Printf("Uploading %s to %s", srcCSVResultPath, dstCSVResultPath)
-
-		var uerr error
-		for k := 0; k < 15; k++ {
-			if uerr = u.UploadFile(cfg.GoogleCloudStorageBucketName, srcCSVResultPath, dstCSVResultPath); uerr != nil {
-				plog.Println(uerr)
-				time.Sleep(2 * time.Second)
-				continue
-			}
-			break
-		}
-	}
+	plog.Println("saved time series at", r.cfg.ResultPathTimeSeries)
 }
 
 func (r *report) printHistogram() {
