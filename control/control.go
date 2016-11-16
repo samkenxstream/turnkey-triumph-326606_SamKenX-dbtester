@@ -218,9 +218,9 @@ func step2(cfg Config) error {
 		}
 		reqGen := func(reqs chan<- request) { generateWrites(cfg, vals, reqs) }
 		generateReport(cfg, h, reqGen)
+		plog.Println("generateReport is finished...")
 
-		plog.Println("generateReport is finished... checking total keys")
-
+		plog.Println("checking total keys on", cfg.DatabaseEndpoints)
 		var totalKeysFunc func([]string) map[string]int64
 		switch cfg.Database {
 		case "etcdv2":

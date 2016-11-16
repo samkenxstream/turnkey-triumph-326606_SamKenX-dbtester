@@ -195,6 +195,8 @@ func getTotalKeysEtcdv3(endpoints []string) map[string]int64 {
 		if !strings.HasPrefix(ep, "http://") {
 			ep = "http://" + ep
 		}
+
+		plog.Println("GET", ep+"/metrics")
 		resp, err := http.Get(ep + "/metrics")
 		if err != nil {
 			plog.Println(err)
@@ -221,6 +223,8 @@ func getTotalKeysEtcdv3(endpoints []string) map[string]int64 {
 		}
 		gracefulClose(resp)
 	}
+
+	plog.Println("getTotalKeysEtcdv3", rs)
 	return rs
 }
 
