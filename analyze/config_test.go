@@ -27,7 +27,7 @@ func TestReadConfig(t *testing.T) {
 	if c.Step2[0].DataList[0].Path != "20160330/01-etcd-aggregated.csv" {
 		t.Fatalf("unexpected %s", c.Step2[0].DataList[0].Path)
 	}
-	if c.Step3[0].PlotList[0].Lines[0].Column != "avg_latency_ms_etcd_v3" {
+	if c.Step3[0].PlotList[0].Lines[0].Column != "avg-latency-ms-etcd_v3" {
 		t.Fatalf("unexpected %s", c.Step3[0].PlotList[0].Lines[0].Column)
 	}
 	if c.Step3[0].PlotList[0].YAxis != "Latency(millisecond)" {

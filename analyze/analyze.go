@@ -304,7 +304,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
-		latencyCol, err := frBench.GetColumn("avg_latency_ms")
+		latencyCol, err := frBench.GetColumn("avg-latency-ms")
 		if err != nil {
 			return err
 		}
@@ -371,7 +371,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 			secondCol.PushBack(dataframe.NewStringValue(i))
 		}
 		nf.AddColumn(secondCol)
-		colsToKeep := []string{"avg_latency_ms", "throughput", "cumulative-throughput", "avg-cpu", "avg-memory-mb"}
+		colsToKeep := []string{"avg-latency-ms", "throughput", "cumulative-throughput", "avg-cpu", "avg-memory-mb"}
 		for i, fr := range frames {
 			dbID := elem.DataList[i].Name
 			plog.Printf("Step 2-%d-%d: cleaning up %s...", step2Idx, i, dbID)
@@ -389,7 +389,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 				if err := col.Appends(dataframe.NewStringValueNil(), maxSize); err != nil {
 					return err
 				}
-				col.UpdateHeader(fmt.Sprintf("%s_%s", col.GetHeader(), dbID))
+				col.UpdateHeader(fmt.Sprintf("%s-%s", col.GetHeader(), dbID))
 				nf.AddColumn(col)
 			}
 		}

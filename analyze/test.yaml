@@ -50,9 +50,9 @@ step3:
 
     plot_list:
     - lines:
-      - column: avg_latency_ms_etcd_v3
+      - column: avg-latency-ms-etcd_v3
         legend: etcd v3
-      - column: avg_latency_ms_zookeeper_3.4.8
+      - column: avg-latency-ms-zookeeper_3.4.8
         legend: Zookeeper 3.4.8
       x_axis: Second
       y_axis: Latency(millisecond)
@@ -72,9 +72,9 @@ step3:
         - 20160330/01-throughput.png
 
     - lines:
-      - column: avg_cpu_etcd_v3
+      - column: avg-cpu-etcd_v3
         legend: etcd v3
-      - column: avg_cpu_zookeeper_3.4.8
+      - column: avg-cpu-zookeeper_3.4.8
         legend: Zookeeper 3.4.8
       x_axis: Second
       y_axis: CPU
@@ -83,9 +83,9 @@ step3:
         - 20160330/01-avg-cpu.png
 
     - lines:
-      - column: avg_memory_mb_etcd_v3
+      - column: avg-memory-mb_etcd_v3
         legend: etcd v3
-      - column: avg_memory_mb_zookeeper_3.4.8
+      - column: avg-memory-mb_zookeeper_3.4.8
         legend: Zookeeper 3.4.8
       x_axis: Second
       y_axis: Memory(MB)
@@ -97,9 +97,9 @@ step3:
 
     plot_list:
     - lines:
-      - column: avg_latency_ms_etcd_v3
+      - column: avg-latency-ms-etcd_v3
         legend: etcd v3
-      - column: avg_latency_ms_zookeeper_3.4.8
+      - column: avg-latency-ms-zookeeper_3.4.8
         legend: Zookeeper 3.4.8
       x_axis: Second
       y_axis: Latency(millisecond)
@@ -119,9 +119,9 @@ step3:
         - 20160330/02-throughput.png
 
     - lines:
-      - column: avg_cpu_etcd_v3
+      - column: avg-cpu-etcd_v3
         legend: etcd v3
-      - column: avg_cpu_zookeeper_3.4.8
+      - column: avg-cpu-zookeeper_3.4.8
         legend: Zookeeper 3.4.8
       x_axis: Second
       y_axis: CPU
@@ -130,9 +130,9 @@ step3:
         - 20160330/02-avg-cpu.png
 
     - lines:
-      - column: avg_memory_mb_etcd_v3
+      - column: avg-memory-mb_etcd_v3
         legend: etcd v3
-      - column: avg_memory_mb_zookeeper_3.4.8
+      - column: avg-memory-mb_zookeeper_3.4.8
         legend: Zookeeper 3.4.8
       x_axis: Second
       y_axis: Memory(MB)
