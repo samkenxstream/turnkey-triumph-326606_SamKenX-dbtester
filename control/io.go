@@ -107,10 +107,13 @@ func newGetZK(conn *zk.Conn) ReqHandler {
 
 func newGetConsul(conn *consulapi.KV) ReqHandler {
 	return func(ctx context.Context, req *request) error {
-		opt := &consulapi.QueryOptions{
-			AllowStale: req.consulOp.staleRead,
+		opt := &consulapi.QueryOptions{}
+		if req.consulOp.staleRead {
+			opt.AllowStale = true
+			opt.RequireConsistent = false
 		}
 		if !req.consulOp.staleRead {
+			opt.AllowStale = false
 			opt.RequireConsistent = true
 		}
 		_, _, err := conn.Get(req.consulOp.key, opt)
