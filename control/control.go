@@ -105,7 +105,57 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 
 	println()
 	time.Sleep(5 * time.Second)
-	return step3(cfg)
+	if err := step3(cfg); err != nil {
+		return err
+	}
+
+	{
+		u, err := remotestorage.NewGoogleCloudStorage([]byte(cfg.GoogleCloudStorageKey), cfg.GoogleCloudProjectName)
+		if err != nil {
+			plog.Fatal(err)
+		}
+		srcCSVResultPath := cfg.ResultPathTimeSeries
+		dstCSVResultPath := filepath.Base(cfg.ResultPathTimeSeries)
+		if !strings.HasPrefix(dstCSVResultPath, cfg.TestName) {
+			dstCSVResultPath = fmt.Sprintf("%s-%s", cfg.TestName, dstCSVResultPath)
+		}
+		dstCSVResultPath = filepath.Join(cfg.GoogleCloudStorageSubDirectory, dstCSVResultPath)
+
+		var uerr error
+		for k := 0; k < 15; k++ {
+			if uerr = u.UploadFile(cfg.GoogleCloudStorageBucketName, srcCSVResultPath, dstCSVResultPath); uerr != nil {
+				plog.Printf("#%d: UploadFile error %v", k, uerr)
+				time.Sleep(2 * time.Second)
+				continue
+			}
+			break
+		}
+	}
+	{
+		u, err := remotestorage.NewGoogleCloudStorage([]byte(cfg.GoogleCloudStorageKey), cfg.GoogleCloudProjectName)
+		if err != nil {
+			plog.Fatal(err)
+		}
+
+		srcCSVResultPath := cfg.ResultPathLog
+		dstCSVResultPath := filepath.Base(cfg.ResultPathLog)
+		if !strings.HasPrefix(dstCSVResultPath, cfg.TestName) {
+			dstCSVResultPath = fmt.Sprintf("%s-%s", cfg.TestName, dstCSVResultPath)
+		}
+		dstCSVResultPath = filepath.Join(cfg.GoogleCloudStorageSubDirectory, dstCSVResultPath)
+
+		var uerr error
+		for k := 0; k < 15; k++ {
+			if uerr = u.UploadFile(cfg.GoogleCloudStorageBucketName, srcCSVResultPath, dstCSVResultPath); uerr != nil {
+				plog.Printf("#%d: UploadFile error %v", k, uerr)
+				time.Sleep(2 * time.Second)
+				continue
+			}
+			break
+		}
+	}
+
+	return nil
 }
 
 func step1(cfg Config) error { return bcastReq(cfg, agent.Request_Start) }
@@ -169,6 +219,8 @@ func step2(cfg Config) error {
 		reqGen := func(reqs chan<- request) { generateWrites(cfg, vals, reqs) }
 		generateReport(cfg, h, reqGen)
 
+		plog.Println("generateReport is finished... checking total keys")
+
 		var totalKeysFunc func([]string) map[string]int64
 		switch cfg.Database {
 		case "etcdv2":
@@ -180,9 +232,9 @@ func step2(cfg Config) error {
 		case "consul":
 			totalKeysFunc = getTotalKeysConsul
 		}
-
 		for k, v := range totalKeysFunc(cfg.DatabaseEndpoints) {
-			plog.Infof("expected write total results [expected_total: %d | database: %q | endpoint: %q | number_of_keys: %d]", cfg.Step2.TotalRequests, cfg.Database, k, v)
+			plog.Infof("expected write total results [expected_total: %d | database: %q | endpoint: %q | number_of_keys: %d]",
+				cfg.Step2.TotalRequests, cfg.Database, k, v)
 		}
 
 	case "read":
@@ -304,52 +356,6 @@ func step2(cfg Config) error {
 		h := newReadOneshotHandlers(cfg)
 		reqGen := func(reqs chan<- request) { generateReads(cfg, key, reqs) }
 		generateReport(cfg, h, reqGen)
-	}
-
-	{
-		u, err := remotestorage.NewGoogleCloudStorage([]byte(cfg.GoogleCloudStorageKey), cfg.GoogleCloudProjectName)
-		if err != nil {
-			plog.Fatal(err)
-		}
-		srcCSVResultPath := cfg.ResultPathTimeSeries
-		dstCSVResultPath := filepath.Base(cfg.ResultPathTimeSeries)
-		if !strings.HasPrefix(dstCSVResultPath, cfg.TestName) {
-			dstCSVResultPath = fmt.Sprintf("%s-%s", cfg.TestName, dstCSVResultPath)
-		}
-		dstCSVResultPath = filepath.Join(cfg.GoogleCloudStorageSubDirectory, dstCSVResultPath)
-
-		var uerr error
-		for k := 0; k < 15; k++ {
-			if uerr = u.UploadFile(cfg.GoogleCloudStorageBucketName, srcCSVResultPath, dstCSVResultPath); uerr != nil {
-				plog.Printf("#%d: UploadFile error %v", k, uerr)
-				time.Sleep(2 * time.Second)
-				continue
-			}
-			break
-		}
-	}
-	{
-		u, err := remotestorage.NewGoogleCloudStorage([]byte(cfg.GoogleCloudStorageKey), cfg.GoogleCloudProjectName)
-		if err != nil {
-			plog.Fatal(err)
-		}
-
-		srcCSVResultPath := cfg.ResultPathLog
-		dstCSVResultPath := filepath.Base(cfg.ResultPathLog)
-		if !strings.HasPrefix(dstCSVResultPath, cfg.TestName) {
-			dstCSVResultPath = fmt.Sprintf("%s-%s", cfg.TestName, dstCSVResultPath)
-		}
-		dstCSVResultPath = filepath.Join(cfg.GoogleCloudStorageSubDirectory, dstCSVResultPath)
-
-		var uerr error
-		for k := 0; k < 15; k++ {
-			if uerr = u.UploadFile(cfg.GoogleCloudStorageBucketName, srcCSVResultPath, dstCSVResultPath); uerr != nil {
-				plog.Printf("#%d: UploadFile error %v", k, uerr)
-				time.Sleep(2 * time.Second)
-				continue
-			}
-			break
-		}
 	}
 	return nil
 }
