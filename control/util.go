@@ -216,7 +216,7 @@ func getTotalKeysEtcdv3(endpoints []string) map[string]int64 {
 					fv = v
 				}
 			}
-			if ts[0] == "etcd_storage_keys_total" {
+			if ts[0] == "etcd_debugging_mvcc_keys_total" {
 				rs[ep] = int64(fv)
 				break
 			}
