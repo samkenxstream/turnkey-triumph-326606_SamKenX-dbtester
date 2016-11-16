@@ -459,7 +459,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 	rdBuf.WriteString(cfg.Step4.Preface)
 	rdBuf.WriteString("\n\n\n")
 	for i, result := range cfg.Step4.Results {
-		rdBuf.WriteString(fmt.Sprintf("<br><br><hr>\n##### %s", cfg.Titles[i]))
+		rdBuf.WriteString(fmt.Sprintf("<br><br>\n##### %s", cfg.Titles[i]))
 		rdBuf.WriteString("\n\n")
 		for _, img := range result.Images {
 			imgPath := ""

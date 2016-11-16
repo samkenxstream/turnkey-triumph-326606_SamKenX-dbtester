@@ -23,6 +23,8 @@ We keep all logs at cloud storage:
 
 
 
+
+<br><br><hr>
 ### Latest Results
 
 - Google Cloud Compute Engine
@@ -38,7 +40,7 @@ We keep all logs at cloud storage:
 - Consul v0.7.1 (Go 1.7.3)
 
 
-<br><br><hr>
+<br><br>
 ##### Write 2M keys, 1000-client (etcd v3.1 100-conn), 8-byte key, 256-byte value
 
 <img src="https://storage.googleapis.com/dbtester-results/2016Q401-etcd-zk-consul/write-2M-keys/avg-latency-ms.svg" alt="2016Q401-etcd-zk-consul/write-2M-keys/avg-latency-ms">
@@ -50,7 +52,7 @@ We keep all logs at cloud storage:
 <img src="https://storage.googleapis.com/dbtester-results/2016Q401-etcd-zk-consul/write-2M-keys/avg-memory-mb.svg" alt="2016Q401-etcd-zk-consul/write-2M-keys/avg-memory-mb">
 
 
-<br><br><hr>
+<br><br>
 ##### Linearizable-Read 2M keys, 1000-client (etcd v3.1 100-conn), 8-byte key, 256-byte value
 
 <img src="https://storage.googleapis.com/dbtester-results/2016Q401-etcd-zk-consul/read-2M-keys-linearizable/avg-latency-ms.svg" alt="2016Q401-etcd-zk-consul/read-2M-keys-linearizable/avg-latency-ms">
@@ -62,7 +64,7 @@ We keep all logs at cloud storage:
 <img src="https://storage.googleapis.com/dbtester-results/2016Q401-etcd-zk-consul/read-2M-keys-linearizable/avg-memory-mb.svg" alt="2016Q401-etcd-zk-consul/read-2M-keys-linearizable/avg-memory-mb">
 
 
-<br><br><hr>
+<br><br>
 ##### Serializable-Read 2M keys, 1000-client (etcd v3.1 100-conn), 8-byte key, 256-byte value
 
 <img src="https://storage.googleapis.com/dbtester-results/2016Q401-etcd-zk-consul/read-2M-keys-serializable/avg-latency-ms.svg" alt="2016Q401-etcd-zk-consul/read-2M-keys-serializable/avg-latency-ms">
