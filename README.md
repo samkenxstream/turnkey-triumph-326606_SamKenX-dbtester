@@ -27,6 +27,8 @@ We keep all logs at cloud storage:
 <br><br><hr>
 ### Latest Results
 
+THIS IS WORKING IN PROGRESS (more accurate results coming soon...)
+
 - Google Cloud Compute Engine
 - 3 machines of 8 vCPUs + 1 6GB Memory + 50 GB SSD
 - 1 machine(client) of 16 vCPUs + 30 GB Memory + 50 GB SSD
@@ -51,26 +53,3 @@ We keep all logs at cloud storage:
 
 <img src="https://storage.googleapis.com/dbtester-results/2016Q401-etcd-zk-consul/write-2M-keys/avg-memory-mb.svg" alt="2016Q401-etcd-zk-consul/write-2M-keys/avg-memory-mb">
 
-
-<br><br>
-##### Linearizable-Read 2M keys, 1000-client (etcd v3.1 100-conn), 8-byte key, 256-byte value
-
-<img src="https://storage.googleapis.com/dbtester-results/2016Q401-etcd-zk-consul/read-2M-keys-linearizable/avg-latency-ms.svg" alt="2016Q401-etcd-zk-consul/read-2M-keys-linearizable/avg-latency-ms">
-
-<img src="https://storage.googleapis.com/dbtester-results/2016Q401-etcd-zk-consul/read-2M-keys-linearizable/throughput.svg" alt="2016Q401-etcd-zk-consul/read-2M-keys-linearizable/throughput">
-
-<img src="https://storage.googleapis.com/dbtester-results/2016Q401-etcd-zk-consul/read-2M-keys-linearizable/avg-cpu.svg" alt="2016Q401-etcd-zk-consul/read-2M-keys-linearizable/avg-cpu">
-
-<img src="https://storage.googleapis.com/dbtester-results/2016Q401-etcd-zk-consul/read-2M-keys-linearizable/avg-memory-mb.svg" alt="2016Q401-etcd-zk-consul/read-2M-keys-linearizable/avg-memory-mb">
-
-
-<br><br>
-##### Serializable-Read 2M keys, 1000-client (etcd v3.1 100-conn), 8-byte key, 256-byte value
-
-<img src="https://storage.googleapis.com/dbtester-results/2016Q401-etcd-zk-consul/read-2M-keys-serializable/avg-latency-ms.svg" alt="2016Q401-etcd-zk-consul/read-2M-keys-serializable/avg-latency-ms">
-
-<img src="https://storage.googleapis.com/dbtester-results/2016Q401-etcd-zk-consul/read-2M-keys-serializable/throughput.svg" alt="2016Q401-etcd-zk-consul/read-2M-keys-serializable/throughput">
-
-<img src="https://storage.googleapis.com/dbtester-results/2016Q401-etcd-zk-consul/read-2M-keys-serializable/avg-cpu.svg" alt="2016Q401-etcd-zk-consul/read-2M-keys-serializable/avg-cpu">
-
-<img src="https://storage.googleapis.com/dbtester-results/2016Q401-etcd-zk-consul/read-2M-keys-serializable/avg-memory-mb.svg" alt="2016Q401-etcd-zk-consul/read-2M-keys-serializable/avg-memory-mb">
