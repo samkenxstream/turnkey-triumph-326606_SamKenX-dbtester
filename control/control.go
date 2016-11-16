@@ -18,11 +18,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/coreos/dbtester/agent"
+	"github.com/coreos/dbtester/remotestorage"
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -151,6 +153,52 @@ func generateReport(cfg Config, h []ReqHandler, reqGen func(chan<- request)) {
 
 	close(results)
 	<-pdoneC
+
+	{
+		u, err := remotestorage.NewGoogleCloudStorage([]byte(cfg.GoogleCloudStorageKey), cfg.GoogleCloudProjectName)
+		if err != nil {
+			plog.Fatal(err)
+		}
+		srcCSVResultPath := cfg.ResultPathTimeSeries
+		dstCSVResultPath := filepath.Base(cfg.ResultPathTimeSeries)
+		if !strings.HasPrefix(dstCSVResultPath, cfg.TestName) {
+			dstCSVResultPath = fmt.Sprintf("%s-%s", cfg.TestName, dstCSVResultPath)
+		}
+		dstCSVResultPath = filepath.Join(cfg.GoogleCloudStorageSubDirectory, dstCSVResultPath)
+
+		var uerr error
+		for k := 0; k < 15; k++ {
+			if uerr = u.UploadFile(cfg.GoogleCloudStorageBucketName, srcCSVResultPath, dstCSVResultPath); uerr != nil {
+				plog.Printf("#%d: UploadFile error %v", k, uerr)
+				time.Sleep(2 * time.Second)
+				continue
+			}
+			break
+		}
+	}
+	{
+		u, err := remotestorage.NewGoogleCloudStorage([]byte(cfg.GoogleCloudStorageKey), cfg.GoogleCloudProjectName)
+		if err != nil {
+			plog.Fatal(err)
+		}
+
+		srcCSVResultPath := cfg.ResultPathLog
+		dstCSVResultPath := filepath.Base(cfg.ResultPathLog)
+		if !strings.HasPrefix(dstCSVResultPath, cfg.TestName) {
+			dstCSVResultPath = fmt.Sprintf("%s-%s", cfg.TestName, dstCSVResultPath)
+		}
+		dstCSVResultPath = filepath.Join(cfg.GoogleCloudStorageSubDirectory, dstCSVResultPath)
+
+		var uerr error
+		for k := 0; k < 15; k++ {
+			if uerr = u.UploadFile(cfg.GoogleCloudStorageBucketName, srcCSVResultPath, dstCSVResultPath); uerr != nil {
+				plog.Printf("#%d: UploadFile error %v", k, uerr)
+				time.Sleep(2 * time.Second)
+				continue
+			}
+			break
+		}
+	}
 }
 
 func step2(cfg Config) error {
