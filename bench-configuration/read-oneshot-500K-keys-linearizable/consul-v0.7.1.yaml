@@ -27,7 +27,7 @@ step1:
 step2:
     skip_stress_database: false
     bench_type: read-oneshot
-    stale_read: true
+    stale_read: false
     connections: 1000
     clients: 1000
     key_size: 8
