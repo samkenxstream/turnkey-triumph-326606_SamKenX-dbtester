@@ -9,7 +9,7 @@ import:
 - package: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - package: github.com/coreos/etcd
-  version: 377f19b0031f9c0aafe2aec28b6f9019311f52f9
+  version: cfd10b4bbfc6a9a1cf2d3f5ec8e31dae31e15122
   subpackages:
   - auth/authpb
   - client
@@ -25,7 +25,7 @@ import:
   subpackages:
   - capnslog
 - package: github.com/dustin/go-humanize
-  version: 8929fe90cee4b2cb9deb468b51fb34eba64d1bf0
+  version: ef638b6c2e62b857442c6443dace9366a48c0ee2
 - package: github.com/gogo/protobuf
   version: 8d70fb3182befc465c4a1eac8ad4d38ff49778e2
   subpackages:
@@ -38,7 +38,7 @@ import:
   - jsonpb
   - proto
 - package: github.com/gonum/plot
-  version: e1023e3931006c9a7e793133a75587c6bc296cfb
+  version: 0e3ec68ffcc2ae4cc415fd64dec3a0ed24db3401
   subpackages:
   - palette
   - plotter
@@ -57,7 +57,7 @@ import:
   subpackages:
   - process
 - package: github.com/hashicorp/consul
-  version: 8ef76ec85131c9fdde6f6da26431fb40b68881f4
+  version: 4e97f36614bf2877b7065f8e4ce4fc16cd7dd9ca
   subpackages:
   - api
 - package: github.com/samuel/go-zookeeper

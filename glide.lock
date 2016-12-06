@@ -1,8 +1,6 @@
-hash: a56df9f3ebe36bd0bc5b03eabc987f3e4d7d4c3bb5341fdaf4fa2c2d267bfc0e
-updated: 2016-11-16T17:08:47.787152174-08:00
+hash: ba57a9a4b64241befe15f1120a0ab284e5df4d803c9fea7e40fa40d54431cd54
+updated: 2016-12-06T10:29:34.171946043-08:00
 imports:
-- name: bitbucket.org/ww/goautoneg
-  version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
   subpackages:
@@ -17,7 +15,7 @@ imports:
 - name: github.com/ajstarks/svgo
   version: 672fe547df4e49efc6db67a74391368bcb149b37
 - name: github.com/beorn7/perks
-  version: b965b613227fddccbfffe13eae360ed3fa822f8d
+  version: 4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9
   subpackages:
   - quantile
 - name: github.com/biogo/graphics
@@ -27,7 +25,7 @@ imports:
 - name: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - name: github.com/coreos/etcd
-  version: 377f19b0031f9c0aafe2aec28b6f9019311f52f9
+  version: cfd10b4bbfc6a9a1cf2d3f5ec8e31dae31e15122
   subpackages:
   - auth/authpb
   - client
@@ -47,7 +45,7 @@ imports:
   subpackages:
   - capnslog
 - name: github.com/dustin/go-humanize
-  version: 8929fe90cee4b2cb9deb468b51fb34eba64d1bf0
+  version: ef638b6c2e62b857442c6443dace9366a48c0ee2
 - name: github.com/ghodss/yaml
   version: 73d445a93680fa1a78ae23a5839bad48f32ba1ee
 - name: github.com/gogo/protobuf
@@ -67,13 +65,13 @@ imports:
   - jsonpb
   - proto
 - name: github.com/gonum/floats
-  version: e7dfbda930c8a40d6d1ba9107762aae3e6e47591
+  version: 9fe75c11ab14e9efe0445ce5b96ac8fd552be30c
 - name: github.com/gonum/internal
-  version: 495c8ab446bf60264be32be6973302faac6a5695
+  version: 3065419bb46aefed1d66b0c951f2ef01da74fcbe
   subpackages:
   - asm
 - name: github.com/gonum/plot
-  version: e1023e3931006c9a7e793133a75587c6bc296cfb
+  version: 0e3ec68ffcc2ae4cc415fd64dec3a0ed24db3401
   subpackages:
   - palette
   - plotter
@@ -102,26 +100,26 @@ imports:
   subpackages:
   - process
 - name: github.com/hashicorp/consul
-  version: 8ef76ec85131c9fdde6f6da26431fb40b68881f4
+  version: 4e97f36614bf2877b7065f8e4ce4fc16cd7dd9ca
   subpackages:
   - api
 - name: github.com/hashicorp/go-cleanhttp
   version: ad28ea4487f05916463e2423a55166280e8254b5
 - name: github.com/hashicorp/serf
-  version: 9432bc08aa8d486e497e27f84878ebbe8c1eab66
+  version: f679d7594a349263f6118db40d87122d3a474e7d
   subpackages:
   - coordinate
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/llgcode/draw2d
-  version: 13548be874707c45a83f9c2c282d76d671c7acf8
+  version: 1286d3b2030ac9952e59c5ef29ef3cc24a8e83d5
   subpackages:
   - draw2dbase
   - draw2dimg
 - name: github.com/mattn/go-runewidth
-  version: d6bea18f789704b5f83375793155289da36a3c7f
+  version: 737072b4e32b7a5018b4a7125da8d12de90e8045
 - name: github.com/matttproud/golang_protobuf_extensions
-  version: fc2b8d3a73c4867e51861bbdd5ae3c1f0869dd6a
+  version: c12348ce28de40eed0136aa2b644d0ee0650e56c
   subpackages:
   - pbutil
 - name: github.com/olekukonko/tablewriter
@@ -135,12 +133,13 @@ imports:
   subpackages:
   - go
 - name: github.com/prometheus/common
-  version: ffe929a3f4c4faeaa10f2b9535c2b1be3ad15650
+  version: 195bde7883f7c39ea62b0d92ab7359b5327065cb
   subpackages:
   - expfmt
+  - internal/bitbucket.org/ww/goautoneg
   - model
 - name: github.com/prometheus/procfs
-  version: 454a56f35412459b5e684fd5ec0f9211b94f002a
+  version: abf152e5f3e97f2fafac028d2cc06c1feb87ffa5
 - name: github.com/samuel/go-zookeeper
   version: 1d7be4effb13d2d908342d349d71a284a7542693
   subpackages:
@@ -150,11 +149,11 @@ imports:
 - name: github.com/spf13/pflag
   version: 5ccb023bc27df288a957c5e994cd44fd19619465
 - name: github.com/ugorji/go
-  version: f1f1a805ed361a0e078bb537e4ea78cd37dcf065
+  version: 9c7f9b7a2bc3a520f7c7b30b34b7f85f47fe27b6
   subpackages:
   - codec
 - name: golang.org/x/image
-  version: 9f8d0d45877da31f672995d10677ae6a586e31a5
+  version: e2d0a9f0e684ecd17e2f185e3d055cb94811f22e
   subpackages:
   - draw
   - font
@@ -192,7 +191,7 @@ imports:
   - storage/v1
   - transport
 - name: google.golang.org/appengine
-  version: 4f7eeb5305a4ba1966344836ba4af9996b7b4e05
+  version: ca59ef35f409df61fa4a5f8290ff289b37eccfb8
   subpackages:
   - internal
   - internal/app_identity
