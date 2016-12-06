@@ -7,9 +7,9 @@ google_cloud_storage_bucket_name: dbtester-results
 google_cloud_storage_sub_directory: 2016Q402-etcd-zk-consul/read-2M-keys-serializable
 
 peer_ips:
-    - 10.240.0.44
-    - 10.240.0.45
-    - 10.240.0.46
+    - 10.240.0.30
+    - 10.240.0.31
+    - 10.240.0.35
 
 agent_port: 3500
 database_port: 8500
