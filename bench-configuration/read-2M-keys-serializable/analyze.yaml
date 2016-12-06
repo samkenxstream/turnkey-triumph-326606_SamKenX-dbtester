@@ -3,11 +3,11 @@ titles:
 
 step1:
   - data_path_list:
-    - 2016Q402-etcd-zk-consul/read-2M-keys-serializable/etcd-v3.1-go1.7.3-1-monitor.csv
-    - 2016Q402-etcd-zk-consul/read-2M-keys-serializable/etcd-v3.1-go1.7.3-2-monitor.csv
-    - 2016Q402-etcd-zk-consul/read-2M-keys-serializable/etcd-v3.1-go1.7.3-3-monitor.csv
-    data_benchmark_path: 2016Q402-etcd-zk-consul/read-2M-keys-serializable/etcd-v3.1-go1.7.3-timeseries.csv
-    output_path: 2016Q402-etcd-zk-consul/read-2M-keys-serializable/etcd-v3.1-go1.7.3-aggregated.csv
+    - 2016Q402-etcd-zk-consul/read-2M-keys-serializable/etcd-v3.1-go1.7.4-1-monitor.csv
+    - 2016Q402-etcd-zk-consul/read-2M-keys-serializable/etcd-v3.1-go1.7.4-2-monitor.csv
+    - 2016Q402-etcd-zk-consul/read-2M-keys-serializable/etcd-v3.1-go1.7.4-3-monitor.csv
+    data_benchmark_path: 2016Q402-etcd-zk-consul/read-2M-keys-serializable/etcd-v3.1-go1.7.4-timeseries.csv
+    output_path: 2016Q402-etcd-zk-consul/read-2M-keys-serializable/etcd-v3.1-go1.7.4-aggregated.csv
 
   - data_path_list:
     - 2016Q402-etcd-zk-consul/read-2M-keys-serializable/zk-v3.4.9-java8-1-monitor.csv
@@ -25,8 +25,8 @@ step1:
 
 step2:
   - data_list:
-      - path: 2016Q402-etcd-zk-consul/read-2M-keys-serializable/etcd-v3.1-go1.7.3-aggregated.csv
-        name: etcd-v3.1-go1.7.3
+      - path: 2016Q402-etcd-zk-consul/read-2M-keys-serializable/etcd-v3.1-go1.7.4-aggregated.csv
+        name: etcd-v3.1-go1.7.4
       - path: 2016Q402-etcd-zk-consul/read-2M-keys-serializable/zk-v3.4.9-java8-aggregated.csv
         name: zk-v3.4.9-java8
       - path: 2016Q402-etcd-zk-consul/read-2M-keys-serializable/consul-v0.7.1-go1.7.3-aggregated.csv
@@ -38,8 +38,8 @@ step3:
 
     plot_list:
     - lines:
-      - column: avg-latency-ms-etcd-v3.1-go1.7.3
-        legend: etcd v3.1 (Go 1.7.3)
+      - column: avg-latency-ms-etcd-v3.1-go1.7.4
+        legend: etcd v3.1 (Go 1.7.4)
       - column: avg-latency-ms-zk-v3.4.9-java8
         legend: Zookeeper v3.4.9 (Java 8)
       - column: avg-latency-ms-consul-v0.7.1-go1.7.3
@@ -51,8 +51,8 @@ step3:
         - 2016Q402-etcd-zk-consul/read-2M-keys-serializable/avg-latency-ms.png
 
     - lines:
-      - column: throughput-etcd-v3.1-go1.7.3
-        legend: etcd v3.1 (Go 1.7.3)
+      - column: throughput-etcd-v3.1-go1.7.4
+        legend: etcd v3.1 (Go 1.7.4)
       - column: throughput-zk-v3.4.9-java8
         legend: Zookeeper v3.4.9 (Java 8)
       - column: throughput-consul-v0.7.1-go1.7.3
@@ -64,8 +64,8 @@ step3:
         - 2016Q402-etcd-zk-consul/read-2M-keys-serializable/throughput.png
 
     - lines:
-      - column: avg-cpu-etcd-v3.1-go1.7.3
-        legend: etcd v3.1 (Go 1.7.3)
+      - column: avg-cpu-etcd-v3.1-go1.7.4
+        legend: etcd v3.1 (Go 1.7.4)
       - column: avg-cpu-zk-v3.4.9-java8
         legend: Zookeeper v3.4.9 (Java 8)
       - column: avg-cpu-consul-v0.7.1-go1.7.3
@@ -77,8 +77,8 @@ step3:
         - 2016Q402-etcd-zk-consul/read-2M-keys-serializable/avg-cpu.png
 
     - lines:
-      - column: avg-memory-mb-etcd-v3.1-go1.7.3
-        legend: etcd v3.1 (Go 1.7.3)
+      - column: avg-memory-mb-etcd-v3.1-go1.7.4
+        legend: etcd v3.1 (Go 1.7.4)
       - column: avg-memory-mb-zk-v3.4.9-java8
         legend: Zookeeper v3.4.9 (Java 8)
       - column: avg-memory-mb-consul-v0.7.1-go1.7.3
@@ -100,7 +100,7 @@ step4:
       - Java(TM) SE Runtime Environment (build 1.8.0_111-b14)
       - Java HotSpot(TM) 64-Bit Server VM (build 25.111-b14, mixed mode)
       - javac 1.8.0_111
-    - etcd v3.1 (Go 1.7.3)
+    - etcd v3.1 (Go 1.7.4)
     - Consul v0.7.1 (Go 1.7.3)
 
   results:
