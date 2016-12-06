@@ -7,9 +7,9 @@ google_cloud_storage_bucket_name: dbtester-results
 google_cloud_storage_sub_directory: 2016Q402-etcd-zk-consul/write-2M-keys
 
 peer_ips:
-    - 10.240.0.40
-    - 10.240.0.41
-    - 10.240.0.42
+    - 10.240.0.25
+    - 10.240.0.27
+    - 10.240.0.28
 
 agent_port: 3500
 database_port: 2181
