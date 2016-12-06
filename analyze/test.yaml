@@ -61,15 +61,15 @@ step3:
         - 20160330/01-avg-latency-ms.png
 
     - lines:
-      - column: throughput_etcd_v3
+      - column: avg-throughput_etcd_v3
         legend: etcd v3
-      - column: throughput_zookeeper_3.4.8
+      - column: avg-throughput_zookeeper_3.4.8
         legend: Zookeeper 3.4.8
       x_axis: Second
       y_axis: Throughput
       output_path_list:
-        - 20160330/01-throughput.svg
-        - 20160330/01-throughput.png
+        - 20160330/01-avg-throughput.svg
+        - 20160330/01-avg-throughput.png
 
     - lines:
       - column: avg-cpu-etcd_v3
@@ -108,15 +108,15 @@ step3:
         - 20160330/02-avg-latency-ms.png
 
     - lines:
-      - column: throughput_etcd_v3
+      - column: avg-throughput_etcd_v3
         legend: etcd v3
-      - column: throughput_zookeeper_3.4.8
+      - column: avg-throughput_zookeeper_3.4.8
         legend: Zookeeper 3.4.8
       x_axis: Second
       y_axis: Throughput
       output_path_list:
-        - 20160330/02-throughput.svg
-        - 20160330/02-throughput.png
+        - 20160330/02-avg-throughput.svg
+        - 20160330/02-avg-throughput.png
 
     - lines:
       - column: avg-cpu-etcd_v3
@@ -155,8 +155,8 @@ step4:
         - image_title: 01-avg-latency-ms
           image_path: 20160330/01-avg-latency-ms.png
           image_type: local
-        - image_title: 01-throughput
-          image_path: 20160330/01-throughput.png
+        - image_title: 01-avg-throughput
+          image_path: 20160330/01-avg-throughput.png
           image_type: local
         - image_title: 01-avg-cpu
           image_path: 20160330/01-avg-cpu.png
@@ -168,8 +168,8 @@ step4:
         - image_title: 02-avg-latency-ms
           image_path: 20160330/02-avg-latency-ms.png
           image_type: local
-        - image_title: 02-throughput
-          image_path: 20160330/02-throughput.png
+        - image_title: 02-avg-throughput
+          image_path: 20160330/02-avg-throughput.png
           image_type: local
         - image_title: 02-avg-cpu
           image_path: 20160330/02-avg-cpu.png

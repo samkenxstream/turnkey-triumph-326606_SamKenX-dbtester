@@ -51,17 +51,17 @@ step3:
         - 2016Q402-etcd-zk-consul/read-2M-keys-linearizable/avg-latency-ms.png
 
     - lines:
-      - column: throughput-etcd-v3.1-go1.7.4
+      - column: avg-throughput-etcd-v3.1-go1.7.4
         legend: etcd v3.1 (Go 1.7.4)
-      - column: throughput-zk-v3.4.9-java8
+      - column: avg-throughput-zk-v3.4.9-java8
         legend: Zookeeper v3.4.9 (Java 8)
-      - column: throughput-consul-v0.7.1-go1.7.3
+      - column: avg-throughput-consul-v0.7.1-go1.7.3
         legend: Consul v0.7.1 (Go 1.7.3)
       x_axis: Second
       y_axis: Throughput
       output_path_list:
-        - 2016Q402-etcd-zk-consul/read-2M-keys-linearizable/throughput.svg
-        - 2016Q402-etcd-zk-consul/read-2M-keys-linearizable/throughput.png
+        - 2016Q402-etcd-zk-consul/read-2M-keys-linearizable/avg-throughput.svg
+        - 2016Q402-etcd-zk-consul/read-2M-keys-linearizable/avg-throughput.png
 
     - lines:
       - column: avg-cpu-etcd-v3.1-go1.7.4
@@ -108,8 +108,8 @@ step4:
         - image_title: 2016Q402-etcd-zk-consul/read-2M-keys-linearizable/avg-latency-ms
           image_path: https://storage.googleapis.com/dbtester-results/2016Q402-etcd-zk-consul/read-2M-keys-linearizable/avg-latency-ms.svg
           image_type: remote
-        - image_title: 2016Q402-etcd-zk-consul/read-2M-keys-linearizable/throughput
-          image_path: https://storage.googleapis.com/dbtester-results/2016Q402-etcd-zk-consul/read-2M-keys-linearizable/throughput.svg
+        - image_title: 2016Q402-etcd-zk-consul/read-2M-keys-linearizable/avg-throughput
+          image_path: https://storage.googleapis.com/dbtester-results/2016Q402-etcd-zk-consul/read-2M-keys-linearizable/avg-throughput.svg
           image_type: remote
         - image_title: 2016Q402-etcd-zk-consul/read-2M-keys-linearizable/avg-cpu
           image_path: https://storage.googleapis.com/dbtester-results/2016Q402-etcd-zk-consul/read-2M-keys-linearizable/avg-cpu.svg
