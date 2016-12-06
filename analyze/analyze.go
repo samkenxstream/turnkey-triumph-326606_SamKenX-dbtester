@@ -267,7 +267,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		plog.Printf("Step 1-%d-%d: calculating average values", step1Idx, len(elem.DataPathList)+1)
 		var (
 			sampleSize              = float64(len(elem.DataPathList))
-			cumulativeThroughputCol = dataframe.NewColumn("cumulative-throughput")
+			cumulativeThroughputCol = dataframe.NewColumn("cumulative-avg-throughput")
 			totalThrougput          int
 			avgCPUCol               = dataframe.NewColumn("avg-cpu")
 			avgMemCol               = dataframe.NewColumn("avg-memory-mb")
@@ -289,7 +289,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 					cpuTotal += fv
 				case strings.HasPrefix(col.GetHeader(), "memory_"):
 					memoryTotal += fv
-				case col.GetHeader() == "throughput":
+				case col.GetHeader() == "avg-throughput":
 					fv, _ := rv.ToNumber()
 					totalThrougput += int(fv)
 					cumulativeThroughputCol.PushBack(dataframe.NewStringValue(totalThrougput))
@@ -308,7 +308,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
-		throughputCol, err := frBench.GetColumn("throughput")
+		throughputCol, err := frBench.GetColumn("avg-throughput")
 		if err != nil {
 			return err
 		}
@@ -371,7 +371,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 			secondCol.PushBack(dataframe.NewStringValue(i))
 		}
 		nf.AddColumn(secondCol)
-		colsToKeep := []string{"avg-latency-ms", "throughput", "cumulative-throughput", "avg-cpu", "avg-memory-mb"}
+		colsToKeep := []string{"avg-latency-ms", "avg-throughput", "cumulative-avg-throughput", "avg-cpu", "avg-memory-mb"}
 		for i, fr := range frames {
 			dbID := elem.DataList[i].Name
 			plog.Printf("Step 2-%d-%d: cleaning up %s...", step2Idx, i, dbID)
