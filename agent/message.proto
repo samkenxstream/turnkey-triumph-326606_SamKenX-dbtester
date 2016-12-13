@@ -16,7 +16,7 @@ message Request {
 	enum Operation {
 		Start     = 0;
 		Stop      = 1;
-		UploadLog = 3;
+		UploadLog = 2;
 	}
 	enum Database {
 		etcdv3    = 0;
