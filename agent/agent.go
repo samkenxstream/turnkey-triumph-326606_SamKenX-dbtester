@@ -155,11 +155,15 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 }
 
 type transporterServer struct { // satisfy TransporterServer
-	req      Request
-	cmd      *exec.Cmd
-	proxyCmd *exec.Cmd
-	logfile  *os.File
-	pid      int
+	req Request
+
+	cmd     *exec.Cmd
+	logfile *os.File
+	pid     int
+
+	proxyCmd     *exec.Cmd
+	proxyLogfile *os.File
+	proxyPid     int
 }
 
 var uploadSig = make(chan Request_Operation, 1)
@@ -283,11 +287,45 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				plog.Infof("exiting %q", cmdString)
 			}()
 
-			if t.req.Database == Request_zetcd {
-				// TODO: start zetcd proxy
-			}
-			if t.req.Database == Request_cetcd {
-				// TODO: start cetcd proxy
+			if t.req.Database == Request_zetcd || t.req.Database == Request_cetcd {
+				f2, err := openToAppend(databaseLogPath + t.req.Database.String())
+				if err != nil {
+					return nil, err
+				}
+				t.proxyLogfile = f2
+				flags2 := []string{}
+				if t.req.Database == Request_zetcd {
+					flags2 = []string{
+						"-zkaddr", "0.0.0.0:2181",
+						"-endpoint", clientURLs[t.req.ServerIndex], // etcd endpoint
+					}
+				} else {
+					flags2 = []string{
+						"-consuladdr", "0.0.0.0:8500",
+						"-endpoint", clientURLs[t.req.ServerIndex], // etcd endpoint
+					}
+				}
+				flagString2 := strings.Join(flags2, " ")
+
+				cmd2 := exec.Command(zetcdBinaryPath, flags2...)
+				cmd2.Stdout = f2
+				cmd2.Stderr = f2
+
+				cmdString2 := fmt.Sprintf("%s %s", cmd2.Path, flagString2)
+				plog.Infof("starting binary %q", cmdString2)
+				if err := cmd2.Start(); err != nil {
+					return nil, err
+				}
+				t.proxyCmd = cmd2
+				t.proxyPid = cmd2.Process.Pid
+				plog.Infof("started binary %q [PID: %d]", cmdString2, t.proxyPid)
+				go func() {
+					if err := cmd2.Wait(); err != nil {
+						plog.Errorf("cmd.Wait %q returned error %v", cmdString2, err)
+						return
+					}
+					plog.Infof("exiting %q", cmdString2)
+				}()
 			}
 
 		case Request_ZooKeeper:
@@ -421,14 +459,14 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					plog.Error("cmd.Wait returned error", cmdString, err)
 					return
 				}
-				plog.Infof("exiting", cmdString, err)
+				plog.Infof("exiting %q (%v)", cmdString, err)
 			}()
 
 		default:
 			return nil, fmt.Errorf("unknown database %q", r.Database)
 		}
 
-	case Request_Restart:
+	case Request_Restart: // TODO: proxy is not supported!
 		if t.cmd == nil {
 			return nil, fmt.Errorf("nil command")
 		}
@@ -479,11 +517,18 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		if t.logfile != nil {
 			t.logfile.Close()
 		}
+		if t.proxyCmd != nil {
+			plog.Infof("stopping proxy binary %q [PID: %d]", t.req.Database.String(), t.proxyPid)
+			if err := syscall.Kill(t.proxyPid, syscall.SIGTERM); err != nil {
+				return nil, err
+			}
+		}
+		if t.proxyLogfile != nil {
+			t.proxyLogfile.Close()
+		}
 		plog.Infof("stopped binary %q [PID: %d]", t.req.Database.String(), t.pid)
 		processPID = t.pid
 		uploadSig <- Request_Stop
-
-		// TODO: kill proxy processes
 
 	case Request_UploadLog:
 		time.Sleep(3 * time.Second) // wait a few more seconds to collect more monitoring data
