@@ -170,7 +170,7 @@ var uploadSig = make(chan Request_Operation, 1)
 
 func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response, error) {
 	peerIPs := strings.Split(r.PeerIPString, "___")
-	if r.Operation == Request_Start || r.Operation == Request_Restart {
+	if r.Operation == Request_Start {
 		if !filepath.HasPrefix(etcdDataDir, globalFlags.WorkingDirectory) {
 			etcdDataDir = filepath.Join(globalFlags.WorkingDirectory, etcdDataDir)
 		}
@@ -466,45 +466,6 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			return nil, fmt.Errorf("unknown database %q", r.Database)
 		}
 
-	case Request_Restart: // TODO: proxy is not supported!
-		if t.cmd == nil {
-			return nil, fmt.Errorf("nil command")
-		}
-
-		plog.Infof("restarting database %q", t.req.Database.String())
-		if r.Database == Request_ZooKeeper {
-			if err := os.Chdir(zkWorkingDir); err != nil {
-				return nil, err
-			}
-		}
-
-		f, err := openToAppend(databaseLogPath)
-		if err != nil {
-			return nil, err
-		}
-		t.logfile = f
-
-		cmd := exec.Command(t.cmd.Path, t.cmd.Args[1:]...)
-		cmd.Stdout = f
-		cmd.Stderr = f
-
-		cmdString := strings.Join(t.cmd.Args, " ")
-		plog.Infof("restarting binary %q", cmdString)
-		if err := cmd.Start(); err != nil {
-			return nil, err
-		}
-		t.cmd = cmd
-		t.pid = cmd.Process.Pid
-		plog.Infof("restarted binary %q [PID: %d]", cmdString, t.pid)
-		processPID = t.pid
-		go func() {
-			if err := cmd.Wait(); err != nil {
-				plog.Errorf("cmd.Wait %q returned error (%v)", cmdString, err)
-				return
-			}
-			plog.Infof("exiting %q", cmdString)
-		}()
-
 	case Request_Stop:
 		time.Sleep(3 * time.Second) // wait a few more seconds to collect more monitoring data
 		if t.cmd == nil {
@@ -542,7 +503,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		return nil, fmt.Errorf("Not implemented %v", r.Operation)
 	}
 
-	if r.Operation == Request_Start || r.Operation == Request_Restart {
+	if r.Operation == Request_Start {
 		go func(processPID int) {
 			notifier := make(chan os.Signal, 1)
 			signal.Notify(notifier, syscall.SIGINT, syscall.SIGTERM)
