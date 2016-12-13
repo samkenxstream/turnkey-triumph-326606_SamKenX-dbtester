@@ -68,7 +68,10 @@ var (
 
 	etcdBinaryPath   = filepath.Join(os.Getenv("GOPATH"), "bin/etcd")
 	consulBinaryPath = filepath.Join(os.Getenv("GOPATH"), "bin/consul")
-	javaBinaryPath   = "/usr/bin/java"
+	zetcdBinaryPath  = filepath.Join(os.Getenv("GOPATH"), "bin/zetcd")
+	cetcdBinaryPath  = filepath.Join(os.Getenv("GOPATH"), "bin/cetcd")
+
+	javaBinaryPath = "/usr/bin/java"
 
 	etcdToken     = "etcd_token"
 	etcdDataDir   = "data.etcd"
@@ -211,9 +214,15 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 	switch r.Operation {
 	case Request_Start:
 		switch t.req.Database {
-		case Request_etcdv2, Request_etcdv3:
+		case Request_etcdv2, Request_etcdv3, Request_zetcd, Request_cetcd:
 			if !exist(etcdBinaryPath) {
-				return nil, fmt.Errorf("%q does not exist", etcdBinaryPath)
+				return nil, fmt.Errorf("etcd binary %q does not exist", etcdBinaryPath)
+			}
+			if t.req.Database == Request_zetcd && !exist(zetcdBinaryPath) {
+				return nil, fmt.Errorf("zetcd binary %q does not exist", zetcdBinaryPath)
+			}
+			if t.req.Database == Request_cetcd && !exist(cetcdBinaryPath) {
+				return nil, fmt.Errorf("cetcd binary %q does not exist", cetcdBinaryPath)
 			}
 			if err := os.RemoveAll(etcdDataDir); err != nil {
 				return nil, err
@@ -272,6 +281,16 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				}
 				plog.Infof("exiting %q", cmdString)
 			}()
+
+			// TODO: run zetcd
+			if t.req.Database == Request_zetcd {
+
+			}
+
+			// TODO: run cetcd
+			if t.req.Database == Request_cetcd {
+
+			}
 
 		case Request_ZooKeeper:
 			if !exist(javaBinaryPath) {
