@@ -1,15 +1,15 @@
-database: etcdv3
-test_name: 01-etcdv3
+database: cetcd
+test_name: cetcd-v3.1-go1.7.4
 
 google_cloud_project_name: etcd-development
-google_cloud_storage_key_path: $HOME/gcloud-key.json
+google_cloud_storage_key_path: /home/gyuho/gcloud-key.json
 google_cloud_storage_bucket_name: dbtester-results
-google_cloud_storage_sub_directory: 2016041501 
+google_cloud_storage_sub_directory: 2016Q403-etcd-zk-consul/01-write-2M-keys
 
 peer_ips:
-    - 10.240.0.13
-    - 10.240.0.14
-    - 10.240.0.15
+    - 10.240.0.41
+    - 10.240.0.42
+    - 10.240.0.43
 
 agent_port: 3500
 database_port: 2379
@@ -28,14 +28,14 @@ step2:
     skip_stress_database: false
     bench_type: write
     stale_read: true
-    connections: 100
-    clients: 100
+    connections: 1000
+    clients: 1000
     key_size: 8
-    same_key: true
     value_size: 256
     total_requests: 2000000
-    request_interval_ms: 100
+    request_interval_ms: 0
+    etcdv3_compaction_cycle: 0
 
 # after benchmark
 step3:
-    action: stop # OR 'only-upload-log'
+    action: stop

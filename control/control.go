@@ -35,10 +35,11 @@ import (
 )
 
 var (
+	// Command implements 'control' command.
 	Command = &cobra.Command{
 		Use:   "control",
 		Short: "Controls tests.",
-		RunE:  CommandFunc,
+		RunE:  commandFunc,
 	}
 	configPath string
 )
@@ -47,7 +48,7 @@ func init() {
 	Command.PersistentFlags().StringVarP(&configPath, "config", "c", "", "YAML configuration file path.")
 }
 
-func CommandFunc(cmd *cobra.Command, args []string) error {
+func commandFunc(cmd *cobra.Command, args []string) error {
 	cfg, err := ReadConfig(configPath)
 	if err != nil {
 		return err
@@ -56,7 +57,9 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 	case "etcdv2":
 	case "etcdv3":
 	case "zk", "zookeeper":
+	case "zetcd":
 	case "consul":
+	case "cetcd":
 	default:
 		return fmt.Errorf("%q is not supported", cfg.Database)
 	}
@@ -227,9 +230,9 @@ func step2(cfg Config) error {
 			totalKeysFunc = getTotalKeysEtcdv2
 		case "etcdv3":
 			totalKeysFunc = getTotalKeysEtcdv3
-		case "zk", "zookeeper":
+		case "zk", "zookeeper", "zetcd":
 			totalKeysFunc = getTotalKeysZk
-		case "consul":
+		case "consul", "cetcd":
 			totalKeysFunc = getTotalKeysConsul
 		}
 		for k, v := range totalKeysFunc(cfg.DatabaseEndpoints) {
@@ -242,7 +245,7 @@ func step2(cfg Config) error {
 
 		switch cfg.Database {
 		case "etcdv2":
-			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, "etcdv2")
+			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, cfg.Database)
 			var err error
 			for i := 0; i < 7; i++ {
 				clients := mustCreateClientsEtcdv2(cfg.DatabaseEndpoints, cfg.Step2.Connections)
@@ -250,16 +253,16 @@ func step2(cfg Config) error {
 				if err != nil {
 					continue
 				}
-				plog.Infof("write done [request: PUT | key: %q | database: %q]", key, "etcdv2")
+				plog.Infof("write done [request: PUT | key: %q | database: %q]", key, cfg.Database)
 				break
 			}
 			if err != nil {
-				plog.Errorf("write error [request: PUT | key: %q | database: %q]", key, "etcdv2")
+				plog.Errorf("write error [request: PUT | key: %q | database: %q]", key, cfg.Database)
 				os.Exit(1)
 			}
 
 		case "etcdv3":
-			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, "etcdv3")
+			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, cfg.Database)
 			var err error
 			for i := 0; i < 7; i++ {
 				clients := mustCreateClientsEtcdv3(cfg.DatabaseEndpoints, etcdv3ClientCfg{
@@ -270,16 +273,16 @@ func step2(cfg Config) error {
 				if err != nil {
 					continue
 				}
-				plog.Infof("write done [request: PUT | key: %q | database: %q]", key, "etcdv3")
+				plog.Infof("write done [request: PUT | key: %q | database: %q]", key, cfg.Database)
 				break
 			}
 			if err != nil {
-				plog.Errorf("write error [request: PUT | key: %q | database: %q]", key, "etcdv3")
+				plog.Errorf("write error [request: PUT | key: %q | database: %q]", key, cfg.Database)
 				os.Exit(1)
 			}
 
-		case "zk", "zookeeper":
-			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, "zookeeper")
+		case "zk", "zookeeper", "zetcd":
+			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, cfg.Database)
 			var err error
 			for i := 0; i < 7; i++ {
 				conns := mustCreateConnsZk(cfg.DatabaseEndpoints, cfg.Step2.Connections)
@@ -290,16 +293,16 @@ func step2(cfg Config) error {
 				for j := range conns {
 					conns[j].Close()
 				}
-				plog.Infof("write done [request: PUT | key: %q | database: %q]", key, "zookeeper")
+				plog.Infof("write done [request: PUT | key: %q | database: %q]", key, cfg.Database)
 				break
 			}
 			if err != nil {
-				plog.Errorf("write error [request: PUT | key: %q | database: %q]", key, "zookeeper")
+				plog.Errorf("write error [request: PUT | key: %q | database: %q]", key, cfg.Database)
 				os.Exit(1)
 			}
 
-		case "consul":
-			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, "consul")
+		case "consul", "cetcd":
+			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, cfg.Database)
 			var err error
 			for i := 0; i < 7; i++ {
 				clients := mustCreateConnsConsul(cfg.DatabaseEndpoints, cfg.Step2.Connections)
@@ -307,11 +310,11 @@ func step2(cfg Config) error {
 				if err != nil {
 					continue
 				}
-				plog.Infof("write done [request: PUT | key: %q | database: %q]", key, "consul")
+				plog.Infof("write done [request: PUT | key: %q | database: %q]", key, cfg.Database)
 				break
 			}
 			if err != nil {
-				plog.Errorf("write done [request: PUT | key: %q | database: %q]", key, "consul")
+				plog.Errorf("write done [request: PUT | key: %q | database: %q]", key, cfg.Database)
 				os.Exit(1)
 			}
 		}
@@ -339,12 +342,12 @@ func step2(cfg Config) error {
 			_, err = clients[0].Do(context.Background(), clientv3.OpPut(key, value))
 			clients[0].Close()
 
-		case "zk", "zookeeper":
+		case "zk", "zookeeper", "zetcd":
 			conns := mustCreateConnsZk(cfg.DatabaseEndpoints, 1)
 			_, err = conns[0].Create("/"+key, vals.bytes[0], zkCreateFlags, zkCreateAcl)
 			conns[0].Close()
 
-		case "consul":
+		case "consul", "cetcd":
 			clients := mustCreateConnsConsul(cfg.DatabaseEndpoints, 1)
 			_, err = clients[0].Put(&consulapi.KVPair{Key: key, Value: vals.bytes[0]}, nil)
 		}
@@ -410,7 +413,7 @@ func sendReq(ep string, req agent.Request, i int) error {
 	req.ServerIndex = uint32(i)
 	req.ZookeeperMyID = uint32(i + 1)
 
-	plog.Infof("sending message [index: %d | operation: %q | database: %q | endpoint: %q]", i, req.Operation.String(), req.Database.String(), ep)
+	plog.Infof("sending message [index: %d | operation: %q | database: %q | endpoint: %q]", i, req.Operation, req.Database, ep)
 
 	conn, err := grpc.Dial(ep, grpc.WithInsecure())
 	if err != nil {
@@ -454,7 +457,7 @@ func newReadHandlers(cfg Config) (rhs []ReqHandler, done func()) {
 				clients[i].Close()
 			}
 		}
-	case "zk", "zookeeper":
+	case "zk", "zookeeper", "zetcd":
 		conns := mustCreateConnsZk(cfg.DatabaseEndpoints, cfg.Step2.Connections)
 		for i := range conns {
 			rhs[i] = newGetZK(conns[i])
@@ -464,7 +467,7 @@ func newReadHandlers(cfg Config) (rhs []ReqHandler, done func()) {
 				conns[i].Close()
 			}
 		}
-	case "consul":
+	case "consul", "cetcd":
 		conns := mustCreateConnsConsul(cfg.DatabaseEndpoints, cfg.Step2.Connections)
 		for i := range conns {
 			rhs[i] = newGetConsul(conns[i])
@@ -494,11 +497,11 @@ func newWriteHandlers(cfg Config) (rhs []ReqHandler, done func()) {
 				etcdClients[i].Close()
 			}
 		}
-	case "zk", "zookeeper":
+	case "zk", "zookeeper", "zetcd":
 		if cfg.Step2.SameKey {
 			key := sameKey(cfg.Step2.KeySize)
 			valueBts := randBytes(cfg.Step2.ValueSize)
-			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, "zookeeper")
+			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, cfg.Database)
 			var err error
 			for i := 0; i < 7; i++ {
 				conns := mustCreateConnsZk(cfg.DatabaseEndpoints, cfg.Step2.Connections)
@@ -509,11 +512,11 @@ func newWriteHandlers(cfg Config) (rhs []ReqHandler, done func()) {
 				for j := range conns {
 					conns[j].Close()
 				}
-				plog.Infof("write done [request: PUT | key: %q | database: %q]", key, "zookeeper")
+				plog.Infof("write done [request: PUT | key: %q | database: %q]", key, cfg.Database)
 				break
 			}
 			if err != nil {
-				plog.Errorf("write error [request: PUT | key: %q | database: %q]", key, "zookeeper")
+				plog.Errorf("write error [request: PUT | key: %q | database: %q]", key, cfg.Database)
 				os.Exit(1)
 			}
 		}
@@ -531,7 +534,7 @@ func newWriteHandlers(cfg Config) (rhs []ReqHandler, done func()) {
 				conns[i].Close()
 			}
 		}
-	case "consul":
+	case "consul", "cetcd":
 		conns := mustCreateConnsConsul(cfg.DatabaseEndpoints, cfg.Step2.Connections)
 		for i := range conns {
 			rhs[i] = newPutConsul(conns[i])
@@ -561,7 +564,7 @@ func newReadOneshotHandlers(cfg Config) []ReqHandler {
 				return newGetEtcd3(conns[0])(ctx, req)
 			}
 		}
-	case "zk", "zookeeper":
+	case "zk", "zookeeper", "zetcd":
 		for i := range rhs {
 			rhs[i] = func(ctx context.Context, req *request) error {
 				conns := mustCreateConnsZk(cfg.DatabaseEndpoints, cfg.Step2.Connections)
@@ -569,7 +572,7 @@ func newReadOneshotHandlers(cfg Config) []ReqHandler {
 				return newGetZK(conns[0])(ctx, req)
 			}
 		}
-	case "consul":
+	case "consul", "cetcd":
 		for i := range rhs {
 			rhs[i] = func(ctx context.Context, req *request) error {
 				conns := mustCreateConnsConsul(cfg.DatabaseEndpoints, 1)
@@ -596,14 +599,14 @@ func generateReads(cfg Config, key string, requests chan<- request) {
 			}
 			requests <- request{etcdv3Op: clientv3.OpGet(key, opts...)}
 
-		case "zk", "zookeeper":
+		case "zk", "zookeeper", "zetcd":
 			op := zkOp{key: key}
 			if cfg.Step2.StaleRead {
 				op.staleRead = true
 			}
 			requests <- request{zkOp: op}
 
-		case "consul":
+		case "consul", "cetcd":
 			op := consulOp{key: key}
 			if cfg.Step2.StaleRead {
 				op.staleRead = true
@@ -636,9 +639,9 @@ func generateWrites(cfg Config, vals values, requests chan<- request) {
 			requests <- request{etcdv2Op: etcdv2Op{key: k, value: vs}}
 		case "etcdv3":
 			requests <- request{etcdv3Op: clientv3.OpPut(k, vs)}
-		case "zk", "zookeeper":
+		case "zk", "zookeeper", "zetcd":
 			requests <- request{zkOp: zkOp{key: "/" + k, value: v}}
-		case "consul":
+		case "consul", "cetcd":
 			requests <- request{consulOp: consulOp{key: k, value: v}}
 		}
 		if cfg.Step2.RequestIntervalMs > 0 {
