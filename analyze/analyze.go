@@ -17,6 +17,7 @@ package analyze
 import (
 	"bytes"
 	"fmt"
+	"image/color"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -428,8 +429,24 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 			pl.Y.Label.Text = pelem.YAxis
 			pl.Legend.Top = true
 
-			var args []interface{}
-			for _, line := range pelem.Lines {
+			// var args []interface{}
+			// for _, line := range pelem.Lines {
+			// 	col, err := fr.GetColumn(line.Column)
+			// 	if err != nil {
+			// 		return err
+			// 	}
+			// 	pt, err := points(col)
+			// 	if err != nil {
+			// 		return err
+			// 	}
+			// 	args = append(args, line.Legend, pt)
+			// }
+			// if err = plotutil.AddLines(pl, args...); err != nil {
+			// 	return err
+			// }
+
+			var ps []plot.Plotter
+			for j, line := range pelem.Lines {
 				col, err := fr.GetColumn(line.Column)
 				if err != nil {
 					return err
@@ -438,12 +455,19 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 				if err != nil {
 					return err
 				}
-				args = append(args, line.Legend, pt)
-			}
 
-			if err = plotutil.AddLines(pl, args...); err != nil {
-				return err
+				l, err := plotter.NewLine(pt)
+				if err != nil {
+					return err
+				}
+				l.Color = getRGB(line.Legend, j)
+				l.Dashes = plotutil.Dashes(j)
+				ps = append(ps, l)
+
+				pl.Legend.Add(line.Legend, l)
 			}
+			pl.Add(ps...)
+
 			for _, outputPath := range pelem.OutputPathList {
 				if err = pl.Save(plotWidth, plotHeight, outputPath); err != nil {
 					return err
@@ -520,4 +544,24 @@ func points(col dataframe.Column) (plotter.XYs, error) {
 		pts[i].Y = n
 	}
 	return pts, nil
+}
+
+func getRGB(legend string, i int) color.Color {
+	legend = strings.ToLower(strings.TrimSpace(legend))
+	if strings.HasPrefix(legend, "zk") || strings.HasPrefix(legend, "zookeeper") {
+		return color.RGBA{38, 169, 24, 255} // green
+	}
+	if strings.HasPrefix(legend, "zetcd") {
+		return color.RGBA{159, 102, 16, 255} // brown
+	}
+	if strings.HasPrefix(legend, "etcd") {
+		return color.RGBA{24, 90, 169, 255} // blue
+	}
+	if strings.HasPrefix(legend, "consul") {
+		return color.RGBA{198, 53, 53, 255} // red
+	}
+	if strings.HasPrefix(legend, "cetcd") {
+		return color.RGBA{116, 24, 169, 255} // purple
+	}
+	return plotutil.Color(i)
 }
