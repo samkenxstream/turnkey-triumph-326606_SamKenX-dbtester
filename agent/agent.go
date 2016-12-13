@@ -155,10 +155,11 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 }
 
 type transporterServer struct { // satisfy TransporterServer
-	req     Request
-	cmd     *exec.Cmd
-	logfile *os.File
-	pid     int
+	req      Request
+	cmd      *exec.Cmd
+	proxyCmd *exec.Cmd
+	logfile  *os.File
+	pid      int
 }
 
 var uploadSig = make(chan Request_Operation, 1)
@@ -282,14 +283,11 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				plog.Infof("exiting %q", cmdString)
 			}()
 
-			// TODO: run zetcd
 			if t.req.Database == Request_zetcd {
-
+				// TODO: start zetcd proxy
 			}
-
-			// TODO: run cetcd
 			if t.req.Database == Request_cetcd {
-
+				// TODO: start cetcd proxy
 			}
 
 		case Request_ZooKeeper:
@@ -484,6 +482,8 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		plog.Infof("stopped binary %q [PID: %d]", t.req.Database.String(), t.pid)
 		processPID = t.pid
 		uploadSig <- Request_Stop
+
+		// TODO: kill proxy processes
 
 	case Request_UploadLog:
 		time.Sleep(3 * time.Second) // wait a few more seconds to collect more monitoring data

@@ -22,6 +22,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// Config configures dbtester control clients.
 type Config struct {
 	Database                       string `yaml:"database"`
 	TestName                       string `yaml:"test_name"`
@@ -114,8 +115,14 @@ func (cfg *Config) ToRequest() agent.Request {
 		cfg.Database = "zookeeper"
 		req.Database = agent.Request_ZooKeeper
 
+	case "zetcd":
+		req.Database = agent.Request_zetcd
+
 	case "consul":
 		req.Database = agent.Request_Consul
+
+	case "cetcd":
+		req.Database = agent.Request_cetcd
 	}
 
 	req.PeerIPString = cfg.PeerIPString
