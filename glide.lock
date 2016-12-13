@@ -1,5 +1,5 @@
-hash: ba57a9a4b64241befe15f1120a0ab284e5df4d803c9fea7e40fa40d54431cd54
-updated: 2016-12-06T10:29:34.171946043-08:00
+hash: 75a5bcd048035387fc2786ae1c6d59635ee1c301f0d24771185064f10720f09a
+updated: 2016-12-13T10:52:33.09408304-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -25,7 +25,7 @@ imports:
 - name: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - name: github.com/coreos/etcd
-  version: cfd10b4bbfc6a9a1cf2d3f5ec8e31dae31e15122
+  version: 1a8e78cd55fe145987c851a2adb98adb188e2964
   subpackages:
   - auth/authpb
   - client
@@ -55,7 +55,7 @@ imports:
   - proto
   - protoc-gen-gogo/descriptor
 - name: github.com/golang/freetype
-  version: 38b4c392adc5eed94207994c4848fff99f4ac234
+  version: d9be45aaf7452cc30c0ceb1b1bf7efe1d17b7c87
   subpackages:
   - raster
   - truetype
@@ -100,13 +100,13 @@ imports:
   subpackages:
   - process
 - name: github.com/hashicorp/consul
-  version: 4e97f36614bf2877b7065f8e4ce4fc16cd7dd9ca
+  version: 763fc2f90299e558a1fb179951e349f19d9d9bd1
   subpackages:
   - api
 - name: github.com/hashicorp/go-cleanhttp
   version: ad28ea4487f05916463e2423a55166280e8254b5
 - name: github.com/hashicorp/serf
-  version: f679d7594a349263f6118db40d87122d3a474e7d
+  version: d3a67ab21bc8a4643fa53a3633f2d951dd50c6ca
   subpackages:
   - coordinate
 - name: github.com/inconshreveable/mousetrap
@@ -125,7 +125,7 @@ imports:
 - name: github.com/olekukonko/tablewriter
   version: cca8bbc0798408af109aaaa239cbd2634846b340
 - name: github.com/prometheus/client_golang
-  version: e51041b3fa41cece0dca035740ba6411905be473
+  version: c5b7fccd204277076155f10851dad72b76a49317
   subpackages:
   - prometheus
 - name: github.com/prometheus/client_model
@@ -139,13 +139,13 @@ imports:
   - internal/bitbucket.org/ww/goautoneg
   - model
 - name: github.com/prometheus/procfs
-  version: abf152e5f3e97f2fafac028d2cc06c1feb87ffa5
+  version: fcdb11ccb4389efb1b210b7ffb623ab71c5fdd60
 - name: github.com/samuel/go-zookeeper
   version: 1d7be4effb13d2d908342d349d71a284a7542693
   subpackages:
   - zk
 - name: github.com/spf13/cobra
-  version: 6b74a60562f5c1c920299b8f02d153e16f4897fc
+  version: 9495bc009a56819bdb0ddbc1a373e29c140bc674
 - name: github.com/spf13/pflag
   version: 5ccb023bc27df288a957c5e994cd44fd19619465
 - name: github.com/ugorji/go
@@ -153,7 +153,7 @@ imports:
   subpackages:
   - codec
 - name: golang.org/x/image
-  version: e2d0a9f0e684ecd17e2f185e3d055cb94811f22e
+  version: 88b013251f75f7c43fdc42017751c3493cc3b8f7
   subpackages:
   - draw
   - font

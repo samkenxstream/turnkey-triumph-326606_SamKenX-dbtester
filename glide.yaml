@@ -9,7 +9,7 @@ import:
 - package: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - package: github.com/coreos/etcd
-  version: cfd10b4bbfc6a9a1cf2d3f5ec8e31dae31e15122
+  version: 1a8e78cd55fe145987c851a2adb98adb188e2964
   subpackages:
   - auth/authpb
   - client
@@ -57,7 +57,7 @@ import:
   subpackages:
   - process
 - package: github.com/hashicorp/consul
-  version: 4e97f36614bf2877b7065f8e4ce4fc16cd7dd9ca
+  version: 763fc2f90299e558a1fb179951e349f19d9d9bd1
   subpackages:
   - api
 - package: github.com/samuel/go-zookeeper
@@ -65,7 +65,7 @@ import:
   subpackages:
   - zk
 - package: github.com/spf13/cobra
-  version: 6b74a60562f5c1c920299b8f02d153e16f4897fc
+  version: 9495bc009a56819bdb0ddbc1a373e29c140bc674
 - package: golang.org/x/net
   version: 6acef71eb69611914f7a30939ea9f6e194c78172
   subpackages:

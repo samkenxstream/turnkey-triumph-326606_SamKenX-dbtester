@@ -24,6 +24,8 @@ message Request {
 		etcdv2    = 1;
 		ZooKeeper = 2;
 		Consul    = 3;
+		zetcd     = 4;
+		cetcd     = 5;
 	}
 
 	Operation operation   = 1;
