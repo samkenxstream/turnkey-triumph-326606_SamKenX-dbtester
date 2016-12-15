@@ -297,14 +297,13 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				if t.req.Database == Request_zetcd {
 					flags2 = []string{
 						// "-zkaddr", "0.0.0.0:2181",
-						"-zkaddr", "localhost:2181",
-						// "-endpoint", clientURLs[t.req.ServerIndex],
-						"-endpoint", "localhost:2379", // etcd endpoint
+						"-zkaddr", fmt.Sprintf("%s:2181", peerIPs[t.req.ServerIndex]),
+						"-endpoint", clientURLs[t.req.ServerIndex],
 					}
 				} else {
 					flags2 = []string{
 						// "-consuladdr", "0.0.0.0:8500",
-						"-consuladdr", fmt.Sprintf("%s:8500", t.req.ServerIndex),
+						"-consuladdr", fmt.Sprintf("%s:8500", peerIPs[t.req.ServerIndex]),
 						"-etcd", clientURLs[t.req.ServerIndex], // etcd endpoint
 					}
 				}
