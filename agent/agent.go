@@ -307,7 +307,11 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				}
 				flagString2 := strings.Join(flags2, " ")
 
-				cmd2 := exec.Command(zetcdBinaryPath, flags2...)
+				bpath := zetcdBinaryPath
+				if t.req.Database == Request_cetcd {
+					bpath = cetcdBinaryPath
+				}
+				cmd2 := exec.Command(bpath, flags2...)
 				cmd2.Stdout = f2
 				cmd2.Stderr = f2
 
