@@ -9,7 +9,7 @@ import:
 - package: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - package: github.com/coreos/etcd
-  version: 1a8e78cd55fe145987c851a2adb98adb188e2964
+  version: 86a43849fb7eb72da1dd5ceb2175031ac89963dd
   subpackages:
   - auth/authpb
   - client
@@ -38,7 +38,7 @@ import:
   - jsonpb
   - proto
 - package: github.com/gonum/plot
-  version: 0e3ec68ffcc2ae4cc415fd64dec3a0ed24db3401
+  version: 9cd91e61771cdd73e563fa54f1fdc3b1071af62d
   subpackages:
   - palette
   - plotter
@@ -57,7 +57,7 @@ import:
   subpackages:
   - process
 - package: github.com/hashicorp/consul
-  version: 763fc2f90299e558a1fb179951e349f19d9d9bd1
+  version: 04f8e5adc03d5bf688b9ff954e7bf0b1a8324f9b
   subpackages:
   - api
 - package: github.com/samuel/go-zookeeper
