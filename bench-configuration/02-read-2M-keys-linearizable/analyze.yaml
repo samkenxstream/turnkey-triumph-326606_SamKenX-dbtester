@@ -23,6 +23,20 @@ step1:
     data_benchmark_path: 2016Q403-etcd-zk-consul/02-read-2M-keys-linearizable/consul-v0.7.2-go1.7.4-timeseries.csv
     output_path: 2016Q403-etcd-zk-consul/02-read-2M-keys-linearizable/consul-v0.7.2-go1.7.4-aggregated.csv
 
+  - data_path_list:
+    - 2016Q403-etcd-zk-consul/02-read-2M-keys-linearizable/zetcd-v3.1-go1.7.4-1-monitor.csv
+    - 2016Q403-etcd-zk-consul/02-read-2M-keys-linearizable/zetcd-v3.1-go1.7.4-2-monitor.csv
+    - 2016Q403-etcd-zk-consul/02-read-2M-keys-linearizable/zetcd-v3.1-go1.7.4-3-monitor.csv
+    data_benchmark_path: 2016Q403-etcd-zk-consul/02-read-2M-keys-linearizable/zetcd-v3.1-go1.7.4-timeseries.csv
+    output_path: 2016Q403-etcd-zk-consul/02-read-2M-keys-linearizable/zetcd-v3.1-go1.7.4-aggregated.csv
+
+  - data_path_list:
+    - 2016Q403-etcd-zk-consul/02-read-2M-keys-linearizable/cetcd-v3.1-go1.7.4-1-monitor.csv
+    - 2016Q403-etcd-zk-consul/02-read-2M-keys-linearizable/cetcd-v3.1-go1.7.4-2-monitor.csv
+    - 2016Q403-etcd-zk-consul/02-read-2M-keys-linearizable/cetcd-v3.1-go1.7.4-3-monitor.csv
+    data_benchmark_path: 2016Q403-etcd-zk-consul/02-read-2M-keys-linearizable/cetcd-v3.1-go1.7.4-timeseries.csv
+    output_path: 2016Q403-etcd-zk-consul/02-read-2M-keys-linearizable/cetcd-v3.1-go1.7.4-aggregated.csv
+
 step2:
   - data_list:
       - path: 2016Q403-etcd-zk-consul/02-read-2M-keys-linearizable/zk-v3.4.9-java8-aggregated.csv
@@ -31,6 +45,10 @@ step2:
         name: etcd-v3.1-go1.7.4
       - path: 2016Q403-etcd-zk-consul/02-read-2M-keys-linearizable/consul-v0.7.2-go1.7.4-aggregated.csv
         name: consul-v0.7.2-go1.7.4
+      - path: 2016Q403-etcd-zk-consul/02-read-2M-keys-linearizable/zetcd-v3.1-go1.7.4-aggregated.csv
+        name: zetcd-v3.1-go1.7.4
+      - path: 2016Q403-etcd-zk-consul/02-read-2M-keys-linearizable/cetcd-v3.1-go1.7.4-aggregated.csv
+        name: cetcd-v3.1-go1.7.4
     output_path: 2016Q403-etcd-zk-consul/02-read-2M-keys-linearizable/aggregated.csv
 
 step3:
@@ -44,6 +62,10 @@ step3:
         legend: etcd v3.1 (Go 1.7.4)
       - column: avg-latency-ms-consul-v0.7.2-go1.7.4
         legend: Consul v0.7.2 (Go 1.7.4)
+      - column: avg-latency-ms-zetcd-v3.1-go1.7.4
+        legend: zetcd v3.1 (Go 1.7.4)
+      - column: avg-latency-ms-cetcd-v3.1-go1.7.4
+        legend: cetcd v3.1 (Go 1.7.4)
       x_axis: Second
       y_axis: Latency(millisecond)
       output_path_list:
@@ -57,6 +79,10 @@ step3:
         legend: etcd v3.1 (Go 1.7.4)
       - column: avg-throughput-consul-v0.7.2-go1.7.4
         legend: Consul v0.7.2 (Go 1.7.4)
+      - column: avg-throughput-zetcd-v3.1-go1.7.4
+        legend: zetcd v3.1 (Go 1.7.4)
+      - column: avg-throughput-cetcd-v3.1-go1.7.4
+        legend: cetcd v3.1 (Go 1.7.4)
       x_axis: Second
       y_axis: Throughput
       output_path_list:
@@ -70,6 +96,10 @@ step3:
         legend: etcd v3.1 (Go 1.7.4)
       - column: avg-cpu-consul-v0.7.2-go1.7.4
         legend: Consul v0.7.2 (Go 1.7.4)
+      - column: avg-cpu-zetcd-v3.1-go1.7.4
+        legend: zetcd v3.1 (Go 1.7.4)
+      - column: avg-cpu-cetcd-v3.1-go1.7.4
+        legend: cetcd v3.1 (Go 1.7.4)
       x_axis: Second
       y_axis: CPU
       output_path_list:
@@ -83,6 +113,10 @@ step3:
         legend: etcd v3.1 (Go 1.7.4)
       - column: avg-memory-mb-consul-v0.7.2-go1.7.4
         legend: Consul v0.7.3 (Go 1.7.3)
+      - column: avg-memory-mb-zetcd-v3.1-go1.7.4
+        legend: zetcd v3.1 (Go 1.7.4)
+      - column: avg-memory-mb-cetcd-v3.1-go1.7.4
+        legend: cetcd v3.1 (Go 1.7.4)
       x_axis: Second
       y_axis: Memory(MB)
       output_path_list:
@@ -102,6 +136,8 @@ step4:
       - javac 1.8.0_111
     - etcd v3.1 (Go 1.7.4)
     - Consul v0.7.2 (Go 1.7.4)
+    - zetcd v3.1 (Go 1.7.4)
+    - cetcd v3.1 (Go 1.7.4)
 
   results:
     - images:
