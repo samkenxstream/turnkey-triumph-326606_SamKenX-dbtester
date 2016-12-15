@@ -288,7 +288,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			}()
 
 			if t.req.Database == Request_zetcd || t.req.Database == Request_cetcd {
-				f2, err := openToAppend(databaseLogPath + t.req.Database.String())
+				f2, err := openToAppend(databaseLogPath + "-" + t.req.Database.String())
 				if err != nil {
 					return nil, err
 				}
@@ -537,14 +537,12 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					return err
 				}
 
-				// set up file names
 				srcDatabaseLogPath := databaseLogPath
 				dstDatabaseLogPath := filepath.Base(databaseLogPath)
 				if !strings.HasPrefix(filepath.Base(databaseLogPath), t.req.TestName) {
 					dstDatabaseLogPath = fmt.Sprintf("%s-%d-%s", t.req.TestName, t.req.ServerIndex+1, filepath.Base(databaseLogPath))
 				}
 				dstDatabaseLogPath = filepath.Join(t.req.GoogleCloudStorageSubDirectory, dstDatabaseLogPath)
-
 				plog.Infof("uploading database log [%q -> %q]", srcDatabaseLogPath, dstDatabaseLogPath)
 				var uerr error
 				for k := 0; k < 30; k++ {
@@ -557,13 +555,37 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					}
 				}
 
+				if t.req.Database == Request_zetcd || t.req.Database == Request_cetcd {
+					dpath := databaseLogPath + "-" + t.req.Database.String()
+					if exist(dpath) {
+						srcDatabaseLogPath2 := dpath
+						dstDatabaseLogPath2 := filepath.Base(dpath)
+						if !strings.HasPrefix(filepath.Base(dpath), t.req.TestName) {
+							dstDatabaseLogPath2 = fmt.Sprintf("%s-%d-%s", t.req.TestName, t.req.ServerIndex+1, filepath.Base(dpath))
+						}
+						dstDatabaseLogPath2 = filepath.Join(t.req.GoogleCloudStorageSubDirectory, dstDatabaseLogPath2)
+						plog.Infof("uploading database log [%q -> %q]", srcDatabaseLogPath2, dstDatabaseLogPath2)
+						var uerr error
+						for k := 0; k < 30; k++ {
+							if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcDatabaseLogPath2, dstDatabaseLogPath2); uerr != nil {
+								plog.Errorf("u.UploadFile error... sleep and retry... (%v)", uerr)
+								time.Sleep(2 * time.Second)
+								continue
+							} else {
+								break
+							}
+						}
+					} else {
+						plog.Errorf("%q is expected, but doesn't exist!", dpath)
+					}
+				}
+
 				srcMonitorResultPath := monitorLogPath
 				dstMonitorResultPath := filepath.Base(monitorLogPath)
 				if !strings.HasPrefix(filepath.Base(monitorLogPath), t.req.TestName) {
 					dstMonitorResultPath = fmt.Sprintf("%s-%d-%s", t.req.TestName, t.req.ServerIndex+1, filepath.Base(monitorLogPath))
 				}
 				dstMonitorResultPath = filepath.Join(t.req.GoogleCloudStorageSubDirectory, dstMonitorResultPath)
-
 				plog.Infof("uploading monitor results [%q -> %q]", srcMonitorResultPath, dstMonitorResultPath)
 				for k := 0; k < 30; k++ {
 					if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcMonitorResultPath, dstMonitorResultPath); uerr != nil {
@@ -581,7 +603,6 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					dstAgentLogPath = fmt.Sprintf("%s-%d-%s", t.req.TestName, t.req.ServerIndex+1, filepath.Base(agentLogPath))
 				}
 				dstAgentLogPath = filepath.Join(t.req.GoogleCloudStorageSubDirectory, dstAgentLogPath)
-
 				plog.Infof("uploading agent logs [%q -> %q]", srcAgentLogPath, dstAgentLogPath)
 				for k := 0; k < 30; k++ {
 					if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcAgentLogPath, dstAgentLogPath); uerr != nil {
@@ -592,6 +613,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 						break
 					}
 				}
+
 				return nil
 			}
 
