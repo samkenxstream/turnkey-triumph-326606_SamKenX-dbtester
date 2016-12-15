@@ -215,7 +215,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		}
 	}
 
-	var processPID int
+	var pidToMonitor int
 	switch r.Operation {
 	case Request_Start:
 		switch t.req.Database {
@@ -278,7 +278,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			t.cmd = cmd
 			t.pid = cmd.Process.Pid
 			plog.Infof("started binary %q [PID: %d]", cmdString, t.pid)
-			processPID = t.pid
+			pidToMonitor = t.pid
 			go func() {
 				if err := cmd.Wait(); err != nil {
 					plog.Errorf("cmd.Wait %q returned error %v", cmdString, err)
@@ -293,7 +293,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					return nil, err
 				}
 				t.proxyLogfile = f2
-				flags2 := []string{}
+				var flags2 []string
 				if t.req.Database == Request_zetcd {
 					flags2 = []string{
 						"-zkaddr", "0.0.0.0:2181",
@@ -395,7 +395,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			t.cmd = cmd
 			t.pid = cmd.Process.Pid
 			plog.Infof("started binary %q [PID: %d]", cmdString, t.pid)
-			processPID = t.pid
+			pidToMonitor = t.pid
 			go func() {
 				if err := cmd.Wait(); err != nil {
 					plog.Error("cmd.Wait returned error", cmdString, err)
@@ -453,7 +453,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 			t.cmd = cmd
 			t.pid = cmd.Process.Pid
 			plog.Infof("started binary %q [PID: %d]", cmdString, t.pid)
-			processPID = t.pid
+			pidToMonitor = t.pid
 			go func() {
 				if err := cmd.Wait(); err != nil {
 					plog.Error("cmd.Wait returned error", cmdString, err)
@@ -471,24 +471,26 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 		if t.cmd == nil {
 			return nil, fmt.Errorf("nil command")
 		}
-		plog.Infof("stopping binary %q [PID: %d]", t.req.Database.String(), t.pid)
+		plog.Infof("stopping binary %q for %q [PID: %d]", t.cmd.Path, t.req.Database.String(), t.pid)
 		if err := syscall.Kill(t.pid, syscall.SIGTERM); err != nil {
 			return nil, err
 		}
 		if t.logfile != nil {
 			t.logfile.Close()
 		}
+		plog.Infof("stopped binary %q [PID: %d]", t.req.Database.String(), t.pid)
+		pidToMonitor = t.pid
+
 		if t.proxyCmd != nil {
-			plog.Infof("stopping proxy binary %q [PID: %d]", t.req.Database.String(), t.proxyPid)
+			plog.Infof("stopping proxy binary %q for %q [PID: %d]", t.proxyCmd.Path, t.req.Database.String(), t.proxyPid)
 			if err := syscall.Kill(t.proxyPid, syscall.SIGTERM); err != nil {
 				return nil, err
 			}
+			plog.Infof("stopped proxy binary %q for %q [PID: %d]", t.proxyCmd.Path, t.req.Database.String(), t.proxyPid)
 		}
 		if t.proxyLogfile != nil {
 			t.proxyLogfile.Close()
 		}
-		plog.Infof("stopped binary %q [PID: %d]", t.req.Database.String(), t.pid)
-		processPID = t.pid
 		uploadSig <- Request_Stop
 
 	case Request_UploadLog:
@@ -504,12 +506,12 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 	}
 
 	if r.Operation == Request_Start {
-		go func(processPID int) {
+		go func(pid int) {
 			notifier := make(chan os.Signal, 1)
 			signal.Notify(notifier, syscall.SIGINT, syscall.SIGTERM)
 
 			rFunc := func() error {
-				pss, err := process.List(&process.Process{Stat: process.Stat{Pid: int64(processPID)}})
+				pss, err := process.List(&process.Process{Stat: process.Stat{Pid: int64(pid)}})
 				if err != nil {
 					return err
 				}
@@ -640,7 +642,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 					return
 				}
 			}
-		}(processPID)
+		}(pidToMonitor)
 	}
 
 	plog.Info("transfer success")
