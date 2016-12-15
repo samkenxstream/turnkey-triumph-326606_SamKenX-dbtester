@@ -1,5 +1,5 @@
-hash: bc370421f6eb93ff996b3c2549388add47c4f2c65bb5a394a5dc498dd096803e
-updated: 2016-12-15T12:08:14.509390382-08:00
+hash: 534163b6b66b234f1da9bf88c868f5aed71e5ff68e8df9c8fd5a34db903808e6
+updated: 2016-12-15T15:53:34.369583618-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -25,7 +25,7 @@ imports:
 - name: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - name: github.com/coreos/etcd
-  version: 86a43849fb7eb72da1dd5ceb2175031ac89963dd
+  version: 93e303ec71351ff6b518a9e42b60d7d5147a60dd
   subpackages:
   - auth/authpb
   - client

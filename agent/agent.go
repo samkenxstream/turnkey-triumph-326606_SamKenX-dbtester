@@ -304,9 +304,8 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				} else {
 					flags2 = []string{
 						// "-consuladdr", "0.0.0.0:8500",
-						"-consuladdr", "localhost:8500",
-						// "-etcd", clientURLs[t.req.ServerIndex],
-						"-etcd", "localhost:2379", // etcd endpoint
+						"-consuladdr", fmt.Sprintf("%s:8500", t.req.ServerIndex),
+						"-etcd", clientURLs[t.req.ServerIndex], // etcd endpoint
 					}
 				}
 				flagString2 := strings.Join(flags2, " ")
