@@ -4,7 +4,7 @@ test_name: zetcd-v3.1-go1.7.4
 google_cloud_project_name: etcd-development
 google_cloud_storage_key_path: /home/gyuho/gcloud-key.json
 google_cloud_storage_bucket_name: dbtester-results
-google_cloud_storage_sub_directory: 2016Q403-etcd-zk-consul/01-write-2M-keys
+google_cloud_storage_sub_directory: 2016Q403-etcd-zk-consul/02-read-2M-keys-linearizable
 
 peer_ips:
     - 10.240.0.37
@@ -26,8 +26,8 @@ step1:
 # start benchmark
 step2:
     skip_stress_database: false
-    bench_type: write
-    stale_read: true
+    bench_type: read
+    stale_read: false
     connections: 1000
     clients: 1000
     key_size: 8
