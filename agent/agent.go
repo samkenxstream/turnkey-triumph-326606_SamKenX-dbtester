@@ -296,13 +296,17 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				var flags2 []string
 				if t.req.Database == Request_zetcd {
 					flags2 = []string{
-						"-zkaddr", "0.0.0.0:2181",
-						"-endpoint", clientURLs[t.req.ServerIndex], // etcd endpoint
+						// "-zkaddr", "0.0.0.0:2181",
+						"-zkaddr", "localhost:2181",
+						// "-endpoint", clientURLs[t.req.ServerIndex],
+						"-endpoint", "localhost:2379", // etcd endpoint
 					}
 				} else {
 					flags2 = []string{
-						"-consuladdr", "0.0.0.0:8500",
-						"-etcd", clientURLs[t.req.ServerIndex], // etcd endpoint
+						// "-consuladdr", "0.0.0.0:8500",
+						"-consuladdr", "localhost:8500",
+						// "-etcd", clientURLs[t.req.ServerIndex],
+						"-etcd", "localhost:2379", // etcd endpoint
 					}
 				}
 				flagString2 := strings.Join(flags2, " ")
@@ -316,13 +320,13 @@ func (t *transporterServer) Transfer(ctx context.Context, r *Request) (*Response
 				cmd2.Stderr = f2
 
 				cmdString2 := fmt.Sprintf("%s %s", cmd2.Path, flagString2)
-				plog.Infof("starting binary %q", cmdString2)
+				plog.Infof("starting proxy binary %q", cmdString2)
 				if err := cmd2.Start(); err != nil {
 					return nil, err
 				}
 				t.proxyCmd = cmd2
 				t.proxyPid = cmd2.Process.Pid
-				plog.Infof("started binary %q [PID: %d]", cmdString2, t.proxyPid)
+				plog.Infof("started proxy binary %q [PID: %d]", cmdString2, t.proxyPid)
 				go func() {
 					if err := cmd2.Wait(); err != nil {
 						plog.Errorf("cmd.Wait %q returned error %v", cmdString2, err)
