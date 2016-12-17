@@ -1,5 +1,5 @@
-hash: 534163b6b66b234f1da9bf88c868f5aed71e5ff68e8df9c8fd5a34db903808e6
-updated: 2016-12-15T15:53:34.369583618-08:00
+hash: a4f38fc29fe31ee464cebeb06e20dd620d89fbe6c47343d326aeeceaea58342c
+updated: 2016-12-16T16:21:52.975170062-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -13,7 +13,7 @@ imports:
   - internal/optional
   - storage
 - name: github.com/ajstarks/svgo
-  version: 672fe547df4e49efc6db67a74391368bcb149b37
+  version: 9f597be83ea4fd9bbc17dfc950ced53b9dbc7f19
 - name: github.com/beorn7/perks
   version: 4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9
   subpackages:
@@ -25,7 +25,7 @@ imports:
 - name: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - name: github.com/coreos/etcd
-  version: 93e303ec71351ff6b518a9e42b60d7d5147a60dd
+  version: af3451be260a093ad0c6b0144b9829e46ddb0d50
   subpackages:
   - auth/authpb
   - client
