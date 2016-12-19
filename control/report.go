@@ -44,7 +44,9 @@ type report struct {
 	total   time.Duration
 
 	errorDist map[string]int
-	lats      []float64
+
+	// latencies in seconds
+	lats []float64
 
 	sps *secondPoints
 
@@ -111,9 +113,16 @@ func (r *report) print() {
 		fmt.Printf("  Average:\t%4.4f secs.\n", r.average)
 		fmt.Printf("  Stddev:\t%4.4f secs.\n", r.stddev)
 		fmt.Printf("  Requests/sec:\t%4.4f\n", r.rps)
+
+		fmt.Printf("\n")
+		r.printLatencyDistribution()
+		fmt.Printf("\n")
 		r.printHistogram()
+		fmt.Printf("\n")
 		r.printLatencies()
+		fmt.Printf("\n")
 		r.printSecondSample()
+		fmt.Printf("\n")
 	}
 
 	plog.Println("ERROR COUNT:", r.errorDist)
@@ -121,12 +130,6 @@ func (r *report) print() {
 
 // Prints percentile latencies.
 func (r *report) printLatencies() {
-	// fmt.Printf("\n\nAll latencies (in Seconds):\n")
-	// for _, l := range r.lats {
-	// 	fmt.Printf("%f\n", l)
-	// }
-	// fmt.Printf("\nDone\n")
-
 	pctls := []int{10, 25, 50, 75, 90, 95, 99}
 	data := make([]float64, len(pctls))
 	j := 0
@@ -156,6 +159,45 @@ func (r *report) printSecondSample() {
 		plog.Fatal(err)
 	}
 	plog.Println("saved time series at", r.cfg.ResultPathTimeSeries)
+}
+
+// printLatencyDistribution prints latency distribution by 10ms.
+func (r *report) printLatencyDistribution() {
+	plog.Printf("analyzing latency distribution of %d points", len(r.lats))
+	min := math.MaxFloat64
+	max := -100000.0
+	rm := make(map[float64]int)
+	for _, lt := range r.lats {
+		// convert second(float64) to millisecond
+		ms := lt * 1000
+
+		// truncate all digits below 10ms
+		// (e.g. 125.11ms becomes 120ms)
+		v := math.Trunc(ms/10) * 10
+		if _, ok := rm[v]; !ok {
+			rm[v] = 1
+		} else {
+			rm[v]++
+		}
+
+		if min > v {
+			min = v
+		}
+		if max < v {
+			max = v
+		}
+	}
+
+	cur := min
+	for cur != max {
+		v, ok := rm[cur]
+		if ok {
+			fmt.Printf("%dms: %d\n", int64(cur), v)
+		} else {
+			fmt.Printf("%dms: 0\n", int64(cur))
+		}
+		cur += 10
+	}
 }
 
 func (r *report) printHistogram() {
