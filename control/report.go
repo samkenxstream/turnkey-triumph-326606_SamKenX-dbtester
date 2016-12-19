@@ -164,16 +164,16 @@ func (r *report) printSecondSample() {
 // printLatencyDistribution prints latency distribution by 10ms.
 func (r *report) printLatencyDistribution() {
 	plog.Printf("analyzing latency distribution of %d points", len(r.lats))
-	min := math.MaxFloat64
-	max := -100000.0
-	rm := make(map[float64]int)
+	min := int64(math.MaxInt64)
+	max := int64(-100000)
+	rm := make(map[int64]int64)
 	for _, lt := range r.lats {
 		// convert second(float64) to millisecond
 		ms := lt * 1000
 
 		// truncate all digits below 10ms
 		// (e.g. 125.11ms becomes 120ms)
-		v := math.Trunc(ms/10) * 10
+		v := int64(math.Trunc(ms/10) * 10)
 		if _, ok := rm[v]; !ok {
 			rm[v] = 1
 		} else {
@@ -197,7 +197,7 @@ func (r *report) printLatencyDistribution() {
 			fmt.Printf("%dms: 0\n", int64(cur))
 		}
 		cur += 10
-		if cur == max { // last point
+    if cur-10 == max { // was last point
 			break
 		}
 	}
