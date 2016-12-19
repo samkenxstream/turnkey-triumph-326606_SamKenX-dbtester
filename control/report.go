@@ -197,7 +197,7 @@ func (r *report) printLatencyDistribution() {
 			fmt.Printf("%dms: 0\n", int64(cur))
 		}
 		cur += 10
-		if cur-10 == max { // was last point
+    if cur-10 == max { // was last point
 			break
 		}
 	}
