@@ -189,7 +189,7 @@ func (r *report) printLatencyDistribution() {
 	}
 
 	cur := min
-	for cur != max {
+	for {
 		v, ok := rm[cur]
 		if ok {
 			fmt.Printf("%dms: %d\n", int64(cur), v)
@@ -197,6 +197,9 @@ func (r *report) printLatencyDistribution() {
 			fmt.Printf("%dms: 0\n", int64(cur))
 		}
 		cur += 10
+		if cur == max { // last point
+			break
+		}
 	}
 }
 
