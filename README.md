@@ -28,7 +28,6 @@ We keep all logs at cloud storage:
 ### Latest Results
 
 THIS IS WORKING IN PROGRESS (more accurate results coming soon...)
-
 - Google Cloud Compute Engine
 - 3 machines of 8 vCPUs + 1 6GB Memory + 50 GB SSD
 - 1 machine(client) of 16 vCPUs + 30 GB Memory + 50 GB SSD
@@ -39,16 +38,15 @@ THIS IS WORKING IN PROGRESS (more accurate results coming soon...)
   - Java HotSpot(TM) 64-Bit Server VM (build 25.111-b14, mixed mode)
   - javac 1.8.0_111
 - etcd v3.1 (Go 1.7.4)
-- Consul v0.7.1 (Go 1.7.3)
-
+- Consul v0.7.2 (Go 1.7.4)
 
 <br><br>
 ##### Write 2M keys, 1000-client (etcd v3.1 100-conn), 8-byte key, 256-byte value
 
-<img src="https://storage.googleapis.com/dbtester-results/2016Q402-etcd-zk-consul/write-2M-keys/avg-latency-ms.svg" alt="2016Q402-etcd-zk-consul/write-2M-keys/avg-latency-ms">
+<img src="https://storage.googleapis.com/dbtester-results/2016Q403-etcd-zk-consul/01-write-2M-keys/avg-latency-ms.svg" alt="2016Q403-etcd-zk-consul/01-write-2M-keys/avg-latency-ms">
 
-<img src="https://storage.googleapis.com/dbtester-results/2016Q402-etcd-zk-consul/write-2M-keys/throughput.svg" alt="2016Q402-etcd-zk-consul/write-2M-keys/throughput">
+<img src="https://storage.googleapis.com/dbtester-results/2016Q403-etcd-zk-consul/01-write-2M-keys/avg-throughput.svg" alt="2016Q403-etcd-zk-consul/01-write-2M-keys/avg-throughput">
 
-<img src="https://storage.googleapis.com/dbtester-results/2016Q402-etcd-zk-consul/write-2M-keys/avg-cpu.svg" alt="2016Q402-etcd-zk-consul/write-2M-keys/avg-cpu">
+<img src="https://storage.googleapis.com/dbtester-results/2016Q403-etcd-zk-consul/01-write-2M-keys/avg-cpu.svg" alt="2016Q403-etcd-zk-consul/01-write-2M-keys/avg-cpu">
 
-<img src="https://storage.googleapis.com/dbtester-results/2016Q402-etcd-zk-consul/write-2M-keys/avg-memory-mb.svg" alt="2016Q402-etcd-zk-consul/write-2M-keys/avg-memory-mb">
+<img src="https://storage.googleapis.com/dbtester-results/2016Q403-etcd-zk-consul/01-write-2M-keys/avg-memory-mb.svg" alt="2016Q403-etcd-zk-consul/01-write-2M-keys/avg-memory-mb">
