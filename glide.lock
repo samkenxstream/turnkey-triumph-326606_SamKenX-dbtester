@@ -1,5 +1,5 @@
-hash: a4f38fc29fe31ee464cebeb06e20dd620d89fbe6c47343d326aeeceaea58342c
-updated: 2016-12-16T16:21:52.975170062-08:00
+hash: 7e56e2b0795ce80b8d55b4ed02cea643952ce670b7f5d6cd09fbc5817b88db86
+updated: 2016-12-19T11:51:16.093755958-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -25,7 +25,7 @@ imports:
 - name: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - name: github.com/coreos/etcd
-  version: af3451be260a093ad0c6b0144b9829e46ddb0d50
+  version: d62ce55584a064968c11b309f1d57a9c1872bc40
   subpackages:
   - auth/authpb
   - client
@@ -100,7 +100,7 @@ imports:
   subpackages:
   - process
 - name: github.com/hashicorp/consul
-  version: 04f8e5adc03d5bf688b9ff954e7bf0b1a8324f9b
+  version: a9afa0c27f484dd19fe59a80444e64e5352c4408
   subpackages:
   - api
 - name: github.com/hashicorp/go-cleanhttp
@@ -191,7 +191,7 @@ imports:
   - storage/v1
   - transport
 - name: google.golang.org/appengine
-  version: ca59ef35f409df61fa4a5f8290ff289b37eccfb8
+  version: 08a149cfaee099e6ce4be01c0113a78c85ee1dee
   subpackages:
   - internal
   - internal/app_identity
