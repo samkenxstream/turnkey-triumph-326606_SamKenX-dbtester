@@ -103,3 +103,7 @@ import:
   version: 53feefa2559fb8dfa8d81baad31be332c97d6c77
 - package: github.com/spf13/pflag
   version: 5ccb023bc27df288a957c5e994cd44fd19619465
+- package: golang.org/x/time
+  version: a4bde12657593d5e90d0533a3e4fd95e635124cb
+  subpackages:
+  - rate

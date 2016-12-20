@@ -1,5 +1,5 @@
-hash: 7e56e2b0795ce80b8d55b4ed02cea643952ce670b7f5d6cd09fbc5817b88db86
-updated: 2016-12-19T11:51:16.093755958-08:00
+hash: d4a1ceef843a6f16e969081a50aeb9117cdca088ddee1f652b847f1bf322a03d
+updated: 2016-12-20T12:42:08.836209288-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -133,7 +133,7 @@ imports:
   subpackages:
   - go
 - name: github.com/prometheus/common
-  version: 195bde7883f7c39ea62b0d92ab7359b5327065cb
+  version: 6d76b79f239843a04e8ad8dfd8fcadfa3920236f
   subpackages:
   - expfmt
   - internal/bitbucket.org/ww/goautoneg
@@ -153,7 +153,7 @@ imports:
   subpackages:
   - codec
 - name: golang.org/x/image
-  version: ed90ab82a880d9b63d5adecdc23c5cd5020addc1
+  version: f1b1ff53e10e288d0ab6f161067c0a69b72cee28
   subpackages:
   - draw
   - font
@@ -178,6 +178,10 @@ imports:
   - internal
   - jws
   - jwt
+- name: golang.org/x/time
+  version: a4bde12657593d5e90d0533a3e4fd95e635124cb
+  subpackages:
+  - rate
 - name: google.golang.org/api
   version: a53f28dc539c26b08a77fc5ae954e02917686ef4
   subpackages:
