@@ -4,7 +4,7 @@ test_name: etcd-v3.1-go1.7.4
 google_cloud_project_name: etcd-development
 google_cloud_storage_key_path: /home/gyuho/gcloud-key.json
 google_cloud_storage_bucket_name: dbtester-results
-google_cloud_storage_sub_directory: 2016Q403-etcd-zk-consul/01-write-2M-keys
+google_cloud_storage_sub_directory: 2016Q404-etcd-zk-consul/01-write-2M-keys
 
 peer_ips:
     - 10.240.0.25
@@ -33,7 +33,7 @@ step2:
     key_size: 8
     value_size: 256
     total_requests: 2000000
-    request_interval_ms: 0
+    requests_per_second: 1000
     etcdv3_compaction_cycle: 0
 
 # after benchmark
