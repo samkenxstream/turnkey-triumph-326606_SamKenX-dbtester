@@ -34,7 +34,7 @@ step2:
     same_key: true
     value_size: 256
     total_requests: 2000000
-    request_interval_ms: 100
+    requests_per_second: 100
 
 # after benchmark
 step3:

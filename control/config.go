@@ -60,7 +60,7 @@ type Config struct {
 		SameKey            bool   `yaml:"same_key"`
 		ValueSize          int    `yaml:"value_size"`
 		TotalRequests      int    `yaml:"total_requests"`
-		RequestIntervalMs  int    `yaml:"request_interval_ms"`
+		RequestsPerSecond  int    `yaml:"requests_per_second"`
 	} `yaml:"step2"`
 
 	Step3 struct {
