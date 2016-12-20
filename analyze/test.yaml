@@ -66,7 +66,7 @@ step3:
       - column: avg-throughput_zookeeper_3.4.8
         legend: Zookeeper 3.4.8
       x_axis: Second
-      y_axis: Throughput
+      y_axis: Throughput(Requests/Second)
       output_path_list:
         - 20160330/01-avg-throughput.svg
         - 20160330/01-avg-throughput.png
@@ -77,7 +77,7 @@ step3:
       - column: avg-cpu-zookeeper_3.4.8
         legend: Zookeeper 3.4.8
       x_axis: Second
-      y_axis: CPU
+      y_axis: CPU(%)
       output_path_list:
         - 20160330/01-avg-cpu.svg
         - 20160330/01-avg-cpu.png

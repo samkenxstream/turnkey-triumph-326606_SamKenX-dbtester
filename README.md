@@ -50,3 +50,15 @@ THIS IS WORKING IN PROGRESS (more accurate results coming soon...)
 <img src="https://storage.googleapis.com/dbtester-results/2016Q403-etcd-zk-consul/01-write-2M-keys/avg-cpu.svg" alt="2016Q403-etcd-zk-consul/01-write-2M-keys/avg-cpu">
 
 <img src="https://storage.googleapis.com/dbtester-results/2016Q403-etcd-zk-consul/01-write-2M-keys/avg-memory-mb.svg" alt="2016Q403-etcd-zk-consul/01-write-2M-keys/avg-memory-mb">
+
+<br><br>
+##### Write 2M keys (1000 QPS), 1000-client (etcd v3.1 100-conn), 8-byte key, 256-byte value
+
+<img src="https://storage.googleapis.com/dbtester-results/2016Q404-etcd-zk-consul/01-write-2M-keys/avg-latency-ms.svg" alt="2016Q404-etcd-zk-consul/01-write-2M-keys/avg-latency-ms">
+
+<img src="https://storage.googleapis.com/dbtester-results/2016Q404-etcd-zk-consul/01-write-2M-keys/avg-throughput.svg" alt="2016Q404-etcd-zk-consul/01-write-2M-keys/avg-throughput">
+
+<img src="https://storage.googleapis.com/dbtester-results/2016Q404-etcd-zk-consul/01-write-2M-keys/avg-cpu.svg" alt="2016Q404-etcd-zk-consul/01-write-2M-keys/avg-cpu">
+
+<img src="https://storage.googleapis.com/dbtester-results/2016Q404-etcd-zk-consul/01-write-2M-keys/avg-memory-mb.svg" alt="2016Q404-etcd-zk-consul/01-write-2M-keys/avg-memory-mb">
+

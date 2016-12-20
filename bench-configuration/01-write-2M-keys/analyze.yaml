@@ -84,7 +84,7 @@ step3:
       - column: avg-throughput-cetcd-v3.1-go1.7.4
         legend: cetcd v3.1 (Go 1.7.4)
       x_axis: Second
-      y_axis: Throughput
+      y_axis: Throughput(Requests/Second)
       output_path_list:
         - 2016Q404-etcd-zk-consul/01-write-2M-keys/avg-throughput.svg
         - 2016Q404-etcd-zk-consul/01-write-2M-keys/avg-throughput.png
@@ -101,7 +101,7 @@ step3:
       - column: avg-cpu-cetcd-v3.1-go1.7.4
         legend: cetcd v3.1 (Go 1.7.4)
       x_axis: Second
-      y_axis: CPU
+      y_axis: CPU(%)
       output_path_list:
         - 2016Q404-etcd-zk-consul/01-write-2M-keys/avg-cpu.svg
         - 2016Q404-etcd-zk-consul/01-write-2M-keys/avg-cpu.png
