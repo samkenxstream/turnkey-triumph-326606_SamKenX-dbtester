@@ -61,16 +61,15 @@ javac -version
 
 echo "Installing Zookeeper..."
 ZK_VER=3.4.9
-sudo rm -rf /tmp/zookeeper*
-sudo curl -sf -o /tmp/zookeeper-${ZK_VER}.tar.gz -L https://www.apache.org/dist/zookeeper/zookeeper-${ZK_VER}/zookeeper-${ZK_VER}.tar.gz
-sudo tar -xzf /tmp/zookeeper-${ZK_VER}.tar.gz -C /tmp/
-sudo mv /tmp/zookeeper-${ZK_VER} /tmp/zookeeper
-sudo chmod -R 777 /tmp/zookeeper/
-mkdir -p /tmp/zookeeper/data.zk
-touch /tmp/zookeeper/data.zk/myid
-sudo chmod -R 777 /tmp/zookeeper/data.zk/
-cd /tmp/zookeeper
-ls /tmp/zookeeper
+sudo rm -rf $HOME/zookeeper*
+sudo curl -sf -o $HOME/zookeeper-${ZK_VER}.tar.gz -L https://www.apache.org/dist/zookeeper/zookeeper-${ZK_VER}/zookeeper-${ZK_VER}.tar.gz
+sudo tar -xzf $HOME/zookeeper-${ZK_VER}.tar.gz -C $HOME/
+sudo mv $HOME/zookeeper-${ZK_VER} $HOME/zookeeper
+sudo chmod -R 777 $HOME/zookeeper/
+mkdir -p $HOME/zookeeper/data.zk
+touch $HOME/zookeeper/data.zk/myid
+sudo chmod -R 777 $HOME/zookeeper/data.zk/
+cd $HOME/zookeeper
+ls $HOME/zookeeper
 
 echo "Done!"
-
