@@ -44,6 +44,7 @@ func newPutEtcd3(conn clientv3.KV) ReqHandler {
 }
 
 func newPutOverwriteZK(conn *zk.Conn) ReqHandler {
+	// samekey
 	return func(ctx context.Context, req *request) error {
 		op := req.zkOp
 		_, err := conn.Set(op.key, op.value, int32(-1))
@@ -52,7 +53,6 @@ func newPutOverwriteZK(conn *zk.Conn) ReqHandler {
 }
 
 func newPutCreateZK(conn *zk.Conn) ReqHandler {
-	// samekey
 	return func(ctx context.Context, req *request) error {
 		op := req.zkOp
 		_, err := conn.Create(op.key, op.value, zkCreateFlags, zkCreateAcl)
