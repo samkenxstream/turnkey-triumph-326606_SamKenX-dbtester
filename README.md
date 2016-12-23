@@ -38,7 +38,7 @@ THIS IS WORKING IN PROGRESS (more accurate results coming soon...)
   - Java HotSpot(TM) 64-Bit Server VM (build 25.111-b14, mixed mode)
   - javac 1.8.0_111
 - etcd v3.1 (Go 1.7.4)
-- Consul v0.7.3 (Go 1.7.4)
+- Consul v0.7.2 (Go 1.7.4)
 
 <br><br>
 ##### Write 2M keys, 1000-client (etcd v3.1 100-conn), 8-byte key, 256-byte value
@@ -61,4 +61,3 @@ THIS IS WORKING IN PROGRESS (more accurate results coming soon...)
 <img src="https://storage.googleapis.com/dbtester-results/2016Q404-etcd-zk-consul/01-write-2M-keys/avg-cpu.svg" alt="2016Q404-etcd-zk-consul/01-write-2M-keys/avg-cpu">
 
 <img src="https://storage.googleapis.com/dbtester-results/2016Q404-etcd-zk-consul/01-write-2M-keys/avg-memory-mb.svg" alt="2016Q404-etcd-zk-consul/01-write-2M-keys/avg-memory-mb">
-
