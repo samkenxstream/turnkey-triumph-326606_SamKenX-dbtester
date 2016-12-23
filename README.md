@@ -38,7 +38,7 @@ THIS IS WORKING IN PROGRESS (more accurate results coming soon...)
   - Java HotSpot(TM) 64-Bit Server VM (build 25.111-b14, mixed mode)
   - javac 1.8.0_111
 - etcd v3.1 (Go 1.7.4)
-- Consul v0.7.2 (Go 1.7.4)
+- Consul v0.7.3 (Go 1.7.4)
 
 <br><br>
 ##### Write 2M keys, 1000-client (etcd v3.1 100-conn), 8-byte key, 256-byte value
