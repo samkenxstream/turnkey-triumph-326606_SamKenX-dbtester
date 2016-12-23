@@ -112,7 +112,7 @@ step3:
       - column: avg-memory-mb-etcd-v3.1-go1.7.4
         legend: etcd v3.1 (Go 1.7.4)
       - column: avg-memory-mb-consul-v0.7.2-go1.7.4
-        legend: Consul v0.7.2 (Go 1.7.3)
+        legend: Consul v0.7.2 (Go 1.7.4)
       - column: avg-memory-mb-zetcd-v3.1-go1.7.4
         legend: zetcd v3.1 (Go 1.7.4)
       - column: avg-memory-mb-cetcd-v3.1-go1.7.4
