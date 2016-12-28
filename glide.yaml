@@ -9,7 +9,7 @@ import:
 - package: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - package: github.com/coreos/etcd
-  version: d62ce55584a064968c11b309f1d57a9c1872bc40
+  version: 1643ed56679abba9b0305bfa5490941fd68e3233
   subpackages:
   - auth/authpb
   - client
@@ -38,7 +38,7 @@ import:
   - jsonpb
   - proto
 - package: github.com/gonum/plot
-  version: 9cd91e61771cdd73e563fa54f1fdc3b1071af62d
+  version: 235bd2a77303194e06d44c3ae432ac676bf041d0
   subpackages:
   - palette
   - plotter

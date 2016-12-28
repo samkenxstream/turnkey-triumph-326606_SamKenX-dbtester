@@ -1,5 +1,5 @@
-hash: d4a1ceef843a6f16e969081a50aeb9117cdca088ddee1f652b847f1bf322a03d
-updated: 2016-12-20T12:42:08.836209288-08:00
+hash: 7850f7d4bf167faa9184167415a18cd1fef5a02be107f31c4721bcc90b2bc5b7
+updated: 2016-12-28T15:43:23.865399282-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -25,7 +25,7 @@ imports:
 - name: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - name: github.com/coreos/etcd
-  version: d62ce55584a064968c11b309f1d57a9c1872bc40
+  version: 1643ed56679abba9b0305bfa5490941fd68e3233
   subpackages:
   - auth/authpb
   - client
@@ -71,7 +71,7 @@ imports:
   subpackages:
   - asm
 - name: github.com/gonum/plot
-  version: 9cd91e61771cdd73e563fa54f1fdc3b1071af62d
+  version: 235bd2a77303194e06d44c3ae432ac676bf041d0
   subpackages:
   - palette
   - plotter
@@ -153,7 +153,7 @@ imports:
   subpackages:
   - codec
 - name: golang.org/x/image
-  version: f1b1ff53e10e288d0ab6f161067c0a69b72cee28
+  version: 3ba119400e6fd98bf5100d1c17303c377b6521e9
   subpackages:
   - draw
   - font
