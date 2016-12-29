@@ -552,7 +552,7 @@ func getRGB(legend string, i int) color.Color {
 		return color.RGBA{38, 169, 24, 255} // green
 	}
 	if strings.HasPrefix(legend, "zetcd") {
-		return color.RGBA{159, 102, 16, 255} // brown
+		return color.RGBA{251, 206, 0, 255} // yellow
 	}
 	if strings.HasPrefix(legend, "etcd") {
 		return color.RGBA{24, 90, 169, 255} // blue
