@@ -9,7 +9,7 @@ import:
 - package: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - package: github.com/coreos/etcd
-  version: 1643ed56679abba9b0305bfa5490941fd68e3233
+  version: 67c75606dbbdf74db0247aa73a190c83f84bef82
   subpackages:
   - auth/authpb
   - client
