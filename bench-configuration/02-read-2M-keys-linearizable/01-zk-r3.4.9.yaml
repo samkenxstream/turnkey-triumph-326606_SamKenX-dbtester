@@ -4,7 +4,9 @@ test_name: zk-r3.4.9-java8
 google_cloud_project_name: etcd-development
 google_cloud_storage_key_path: /home/gyuho/gcloud-key.json
 google_cloud_storage_bucket_name: dbtester-results
-google_cloud_storage_sub_directory: 2016Q405-etcd-zk-consul/02-read-2M-keys-linearizable
+google_cloud_storage_sub_directory: 2016Q4-01-etcd-zk-consul/02-read-2M-keys-linearizable
+# google_cloud_storage_sub_directory: 2016Q4-01-etcd-zk-consul/02-read-2M-keys-linearizable-1CONN
+# google_cloud_storage_sub_directory: 2016Q4-01-etcd-zk-consul/02-read-2M-keys-linearizable-1000QPS
 
 peer_ips:
     - 10.240.0.20
