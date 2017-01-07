@@ -1,5 +1,5 @@
-hash: 4a31a6635850dfeafb8706456d1d09b3efa9dc9599806fceceab2ca37627eef5
-updated: 2016-12-29T10:05:57.747054932-08:00
+hash: 15089f34e0f7a9f394d67280a8f8d2d2a289d3d09b155d0647f72b968ffc8204
+updated: 2017-01-06T17:23:43.566339071-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -25,7 +25,7 @@ imports:
 - name: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - name: github.com/coreos/etcd
-  version: 67c75606dbbdf74db0247aa73a190c83f84bef82
+  version: bc2d47118dfb60b1c9c4cc18d4aa2ba75e8bdfe0
   subpackages:
   - auth/authpb
   - client
@@ -153,7 +153,7 @@ imports:
   subpackages:
   - codec
 - name: golang.org/x/image
-  version: 3ba119400e6fd98bf5100d1c17303c377b6521e9
+  version: 1ff62c92167a10494f3e0b1e77cb67860a6ac43a
   subpackages:
   - draw
   - font
@@ -195,7 +195,7 @@ imports:
   - storage/v1
   - transport
 - name: google.golang.org/appengine
-  version: 08a149cfaee099e6ce4be01c0113a78c85ee1dee
+  version: 8758a385849434ba5eac8aeedcf5192c5a0f5f10
   subpackages:
   - internal
   - internal/app_identity
