@@ -46,7 +46,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 	switch cfg.Database {
 	case "etcdv2":
 	case "etcdv3":
-	case "zk", "zookeeper":
+	case "zookeeper":
 	case "zetcd":
 	case "consul":
 	case "cetcd":

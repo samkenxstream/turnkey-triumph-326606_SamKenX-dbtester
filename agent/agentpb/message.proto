@@ -18,8 +18,8 @@ message Request {
 		Stop      = 1;
 	}
 	enum Database {
-		etcdv3    = 0;
-		etcdv2    = 1;
+		etcdv2    = 0;
+		etcdv3    = 1;
 		ZooKeeper = 2;
 		Consul    = 3;
 		zetcd     = 4;
