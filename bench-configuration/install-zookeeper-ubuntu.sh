@@ -66,9 +66,9 @@ sudo curl -sf -o $HOME/zookeeper-${ZK_VER}.tar.gz -L https://www.apache.org/dist
 sudo tar -xzf $HOME/zookeeper-${ZK_VER}.tar.gz -C $HOME/
 sudo mv $HOME/zookeeper-${ZK_VER} $HOME/zookeeper
 sudo chmod -R 777 $HOME/zookeeper/
-mkdir -p $HOME/zookeeper/data.zk
-touch $HOME/zookeeper/data.zk/myid
-sudo chmod -R 777 $HOME/zookeeper/data.zk/
+mkdir -p $HOME/zookeeper/zookeeper.data
+touch $HOME/zookeeper/zookeeper.data/myid
+sudo chmod -R 777 $HOME/zookeeper/zookeeper.data/
 cd $HOME/zookeeper
 ls $HOME/zookeeper
 

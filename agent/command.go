@@ -70,9 +70,9 @@ func init() {
 	Command.PersistentFlags().StringVar(&globalFlags.cetcdExec, "cetcd-exec", filepath.Join(os.Getenv("GOPATH"), "bin/cetcd"), "cetcd executable binary path .")
 	Command.PersistentFlags().StringVar(&globalFlags.consulExec, "consul-exec", filepath.Join(os.Getenv("GOPATH"), "bin/consul"), "Consul executable binary path.")
 
-	Command.PersistentFlags().StringVar(&globalFlags.zkWorkDir, "zk-work-dir", filepath.Join(homeDir(), "zookeeper"), "Zookeeper working directory.")
-	Command.PersistentFlags().StringVar(&globalFlags.zkDataDir, "zk-data-dir", filepath.Join(homeDir(), "zookeeper/data.zk"), "Zookeeper data directory.")
-	Command.PersistentFlags().StringVar(&globalFlags.zkConfig, "zk-config", filepath.Join(homeDir(), "zookeeper/zookeeper.config"), "Zookeeper configuration file path.")
+	Command.PersistentFlags().StringVar(&globalFlags.zkWorkDir, "zookeeper-work-dir", filepath.Join(homeDir(), "zookeeper"), "Zookeeper working directory.")
+	Command.PersistentFlags().StringVar(&globalFlags.zkDataDir, "zookeeper-data-dir", filepath.Join(homeDir(), "zookeeper/zookeeper.data"), "Zookeeper data directory.")
+	Command.PersistentFlags().StringVar(&globalFlags.zkConfig, "zookeeper-config", filepath.Join(homeDir(), "zookeeper/zookeeper.config"), "Zookeeper configuration file path.")
 	Command.PersistentFlags().StringVar(&globalFlags.etcdDataDir, "etcd-data-dir", filepath.Join(homeDir(), "etcd.data"), "etcd data directory.")
 	Command.PersistentFlags().StringVar(&globalFlags.consulDataDir, "consul-data-dir", filepath.Join(homeDir(), "consul.data"), "Consul data directory.")
 

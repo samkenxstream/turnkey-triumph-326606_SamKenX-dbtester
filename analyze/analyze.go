@@ -91,6 +91,13 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 				return err
 			}
 
+			// READS-COMPLETED-DIFF
+			// SECTORS-READ-DIFF
+			// WRITES-COMPLETED-DIFF
+			// SECTORS-WRITTEN-DIFF
+			// RECEIVE-BYTES-NUM-DIFF
+			// TRANSMIT-BYTES-NUM-DIFF
+
 			frames = append(frames, nf)
 
 			fv, ok := c1.FrontNonNil()
