@@ -21,28 +21,28 @@ func TestReadConfig(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if c.Step1[0].DataPathList[0] != "20160330/01-etcd-1-monitor.csv" {
+	if c.Step1[0].DataPathList[0] != "20170101/01-etcd-1-monitor.csv" {
 		t.Fatalf("unexpected %s", c.Step1[0].DataPathList[0])
 	}
-	if c.Step2[0].DataList[0].Path != "20160330/01-etcd-aggregated.csv" {
+	if c.Step2[0].DataList[0].Path != "20170101/01-etcd-aggregated.csv" {
 		t.Fatalf("unexpected %s", c.Step2[0].DataList[0].Path)
 	}
-	if c.Step3[0].PlotList[0].Lines[0].Column != "avg-latency-ms-etcd_v3" {
+	if c.Step3[0].PlotList[0].Lines[0].Column != "AVG-LATENCY-MS-etcd-v3" {
 		t.Fatalf("unexpected %s", c.Step3[0].PlotList[0].Lines[0].Column)
 	}
 	if c.Step3[0].PlotList[0].YAxis != "Latency(millisecond)" {
 		t.Fatalf("unexpected %s", c.Step3[0].PlotList[0].YAxis)
 	}
-	if c.Step3[0].PlotList[0].OutputPathList[1] != "20160330/01-avg-latency-ms.png" {
+	if c.Step3[0].PlotList[0].OutputPathList[1] != "20170101/01-AVG-LATENCY-MS.png" {
 		t.Fatalf("unexpected %s", c.Step3[0].PlotList[0].OutputPathList[1])
 	}
-	if c.Step4.OutputPath != "20160330/README.md" {
+	if c.Step4.OutputPath != "20170101/README.md" {
 		t.Fatalf("unexpected %s", c.Step4.OutputPath)
 	}
-	if c.Step4.Results[0].Images[0].ImageTitle != "01-avg-latency-ms" {
+	if c.Step4.Results[0].Images[0].ImageTitle != "01-AVG-LATENCY-MS" {
 		t.Fatalf("unexpected %s", c.Step4.Results[0].Images[0].ImageTitle)
 	}
-	if c.Step4.Results[0].Images[0].ImagePath != "20160330/01-avg-latency-ms.png" {
+	if c.Step4.Results[0].Images[0].ImagePath != "20170101/01-AVG-LATENCY-MS.png" {
 		t.Fatalf("unexpected %s", c.Step4.Results[0].Images[0].ImagePath)
 	}
 	if c.Step4.Results[0].Images[0].ImageType != "local" {
