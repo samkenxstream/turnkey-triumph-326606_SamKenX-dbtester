@@ -9,9 +9,9 @@ google_cloud_storage_sub_directory: 2016Q4-01-etcd-zk-consul/04-read-2M-keys-lin
 # google_cloud_storage_sub_directory: 2016Q4-01-etcd-zk-consul/06-read-500K-keys-linearizable-1CONN
 
 peer_ips:
-    - 10.240.0.25
-    - 10.240.0.27
-    - 10.240.0.28
+    - 10.240.0.20
+    - 10.240.0.21
+    - 10.240.0.22
 
 agent_port: 3500
 database_port: 2379

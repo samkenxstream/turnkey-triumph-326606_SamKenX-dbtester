@@ -25,4 +25,4 @@ popd
 printf "Generating agent\n"
 protoc --gofast_out=plugins=grpc:. \
 	--proto_path=$GOPATH/src:$GOPATH/src/github.com/gogo/protobuf/protobuf:. \
-	agent/*.proto;
+	agent/agentpb/*.proto;

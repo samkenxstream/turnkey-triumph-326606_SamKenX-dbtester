@@ -1,4 +1,4 @@
-// Copyright 2016 CoreOS, Inc.
+// Copyright 2017 CoreOS, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
 //	  agent       Database agent in remote servers.
 //	  analyze     Analyzes test results specific to dbtester.
 //	  control     Controls tests.
-//	  upload      Uploads to cloud storage.
 //
 //	Flags:
 //	  -h, --help   help for dbtester
@@ -37,8 +36,6 @@ import (
 	"github.com/coreos/dbtester/agent"
 	"github.com/coreos/dbtester/analyze"
 	"github.com/coreos/dbtester/control"
-	"github.com/coreos/dbtester/upload"
-
 	"github.com/spf13/cobra"
 )
 
@@ -58,7 +55,6 @@ func init() {
 	rootCommand.AddCommand(agent.Command)
 	rootCommand.AddCommand(analyze.Command)
 	rootCommand.AddCommand(control.Command)
-	rootCommand.AddCommand(upload.Command)
 }
 
 func main() {
