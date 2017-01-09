@@ -15,17 +15,12 @@
 // dbtester is distributed database tester.
 //
 //	Usage:
-//	  dbtester [command]
+//	dbtester [command]
 //
 //	Available Commands:
-//	  agent       Database agent in remote servers.
-//	  analyze     Analyzes test results specific to dbtester.
-//	  control     Controls tests.
-//
-//	Flags:
-//	  -h, --help   help for dbtester
-//
-//	Use "dbtester [command] --help" for more information about a command.
+//	agent       Database 'agent' in remote servers (runs database, upload logs).
+//	analyze     Analyzes test dbtester test results.
+//	control     Controls tests.
 //
 package main
 

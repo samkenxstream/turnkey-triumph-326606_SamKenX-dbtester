@@ -15,12 +15,12 @@ All logs and results can be found at https://console.cloud.google.com/storage/br
 - 3 machines of 8 vCPUs + 1 6GB Memory + 50 GB SSD
 - 1 machine(client) of 16 vCPUs + 30 GB Memory + 50 GB SSD
 - Ubuntu 16.10
+- etcd v3.1 (Go 1.7.4)
 - Zookeepr r3.4.9
   - Java 8
   - Java(TM) SE Runtime Environment (build 1.8.0_111-b14)
   - Java HotSpot(TM) 64-Bit Server VM (build 25.111-b14, mixed mode)
   - javac 1.8.0_111
-- etcd v3.1 (Go 1.7.4)
 - Consul v0.7.2 (Go 1.7.4)
 - zetcd v3.1 (Go 1.7.4)
 - cetcd v3.1 (Go 1.7.4)
