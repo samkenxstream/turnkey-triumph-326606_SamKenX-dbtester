@@ -20,17 +20,17 @@ import (
 	"sync"
 	"time"
 
-	"github.com/coreos/dbtester/agent"
 	"golang.org/x/net/context"
 	"golang.org/x/time/rate"
 	"google.golang.org/grpc"
 
 	"github.com/cheggaaa/pb"
+	"github.com/coreos/dbtester/agent/agentpb"
 	"github.com/coreos/etcd/clientv3"
 	consulapi "github.com/hashicorp/consul/api"
 )
 
-func step1(cfg Config) error { return bcastReq(cfg, agent.Request_Start) }
+func step1(cfg Config) error { return bcastReq(cfg, agentpb.Request_Start) }
 
 type values struct {
 	bytes      [][]byte
@@ -99,7 +99,7 @@ func step2(cfg Config) error {
 			totalKeysFunc = getTotalKeysEtcdv2
 		case "etcdv3":
 			totalKeysFunc = getTotalKeysEtcdv3
-		case "zk", "zookeeper", "zetcd":
+		case "zookeeper", "zetcd":
 			totalKeysFunc = getTotalKeysZk
 		case "consul", "cetcd":
 			totalKeysFunc = getTotalKeysConsul
@@ -150,7 +150,7 @@ func step2(cfg Config) error {
 				os.Exit(1)
 			}
 
-		case "zk", "zookeeper", "zetcd":
+		case "zookeeper", "zetcd":
 			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, cfg.Database)
 			var err error
 			for i := 0; i < 7; i++ {
@@ -211,7 +211,7 @@ func step2(cfg Config) error {
 			_, err = clients[0].Do(context.Background(), clientv3.OpPut(key, value))
 			clients[0].Close()
 
-		case "zk", "zookeeper", "zetcd":
+		case "zookeeper", "zetcd":
 			conns := mustCreateConnsZk(cfg.DatabaseEndpoints, 1)
 			_, err = conns[0].Create("/"+key, vals.bytes[0], zkCreateFlags, zkCreateAcl)
 			conns[0].Close()
@@ -236,18 +236,14 @@ func step3(cfg Config) error {
 	switch cfg.Step3.Action {
 	case "stop":
 		plog.Info("step 3: stopping databases...")
-		return bcastReq(cfg, agent.Request_Stop)
-
-	case "only-upload-log":
-		plog.Info("step 3: uploading logs without stopping databases...")
-		return bcastReq(cfg, agent.Request_UploadLog)
+		return bcastReq(cfg, agentpb.Request_Stop)
 
 	default:
 		return fmt.Errorf("unknown %q", cfg.Step3.Action)
 	}
 }
 
-func bcastReq(cfg Config, op agent.Request_Operation) error {
+func bcastReq(cfg Config, op agentpb.Request_Operation) error {
 	req := cfg.ToRequest()
 	req.Operation = op
 
@@ -278,7 +274,7 @@ func bcastReq(cfg Config, op agent.Request_Operation) error {
 	return nil
 }
 
-func sendReq(ep string, req agent.Request, i int) error {
+func sendReq(ep string, req agentpb.Request, i int) error {
 	req.ServerIndex = uint32(i)
 	req.ZookeeperMyID = uint32(i + 1)
 
@@ -292,7 +288,7 @@ func sendReq(ep string, req agent.Request, i int) error {
 
 	defer conn.Close()
 
-	cli := agent.NewTransporterClient(conn)
+	cli := agentpb.NewTransporterClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second) // Consul takes longer
 	resp, err := cli.Transfer(ctx, &req)
 	cancel()
@@ -326,7 +322,7 @@ func newReadHandlers(cfg Config) (rhs []ReqHandler, done func()) {
 				clients[i].Close()
 			}
 		}
-	case "zk", "zookeeper", "zetcd":
+	case "zookeeper", "zetcd":
 		conns := mustCreateConnsZk(cfg.DatabaseEndpoints, cfg.Step2.Connections)
 		for i := range conns {
 			rhs[i] = newGetZK(conns[i])
@@ -366,7 +362,7 @@ func newWriteHandlers(cfg Config) (rhs []ReqHandler, done func()) {
 				etcdClients[i].Close()
 			}
 		}
-	case "zk", "zookeeper", "zetcd":
+	case "zookeeper", "zetcd":
 		if cfg.Step2.SameKey {
 			key := sameKey(cfg.Step2.KeySize)
 			valueBts := randBytes(cfg.Step2.ValueSize)
@@ -433,7 +429,7 @@ func newReadOneshotHandlers(cfg Config) []ReqHandler {
 				return newGetEtcd3(conns[0])(ctx, req)
 			}
 		}
-	case "zk", "zookeeper", "zetcd":
+	case "zookeeper", "zetcd":
 		for i := range rhs {
 			rhs[i] = func(ctx context.Context, req *request) error {
 				conns := mustCreateConnsZk(cfg.DatabaseEndpoints, cfg.Step2.Connections)
@@ -477,7 +473,7 @@ func generateReads(cfg Config, key string, requests chan<- request) {
 			}
 			requests <- request{etcdv3Op: clientv3.OpGet(key, opts...)}
 
-		case "zk", "zookeeper", "zetcd":
+		case "zookeeper", "zetcd":
 			op := zkOp{key: key}
 			if cfg.Step2.StaleRead {
 				op.staleRead = true
@@ -524,7 +520,7 @@ func generateWrites(cfg Config, vals values, requests chan<- request) {
 			requests <- request{etcdv2Op: etcdv2Op{key: k, value: vs}}
 		case "etcdv3":
 			requests <- request{etcdv3Op: clientv3.OpPut(k, vs)}
-		case "zk", "zookeeper", "zetcd":
+		case "zookeeper", "zetcd":
 			requests <- request{zkOp: zkOp{key: "/" + k, value: v}}
 		case "consul", "cetcd":
 			requests <- request{consulOp: consulOp{key: k, value: v}}

@@ -57,7 +57,7 @@ func copyFile(src, dst string) error {
 
 func getRGB(legend string, i int) color.Color {
 	legend = strings.ToLower(strings.TrimSpace(legend))
-	if strings.HasPrefix(legend, "zk") || strings.HasPrefix(legend, "zookeeper") {
+	if strings.HasPrefix(legend, "zookeeper") {
 		return color.RGBA{38, 169, 24, 255} // green
 	}
 	if strings.HasPrefix(legend, "zetcd") {
