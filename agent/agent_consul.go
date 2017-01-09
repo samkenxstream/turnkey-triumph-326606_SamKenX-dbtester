@@ -19,21 +19,19 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-
-	"github.com/coreos/dbtester/agent/agentpb"
 )
 
 // startConsul starts Consul.
-func startConsul(fs *flags, t *transporterServer, req *agentpb.Request) (*exec.Cmd, error) {
+func startConsul(fs *flags, t *transporterServer) error {
 	if !exist(fs.consulExec) {
-		return nil, fmt.Errorf("Consul binary %q does not exist", globalFlags.consulExec)
+		return fmt.Errorf("Consul binary %q does not exist", globalFlags.consulExec)
 	}
 
 	if err := os.RemoveAll(fs.consulDataDir); err != nil {
-		return nil, err
+		return err
 	}
 
-	peerIPs := strings.Split(req.PeerIPString, "___")
+	peerIPs := strings.Split(t.req.PeerIPString, "___")
 
 	var flags []string
 	switch t.req.ServerIndex {
@@ -66,11 +64,11 @@ func startConsul(fs *flags, t *transporterServer, req *agentpb.Request) (*exec.C
 
 	plog.Infof("starting database %q", cs)
 	if err := cmd.Start(); err != nil {
-		return nil, err
+		return err
 	}
 	t.cmd = cmd
 	t.pid = int64(cmd.Process.Pid)
 	plog.Infof("started database %q (PID: %d)", cs, t.pid)
 
-	return cmd, nil
+	return nil
 }

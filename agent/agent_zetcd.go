@@ -18,16 +18,15 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
-
-	"github.com/coreos/dbtester/agent/agentpb"
 )
 
 // startZetcd starts zetcd. This assumes that etcd is already started.
-func startZetcd(fs *flags, t *transporterServer, req *agentpb.Request) (*exec.Cmd, error) {
+func startZetcd(fs *flags, t *transporterServer) error {
 	if !exist(fs.zetcdExec) {
-		return nil, fmt.Errorf("zetcd binary %q does not exist", globalFlags.zetcdExec)
+		return fmt.Errorf("zetcd binary %q does not exist", globalFlags.zetcdExec)
 	}
-	peerIPs := strings.Split(req.PeerIPString, "___")
+
+	peerIPs := strings.Split(t.req.PeerIPString, "___")
 	clientURLs := make([]string, len(peerIPs))
 	for i, u := range peerIPs {
 		clientURLs[i] = fmt.Sprintf("http://%s:2379", u)
@@ -47,11 +46,11 @@ func startZetcd(fs *flags, t *transporterServer, req *agentpb.Request) (*exec.Cm
 
 	plog.Infof("starting database %q", cs)
 	if err := cmd.Start(); err != nil {
-		return nil, err
+		return err
 	}
 	t.proxyCmd = cmd
 	t.proxyPid = int64(cmd.Process.Pid)
 	plog.Infof("started database %q (PID: %d)", cs, t.pid)
 
-	return cmd, nil
+	return nil
 }

@@ -22,8 +22,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-
-	"github.com/coreos/dbtester/agent/agentpb"
 )
 
 var (
@@ -74,31 +72,31 @@ type ZookeeperConfig struct {
 }
 
 // startZookeeper starts Zookeeper.
-func startZookeeper(fs *flags, t *transporterServer, req *agentpb.Request) (*exec.Cmd, error) {
+func startZookeeper(fs *flags, t *transporterServer) error {
 	if !exist(fs.javaExec) {
-		return nil, fmt.Errorf("Java binary %q does not exist", globalFlags.javaExec)
+		return fmt.Errorf("Java binary %q does not exist", globalFlags.javaExec)
 	}
 
 	if err := os.RemoveAll(fs.zkDataDir); err != nil {
-		return nil, err
+		return err
 	}
 	if err := os.MkdirAll(fs.zkDataDir, 0777); err != nil {
-		return nil, err
+		return err
 	}
 
 	// Zookeeper requires correct relative-path for runtime
 	// needs manual 'cd' into the Zookeeper working directory!
 	if err := os.Chdir(fs.zkWorkDir); err != nil {
-		return nil, err
+		return err
 	}
 
 	ipath := filepath.Join(fs.zkDataDir, "myid")
 	plog.Infof("writing Zookeeper myid file %d to %s", t.req.ZookeeperMyID, ipath)
 	if err := toFile(fmt.Sprintf("%d", t.req.ZookeeperMyID), ipath); err != nil {
-		return nil, err
+		return err
 	}
 
-	peerIPs := strings.Split(req.PeerIPString, "___")
+	peerIPs := strings.Split(t.req.PeerIPString, "___")
 	peers := []ZookeeperPeer{}
 	for i := range peerIPs {
 		peers = append(peers, ZookeeperPeer{MyID: i + 1, IP: peerIPs[i]})
@@ -113,13 +111,13 @@ func startZookeeper(fs *flags, t *transporterServer, req *agentpb.Request) (*exe
 	tpl := template.Must(template.New("zkTemplate").Parse(zkTemplate))
 	buf := new(bytes.Buffer)
 	if err := tpl.Execute(buf, cfg); err != nil {
-		return nil, err
+		return err
 	}
 	zc := buf.String()
 
 	plog.Infof("writing Zookeeper config file %q (config %q)", fs.zkConfig, zc)
 	if err := toFile(zc, fs.zkConfig); err != nil {
-		return nil, err
+		return err
 	}
 
 	// CHANGE THIS FOR DIFFERENT ZOOKEEPER RELEASE
@@ -136,11 +134,11 @@ func startZookeeper(fs *flags, t *transporterServer, req *agentpb.Request) (*exe
 
 	plog.Infof("starting database %q", cs)
 	if err := cmd.Start(); err != nil {
-		return nil, err
+		return err
 	}
 	t.cmd = cmd
 	t.pid = int64(cmd.Process.Pid)
 	plog.Infof("started database %q (PID: %d)", cs, t.pid)
 
-	return cmd, nil
+	return nil
 }

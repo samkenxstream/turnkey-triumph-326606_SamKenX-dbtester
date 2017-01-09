@@ -19,21 +19,19 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-
-	"github.com/coreos/dbtester/agent/agentpb"
 )
 
 // startEtcd starts etcd v2 and v3.
-func startEtcd(fs *flags, t *transporterServer, req *agentpb.Request) (*exec.Cmd, error) {
+func startEtcd(fs *flags, t *transporterServer) error {
 	if !exist(fs.etcdExec) {
-		return nil, fmt.Errorf("etcd binary %q does not exist", globalFlags.etcdExec)
+		return fmt.Errorf("etcd binary %q does not exist", globalFlags.etcdExec)
 	}
 
 	if err := os.RemoveAll(fs.etcdDataDir); err != nil {
-		return nil, err
+		return err
 	}
 
-	peerIPs := strings.Split(req.PeerIPString, "___")
+	peerIPs := strings.Split(t.req.PeerIPString, "___")
 
 	names := make([]string, len(peerIPs))
 	clientURLs := make([]string, len(peerIPs))
@@ -47,14 +45,14 @@ func startEtcd(fs *flags, t *transporterServer, req *agentpb.Request) (*exec.Cmd
 	}
 
 	flags := []string{
-		"--name", names[req.ServerIndex],
+		"--name", names[t.req.ServerIndex],
 		"--data-dir", fs.etcdDataDir,
 
-		"--listen-client-urls", clientURLs[req.ServerIndex],
-		"--advertise-client-urls", clientURLs[req.ServerIndex],
+		"--listen-client-urls", clientURLs[t.req.ServerIndex],
+		"--advertise-client-urls", clientURLs[t.req.ServerIndex],
 
-		"--listen-peer-urls", peerURLs[req.ServerIndex],
-		"--initial-advertise-peer-urls", peerURLs[req.ServerIndex],
+		"--listen-peer-urls", peerURLs[t.req.ServerIndex],
+		"--initial-advertise-peer-urls", peerURLs[t.req.ServerIndex],
 
 		"--initial-cluster-token", "dbtester-etcd-token",
 		"--initial-cluster", strings.Join(members, ","),
@@ -69,11 +67,11 @@ func startEtcd(fs *flags, t *transporterServer, req *agentpb.Request) (*exec.Cmd
 
 	plog.Infof("starting database %q", cs)
 	if err := cmd.Start(); err != nil {
-		return nil, err
+		return err
 	}
 	t.cmd = cmd
 	t.pid = int64(cmd.Process.Pid)
 	plog.Infof("started database %q (PID: %d)", cs, t.pid)
 
-	return cmd, nil
+	return nil
 }
