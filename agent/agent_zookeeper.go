@@ -71,6 +71,14 @@ type ZookeeperConfig struct {
 	Peers          []ZookeeperPeer
 }
 
+var shell = os.Getenv("SHELL")
+
+func init() {
+	if len(shell) == 0 {
+		shell = "sh"
+	}
+}
+
 // startZookeeper starts Zookeeper.
 func startZookeeper(fs *flags, t *transporterServer) error {
 	if !exist(fs.javaExec) {
