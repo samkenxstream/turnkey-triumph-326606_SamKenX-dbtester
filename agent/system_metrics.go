@@ -38,6 +38,7 @@ func collectMetrics(fs *flags, t *transporterServer) error {
 	if err := c.Add(); err != nil {
 		return err
 	}
+	t.metricsCSV = c
 
 	go func() {
 		for {
@@ -49,10 +50,16 @@ func collectMetrics(fs *flags, t *transporterServer) error {
 				}
 
 			case <-t.uploadSig:
-				plog.Info("upload signal received; returning")
+				plog.Infof("upload signal received; saving CSV at %q", t.metricsCSV.FilePath)
+				if err := t.metricsCSV.Save(); err != nil {
+					plog.Errorf("psn.CSV.Save error %v", err)
+				} else {
+					plog.Infof("CSV saved at %q", t.metricsCSV.FilePath)
+				}
+				close(t.csvReady)
 				return
 
-			case sig := <-notifier:
+			case sig := <-t.notifier:
 				plog.Infof("signal received %q", sig.String())
 				return
 			}

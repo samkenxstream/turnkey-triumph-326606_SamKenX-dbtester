@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/coreos/dbtester/agent/agentpb"
+	"github.com/gyuho/psn"
 	"golang.org/x/net/context"
 )
 
@@ -39,10 +40,13 @@ type transporterServer struct {
 	proxyCmd *exec.Cmd
 	proxyPid int64
 
+	metricsCSV *psn.CSV
+
 	// trigger log uploads to cloud storage
 	// this should be triggered before we shut down
 	// the agent server
 	uploadSig chan struct{}
+	csvReady  chan struct{}
 
 	// notified after all tests finish
 	notifier chan os.Signal
@@ -55,6 +59,7 @@ func NewServer() agentpb.TransporterServer {
 
 	return &transporterServer{
 		uploadSig: make(chan struct{}, 1),
+		csvReady:  make(chan struct{}),
 		notifier:  notifier,
 	}
 }
@@ -214,6 +219,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 		}
 
 		t.uploadSig <- struct{}{}
+		<-t.csvReady
 
 		if err := uploadLog(&globalFlags, t); err != nil {
 			plog.Warningf("uploadLog error %v", err)
