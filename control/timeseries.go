@@ -110,7 +110,7 @@ func (sp *secondPoints) getTimeSeries() TimeSeries {
 func (ts TimeSeries) String() string {
 	buf := new(bytes.Buffer)
 	wr := csv.NewWriter(buf)
-	if err := wr.Write([]string{"unix-ts", "avg-latency-ms", "avg-throughput"}); err != nil {
+	if err := wr.Write([]string{"UNIX-TS", "AVG-LATENCY-MS", "AVG-THROUGHPUT"}); err != nil {
 		plog.Fatal(err)
 	}
 	rows := [][]string{}
