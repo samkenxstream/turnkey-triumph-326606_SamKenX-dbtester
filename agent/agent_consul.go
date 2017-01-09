@@ -25,12 +25,14 @@ import (
 
 // startConsul starts Consul.
 func startConsul(fs *flags, t *transporterServer, req *agentpb.Request) (*exec.Cmd, error) {
-	if err := os.RemoveAll(fs.consulDataDir); err != nil {
-		return nil, err
-	}
 	if !exist(fs.consulExec) {
 		return nil, fmt.Errorf("Consul binary %q does not exist", globalFlags.consulExec)
 	}
+
+	if err := os.RemoveAll(fs.consulDataDir); err != nil {
+		return nil, err
+	}
+
 	peerIPs := strings.Split(req.PeerIPString, "___")
 
 	var flags []string

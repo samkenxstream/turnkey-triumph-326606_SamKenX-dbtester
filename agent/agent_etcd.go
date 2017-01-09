@@ -25,12 +25,14 @@ import (
 
 // startEtcd starts etcd v2 and v3.
 func startEtcd(fs *flags, t *transporterServer, req *agentpb.Request) (*exec.Cmd, error) {
-	if err := os.RemoveAll(fs.etcdDataDir); err != nil {
-		return nil, err
-	}
 	if !exist(fs.etcdExec) {
 		return nil, fmt.Errorf("etcd binary %q does not exist", globalFlags.etcdExec)
 	}
+
+	if err := os.RemoveAll(fs.etcdDataDir); err != nil {
+		return nil, err
+	}
+
 	peerIPs := strings.Split(req.PeerIPString, "___")
 
 	names := make([]string, len(peerIPs))

@@ -27,6 +27,7 @@ func startCetcd(fs *flags, t *transporterServer, req *agentpb.Request) (*exec.Cm
 	if !exist(fs.cetcdExec) {
 		return nil, fmt.Errorf("cetcd binary %q does not exist", globalFlags.cetcdExec)
 	}
+
 	peerIPs := strings.Split(req.PeerIPString, "___")
 	clientURLs := make([]string, len(peerIPs))
 	for i, u := range peerIPs {

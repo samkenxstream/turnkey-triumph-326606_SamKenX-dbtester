@@ -37,6 +37,9 @@ snapCount={{.SnapCount}}
 {{range .Peers}}server.{{.MyID}}={{.IP}}:2888:3888
 {{end}}
 `
+
+	// this is Zookeeper default configuration
+	// http://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html
 	zkConfigDefault = ZookeeperConfig{
 		TickTime:       2000,
 		ClientPort:     "2181",
