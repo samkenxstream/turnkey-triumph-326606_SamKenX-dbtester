@@ -1,44 +1,44 @@
 # aggregate the data from each machine
 step1:
   - data_path_list:
-    - 20160330/01-etcd-1-monitor.csv
-    - 20160330/01-etcd-2-monitor.csv
-    - 20160330/01-etcd-3-monitor.csv
-    data_benchmark_path: 20160330/01-etcd-timeseries.csv
-    output_path: 20160330/01-etcd-aggregated.csv
+    - 20170101/01-etcd-1-monitor.csv
+    - 20170101/01-etcd-2-monitor.csv
+    - 20170101/01-etcd-3-monitor.csv
+    data_benchmark_path: 20170101/01-etcd-timeseries.csv
+    output_path: 20170101/01-etcd-aggregated.csv
   - data_path_list:
-    - 20160330/01-zk-1-monitor.csv
-    - 20160330/01-zk-2-monitor.csv
-    - 20160330/01-zk-3-monitor.csv
-    data_benchmark_path: 20160330/01-zk-timeseries.csv
-    output_path: 20160330/01-zk-aggregated.csv
+    - 20170101/01-zk-1-monitor.csv
+    - 20170101/01-zk-2-monitor.csv
+    - 20170101/01-zk-3-monitor.csv
+    data_benchmark_path: 20170101/01-zk-timeseries.csv
+    output_path: 20170101/01-zk-aggregated.csv
   - data_path_list:
-    - 20160330/02-etcd-1-monitor.csv
-    - 20160330/02-etcd-2-monitor.csv
-    - 20160330/02-etcd-3-monitor.csv
-    data_benchmark_path: 20160330/02-etcd-timeseries.csv
-    output_path: 20160330/02-etcd-aggregated.csv
+    - 20170101/02-etcd-1-monitor.csv
+    - 20170101/02-etcd-2-monitor.csv
+    - 20170101/02-etcd-3-monitor.csv
+    data_benchmark_path: 20170101/02-etcd-timeseries.csv
+    output_path: 20170101/02-etcd-aggregated.csv
   - data_path_list:
-    - 20160330/02-zk-1-monitor.csv
-    - 20160330/02-zk-2-monitor.csv
-    - 20160330/02-zk-3-monitor.csv
-    data_benchmark_path: 20160330/02-zk-timeseries.csv
-    output_path: 20160330/02-zk-aggregated.csv
+    - 20170101/02-zk-1-monitor.csv
+    - 20170101/02-zk-2-monitor.csv
+    - 20170101/02-zk-3-monitor.csv
+    data_benchmark_path: 20170101/02-zk-timeseries.csv
+    output_path: 20170101/02-zk-aggregated.csv
 
 # aggregate the data of each aggregated from step1
 step2:
   - data_list:
-      - path: 20160330/01-etcd-aggregated.csv
+      - path: 20170101/01-etcd-aggregated.csv
         name: etcd-v3
-      - path: 20160330/01-zk-aggregated.csv
+      - path: 20170101/01-zk-aggregated.csv
         name: zookeeper-r3.4.8
-    output_path: 20160330/01-all-aggregated.csv
+    output_path: 20170101/01-all-aggregated.csv
   - data_list:
-      - path: 20160330/02-etcd-aggregated.csv
+      - path: 20170101/02-etcd-aggregated.csv
         name: etcd-v3
-      - path: 20160330/02-zk-aggregated.csv
+      - path: 20170101/02-zk-aggregated.csv
         name: zookeeper-r3.4.8
-    output_path: 20160330/02-all-aggregated.csv
+    output_path: 20170101/02-all-aggregated.csv
 
 titles:
     - Write 300K keys, 1 client, key 64 bytes, value 256 bytes
@@ -46,7 +46,7 @@ titles:
 
 # plot graphs
 step3:
-  - data_path: 20160330/01-all-aggregated.csv
+  - data_path: 20170101/01-all-aggregated.csv
 
     plot_list:
     - lines:
@@ -57,8 +57,8 @@ step3:
       x_axis: Second
       y_axis: Latency(millisecond)
       output_path_list:
-        - 20160330/01-AVG-LATENCY-MS.svg
-        - 20160330/01-AVG-LATENCY-MS.png
+        - 20170101/01-AVG-LATENCY-MS.svg
+        - 20170101/01-AVG-LATENCY-MS.png
 
     - lines:
       - column: AVG-THROUGHPUT-etcd-v3
@@ -68,8 +68,8 @@ step3:
       x_axis: Second
       y_axis: Throughput(Requests/Second)
       output_path_list:
-        - 20160330/01-avg-throughput.svg
-        - 20160330/01-avg-throughput.png
+        - 20170101/01-avg-throughput.svg
+        - 20170101/01-avg-throughput.png
 
     - lines:
       - column: AVG-CPU-etcd-v3
@@ -79,21 +79,21 @@ step3:
       x_axis: Second
       y_axis: CPU(%)
       output_path_list:
-        - 20160330/01-AVG-CPU.svg
-        - 20160330/01-AVG-CPU.png
+        - 20170101/01-AVG-CPU.svg
+        - 20170101/01-AVG-CPU.png
 
     - lines:
-      - column: avg-memory-mb_etcd-v3
+      - column: AVG-VMRSS-MB-etcd-v3
         legend: etcd v3
-      - column: avg-memory-mb_zookeeper-r3.4.8
+      - column: AVG-VMRSS-MB-zookeeper-r3.4.8
         legend: Zookeeper r3.4.9
       x_axis: Second
       y_axis: Memory(MB)
       output_path_list:
-        - 20160330/01-avg-memory.svg
-        - 20160330/01-avg-memory.png
+        - 20170101/01-avg-memory.svg
+        - 20170101/01-avg-memory.png
 
-  - data_path: 20160330/02-all-aggregated.csv
+  - data_path: 20170101/02-all-aggregated.csv
 
     plot_list:
     - lines:
@@ -104,8 +104,8 @@ step3:
       x_axis: Second
       y_axis: Latency(millisecond)
       output_path_list:
-        - 20160330/02-AVG-LATENCY-MS.svg
-        - 20160330/02-AVG-LATENCY-MS.png
+        - 20170101/02-AVG-LATENCY-MS.svg
+        - 20170101/02-AVG-LATENCY-MS.png
 
     - lines:
       - column: AVG-THROUGHPUT-etcd-v3
@@ -115,8 +115,8 @@ step3:
       x_axis: Second
       y_axis: Throughput
       output_path_list:
-        - 20160330/02-avg-throughput.svg
-        - 20160330/02-avg-throughput.png
+        - 20170101/02-avg-throughput.svg
+        - 20170101/02-avg-throughput.png
 
     - lines:
       - column: AVG-CPU-etcd-v3
@@ -126,19 +126,19 @@ step3:
       x_axis: Second
       y_axis: CPU
       output_path_list:
-        - 20160330/02-AVG-CPU.svg
-        - 20160330/02-AVG-CPU.png
+        - 20170101/02-AVG-CPU.svg
+        - 20170101/02-AVG-CPU.png
 
     - lines:
-      - column: avg-memory-mb_etcd-v3
+      - column: AVG-VMRSS-MB-etcd-v3
         legend: etcd v3
-      - column: avg-memory-mb_zookeeper-r3.4.8
+      - column: AVG-VMRSS-MB-zookeeper-r3.4.8
         legend: Zookeeper r3.4.9
       x_axis: Second
       y_axis: Memory(MB)
       output_path_list:
-        - 20160330/02-avg-memory.svg
-        - 20160330/02-avg-memory.png
+        - 20170101/02-avg-memory.svg
+        - 20170101/02-avg-memory.png
 
 step4:
   preface: |
@@ -146,35 +146,35 @@ step4:
     - 3 machines(server) of 8 vCPUs + 16GB Memory + 375GB local SSD (SCSI)
     - 1 machine(client) of 16 vCPUs + 30GB Memory + 50GB SSD
     - Ubuntu 15.10
-    - Go 1.6 with etcd master branch as of testing date
+    - Go 1.7.4 with etcd master branch as of testing date
     - Java 8 with Zookeeper r3.4.9(current)
       - Java(TM) SE Runtime Environment (build 1.8.0_74-b02)
       - Java HotSpot(TM) 64-Bit Server VM (build 25.74-b02, mixed mode)
   results:
     - images:
         - image_title: 01-AVG-LATENCY-MS
-          image_path: 20160330/01-AVG-LATENCY-MS.png
+          image_path: 20170101/01-AVG-LATENCY-MS.png
           image_type: local
         - image_title: 01-avg-throughput
-          image_path: 20160330/01-avg-throughput.png
+          image_path: 20170101/01-avg-throughput.png
           image_type: local
         - image_title: 01-AVG-CPU
-          image_path: 20160330/01-AVG-CPU.png
+          image_path: 20170101/01-AVG-CPU.png
           image_type: local
         - image_title: 01-avg-memory
-          image_path: 20160330/01-avg-memory.png
+          image_path: 20170101/01-avg-memory.png
           image_type: local
     - images:
         - image_title: 02-AVG-LATENCY-MS
-          image_path: 20160330/02-AVG-LATENCY-MS.png
+          image_path: 20170101/02-AVG-LATENCY-MS.png
           image_type: local
         - image_title: 02-avg-throughput
-          image_path: 20160330/02-avg-throughput.png
+          image_path: 20170101/02-avg-throughput.png
           image_type: local
         - image_title: 02-AVG-CPU
-          image_path: 20160330/02-AVG-CPU.png
+          image_path: 20170101/02-AVG-CPU.png
           image_type: local
         - image_title: 02-avg-memory
-          image_path: 20160330/02-avg-memory.png
+          image_path: 20170101/02-avg-memory.png
           image_type: local
-  output_path: 20160330/README.md
+  output_path: 20170101/README.md
