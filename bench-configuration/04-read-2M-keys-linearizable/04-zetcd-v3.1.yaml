@@ -2,11 +2,11 @@ database: zetcd
 test_name: zetcd-v3.1-go1.7.4
 
 google_cloud_project_name: etcd-development
-google_cloud_storage_key_path: /home/gyuho/gcloud-key.json
+google_cloud_storage_key_path: /home/gyuho/gcloud-key.json # need this only in 'control' side
 google_cloud_storage_bucket_name: dbtester-results
-google_cloud_storage_sub_directory: 2016Q4-01-etcd-zk-consul/04-read-2M-keys-linearizable
-# google_cloud_storage_sub_directory: 2016Q4-01-etcd-zk-consul/05-read-2M-keys-linearizable-1000QPS
-# google_cloud_storage_sub_directory: 2016Q4-01-etcd-zk-consul/06-read-500K-keys-linearizable-1CONN
+google_cloud_storage_sub_directory: 2017Q1-01-etcd-zk-consul/04-read-2M-keys-linearizable
+# google_cloud_storage_sub_directory: 2017Q1-01-etcd-zk-consul/05-read-2M-keys-linearizable-1000QPS
+# google_cloud_storage_sub_directory: 2017Q1-01-etcd-zk-consul/06-read-500K-keys-linearizable-1CONN
 
 peer_ips:
     - 10.240.0.37
