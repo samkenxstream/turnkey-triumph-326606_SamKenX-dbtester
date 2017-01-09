@@ -265,7 +265,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 			cumulativeThroughputCol = dataframe.NewColumn("CUMULATIVE-AVG-THROUGHPUT")
 			totalThrougput          int
 			avgCPUCol               = dataframe.NewColumn("AVG-CPU")
-			avgMemCol               = dataframe.NewColumn("AVG-MEMORY-MB")
+			avgMemCol               = dataframe.NewColumn("AVG-VMRSS-MB")
 		)
 		for i := 0; i < benchLastIdx; i++ {
 			var (
@@ -278,12 +278,15 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 				if err != nil {
 					return err
 				}
+
 				fv, _ := rv.ToNumber()
 				switch {
-				case strings.HasPrefix(col.GetHeader(), "cpu_"):
+				case strings.HasPrefix(col.GetHeader(), "CPU-"):
 					cpuTotal += fv
-				case strings.HasPrefix(col.GetHeader(), "memory_"):
+
+				case strings.HasPrefix(col.GetHeader(), "VMRSS-"):
 					memoryTotal += fv
+
 				case col.GetHeader() == "AVG-THROUGHPUT":
 					fv, _ := rv.ToNumber()
 					totalThrougput += int(fv)
@@ -319,9 +322,9 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 				return err
 			}
 			switch {
-			case strings.HasPrefix(hd, "cpu_"):
+			case strings.HasPrefix(hd, "CPU-"):
 				aggFr.AddColumn(col)
-			case strings.HasPrefix(hd, "memory_"):
+			case strings.HasPrefix(hd, "VMRSS-"):
 				aggFr.AddColumn(col)
 			}
 		}
@@ -366,7 +369,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 			secondCol.PushBack(dataframe.NewStringValue(i))
 		}
 		nf.AddColumn(secondCol)
-		colsToKeep := []string{"AVG-LATENCY-MS", "AVG-THROUGHPUT", "CUMULATIVE-AVG-THROUGHPUT", "AVG-CPU", "AVG-MEMORY-MB"}
+		colsToKeep := []string{"AVG-LATENCY-MS", "AVG-THROUGHPUT", "CUMULATIVE-AVG-THROUGHPUT", "AVG-CPU", "AVG-VMRSS-MB"}
 		for i, fr := range frames {
 			dbID := elem.DataList[i].Name
 			plog.Printf("Step 2-%d-%d: cleaning up %s...", step2Idx, i, dbID)

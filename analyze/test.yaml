@@ -29,15 +29,15 @@ step1:
 step2:
   - data_list:
       - path: 20160330/01-etcd-aggregated.csv
-        name: etcd_v3
+        name: etcd-v3
       - path: 20160330/01-zk-aggregated.csv
-        name: zookeeper_3.4.8
+        name: zookeeper-r3.4.8
     output_path: 20160330/01-all-aggregated.csv
   - data_list:
       - path: 20160330/02-etcd-aggregated.csv
-        name: etcd_v3
+        name: etcd-v3
       - path: 20160330/02-zk-aggregated.csv
-        name: zookeeper_3.4.8
+        name: zookeeper-r3.4.8
     output_path: 20160330/02-all-aggregated.csv
 
 titles:
@@ -50,21 +50,21 @@ step3:
 
     plot_list:
     - lines:
-      - column: avg-latency-ms-etcd_v3
+      - column: AVG-LATENCY-MS-etcd-v3
         legend: etcd v3
-      - column: avg-latency-ms-zookeeper_3.4.8
-        legend: Zookeeper 3.4.8
+      - column: AVG-LATENCY-MS-zookeeper-r3.4.8
+        legend: Zookeeper r3.4.9
       x_axis: Second
       y_axis: Latency(millisecond)
       output_path_list:
-        - 20160330/01-avg-latency-ms.svg
-        - 20160330/01-avg-latency-ms.png
+        - 20160330/01-AVG-LATENCY-MS.svg
+        - 20160330/01-AVG-LATENCY-MS.png
 
     - lines:
-      - column: avg-throughput_etcd_v3
+      - column: AVG-THROUGHPUT-etcd-v3
         legend: etcd v3
-      - column: avg-throughput_zookeeper_3.4.8
-        legend: Zookeeper 3.4.8
+      - column: AVG-THROUGHPUT-zookeeper-r3.4.8
+        legend: Zookeeper r3.4.9
       x_axis: Second
       y_axis: Throughput(Requests/Second)
       output_path_list:
@@ -72,21 +72,21 @@ step3:
         - 20160330/01-avg-throughput.png
 
     - lines:
-      - column: avg-cpu-etcd_v3
+      - column: AVG-CPU-etcd-v3
         legend: etcd v3
-      - column: avg-cpu-zookeeper_3.4.8
-        legend: Zookeeper 3.4.8
+      - column: AVG-CPU-zookeeper-r3.4.8
+        legend: Zookeeper r3.4.9
       x_axis: Second
       y_axis: CPU(%)
       output_path_list:
-        - 20160330/01-avg-cpu.svg
-        - 20160330/01-avg-cpu.png
+        - 20160330/01-AVG-CPU.svg
+        - 20160330/01-AVG-CPU.png
 
     - lines:
-      - column: avg-memory-mb_etcd_v3
+      - column: avg-memory-mb_etcd-v3
         legend: etcd v3
-      - column: avg-memory-mb_zookeeper_3.4.8
-        legend: Zookeeper 3.4.8
+      - column: avg-memory-mb_zookeeper-r3.4.8
+        legend: Zookeeper r3.4.9
       x_axis: Second
       y_axis: Memory(MB)
       output_path_list:
@@ -97,21 +97,21 @@ step3:
 
     plot_list:
     - lines:
-      - column: avg-latency-ms-etcd_v3
+      - column: AVG-LATENCY-MS-etcd-v3
         legend: etcd v3
-      - column: avg-latency-ms-zookeeper_3.4.8
-        legend: Zookeeper 3.4.8
+      - column: AVG-LATENCY-MS-zookeeper-r3.4.8
+        legend: Zookeeper r3.4.9
       x_axis: Second
       y_axis: Latency(millisecond)
       output_path_list:
-        - 20160330/02-avg-latency-ms.svg
-        - 20160330/02-avg-latency-ms.png
+        - 20160330/02-AVG-LATENCY-MS.svg
+        - 20160330/02-AVG-LATENCY-MS.png
 
     - lines:
-      - column: avg-throughput_etcd_v3
+      - column: AVG-THROUGHPUT-etcd-v3
         legend: etcd v3
-      - column: avg-throughput_zookeeper_3.4.8
-        legend: Zookeeper 3.4.8
+      - column: AVG-THROUGHPUT-zookeeper-r3.4.8
+        legend: Zookeeper r3.4.9
       x_axis: Second
       y_axis: Throughput
       output_path_list:
@@ -119,21 +119,21 @@ step3:
         - 20160330/02-avg-throughput.png
 
     - lines:
-      - column: avg-cpu-etcd_v3
+      - column: AVG-CPU-etcd-v3
         legend: etcd v3
-      - column: avg-cpu-zookeeper_3.4.8
-        legend: Zookeeper 3.4.8
+      - column: AVG-CPU-zookeeper-r3.4.8
+        legend: Zookeeper r3.4.9
       x_axis: Second
       y_axis: CPU
       output_path_list:
-        - 20160330/02-avg-cpu.svg
-        - 20160330/02-avg-cpu.png
+        - 20160330/02-AVG-CPU.svg
+        - 20160330/02-AVG-CPU.png
 
     - lines:
-      - column: avg-memory-mb_etcd_v3
+      - column: avg-memory-mb_etcd-v3
         legend: etcd v3
-      - column: avg-memory-mb_zookeeper_3.4.8
-        legend: Zookeeper 3.4.8
+      - column: avg-memory-mb_zookeeper-r3.4.8
+        legend: Zookeeper r3.4.9
       x_axis: Second
       y_axis: Memory(MB)
       output_path_list:
@@ -147,32 +147,32 @@ step4:
     - 1 machine(client) of 16 vCPUs + 30GB Memory + 50GB SSD
     - Ubuntu 15.10
     - Go 1.6 with etcd master branch as of testing date
-    - Java 8 with Zookeeper 3.4.8(current)
+    - Java 8 with Zookeeper r3.4.9(current)
       - Java(TM) SE Runtime Environment (build 1.8.0_74-b02)
       - Java HotSpot(TM) 64-Bit Server VM (build 25.74-b02, mixed mode)
   results:
     - images:
-        - image_title: 01-avg-latency-ms
-          image_path: 20160330/01-avg-latency-ms.png
+        - image_title: 01-AVG-LATENCY-MS
+          image_path: 20160330/01-AVG-LATENCY-MS.png
           image_type: local
         - image_title: 01-avg-throughput
           image_path: 20160330/01-avg-throughput.png
           image_type: local
-        - image_title: 01-avg-cpu
-          image_path: 20160330/01-avg-cpu.png
+        - image_title: 01-AVG-CPU
+          image_path: 20160330/01-AVG-CPU.png
           image_type: local
         - image_title: 01-avg-memory
           image_path: 20160330/01-avg-memory.png
           image_type: local
     - images:
-        - image_title: 02-avg-latency-ms
-          image_path: 20160330/02-avg-latency-ms.png
+        - image_title: 02-AVG-LATENCY-MS
+          image_path: 20160330/02-AVG-LATENCY-MS.png
           image_type: local
         - image_title: 02-avg-throughput
           image_path: 20160330/02-avg-throughput.png
           image_type: local
-        - image_title: 02-avg-cpu
-          image_path: 20160330/02-avg-cpu.png
+        - image_title: 02-AVG-CPU
+          image_path: 20160330/02-AVG-CPU.png
           image_type: local
         - image_title: 02-avg-memory
           image_path: 20160330/02-avg-memory.png
