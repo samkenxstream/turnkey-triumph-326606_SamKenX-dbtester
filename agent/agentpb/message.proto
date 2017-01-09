@@ -1,0 +1,67 @@
+syntax = "proto3";
+package agentpb;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+
+service Transporter {
+	rpc Transfer(Request) returns (Response) {}
+}
+
+message Request {
+	enum Operation {
+		Start     = 0;
+		Stop      = 1;
+	}
+	enum Database {
+		etcdv3    = 0;
+		etcdv2    = 1;
+		ZooKeeper = 2;
+		Consul    = 3;
+		zetcd     = 4;
+		cetcd     = 5;
+	}
+
+	Operation operation    = 1;
+	Database  database     = 2;
+	string    peerIPString = 3;
+
+	// ServerIPIndex is the index in peerIPs that points to the
+	// corresponding remote IP.
+	uint32 serverIndex = 4;
+
+	// TestName prefixes all logs to be generated in agent.
+	string testName = 5;
+
+	// GoogleCloudProjectName is the project name to use
+	// to upload logs.
+	string googleCloudProjectName = 6;
+
+	// GoogleCloudStorageKey is the key to be used to upload
+	// data and logs to Google Cloud Storage and others.
+	string googleCloudStorageKey = 7;
+
+	// GoogleCloudStorageBucketName is the bucket name to store all data and logs.
+	string googleCloudStorageBucketName = 8;
+
+	// GoogleCloudStorageSubDirectory is the sub-directory name to store data.
+	string googleCloudStorageSubDirectory = 9;
+
+	// ZookeeperMyID is myid that needs to be stored as a file in the remote machine.
+	uint32 zookeeperMyID   = 10;
+
+	// ZookeeperMaxClientCnxns limits the number of concurrent connections
+	// (at the socket level) that a single client, identified by IP address.
+	int64 zookeeperMaxClientCnxns = 11;
+
+	// ZookeeperSnapCount is 100,000 by default.
+	int64 zookeeperSnapCount = 12;
+}
+
+message Response {
+	bool success  = 1;
+}
