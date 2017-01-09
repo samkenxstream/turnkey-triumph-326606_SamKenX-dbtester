@@ -21,6 +21,7 @@ import (
 
 	"github.com/coreos/dbtester/agent/agentpb"
 	"github.com/coreos/pkg/capnslog"
+	"github.com/gyuho/psn"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 )
@@ -42,12 +43,23 @@ type flags struct {
 	etcdDataDir   string
 	consulDataDir string
 
-	grpcPort string
+	grpcPort         string
+	diskDevice       string
+	networkInterface string
 }
 
 var globalFlags flags
 
 func init() {
+	dn, err := psn.GetDevice("/")
+	if err != nil {
+		plog.Warningf("cannot get disk device mounted at '/' (%v)", err)
+	}
+	nt, err := psn.GetDefaultInterface()
+	if err != nil {
+		plog.Warningf("cannot detect default network interface (%v)", err)
+	}
+
 	Command.PersistentFlags().StringVar(&globalFlags.agentLog, "agent-log", filepath.Join(homeDir(), "agent.log"), "agent log path.")
 	Command.PersistentFlags().StringVar(&globalFlags.databaseLog, "database-log", filepath.Join(homeDir(), "database.log"), "Database log path.")
 	Command.PersistentFlags().StringVar(&globalFlags.systemMetricsLog, "system-metrics-log", filepath.Join(homeDir(), "system-metrics.csv"), "System metrics log path.")
@@ -65,6 +77,8 @@ func init() {
 	Command.PersistentFlags().StringVar(&globalFlags.consulDataDir, "consul-data-dir", filepath.Join(homeDir(), "consul.data"), "Consul data directory.")
 
 	Command.PersistentFlags().StringVar(&globalFlags.grpcPort, "agent-port", ":3500", "Port to server agent gRPC server.")
+	Command.PersistentFlags().StringVar(&globalFlags.diskDevice, "disk-device", dn, "Disk device to collect disk statistics metrics from.")
+	Command.PersistentFlags().StringVar(&globalFlags.networkInterface, "network-interface", nt, "Network interface to record in/outgoing packets.")
 }
 
 // Command implements 'agent' command.
@@ -84,7 +98,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 
 	var (
 		grpcServer = grpc.NewServer()
-		sender     = NewTransporterServer()
+		sender     = NewServer()
 	)
 	ln, err := net.Listen("tcp", globalFlags.grpcPort)
 	if err != nil {
