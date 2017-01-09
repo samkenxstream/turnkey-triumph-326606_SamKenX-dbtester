@@ -1,11 +1,10 @@
-package process
+package psn
 
 import (
 	"bufio"
 	"bytes"
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"log"
 	"os/exec"
 	"reflect"
@@ -14,27 +13,23 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
+	"github.com/gyuho/psn/schema"
 )
 
-// GetStat reads /proc/$PID/stat data.
-func GetStat(pid int64) (Stat, error) {
-	var (
-		s   Stat
-		err error
-	)
-	for i := 0; i < 3; i++ {
-		s, err = getStat(pid)
+// GetStat reads '/proc/$PID/stat' data.
+func GetStat(pid int64, up Uptime) (s Stat, err error) {
+	for i := 0; i < 5; i++ {
+		s, err = parseProcStat(pid, up)
 		if err == nil {
 			return s, nil
-		} else {
-			log.Println(err)
 		}
+		log.Println("retrying;", err)
 		time.Sleep(5 * time.Millisecond)
 	}
-	return s, err
+	return
 }
 
-func getStat(pid int64) (Stat, error) {
+func parseProcStat(pid int64, up Uptime) (Stat, error) {
 	fpath := fmt.Sprintf("/proc/%d/stat", pid)
 	f, err := openToRead(fpath)
 	if err != nil {
@@ -52,13 +47,14 @@ func getStat(pid int64) (Stat, error) {
 
 		fds := strings.Fields(txt)
 		for i, fv := range fds {
-			column := ToField(StatList[i].Col)
+			column := schema.ToField(schema.Stat.Columns[i].Name)
 			s := reflect.ValueOf(st).Elem()
 			if s.Kind() == reflect.Struct {
 				f := s.FieldByName(column)
 				if f.IsValid() {
 					if f.CanSet() {
-						switch StatList[i].Kind {
+						switch schema.Stat.Columns[i].Kind {
+
 						case reflect.Uint64:
 							value, err := strconv.ParseUint(fv, 10, 64)
 							if err != nil {
@@ -66,15 +62,27 @@ func getStat(pid int64) (Stat, error) {
 							}
 							if !f.OverflowUint(value) {
 								f.SetUint(value)
-								if StatList[i].Humanize {
-									hF := s.FieldByName(column + "Humanize")
-									if hF.IsValid() {
-										if hF.CanSet() {
-											hF.SetString(humanize.Bytes(value))
+
+								bF := s.FieldByName(column + "BytesN")
+								if bF.IsValid() {
+									if bF.CanSet() {
+										bF.SetUint(value)
+									}
+								}
+
+								if vv, ok := schema.Stat.ColumnsToParse[schema.Stat.Columns[i].Name]; ok {
+									switch vv {
+									case schema.TypeBytes:
+										hF := s.FieldByName(column + "ParsedBytes")
+										if hF.IsValid() {
+											if hF.CanSet() {
+												hF.SetString(humanize.Bytes(value))
+											}
 										}
 									}
 								}
 							}
+
 						case reflect.Int64:
 							value, err := strconv.ParseInt(fv, 10, 64)
 							if err != nil {
@@ -82,19 +90,41 @@ func getStat(pid int64) (Stat, error) {
 							}
 							if !f.OverflowInt(value) {
 								f.SetInt(value)
-								if StatList[i].Humanize {
-									hF := s.FieldByName(column + "Humanize")
-									if hF.IsValid() {
-										if hF.CanSet() {
-											if value > 0 {
+
+								bF := s.FieldByName(column + "BytesN")
+								if bF.IsValid() {
+									if bF.CanSet() {
+										bF.SetInt(value)
+									}
+								}
+
+								if vv, ok := schema.Stat.ColumnsToParse[schema.Stat.Columns[i].Name]; ok {
+									switch vv {
+									case schema.TypeBytes:
+										hF := s.FieldByName(column + "ParsedBytes")
+										if hF.IsValid() {
+											if hF.CanSet() {
 												hF.SetString(humanize.Bytes(uint64(value)))
 											}
 										}
 									}
 								}
 							}
+
 						case reflect.String:
 							f.SetString(fv)
+
+							if vv, ok := schema.Stat.ColumnsToParse[schema.Stat.Columns[i].Name]; ok {
+								switch vv {
+								case schema.TypeStatus:
+									hF := s.FieldByName(column + "ParsedStatus")
+									if hF.IsValid() {
+										if hF.CanSet() {
+											hF.SetString(strings.TrimSpace(fv))
+										}
+									}
+								}
+							}
 						}
 					}
 				}
@@ -104,10 +134,10 @@ func getStat(pid int64) (Stat, error) {
 	if err := scanner.Err(); err != nil {
 		return Stat{}, err
 	}
-	return st.update()
+	return st.update(up)
 }
 
-func (s *Stat) update() (Stat, error) {
+func (s *Stat) update(up Uptime) (Stat, error) {
 	if s == nil {
 		return Stat{}, nil
 	}
@@ -117,7 +147,7 @@ func (s *Stat) update() (Stat, error) {
 	if strings.HasSuffix(s.Comm, ")") {
 		s.Comm = s.Comm[:len(s.Comm)-1]
 	}
-	cu, err := s.getCpuUsage()
+	cu, err := s.getCPU(up)
 	if err != nil {
 		return Stat{}, err
 	}
@@ -125,9 +155,9 @@ func (s *Stat) update() (Stat, error) {
 	return *s, nil
 }
 
-// getCpuUsage returns the average CPU usage in percentage.
+// getCPU returns the average CPU usage in percentage.
 // http://stackoverflow.com/questions/16726779/how-do-i-get-the-total-cpu-usage-of-an-application-from-proc-pid-stat
-func (s Stat) getCpuUsage() (float64, error) {
+func (s Stat) getCPU(up Uptime) (float64, error) {
 	totalSec := s.Utime + s.Stime
 	totalSec += s.Cutime + s.Cstime
 
@@ -141,46 +171,11 @@ func (s Stat) getCpuUsage() (float64, error) {
 		return 0, err
 	}
 
-	u, err := GetUptime()
-	if err != nil {
-		return 0, err
-	}
-	tookSec := u.UptimeTotal - (float64(s.Starttime) / float64(hertz))
+	tookSec := up.UptimeTotal - (float64(s.Starttime) / float64(hertz))
 	if hertz == 0 || tookSec == 0.0 {
 		return 0.0, nil
 	}
 	return 100 * ((float64(totalSec) / float64(hertz)) / float64(tookSec)), nil
-}
-
-// Uptime describes /proc/uptime.
-type Uptime struct {
-	UptimeTotal float64
-	UptimeIdle  float64
-}
-
-// GetUptime reads /proc/uptime.
-func GetUptime() (Uptime, error) {
-	f, err := ioutil.ReadFile("/proc/uptime")
-	if err != nil {
-		return Uptime{}, err
-	}
-	fields := strings.Fields(strings.TrimSpace(string(f)))
-	u := Uptime{}
-	if len(fields) > 0 {
-		v, err := strconv.ParseFloat(fields[0], 64)
-		if err != nil {
-			return Uptime{}, err
-		}
-		u.UptimeTotal = v
-	}
-	if len(fields) > 1 {
-		v, err := strconv.ParseFloat(fields[1], 64)
-		if err != nil {
-			return Uptime{}, err
-		}
-		u.UptimeIdle = v
-	}
-	return u, nil
 }
 
 const statTmpl = `
@@ -194,9 +189,9 @@ Pid:         {{.Pid}}
 Ppid:        {{.Ppid}}
 NumThreads:  {{.NumThreads}}
 
-Rss:       {{.RssHumanize}} ({{.Rss}})
-Rsslim:    {{.RsslimHumanize}} ({{.Rsslim}})
-Vsize:     {{.VsizeHumanize}} ({{.Vsize}})
+Rss:       {{.RssParsedBytes}} ({{.RssBytesN}})
+Rsslim:    {{.RsslimParsedBytes}} ({{.RsslimBytesN}})
+Vsize:     {{.VsizeParsedBytes}} ({{.VsizeBytesN}})
 CpuUsage:  {{.CpuUsage}} %
 
 Starttime:  {{.Starttime}}

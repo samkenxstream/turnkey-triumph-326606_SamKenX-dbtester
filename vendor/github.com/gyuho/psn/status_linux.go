@@ -1,10 +1,11 @@
-package process
+package psn
 
 import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"strings"
 	"text/template"
 	"time"
 
@@ -12,25 +13,20 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// GetStatus reads /proc/$PID/status data.
-func GetStatus(pid int64) (Status, error) {
-	var (
-		s   Status
-		err error
-	)
-	for i := 0; i < 3; i++ {
-		s, err = getStatus(pid)
+// GetStatus reads '/proc/$PID/status' data.
+func GetStatus(pid int64) (s Status, err error) {
+	for i := 0; i < 5; i++ {
+		s, err = parseProcStatus(pid)
 		if err == nil {
 			return s, nil
-		} else {
-			log.Println(err)
 		}
+		log.Println(err)
 		time.Sleep(5 * time.Millisecond)
 	}
-	return s, err
+	return
 }
 
-func getStatus(pid int64) (Status, error) {
+func rawProcStatus(pid int64) (Status, error) {
 	fpath := fmt.Sprintf("/proc/%d/status", pid)
 	f, err := openToRead(fpath)
 	if err != nil {
@@ -42,46 +38,64 @@ func getStatus(pid int64) (Status, error) {
 	if err != nil {
 		return Status{}, err
 	}
+
 	rs := Status{}
 	if err := yaml.Unmarshal(b, &rs); err != nil {
-		return Status{}, err
+		return rs, err
 	}
+	return rs, nil
+}
+
+func parseProcStatus(pid int64) (Status, error) {
+	rs, err := rawProcStatus(pid)
+	if err != nil {
+		return rs, err
+	}
+
+	rs.StateParsedStatus = strings.TrimSpace(rs.State)
+
 	u, _ := humanize.ParseBytes(rs.VmPeak)
-	rs.VmPeak = humanize.Bytes(u)
-	rs.VmPeakBytes = u
+	rs.VmPeakBytesN = u
+	rs.VmPeakParsedBytes = humanize.Bytes(u)
 	u, _ = humanize.ParseBytes(rs.VmSize)
-	rs.VmSize = humanize.Bytes(u)
-	rs.VmSizeBytes = u
+	rs.VmSizeBytesN = u
+	rs.VmSizeParsedBytes = humanize.Bytes(u)
 	u, _ = humanize.ParseBytes(rs.VmLck)
-	rs.VmLck = humanize.Bytes(u)
-	rs.VmLckBytes = u
+	rs.VmLckBytesN = u
+	rs.VmLckParsedBytes = humanize.Bytes(u)
 	u, _ = humanize.ParseBytes(rs.VmPin)
-	rs.VmPin = humanize.Bytes(u)
-	rs.VmPinBytes = u
+	rs.VmPinBytesN = u
+	rs.VmPinParsedBytes = humanize.Bytes(u)
 	u, _ = humanize.ParseBytes(rs.VmHWM)
-	rs.VmHWM = humanize.Bytes(u)
-	rs.VmHWMBytes = u
+	rs.VmHWMBytesN = u
+	rs.VmHWMParsedBytes = humanize.Bytes(u)
 	u, _ = humanize.ParseBytes(rs.VmRSS)
-	rs.VmRSS = humanize.Bytes(u)
-	rs.VmRSSBytes = u
+	rs.VmRSSBytesN = u
+	rs.VmRSSParsedBytes = humanize.Bytes(u)
 	u, _ = humanize.ParseBytes(rs.VmData)
-	rs.VmData = humanize.Bytes(u)
-	rs.VmDataBytes = u
+	rs.VmDataBytesN = u
+	rs.VmDataParsedBytes = humanize.Bytes(u)
 	u, _ = humanize.ParseBytes(rs.VmStk)
-	rs.VmStk = humanize.Bytes(u)
-	rs.VmStkBytes = u
+	rs.VmStkBytesN = u
+	rs.VmStkParsedBytes = humanize.Bytes(u)
 	u, _ = humanize.ParseBytes(rs.VmExe)
-	rs.VmExe = humanize.Bytes(u)
-	rs.VmExeBytes = u
+	rs.VmExeBytesN = u
+	rs.VmExeParsedBytes = humanize.Bytes(u)
 	u, _ = humanize.ParseBytes(rs.VmLib)
-	rs.VmLib = humanize.Bytes(u)
-	rs.VmLibBytes = u
+	rs.VmLibBytesN = u
+	rs.VmLibParsedBytes = humanize.Bytes(u)
 	u, _ = humanize.ParseBytes(rs.VmPTE)
-	rs.VmPTE = humanize.Bytes(u)
-	rs.VmPTEBytes = u
+	rs.VmPTEBytesN = u
+	rs.VmPTEParsedBytes = humanize.Bytes(u)
+	u, _ = humanize.ParseBytes(rs.VmPMD)
+	rs.VmPMDBytesN = u
+	rs.VmPMDParsedBytes = humanize.Bytes(u)
 	u, _ = humanize.ParseBytes(rs.VmSwap)
-	rs.VmSwap = humanize.Bytes(u)
-	rs.VmSwapBytes = u
+	rs.VmSwapBytesN = u
+	rs.VmSwapParsedBytes = humanize.Bytes(u)
+	u, _ = humanize.ParseBytes(rs.HugetlbPages)
+	rs.HugetlbPagesBytesN = u
+	rs.HugetlbPagesParsedBytes = humanize.Bytes(u)
 
 	return rs, nil
 }
@@ -90,8 +104,9 @@ const statusTmpl = `
 ----------------------------------------
 [/proc/{{.Pid}}/status]
 
-Name:  {{.Name}}
-State: {{.State}}
+Name:   {{.Name}}
+Umask:  {{.Umask}}
+State:  {{.StateParsedStatus}}
 
 Tgid:      {{.Tgid}}
 Ngid:      {{.Ngid}}
@@ -101,18 +116,20 @@ TracerPid: {{.TracerPid}}
 
 FDSize:  {{.FDSize}}
 
-VmPeak:  {{.VmPeak}}
-VmSize:  {{.VmSize}}
-VmLck:   {{.VmLck}}
-VmPin:   {{.VmPin}}
-VmHWM:   {{.VmHWM}}
-VmRSS:   {{.VmRSS}}
-VmData:  {{.VmData}}
-VmStk:   {{.VmStk}}
-VmExe:   {{.VmExe}}
-VmLib:   {{.VmLib}}
-VmPTE:   {{.VmPTE}}
-VmSwap:  {{.VmSwap}}
+VmPeak:  {{.VmPeakParsedBytes}}
+VmSize:  {{.VmSizeParsedBytes}}
+VmLck:   {{.VmLckParsedBytes}}
+VmPin:   {{.VmPinParsedBytes}}
+VmHWM:   {{.VmHWMParsedBytes}}
+VmRSS:   {{.VmRSSParsedBytes}}
+VmData:  {{.VmDataParsedBytes}}
+VmStk:   {{.VmStkParsedBytes}}
+VmExe:   {{.VmExeParsedBytes}}
+VmLib:   {{.VmLibParsedBytes}}
+VmPTE:   {{.VmPTEParsedBytes}}
+VmPMD:   {{.VmPMDParsedBytes}}
+VmSwap:  {{.VmSwapParsedBytes}}
+HugetlbPages:  {{.HugetlbPagesParsedBytes}}
 
 Threads:   {{.Threads}}
 
