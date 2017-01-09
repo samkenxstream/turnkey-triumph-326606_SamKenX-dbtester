@@ -1,4 +1,4 @@
-// Copyright 2016 CoreOS, Inc.
+// Copyright 2017 CoreOS, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -110,7 +110,7 @@ func (sp *secondPoints) getTimeSeries() TimeSeries {
 func (ts TimeSeries) String() string {
 	buf := new(bytes.Buffer)
 	wr := csv.NewWriter(buf)
-	if err := wr.Write([]string{"unix-ts", "avg-latency-ms", "avg-throughput"}); err != nil {
+	if err := wr.Write([]string{"UNIX-TS", "AVG-LATENCY-MS", "AVG-THROUGHPUT"}); err != nil {
 		plog.Fatal(err)
 	}
 	rows := [][]string{}

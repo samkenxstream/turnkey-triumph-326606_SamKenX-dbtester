@@ -1,5 +1,5 @@
-hash: 4a31a6635850dfeafb8706456d1d09b3efa9dc9599806fceceab2ca37627eef5
-updated: 2016-12-29T10:05:57.747054932-08:00
+hash: 79e108074acefd584e2963e1c13d08ad27ac91ad481d791e98f5b99760f398b7
+updated: 2017-01-09T15:13:09.585723425-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -25,7 +25,7 @@ imports:
 - name: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - name: github.com/coreos/etcd
-  version: 67c75606dbbdf74db0247aa73a190c83f84bef82
+  version: 8adfc06084c28320079a09ae4d08f09b29eebd04
   subpackages:
   - auth/authpb
   - client
@@ -96,9 +96,10 @@ imports:
 - name: github.com/gyuho/dataframe
   version: 573cd728a011e5473510a6a1df0f39023c305e04
 - name: github.com/gyuho/psn
-  version: 29bf72881f998ac840f3cd5d30ed22c9a8fe50a9
+  version: be5928dfa765874e1d3a3f9e70fcaa6a6fcd250f
   subpackages:
   - process
+  - schema
 - name: github.com/hashicorp/consul
   version: a9afa0c27f484dd19fe59a80444e64e5352c4408
   subpackages:
@@ -133,7 +134,7 @@ imports:
   subpackages:
   - go
 - name: github.com/prometheus/common
-  version: 6d76b79f239843a04e8ad8dfd8fcadfa3920236f
+  version: dd2f054febf4a6c00f2343686efb775948a8bff4
   subpackages:
   - expfmt
   - internal/bitbucket.org/ww/goautoneg
@@ -153,7 +154,7 @@ imports:
   subpackages:
   - codec
 - name: golang.org/x/image
-  version: 3ba119400e6fd98bf5100d1c17303c377b6521e9
+  version: 1ff62c92167a10494f3e0b1e77cb67860a6ac43a
   subpackages:
   - draw
   - font
@@ -195,7 +196,7 @@ imports:
   - storage/v1
   - transport
 - name: google.golang.org/appengine
-  version: 08a149cfaee099e6ce4be01c0113a78c85ee1dee
+  version: 8758a385849434ba5eac8aeedcf5192c5a0f5f10
   subpackages:
   - internal
   - internal/app_identity

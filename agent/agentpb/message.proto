@@ -1,5 +1,5 @@
 syntax = "proto3";
-package agent;
+package agentpb;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
@@ -16,7 +16,6 @@ message Request {
 	enum Operation {
 		Start     = 0;
 		Stop      = 1;
-		UploadLog = 2;
 	}
 	enum Database {
 		etcdv3    = 0;
@@ -27,9 +26,9 @@ message Request {
 		cetcd     = 5;
 	}
 
-	Operation operation   = 1;
-	Database database     = 2;
-	string peerIPString   = 3;
+	Operation operation    = 1;
+	Database  database     = 2;
+	string    peerIPString = 3;
 
 	// ServerIPIndex is the index in peerIPs that points to the
 	// corresponding remote IP.

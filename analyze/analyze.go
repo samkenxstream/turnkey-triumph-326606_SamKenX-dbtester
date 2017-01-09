@@ -17,7 +17,6 @@ package analyze
 import (
 	"bytes"
 	"fmt"
-	"image/color"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -28,24 +27,23 @@ import (
 	"github.com/gonum/plot/plotutil"
 	"github.com/gonum/plot/vg"
 	"github.com/gyuho/dataframe"
-	"github.com/gyuho/psn/process"
 	"github.com/spf13/cobra"
 )
 
-var (
-	Command = &cobra.Command{
-		Use:   "analyze",
-		Short: "Analyzes test results specific to dbtester.",
-		RunE:  CommandFunc,
-	}
-	configPath string
-)
+// Command implements 'analyze' command.
+var Command = &cobra.Command{
+	Use:   "analyze",
+	Short: "Analyzes test dbtester test results.",
+	RunE:  commandFunc,
+}
+
+var configPath string
 
 func init() {
 	Command.PersistentFlags().StringVarP(&configPath, "config", "c", "", "YAML configuration file path.")
 }
 
-func CommandFunc(cmd *cobra.Command, args []string) error {
+func commandFunc(cmd *cobra.Command, args []string) error {
 	cfg, err := ReadConfig(configPath)
 	if err != nil {
 		return err
@@ -62,43 +60,37 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		for i, monitorPath := range elem.DataPathList {
 			plog.Printf("Step 1-%d-%d: creating dataframe from %s", step1Idx, i, monitorPath)
 
-			// fill in missing timestamps
-			tb, err := process.ReadCSVFillIn(monitorPath)
+			fr, err := dataframe.NewFromCSV(nil, monitorPath)
 			if err != nil {
-				return err
-			}
-			ext := filepath.Ext(monitorPath)
-			cPath := strings.Replace(monitorPath, ext, "-filled-in"+ext, -1)
-			if err := tb.ToCSV(cPath); err != nil {
 				return err
 			}
 
-			fr, err := dataframe.NewFromCSV(nil, cPath)
-			if err != nil {
-				return err
-			}
 			nf := dataframe.New()
-			c1, err := fr.GetColumn("unix-ts")
-			if err != nil {
-				return err
-			}
-			c2, err := fr.GetColumn("CpuUsageFloat64")
-			if err != nil {
-				return err
-			}
-			c3, err := fr.GetColumn("VmRSSBytes")
+
+			c1, err := fr.GetColumn("UNIX-TS")
 			if err != nil {
 				return err
 			}
 			if err = nf.AddColumn(c1); err != nil {
 				return err
 			}
+
+			c2, err := fr.GetColumn("CPU-NUM")
+			if err != nil {
+				return err
+			}
 			if err = nf.AddColumn(c2); err != nil {
+				return err
+			}
+
+			c3, err := fr.GetColumn("VMRSS-NUM")
+			if err != nil {
 				return err
 			}
 			if err = nf.AddColumn(c3); err != nil {
 				return err
 			}
+
 			frames = append(frames, nf)
 
 			fv, ok := c1.FrontNonNil()
@@ -138,13 +130,13 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 			}
 		}
 
-		// make all columns have equal row number, based on the column unix-ts
-		// truncate all rows before maxCommonMinUnixTime and after maxCommonMinUnixTime
+		// monitor CSVs from multiple servers, and want them to have equal number of rows
+		// Truncate all rows before maxCommonMinUnixTime and after maxCommonMinUnixTime
 		minTS := fmt.Sprintf("%d", maxCommonMinUnixTime)
 		maxTS := fmt.Sprintf("%d", maxCommonMaxUnixTime)
 		frMonitor := dataframe.New()
 		for i := range frames {
-			uc, err := frames[i].GetColumn("unix-ts")
+			uc, err := frames[i].GetColumn("UNIX-TS")
 			if err != nil {
 				return err
 			}
@@ -157,24 +149,25 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 				return fmt.Errorf("%v does not exist in %s", maxTS, elem.DataPathList[i])
 			}
 
-			for _, hd := range frames[i].GetHeader() {
-				if i > 0 && hd == "unix-ts" {
+			// TODO: add fsyncs, network metrics
+			for _, header := range frames[i].GetHeader() {
+				if i > 0 && header == "UNIX-TS" {
 					continue
 				}
 				var col dataframe.Column
-				col, err = frames[i].GetColumn(hd)
+				col, err = frames[i].GetColumn(header)
 				if err != nil {
 					return err
 				}
 				if err = col.KeepRows(j, k+1); err != nil {
 					return err
 				}
-				if hd != "unix-ts" {
-					switch hd {
-					case "CpuUsageFloat64":
-						hd = "cpu"
-					case "VmRSSBytes":
-						hd = "memory_mb"
+				if header != "UNIX-TS" {
+					switch header {
+					case "CPU-NUM":
+						header = "CPU"
+					case "VMRSS-NUM":
+						header = "VMRSS-MB"
 
 						// to bytes to mb
 						colN := col.RowNumber()
@@ -191,7 +184,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 							}
 						}
 					}
-					col.UpdateHeader(fmt.Sprintf("%s_%d", hd, i+1))
+					col.UpdateHeader(fmt.Sprintf("%s-%d", header, i+1))
 				}
 				if err = frMonitor.AddColumn(col); err != nil {
 					return err
@@ -200,16 +193,17 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		}
 
 		plog.Printf("Step 1-%d-%d: creating dataframe from %s", step1Idx, len(elem.DataPathList), elem.DataBenchmarkPath)
-		colMonitorUnixTs, err := frMonitor.GetColumn("unix-ts")
+		colMonitorUnixTs, err := frMonitor.GetColumn("UNIX-TS")
 		if err != nil {
 			return err
 		}
-		// need to combine frMonitor to frBench
+
+		// need to combine frMonitor to frBench by unix timestamps
 		frBench, err := dataframe.NewFromCSV(nil, elem.DataBenchmarkPath)
 		if err != nil {
 			return err
 		}
-		colBenchUnixTs, err := frBench.GetColumn("unix-ts")
+		colBenchUnixTs, err := frBench.GetColumn("UNIX-TS")
 		if err != nil {
 			return err
 		}
@@ -249,7 +243,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		}
 
 		for _, hd := range frMonitor.GetHeader() {
-			if hd == "unix-ts" {
+			if hd == "UNIX-TS" {
 				continue
 			}
 			var col dataframe.Column
@@ -268,10 +262,10 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		plog.Printf("Step 1-%d-%d: calculating average values", step1Idx, len(elem.DataPathList)+1)
 		var (
 			sampleSize              = float64(len(elem.DataPathList))
-			cumulativeThroughputCol = dataframe.NewColumn("cumulative-avg-throughput")
+			cumulativeThroughputCol = dataframe.NewColumn("CUMULATIVE-AVG-THROUGHPUT")
 			totalThrougput          int
-			avgCPUCol               = dataframe.NewColumn("avg-cpu")
-			avgMemCol               = dataframe.NewColumn("avg-memory-mb")
+			avgCPUCol               = dataframe.NewColumn("AVG-CPU")
+			avgMemCol               = dataframe.NewColumn("AVG-MEMORY-MB")
 		)
 		for i := 0; i < benchLastIdx; i++ {
 			var (
@@ -290,7 +284,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 					cpuTotal += fv
 				case strings.HasPrefix(col.GetHeader(), "memory_"):
 					memoryTotal += fv
-				case col.GetHeader() == "avg-throughput":
+				case col.GetHeader() == "AVG-THROUGHPUT":
 					fv, _ := rv.ToNumber()
 					totalThrougput += int(fv)
 					cumulativeThroughputCol.PushBack(dataframe.NewStringValue(totalThrougput))
@@ -301,15 +295,15 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		}
 
 		plog.Printf("Step 1-%d-%d: combine %s and %q", step1Idx, len(elem.DataPathList)+2, elem.DataBenchmarkPath, elem.DataPathList)
-		unixTsCol, err := frBench.GetColumn("unix-ts")
+		unixTsCol, err := frBench.GetColumn("UNIX-TS")
 		if err != nil {
 			return err
 		}
-		latencyCol, err := frBench.GetColumn("avg-latency-ms")
+		latencyCol, err := frBench.GetColumn("AVG-LATENCY-MS")
 		if err != nil {
 			return err
 		}
-		throughputCol, err := frBench.GetColumn("avg-throughput")
+		throughputCol, err := frBench.GetColumn("AVG-THROUGHPUT")
 		if err != nil {
 			return err
 		}
@@ -356,7 +350,7 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 			}
 			frames = append(frames, fr)
 
-			col, err := fr.GetColumn("unix-ts")
+			col, err := fr.GetColumn("UNIX-TS")
 			if err != nil {
 				return err
 			}
@@ -367,12 +361,12 @@ func CommandFunc(cmd *cobra.Command, args []string) error {
 		}
 
 		nf := dataframe.New()
-		secondCol := dataframe.NewColumn("second")
+		secondCol := dataframe.NewColumn("SECOND")
 		for i := 0; i < maxSize; i++ {
 			secondCol.PushBack(dataframe.NewStringValue(i))
 		}
 		nf.AddColumn(secondCol)
-		colsToKeep := []string{"avg-latency-ms", "avg-throughput", "cumulative-avg-throughput", "avg-cpu", "avg-memory-mb"}
+		colsToKeep := []string{"AVG-LATENCY-MS", "AVG-THROUGHPUT", "CUMULATIVE-AVG-THROUGHPUT", "AVG-CPU", "AVG-MEMORY-MB"}
 		for i, fr := range frames {
 			dbID := elem.DataList[i].Name
 			plog.Printf("Step 2-%d-%d: cleaning up %s...", step2Idx, i, dbID)
@@ -544,24 +538,4 @@ func points(col dataframe.Column) (plotter.XYs, error) {
 		pts[i].Y = n
 	}
 	return pts, nil
-}
-
-func getRGB(legend string, i int) color.Color {
-	legend = strings.ToLower(strings.TrimSpace(legend))
-	if strings.HasPrefix(legend, "zk") || strings.HasPrefix(legend, "zookeeper") {
-		return color.RGBA{38, 169, 24, 255} // green
-	}
-	if strings.HasPrefix(legend, "zetcd") {
-		return color.RGBA{251, 206, 0, 255} // yellow
-	}
-	if strings.HasPrefix(legend, "etcd") {
-		return color.RGBA{24, 90, 169, 255} // blue
-	}
-	if strings.HasPrefix(legend, "consul") {
-		return color.RGBA{198, 53, 53, 255} // red
-	}
-	if strings.HasPrefix(legend, "cetcd") {
-		return color.RGBA{116, 24, 169, 255} // purple
-	}
-	return plotutil.Color(i)
 }

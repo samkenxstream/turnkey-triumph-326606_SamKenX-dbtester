@@ -1,4 +1,4 @@
-// Copyright 2016 CoreOS, Inc.
+// Copyright 2017 CoreOS, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ package control
 import (
 	"io/ioutil"
 
-	"github.com/coreos/dbtester/agent"
+	"github.com/coreos/dbtester/agent/agentpb"
 
 	"gopkg.in/yaml.v2"
 )
@@ -95,8 +95,8 @@ func ReadConfig(fpath string) (Config, error) {
 }
 
 // ToRequest converts control configuration to agent RPC.
-func (cfg *Config) ToRequest() agent.Request {
-	req := agent.Request{}
+func (cfg *Config) ToRequest() agentpb.Request {
+	req := agentpb.Request{}
 
 	req.TestName = cfg.TestName
 	req.GoogleCloudProjectName = cfg.GoogleCloudProjectName
@@ -106,23 +106,22 @@ func (cfg *Config) ToRequest() agent.Request {
 
 	switch cfg.Database {
 	case "etcdv2":
-		req.Database = agent.Request_etcdv2
+		req.Database = agentpb.Request_etcdv2
 
 	case "etcdv3":
-		req.Database = agent.Request_etcdv3
+		req.Database = agentpb.Request_etcdv3
 
-	case "zk", "zookeeper":
-		cfg.Database = "zookeeper"
-		req.Database = agent.Request_ZooKeeper
+	case "zookeeper":
+		req.Database = agentpb.Request_ZooKeeper
 
 	case "zetcd":
-		req.Database = agent.Request_zetcd
+		req.Database = agentpb.Request_zetcd
 
 	case "consul":
-		req.Database = agent.Request_Consul
+		req.Database = agentpb.Request_Consul
 
 	case "cetcd":
-		req.Database = agent.Request_cetcd
+		req.Database = agentpb.Request_cetcd
 	}
 
 	req.PeerIPString = cfg.PeerIPString
