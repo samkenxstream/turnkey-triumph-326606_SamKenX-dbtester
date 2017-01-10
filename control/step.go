@@ -67,12 +67,12 @@ func newBenchmark(cfg Config) (b *benchmark) {
 
 func (b *benchmark) startRequests(h []ReqHandler, reqGen func(chan<- request)) {
 	clientsN := b.cfg.Step2.Clients
-	inflightClients := make(chan request, clientsN)
+	inflightReqs := make(chan request, clientsN)
 	for i := range h {
 		b.wg.Add(1)
 		go func(rh ReqHandler) {
 			defer b.wg.Done()
-			for req := range inflightClients {
+			for req := range inflightReqs {
 				st := time.Now()
 				err := rh(context.Background(), &req)
 				var errStr string
@@ -84,7 +84,7 @@ func (b *benchmark) startRequests(h []ReqHandler, reqGen func(chan<- request)) {
 			}
 		}(h[i])
 	}
-	go reqGen(inflightClients)
+	go reqGen(inflightReqs)
 }
 
 func (b *benchmark) waitRequestsEnd() {
@@ -120,7 +120,7 @@ func step2(cfg Config) error {
 		if done != nil {
 			defer done()
 		}
-		reqGen := func(reqs chan<- request) { generateWrites(cfg, vals, reqs) }
+		reqGen := func(inflightReqs chan<- request) { generateWrites(cfg, vals, inflightReqs) }
 		generateReport(cfg, h, reqGen)
 		plog.Println("write generateReport is finished...")
 
@@ -224,7 +224,7 @@ func step2(cfg Config) error {
 		if done != nil {
 			defer done()
 		}
-		reqGen := func(reqs chan<- request) { generateReads(cfg, key, reqs) }
+		reqGen := func(inflightReqs chan<- request) { generateReads(cfg, key, inflightReqs) }
 		generateReport(cfg, h, reqGen)
 		plog.Println("read generateReport is finished...")
 
@@ -260,7 +260,7 @@ func step2(cfg Config) error {
 		}
 
 		h := newReadOneshotHandlers(cfg)
-		reqGen := func(reqs chan<- request) { generateReads(cfg, key, reqs) }
+		reqGen := func(inflightReqs chan<- request) { generateReads(cfg, key, inflightReqs) }
 		generateReport(cfg, h, reqGen)
 		plog.Println("read-oneshot generateReport is finished...")
 	}
@@ -484,8 +484,8 @@ func newReadOneshotHandlers(cfg Config) []ReqHandler {
 	return rhs
 }
 
-func generateReads(cfg Config, key string, requests chan<- request) {
-	defer close(requests)
+func generateReads(cfg Config, key string, inflightReqs chan<- request) {
+	defer close(inflightReqs)
 
 	var rateLimiter *rate.Limiter
 	if cfg.Step2.RequestsPerSecond > 0 {
@@ -500,33 +500,33 @@ func generateReads(cfg Config, key string, requests chan<- request) {
 		switch cfg.Database {
 		case "etcdv2":
 			// serializable read by default
-			requests <- request{etcdv2Op: etcdv2Op{key: key}}
+			inflightReqs <- request{etcdv2Op: etcdv2Op{key: key}}
 
 		case "etcdv3":
 			opts := []clientv3.OpOption{clientv3.WithRange("")}
 			if cfg.Step2.StaleRead {
 				opts = append(opts, clientv3.WithSerializable())
 			}
-			requests <- request{etcdv3Op: clientv3.OpGet(key, opts...)}
+			inflightReqs <- request{etcdv3Op: clientv3.OpGet(key, opts...)}
 
 		case "zookeeper", "zetcd":
 			op := zkOp{key: key}
 			if cfg.Step2.StaleRead {
 				op.staleRead = true
 			}
-			requests <- request{zkOp: op}
+			inflightReqs <- request{zkOp: op}
 
 		case "consul", "cetcd":
 			op := consulOp{key: key}
 			if cfg.Step2.StaleRead {
 				op.staleRead = true
 			}
-			requests <- request{consulOp: op}
+			inflightReqs <- request{consulOp: op}
 		}
 	}
 }
 
-func generateWrites(cfg Config, vals values, requests chan<- request) {
+func generateWrites(cfg Config, vals values, inflightReqs chan<- request) {
 	var rateLimiter *rate.Limiter
 	if cfg.Step2.RequestsPerSecond > 0 {
 		rateLimiter = rate.NewLimiter(rate.Limit(cfg.Step2.RequestsPerSecond), cfg.Step2.RequestsPerSecond)
@@ -534,7 +534,7 @@ func generateWrites(cfg Config, vals values, requests chan<- request) {
 
 	var wg sync.WaitGroup
 	defer func() {
-		close(requests)
+		close(inflightReqs)
 		wg.Wait()
 	}()
 
@@ -553,13 +553,13 @@ func generateWrites(cfg Config, vals values, requests chan<- request) {
 
 		switch cfg.Database {
 		case "etcdv2":
-			requests <- request{etcdv2Op: etcdv2Op{key: k, value: vs}}
+			inflightReqs <- request{etcdv2Op: etcdv2Op{key: k, value: vs}}
 		case "etcdv3":
-			requests <- request{etcdv3Op: clientv3.OpPut(k, vs)}
+			inflightReqs <- request{etcdv3Op: clientv3.OpPut(k, vs)}
 		case "zookeeper", "zetcd":
-			requests <- request{zkOp: zkOp{key: "/" + k, value: v}}
+			inflightReqs <- request{zkOp: zkOp{key: "/" + k, value: v}}
 		case "consul", "cetcd":
-			requests <- request{consulOp: consulOp{key: k, value: v}}
+			inflightReqs <- request{consulOp: consulOp{key: k, value: v}}
 		}
 	}
 }
