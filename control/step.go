@@ -49,7 +49,7 @@ func generateReport(cfg Config, h []ReqHandler, reqGen func(chan<- request)) {
 	var wg sync.WaitGroup
 
 	results := make(chan result)
-	pdoneC := printReport(results, cfg)
+	reportDonec := printReport(results, cfg)
 
 	bar := pb.New(cfg.Step2.TotalRequests)
 	bar.Format("Bom !")
@@ -76,9 +76,8 @@ func generateReport(cfg Config, h []ReqHandler, reqGen func(chan<- request)) {
 
 	wg.Wait()
 	bar.Finish()
-
 	close(results)
-	<-pdoneC
+	<-reportDonec
 }
 
 func step2(cfg Config) error {
@@ -95,7 +94,7 @@ func step2(cfg Config) error {
 		}
 		reqGen := func(reqs chan<- request) { generateWrites(cfg, vals, reqs) }
 		generateReport(cfg, h, reqGen)
-		plog.Println("generateReport is finished...")
+		plog.Println("write generateReport is finished...")
 
 		plog.Println("checking total keys on", cfg.DatabaseEndpoints)
 		var totalKeysFunc func([]string) map[string]int64
@@ -199,6 +198,7 @@ func step2(cfg Config) error {
 		}
 		reqGen := func(reqs chan<- request) { generateReads(cfg, key, reqs) }
 		generateReport(cfg, h, reqGen)
+		plog.Println("read generateReport is finished...")
 
 	case "read-oneshot":
 		key, value := sameKey(cfg.Step2.KeySize), vals.strings[0]
@@ -234,6 +234,7 @@ func step2(cfg Config) error {
 		h := newReadOneshotHandlers(cfg)
 		reqGen := func(reqs chan<- request) { generateReads(cfg, key, reqs) }
 		generateReport(cfg, h, reqGen)
+		plog.Println("read-oneshot generateReport is finished...")
 	}
 
 	return nil
