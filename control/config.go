@@ -129,5 +129,7 @@ func (cfg *Config) ToRequest() agentpb.Request {
 	req.ZookeeperMaxClientCnxns = cfg.Step1.ZookeeperMaxClientCnxns
 	req.ZookeeperSnapCount = cfg.Step1.ZookeeperSnapCount
 
+	req.ClientNum = int64(cfg.Step2.Clients)
+
 	return req
 }
