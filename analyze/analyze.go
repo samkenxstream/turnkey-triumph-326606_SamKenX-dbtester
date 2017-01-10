@@ -43,6 +43,22 @@ func init() {
 	Command.PersistentFlags().StringVarP(&configPath, "config", "c", "", "YAML configuration file path.")
 }
 
+var columnsToAggregate = []string{
+	"UNIX-TS", "CPU-NUM", "VMRSS-NUM",
+	"READS-COMPLETED",
+	"READS-COMPLETED-DIFF",
+	"SECTORS-READ",
+	"SECTORS-READ-DIFF",
+	"WRITES-COMPLETED",
+	"WRITES-COMPLETED-DIFF",
+	"SECTORS-WRITTEN",
+	"SECTORS-WRITTEN-DIFF",
+	"RECEIVE-BYTES-NUM",
+	"RECEIVE-BYTES-NUM-DIFF",
+	"TRANSMIT-BYTES-NUM",
+	"TRANSMIT-BYTES-NUM-DIFF",
+}
+
 func commandFunc(cmd *cobra.Command, args []string) error {
 	cfg, err := ReadConfig(configPath)
 	if err != nil {
@@ -59,48 +75,28 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 		)
 		for i, monitorPath := range elem.DataPathList {
 			plog.Printf("Step 1-%d-%d: creating dataframe from %s", step1Idx, i, monitorPath)
-
-			fr, err := dataframe.NewFromCSV(nil, monitorPath)
+			originalFrame, err := dataframe.NewFromCSV(nil, monitorPath)
 			if err != nil {
 				return err
 			}
 
-			nf := dataframe.New()
-
-			c1, err := fr.GetColumn("UNIX-TS")
-			if err != nil {
-				return err
+			newFrame := dataframe.New()
+			var tsc dataframe.Column
+			for _, name := range columnsToAggregate {
+				cmn, err := originalFrame.GetColumn(name)
+				if err != nil {
+					return err
+				}
+				if name == "UNIX-TS" {
+					tsc = cmn
+				}
+				if err = newFrame.AddColumn(cmn); err != nil {
+					return err
+				}
 			}
-			if err = nf.AddColumn(c1); err != nil {
-				return err
-			}
+			frames = append(frames, newFrame)
 
-			c2, err := fr.GetColumn("CPU-NUM")
-			if err != nil {
-				return err
-			}
-			if err = nf.AddColumn(c2); err != nil {
-				return err
-			}
-
-			c3, err := fr.GetColumn("VMRSS-NUM")
-			if err != nil {
-				return err
-			}
-			if err = nf.AddColumn(c3); err != nil {
-				return err
-			}
-
-			// READS-COMPLETED-DIFF
-			// SECTORS-READ-DIFF
-			// WRITES-COMPLETED-DIFF
-			// SECTORS-WRITTEN-DIFF
-			// RECEIVE-BYTES-NUM-DIFF
-			// TRANSMIT-BYTES-NUM-DIFF
-
-			frames = append(frames, nf)
-
-			fv, ok := c1.FrontNonNil()
+			fv, ok := tsc.FrontNonNil()
 			if !ok {
 				return fmt.Errorf("FrontNonNil %s has empty Unix time %v", monitorPath, fv)
 			}
@@ -112,7 +108,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 			if err != nil {
 				return err
 			}
-			bv, ok := c1.BackNonNil()
+			bv, ok := tsc.BackNonNil()
 			if !ok {
 				return fmt.Errorf("BackNonNil %s has empty Unix time %v", monitorPath, fv)
 			}
@@ -124,7 +120,6 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 			if err != nil {
 				return err
 			}
-
 			if i == 0 {
 				maxCommonMinUnixTime = fd
 				maxCommonMaxUnixTime = bd
@@ -141,7 +136,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 		// Truncate all rows before maxCommonMinUnixTime and after maxCommonMinUnixTime
 		minTS := fmt.Sprintf("%d", maxCommonMinUnixTime)
 		maxTS := fmt.Sprintf("%d", maxCommonMaxUnixTime)
-		frMonitor := dataframe.New()
+		aggregatedFrame := dataframe.New()
 		for i := range frames {
 			uc, err := frames[i].GetColumn("UNIX-TS")
 			if err != nil {
@@ -156,7 +151,6 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 				return fmt.Errorf("%v does not exist in %s", maxTS, elem.DataPathList[i])
 			}
 
-			// TODO: add fsyncs, network metrics
 			for _, header := range frames[i].GetHeader() {
 				if i > 0 && header == "UNIX-TS" {
 					continue
@@ -169,6 +163,9 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 				if err = col.KeepRows(j, k+1); err != nil {
 					return err
 				}
+
+				// update column name with database name and its index
+				// all in one aggregated CSV file
 				if header != "UNIX-TS" {
 					switch header {
 					case "CPU-NUM":
@@ -191,26 +188,28 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 							}
 						}
 					}
+
 					col.UpdateHeader(fmt.Sprintf("%s-%d", header, i+1))
 				}
-				if err = frMonitor.AddColumn(col); err != nil {
+
+				if err = aggregatedFrame.AddColumn(col); err != nil {
 					return err
 				}
 			}
 		}
 
 		plog.Printf("Step 1-%d-%d: creating dataframe from %s", step1Idx, len(elem.DataPathList), elem.DataBenchmarkPath)
-		colMonitorUnixTs, err := frMonitor.GetColumn("UNIX-TS")
+		colMonitorUnixTs, err := aggregatedFrame.GetColumn("UNIX-TS")
 		if err != nil {
 			return err
 		}
 
-		// need to combine frMonitor to frBench by unix timestamps
-		frBench, err := dataframe.NewFromCSV(nil, elem.DataBenchmarkPath)
+		// need to combine aggregatedFrame to benchResultFrame by unix timestamps
+		benchResultFrame, err := dataframe.NewFromCSV(nil, elem.DataBenchmarkPath)
 		if err != nil {
 			return err
 		}
-		colBenchUnixTs, err := frBench.GetColumn("UNIX-TS")
+		colBenchUnixTs, err := benchResultFrame.GetColumn("UNIX-TS")
 		if err != nil {
 			return err
 		}
@@ -233,7 +232,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 		}
 
 		var benchLastIdx int
-		for _, col := range frBench.GetColumns() {
+		for _, col := range benchResultFrame.GetColumns() {
 			if benchLastIdx == 0 {
 				benchLastIdx = col.RowNumber()
 			}
@@ -249,37 +248,39 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 			benchLastIdx = endRowMonitor - startRowMonitor
 		}
 
-		for _, hd := range frMonitor.GetHeader() {
+		for _, hd := range aggregatedFrame.GetHeader() {
 			if hd == "UNIX-TS" {
 				continue
 			}
 			var col dataframe.Column
-			col, err = frMonitor.GetColumn(hd)
+			col, err = aggregatedFrame.GetColumn(hd)
 			if err != nil {
 				return err
 			}
 			if err = col.KeepRows(startRowMonitor, endRowMonitor); err != nil {
 				return err
 			}
-			if err = frBench.AddColumn(col); err != nil {
+			if err = benchResultFrame.AddColumn(col); err != nil {
 				return err
 			}
 		}
 
-		plog.Printf("Step 1-%d-%d: calculating average values", step1Idx, len(elem.DataPathList)+1)
+		plog.Printf("Step 1-%d-%d: calculating average, cumulative values", step1Idx, len(elem.DataPathList)+1)
 		var (
 			sampleSize              = float64(len(elem.DataPathList))
 			cumulativeThroughputCol = dataframe.NewColumn("CUMULATIVE-AVG-THROUGHPUT")
 			totalThrougput          int
 			avgCPUCol               = dataframe.NewColumn("AVG-CPU")
-			avgMemCol               = dataframe.NewColumn("AVG-VMRSS-MB")
+			avgVMRSSMBCol           = dataframe.NewColumn("AVG-VMRSS-MB")
+
+			// TODO: average value of disk stats, network stats
 		)
 		for i := 0; i < benchLastIdx; i++ {
 			var (
 				cpuTotal    float64
 				memoryTotal float64
 			)
-			for _, col := range frBench.GetColumns() {
+			for _, col := range benchResultFrame.GetColumns() {
 				var rv dataframe.Value
 				rv, err = col.GetValue(i)
 				if err != nil {
@@ -301,19 +302,19 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 				}
 			}
 			avgCPUCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", cpuTotal/sampleSize)))
-			avgMemCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", memoryTotal/sampleSize)))
+			avgVMRSSMBCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", memoryTotal/sampleSize)))
 		}
 
 		plog.Printf("Step 1-%d-%d: combine %s and %q", step1Idx, len(elem.DataPathList)+2, elem.DataBenchmarkPath, elem.DataPathList)
-		unixTsCol, err := frBench.GetColumn("UNIX-TS")
+		unixTsCol, err := benchResultFrame.GetColumn("UNIX-TS")
 		if err != nil {
 			return err
 		}
-		latencyCol, err := frBench.GetColumn("AVG-LATENCY-MS")
+		latencyCol, err := benchResultFrame.GetColumn("AVG-LATENCY-MS")
 		if err != nil {
 			return err
 		}
-		throughputCol, err := frBench.GetColumn("AVG-THROUGHPUT")
+		throughputCol, err := benchResultFrame.GetColumn("AVG-THROUGHPUT")
 		if err != nil {
 			return err
 		}
@@ -323,8 +324,8 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 		aggFr.AddColumn(latencyCol)
 		aggFr.AddColumn(throughputCol)
 		aggFr.AddColumn(cumulativeThroughputCol)
-		for _, hd := range frBench.GetHeader() {
-			col, err := frBench.GetColumn(hd)
+		for _, hd := range benchResultFrame.GetHeader() {
+			col, err := benchResultFrame.GetColumn(hd)
 			if err != nil {
 				return err
 			}
@@ -336,7 +337,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 			}
 		}
 		aggFr.AddColumn(avgCPUCol)
-		aggFr.AddColumn(avgMemCol)
+		aggFr.AddColumn(avgVMRSSMBCol)
 
 		plog.Printf("Step 1-%d-%d: saving to %s", step1Idx, len(elem.DataPathList)+3, elem.OutputPath)
 		if err := aggFr.ToCSV(elem.OutputPath); err != nil {
@@ -376,6 +377,8 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 			secondCol.PushBack(dataframe.NewStringValue(i))
 		}
 		nf.AddColumn(secondCol)
+
+		// TODO: keep disk, network stats columns
 		colsToKeep := []string{"AVG-LATENCY-MS", "AVG-THROUGHPUT", "CUMULATIVE-AVG-THROUGHPUT", "AVG-CPU", "AVG-VMRSS-MB"}
 		for i, fr := range frames {
 			dbID := elem.DataList[i].Name
