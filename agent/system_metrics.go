@@ -17,13 +17,14 @@ package agent
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/gyuho/psn"
 )
 
-// collectMetrics starts collecting metrics.
-func collectMetrics(fs *flags, t *transporterServer) error {
+// startMetrics starts collecting metrics.
+func startMetrics(fs *flags, t *transporterServer) error {
 	if fs == nil || t == nil || t.cmd == nil {
 		return fmt.Errorf("cannot find process to track (%+v, %+v)", fs, t)
 	}
@@ -34,7 +35,12 @@ func collectMetrics(fs *flags, t *transporterServer) error {
 		return err
 	}
 
-	c := psn.NewCSV(fs.systemMetricsLog, t.pid, fs.diskDevice, fs.networkInterface)
+	epath := filepath.Join(homeDir(), "etcd-client-num")
+	if err := toFile(fmt.Sprintf("%d", t.req.ClientNum), epath); err != nil {
+		return err
+	}
+
+	c := psn.NewCSV(fs.systemMetricsLog, t.pid, fs.diskDevice, fs.networkInterface, epath)
 	if err := c.Add(); err != nil {
 		return err
 	}

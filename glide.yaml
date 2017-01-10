@@ -9,7 +9,7 @@ import:
 - package: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - package: github.com/coreos/etcd
-  version: 8adfc06084c28320079a09ae4d08f09b29eebd04
+  version: f0fa5ec507b9e5fa39612627829189b2984f00bd
   subpackages:
   - auth/authpb
   - client
@@ -53,11 +53,11 @@ import:
 - package: github.com/gyuho/dataframe
   version: 573cd728a011e5473510a6a1df0f39023c305e04
 - package: github.com/gyuho/psn
-  version: be5928dfa765874e1d3a3f9e70fcaa6a6fcd250f
+  version: e11046c0ff777d30e27936a5a3acff8a56fa7fb0
   subpackages:
   - process
 - package: github.com/hashicorp/consul
-  version: a9afa0c27f484dd19fe59a80444e64e5352c4408
+  version: 3e9c96d9965eae8a375f68433de9e0a4144ce823
   subpackages:
   - api
 - package: github.com/samuel/go-zookeeper

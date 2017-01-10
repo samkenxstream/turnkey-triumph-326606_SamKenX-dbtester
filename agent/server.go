@@ -172,8 +172,8 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 			plog.Infof("exiting %q", t.cmd.Path)
 		}()
 
-		if err := collectMetrics(&globalFlags, t); err != nil {
-			plog.Errorf("collectMetrics error %v", err)
+		if err := startMetrics(&globalFlags, t); err != nil {
+			plog.Errorf("startMetrics error %v", err)
 			return nil, err
 		}
 
