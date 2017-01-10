@@ -17,7 +17,6 @@ package agent
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/gyuho/psn"
@@ -35,12 +34,10 @@ func startMetrics(fs *flags, t *transporterServer) error {
 		return err
 	}
 
-	epath := filepath.Join(homeDir(), "etcd-client-num")
-	if err := toFile(fmt.Sprintf("%d", t.req.ClientNum), epath); err != nil {
+	if err := toFile(fmt.Sprintf("%d", t.req.ClientNum), t.etcdClientNumPath); err != nil {
 		return err
 	}
-
-	c := psn.NewCSV(fs.systemMetricsLog, t.pid, fs.diskDevice, fs.networkInterface, epath)
+	c := psn.NewCSV(fs.systemMetricsLog, t.pid, fs.diskDevice, fs.networkInterface, t.etcdClientNumPath)
 	if err := c.Add(); err != nil {
 		return err
 	}
