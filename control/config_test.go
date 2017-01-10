@@ -83,6 +83,9 @@ func TestReadConfig(t *testing.T) {
 	if c.Step2.ClientsDeltaInterval != 1 {
 		t.Fatalf("unexpected %d", c.Step2.ClientsDeltaInterval)
 	}
+	if c.Step2.ClientsMax != 1000 {
+		t.Fatalf("unexpected %d", c.Step2.ClientsMax)
+	}
 	if c.Step2.KeySize != 8 {
 		t.Fatalf("unexpected %d", c.Step2.KeySize)
 	}

@@ -59,6 +59,7 @@ type Config struct {
 		Clients              int    `yaml:"clients"`
 		ClientsDelta         int    `yaml:"clients_delta"`
 		ClientsDeltaInterval int    `yaml:"clients_delta_interval"`
+		ClientsMax           int    `yaml:"clients_max"`
 		KeySize              int    `yaml:"key_size"`
 		SameKey              bool   `yaml:"same_key"`
 		ValueSize            int    `yaml:"value_size"`
