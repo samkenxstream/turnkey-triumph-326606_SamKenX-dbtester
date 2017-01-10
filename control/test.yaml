@@ -30,8 +30,6 @@ step2:
     stale_read: true
     connections: 100
     clients: 100
-    clients_delta: 10
-    clients_delta_interval: 1
     clients_max: 1000 # increase from 100 to 1000
     key_size: 8
     same_key: true
