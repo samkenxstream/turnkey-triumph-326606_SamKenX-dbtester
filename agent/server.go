@@ -19,7 +19,6 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
-	"path/filepath"
 	"syscall"
 	"time"
 
@@ -34,7 +33,7 @@ type transporterServer struct {
 
 	databaseLogFile      *os.File
 	proxyDatabaseLogfile *os.File
-	etcdClientNumPath    string
+	clientNumPath        string
 
 	cmd *exec.Cmd
 	pid int64
@@ -60,10 +59,10 @@ func NewServer() agentpb.TransporterServer {
 	signal.Notify(notifier, syscall.SIGINT, syscall.SIGTERM)
 
 	return &transporterServer{
-		etcdClientNumPath: filepath.Join(homeDir(), "etcd-client-num"),
-		uploadSig:         make(chan struct{}, 1),
-		csvReady:          make(chan struct{}),
-		notifier:          notifier,
+		clientNumPath: globalFlags.clientNumPath,
+		uploadSig:     make(chan struct{}, 1),
+		csvReady:      make(chan struct{}),
+		notifier:      notifier,
 	}
 }
 
@@ -230,7 +229,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 		}
 
 	case agentpb.Request_Heartbeat:
-		if err := toFile(fmt.Sprintf("%d", t.req.ClientNum), t.etcdClientNumPath); err != nil {
+		if err := toFile(fmt.Sprintf("%d", t.req.ClientNum), t.clientNumPath); err != nil {
 			return nil, err
 		}
 

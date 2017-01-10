@@ -34,10 +34,10 @@ func startMetrics(fs *flags, t *transporterServer) error {
 		return err
 	}
 
-	if err := toFile(fmt.Sprintf("%d", t.req.ClientNum), t.etcdClientNumPath); err != nil {
+	if err := toFile(fmt.Sprintf("%d", t.req.ClientNum), t.clientNumPath); err != nil {
 		return err
 	}
-	c := psn.NewCSV(fs.systemMetricsLog, t.pid, fs.diskDevice, fs.networkInterface, t.etcdClientNumPath)
+	c := psn.NewCSV(fs.systemMetricsLog, t.pid, fs.diskDevice, fs.networkInterface, t.clientNumPath)
 	if err := c.Add(); err != nil {
 		return err
 	}
