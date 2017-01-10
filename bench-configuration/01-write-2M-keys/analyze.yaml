@@ -8,35 +8,35 @@ step1:
     - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/etcd-v3.1-go1.7.4-1-monitor.csv
     - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/etcd-v3.1-go1.7.4-2-monitor.csv
     - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/etcd-v3.1-go1.7.4-3-monitor.csv
-    data_benchmark_path: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/etcd-v3.1-go1.7.4-timeseries.csv
+    data_benchmark_path: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/etcd-v3.1-go1.7.4-bench-result-timeseries.csv
     output_path: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/etcd-v3.1-go1.7.4-aggregated.csv
 
   - data_path_list:
     - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/zookeeper-r3.4.9-java8-1-monitor.csv
     - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/zookeeper-r3.4.9-java8-2-monitor.csv
     - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/zookeeper-r3.4.9-java8-3-monitor.csv
-    data_benchmark_path: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/zookeeper-r3.4.9-java8-timeseries.csv
+    data_benchmark_path: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/zookeeper-r3.4.9-java8-bench-result-timeseries.csv
     output_path: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/zookeeper-r3.4.9-java8-aggregated.csv
 
   - data_path_list:
     - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/consul-v0.7.2-go1.7.4-1-monitor.csv
     - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/consul-v0.7.2-go1.7.4-2-monitor.csv
     - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/consul-v0.7.2-go1.7.4-3-monitor.csv
-    data_benchmark_path: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/consul-v0.7.2-go1.7.4-timeseries.csv
+    data_benchmark_path: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/consul-v0.7.2-go1.7.4-bench-result-timeseries.csv
     output_path: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/consul-v0.7.2-go1.7.4-aggregated.csv
 
   - data_path_list:
     - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/zetcd-v3.1-go1.7.4-1-monitor.csv
     - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/zetcd-v3.1-go1.7.4-2-monitor.csv
     - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/zetcd-v3.1-go1.7.4-3-monitor.csv
-    data_benchmark_path: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/zetcd-v3.1-go1.7.4-timeseries.csv
+    data_benchmark_path: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/zetcd-v3.1-go1.7.4-bench-result-timeseries.csv
     output_path: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/zetcd-v3.1-go1.7.4-aggregated.csv
 
   - data_path_list:
     - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/cetcd-v3.1-go1.7.4-1-monitor.csv
     - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/cetcd-v3.1-go1.7.4-2-monitor.csv
     - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/cetcd-v3.1-go1.7.4-3-monitor.csv
-    data_benchmark_path: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/cetcd-v3.1-go1.7.4-timeseries.csv
+    data_benchmark_path: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/cetcd-v3.1-go1.7.4-bench-result-timeseries.csv
     output_path: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/cetcd-v3.1-go1.7.4-aggregated.csv
 
 step2:

@@ -69,7 +69,9 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 	}
 	cfg.GoogleCloudStorageKey = string(bts)
 
-	cfg.PeerIPString = strings.Join(cfg.PeerIPs, "___") // protoc sorts the 'repeated' type data
+	// protoc sorts the 'repeated' type data
+	// encode in string to enforce ordering of IPs
+	cfg.PeerIPString = strings.Join(cfg.PeerIPs, "___")
 	cfg.AgentEndpoints = make([]string, len(cfg.PeerIPs))
 	cfg.DatabaseEndpoints = make([]string, len(cfg.PeerIPs))
 	for i := range cfg.PeerIPs {
