@@ -47,44 +47,57 @@ func newValues(cfg Config) (v values, rerr error) {
 
 type benchmark struct {
 	cfg         Config
-	results     chan result
-	reportDonec <-chan struct{}
 	bar         *pb.ProgressBar
+	resultch    chan result
 	wg          sync.WaitGroup
+	reportDonec <-chan struct{}
+
+	mu           sync.Mutex
+	inflightReqs chan request
 }
 
 func newBenchmark(cfg Config) (b *benchmark) {
+	rc := make(chan result)
 	b = &benchmark{
-		cfg:     cfg,
-		results: make(chan result),
-		bar:     pb.New(cfg.Step2.TotalRequests),
+		cfg:         cfg,
+		bar:         pb.New(cfg.Step2.TotalRequests),
+		resultch:    rc,
+		wg:          sync.WaitGroup{},
+		reportDonec: printReport(rc, cfg),
 	}
-	b.reportDonec = printReport(b.results, cfg)
+	clientsN := b.cfg.Step2.Clients
+	b.inflightReqs = make(chan request, clientsN)
+
 	b.bar.Format("Bom !")
 	b.bar.Start()
 	return
 }
 
+func (b *benchmark) getInflightsReqs() (ch chan request) {
+	b.mu.Lock()
+	ch = b.inflightReqs
+	b.mu.Unlock()
+	return
+}
+
 func (b *benchmark) startRequests(h []ReqHandler, reqGen func(chan<- request)) {
-	clientsN := b.cfg.Step2.Clients
-	inflightReqs := make(chan request, clientsN)
 	for i := range h {
 		b.wg.Add(1)
 		go func(rh ReqHandler) {
 			defer b.wg.Done()
-			for req := range inflightReqs {
+			for req := range b.getInflightsReqs() {
 				st := time.Now()
 				err := rh(context.Background(), &req)
 				var errStr string
 				if err != nil {
 					errStr = err.Error()
 				}
-				b.results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
+				b.resultch <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
 				b.bar.Increment()
 			}
 		}(h[i])
 	}
-	go reqGen(inflightReqs)
+	go reqGen(b.getInflightsReqs())
 }
 
 func (b *benchmark) waitRequestsEnd() {
@@ -93,7 +106,7 @@ func (b *benchmark) waitRequestsEnd() {
 
 func (b *benchmark) finishReports() {
 	b.bar.Finish()
-	close(b.results)
+	close(b.resultch)
 	<-b.reportDonec
 }
 
