@@ -47,17 +47,20 @@ func newValues(cfg Config) (v values, rerr error) {
 
 func generateReport(cfg Config, h []ReqHandler, reqGen func(chan<- request)) {
 	var wg sync.WaitGroup
+
 	results := make(chan result)
-	requests := make(chan request, cfg.Step2.Clients)
-	bar := pb.New(cfg.Step2.TotalRequests)
 	pdoneC := printReport(results, cfg)
+
+	bar := pb.New(cfg.Step2.TotalRequests)
 	bar.Format("Bom !")
 	bar.Start()
+
+	inflightRequests := make(chan request, cfg.Step2.Clients)
 	for i := range h {
 		wg.Add(1)
 		go func(rh ReqHandler) {
 			defer wg.Done()
-			for req := range requests {
+			for req := range inflightRequests {
 				st := time.Now()
 				err := rh(context.Background(), &req)
 				var errStr string
@@ -69,7 +72,8 @@ func generateReport(cfg Config, h []ReqHandler, reqGen func(chan<- request)) {
 			}
 		}(h[i])
 	}
-	go reqGen(requests)
+	go reqGen(inflightRequests)
+
 	wg.Wait()
 	bar.Finish()
 
@@ -231,6 +235,7 @@ func step2(cfg Config) error {
 		reqGen := func(reqs chan<- request) { generateReads(cfg, key, reqs) }
 		generateReport(cfg, h, reqGen)
 	}
+
 	return nil
 }
 
