@@ -46,23 +46,29 @@ func newValues(cfg Config) (v values, rerr error) {
 }
 
 type benchmark struct {
-	cfg         Config
-	bar         *pb.ProgressBar
-	resultch    chan result
+	cfg Config
+	bar *pb.ProgressBar
+
+	reqHandlers []ReqHandler
+	reqDone     func()
 	wg          sync.WaitGroup
+
+	resultch    chan result
 	reportDonec <-chan struct{}
 
-	mu           sync.Mutex
+	mu           sync.RWMutex
 	inflightReqs chan request
 }
 
-func newBenchmark(cfg Config) (b *benchmark) {
+func newBenchmark(cfg Config, reqHandlers []ReqHandler, reqDone func()) (b *benchmark) {
 	rc := make(chan result)
 	b = &benchmark{
 		cfg:         cfg,
 		bar:         pb.New(cfg.Step2.TotalRequests),
-		resultch:    rc,
+		reqHandlers: reqHandlers,
+		reqDone:     reqDone,
 		wg:          sync.WaitGroup{},
+		resultch:    rc,
 		reportDonec: printReport(rc, cfg),
 	}
 	clientsN := b.cfg.Step2.Clients
@@ -74,14 +80,22 @@ func newBenchmark(cfg Config) (b *benchmark) {
 }
 
 func (b *benchmark) getInflightsReqs() (ch chan request) {
-	b.mu.Lock()
+	b.mu.RLock()
 	ch = b.inflightReqs
+	b.mu.RUnlock()
+	return
+}
+
+// inflight requests will be dropped!
+func (b *benchmark) updateInflightsReqs(ch chan request) {
+	b.mu.Lock()
+	b.inflightReqs = ch
 	b.mu.Unlock()
 	return
 }
 
-func (b *benchmark) startRequests(h []ReqHandler, reqGen func(chan<- request)) {
-	for i := range h {
+func (b *benchmark) startRequests(reqGen func(chan<- request)) {
+	for i := range b.reqHandlers {
 		b.wg.Add(1)
 		go func(rh ReqHandler) {
 			defer b.wg.Done()
@@ -95,13 +109,16 @@ func (b *benchmark) startRequests(h []ReqHandler, reqGen func(chan<- request)) {
 				b.resultch <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
 				b.bar.Increment()
 			}
-		}(h[i])
+		}(b.reqHandlers[i])
 	}
 	go reqGen(b.getInflightsReqs())
 }
 
 func (b *benchmark) waitRequestsEnd() {
 	b.wg.Wait()
+	if b.reqDone != nil {
+		b.reqDone() // cancel connections
+	}
 }
 
 func (b *benchmark) finishReports() {
@@ -115,9 +132,9 @@ func (b *benchmark) waitAll() {
 	b.finishReports()
 }
 
-func generateReport(cfg Config, h []ReqHandler, reqGen func(chan<- request)) {
-	b := newBenchmark(cfg)
-	b.startRequests(h, reqGen)
+func generateReport(cfg Config, h []ReqHandler, reqDone func(), reqGen func(chan<- request)) {
+	b := newBenchmark(cfg, h, reqDone)
+	b.startRequests(reqGen)
 	b.waitAll()
 }
 
@@ -129,12 +146,10 @@ func step2(cfg Config) error {
 
 	switch cfg.Step2.BenchType {
 	case "write":
+		plog.Println("write generateReport is started...")
 		h, done := newWriteHandlers(cfg)
-		if done != nil {
-			defer done()
-		}
 		reqGen := func(inflightReqs chan<- request) { generateWrites(cfg, vals, inflightReqs) }
-		generateReport(cfg, h, reqGen)
+		generateReport(cfg, h, done, reqGen)
 		plog.Println("write generateReport is finished...")
 
 		plog.Println("checking total keys on", cfg.DatabaseEndpoints)
