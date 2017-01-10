@@ -32,6 +32,8 @@ step2:
     stale_read: true
     connections: 1000
     clients: 1000
+    clients_delta: 0
+    clients_max: 0 # if not 0, increase clients per 100K requests (only for writes)
     key_size: 8
     value_size: 256
     total_requests: 2000000
