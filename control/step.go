@@ -82,6 +82,7 @@ func step2(cfg Config) error {
 	if err != nil {
 		return err
 	}
+
 	switch cfg.Step2.BenchType {
 	case "write":
 		h, done := newWriteHandlers(cfg)
@@ -194,6 +195,7 @@ func step2(cfg Config) error {
 		}
 		reqGen := func(reqs chan<- request) { generateReads(cfg, key, reqs) }
 		generateReport(cfg, h, reqGen)
+
 	case "read-oneshot":
 		key, value := sameKey(cfg.Step2.KeySize), vals.strings[0]
 		plog.Infof("writing key for read-oneshot [key: %q | database: %q]", key, cfg.Database)

@@ -15,6 +15,7 @@
 package control
 
 import (
+	"fmt"
 	"io/ioutil"
 
 	"github.com/coreos/dbtester/agent/agentpb"
@@ -51,16 +52,18 @@ type Config struct {
 	} `yaml:"step1"`
 
 	Step2 struct {
-		SkipStressDatabase bool   `yaml:"skip_stress_database"`
-		BenchType          string `yaml:"bench_type"`
-		StaleRead          bool   `yaml:"stale_read"`
-		Connections        int    `yaml:"connections"`
-		Clients            int    `yaml:"clients"`
-		KeySize            int    `yaml:"key_size"`
-		SameKey            bool   `yaml:"same_key"`
-		ValueSize          int    `yaml:"value_size"`
-		TotalRequests      int    `yaml:"total_requests"`
-		RequestsPerSecond  int    `yaml:"requests_per_second"`
+		SkipStressDatabase   bool   `yaml:"skip_stress_database"`
+		BenchType            string `yaml:"bench_type"`
+		StaleRead            bool   `yaml:"stale_read"`
+		Connections          int    `yaml:"connections"`
+		Clients              int    `yaml:"clients"`
+		ClientsDelta         int    `yaml:"clients_delta"`
+		ClientsDeltaInterval int    `yaml:"clients_delta_interval"`
+		KeySize              int    `yaml:"key_size"`
+		SameKey              bool   `yaml:"same_key"`
+		ValueSize            int    `yaml:"value_size"`
+		TotalRequests        int    `yaml:"total_requests"`
+		RequestsPerSecond    int    `yaml:"requests_per_second"`
 	} `yaml:"step2"`
 
 	Step3 struct {
@@ -82,6 +85,27 @@ func ReadConfig(fpath string) (Config, error) {
 	rs := Config{}
 	if err := yaml.Unmarshal(bts, &rs); err != nil {
 		return Config{}, err
+	}
+
+	if rs.Step2.Connections != rs.Step2.Clients {
+		switch rs.Database {
+		case "etcdv2":
+			return Config{}, fmt.Errorf("connected %d != clients %d", rs.Step2.Connections, rs.Step2.Clients)
+
+		case "etcdv3":
+
+		case "zookeeper":
+			return Config{}, fmt.Errorf("connected %d != clients %d", rs.Step2.Connections, rs.Step2.Clients)
+
+		case "zetcd":
+			return Config{}, fmt.Errorf("connected %d != clients %d", rs.Step2.Connections, rs.Step2.Clients)
+
+		case "consul":
+			return Config{}, fmt.Errorf("connected %d != clients %d", rs.Step2.Connections, rs.Step2.Clients)
+
+		case "cetcd":
+			return Config{}, fmt.Errorf("connected %d != clients %d", rs.Step2.Connections, rs.Step2.Clients)
+		}
 	}
 
 	if rs.Step1.ZookeeperMaxClientCnxns == 0 {

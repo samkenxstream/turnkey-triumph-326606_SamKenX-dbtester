@@ -74,6 +74,15 @@ func TestReadConfig(t *testing.T) {
 	if c.Step2.BenchType != "write" {
 		t.Fatalf("unexpected %s", c.Step2.BenchType)
 	}
+	if c.Step2.Clients != 100 {
+		t.Fatalf("unexpected %d", c.Step2.Clients)
+	}
+	if c.Step2.ClientsDelta != 10 {
+		t.Fatalf("unexpected %d", c.Step2.ClientsDelta)
+	}
+	if c.Step2.ClientsDeltaInterval != 1 {
+		t.Fatalf("unexpected %d", c.Step2.ClientsDeltaInterval)
+	}
 	if c.Step2.KeySize != 8 {
 		t.Fatalf("unexpected %d", c.Step2.KeySize)
 	}
