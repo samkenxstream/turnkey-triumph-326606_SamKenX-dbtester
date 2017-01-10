@@ -51,10 +51,10 @@ func TestReadConfig(t *testing.T) {
 	if c.GoogleCloudStorageSubDirectory != "2016041501" {
 		t.Fatalf("unexpected %s", c.GoogleCloudStorageSubDirectory)
 	}
-	if c.ResultPathTimeSeries != "timeseries.csv" {
+	if c.ResultPathTimeSeries != "bench-result-timeseries.csv" {
 		t.Fatalf("unexpected %s", c.ResultPathTimeSeries)
 	}
-	if c.ResultPathLog != "result.log" {
+	if c.ResultPathLog != "bench-result.log" {
 		t.Fatalf("unexpected %v", c.ResultPathLog)
 	}
 

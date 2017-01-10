@@ -16,8 +16,8 @@ peer_ips:
 agent_port: 3500
 database_port: 2181
 
-result_path_time_series: timeseries.csv
-result_path_log: result.log
+result_path_time_series: bench-result-timeseries.csv
+result_path_log: bench-result.log
 
 # start database by sending RPC calls to agents
 step1:
