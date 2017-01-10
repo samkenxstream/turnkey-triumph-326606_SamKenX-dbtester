@@ -33,21 +33,19 @@ func startMetrics(fs *flags, t *transporterServer) error {
 	if err := os.RemoveAll(fs.systemMetricsLog); err != nil {
 		return err
 	}
-
 	if err := toFile(fmt.Sprintf("%d", t.req.ClientNum), t.clientNumPath); err != nil {
 		return err
 	}
-	c := psn.NewCSV(fs.systemMetricsLog, t.pid, fs.diskDevice, fs.networkInterface, t.clientNumPath)
-	if err := c.Add(); err != nil {
+	t.metricsCSV = psn.NewCSV(fs.systemMetricsLog, t.pid, fs.diskDevice, fs.networkInterface, t.clientNumPath)
+	if err := t.metricsCSV.Add(); err != nil {
 		return err
 	}
-	t.metricsCSV = c
 
 	go func() {
 		for {
 			select {
 			case <-time.After(time.Second):
-				if err := c.Add(); err != nil {
+				if err := t.metricsCSV.Add(); err != nil {
 					plog.Errorf("psn.CSV.Add error (%v)", err)
 					continue
 				}
