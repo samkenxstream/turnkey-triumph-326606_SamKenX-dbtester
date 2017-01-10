@@ -45,39 +45,67 @@ func newValues(cfg Config) (v values, rerr error) {
 	return
 }
 
-func generateReport(cfg Config, h []ReqHandler, reqGen func(chan<- request)) {
-	var wg sync.WaitGroup
+type benchmark struct {
+	cfg         Config
+	results     chan result
+	reportDonec <-chan struct{}
+	bar         *pb.ProgressBar
+	wg          sync.WaitGroup
+}
 
-	results := make(chan result)
-	reportDonec := printReport(results, cfg)
+func newBenchmark(cfg Config) (b *benchmark) {
+	b = &benchmark{
+		cfg:     cfg,
+		results: make(chan result),
+		bar:     pb.New(cfg.Step2.TotalRequests),
+	}
+	b.reportDonec = printReport(b.results, cfg)
+	b.bar.Format("Bom !")
+	b.bar.Start()
+	return
+}
 
-	bar := pb.New(cfg.Step2.TotalRequests)
-	bar.Format("Bom !")
-	bar.Start()
-
-	inflightRequests := make(chan request, cfg.Step2.Clients)
+func (b *benchmark) startRequests(h []ReqHandler, reqGen func(chan<- request)) {
+	clientsN := b.cfg.Step2.Clients
+	inflightClients := make(chan request, clientsN)
 	for i := range h {
-		wg.Add(1)
+		b.wg.Add(1)
 		go func(rh ReqHandler) {
-			defer wg.Done()
-			for req := range inflightRequests {
+			defer b.wg.Done()
+			for req := range inflightClients {
 				st := time.Now()
 				err := rh(context.Background(), &req)
 				var errStr string
 				if err != nil {
 					errStr = err.Error()
 				}
-				results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
-				bar.Increment()
+				b.results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
+				b.bar.Increment()
 			}
 		}(h[i])
 	}
-	go reqGen(inflightRequests)
+	go reqGen(inflightClients)
+}
 
-	wg.Wait()
-	bar.Finish()
-	close(results)
-	<-reportDonec
+func (b *benchmark) waitRequestsEnd() {
+	b.wg.Wait()
+}
+
+func (b *benchmark) finishReports() {
+	b.bar.Finish()
+	close(b.results)
+	<-b.reportDonec
+}
+
+func (b *benchmark) waitAll() {
+	b.waitRequestsEnd()
+	b.finishReports()
+}
+
+func generateReport(cfg Config, h []ReqHandler, reqGen func(chan<- request)) {
+	b := newBenchmark(cfg)
+	b.startRequests(h, reqGen)
+	b.waitAll()
 }
 
 func step2(cfg Config) error {
