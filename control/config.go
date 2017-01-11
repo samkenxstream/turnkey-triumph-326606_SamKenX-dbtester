@@ -57,6 +57,7 @@ type Config struct {
 		StaleRead          bool   `yaml:"stale_read"`
 		Connections        int    `yaml:"connections"`
 		Clients            int    `yaml:"clients"`
+		ClientsDelta       int    `yaml:"clients_delta"`
 		ClientsMax         int    `yaml:"clients_max"`
 		KeySize            int    `yaml:"key_size"`
 		SameKey            bool   `yaml:"same_key"`

@@ -157,8 +157,9 @@ func step2(cfg Config) error {
 			generateReport(cfg, h, done, reqGen)
 		} else {
 			// need client number increase
-			// TODO: currently, clients delta is 100 (fixed)
 			// TODO: currently, request range is 100000 (fixed)
+			// e.g. 2M requests, starts with clients 100, range 100K
+			// at 2M requests point, there will be 2K clients (20 * 100)
 			copied := cfg
 			copied.Step2.TotalRequests = 100000
 			h, done := newWriteHandlers(copied)
@@ -181,7 +182,7 @@ func step2(cfg Config) error {
 				b.waitRequestsEnd()
 
 				// update request handlers, generator
-				copied.Step2.Clients += 100
+				copied.Step2.Clients += copied.Step2.ClientsDelta
 				if copied.Step2.Clients > copied.Step2.ClientsMax {
 					copied.Step2.Clients = copied.Step2.ClientsMax
 				}

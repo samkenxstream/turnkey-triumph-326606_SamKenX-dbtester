@@ -29,8 +29,9 @@ step2:
     bench_type: write
     stale_read: true
     connections: 100
-    clients: 100
-    clients_max: 1000 # increase from 100 to 1000
+    clients: 1000
+    clients_delta: 100
+    clients_max: 2000 # if not 0, increase clients per 100K requests (only for writes)
     key_size: 8
     same_key: true
     value_size: 256
