@@ -33,6 +33,7 @@ type transporterServer struct {
 
 	databaseLogFile      *os.File
 	proxyDatabaseLogfile *os.File
+	clientNumPath        string
 
 	cmd *exec.Cmd
 	pid int64
@@ -58,9 +59,10 @@ func NewServer() agentpb.TransporterServer {
 	signal.Notify(notifier, syscall.SIGINT, syscall.SIGTERM)
 
 	return &transporterServer{
-		uploadSig: make(chan struct{}, 1),
-		csvReady:  make(chan struct{}),
-		notifier:  notifier,
+		clientNumPath: globalFlags.clientNumPath,
+		uploadSig:     make(chan struct{}, 1),
+		csvReady:      make(chan struct{}),
+		notifier:      notifier,
 	}
 }
 
@@ -172,8 +174,8 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 			plog.Infof("exiting %q", t.cmd.Path)
 		}()
 
-		if err := collectMetrics(&globalFlags, t); err != nil {
-			plog.Errorf("collectMetrics error %v", err)
+		if err := startMetrics(&globalFlags, t); err != nil {
+			plog.Errorf("startMetrics error %v", err)
 			return nil, err
 		}
 
@@ -223,6 +225,11 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 
 		if err := uploadLog(&globalFlags, t); err != nil {
 			plog.Warningf("uploadLog error %v", err)
+			return nil, err
+		}
+
+	case agentpb.Request_Heartbeat:
+		if err := toFile(fmt.Sprintf("%d", t.req.ClientNum), t.clientNumPath); err != nil {
 			return nil, err
 		}
 

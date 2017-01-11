@@ -46,6 +46,7 @@ type flags struct {
 	grpcPort         string
 	diskDevice       string
 	networkInterface string
+	clientNumPath    string
 }
 
 var globalFlags flags
@@ -79,6 +80,7 @@ func init() {
 	Command.PersistentFlags().StringVar(&globalFlags.grpcPort, "agent-port", ":3500", "Port to server agent gRPC server.")
 	Command.PersistentFlags().StringVar(&globalFlags.diskDevice, "disk-device", dn, "Disk device to collect disk statistics metrics from.")
 	Command.PersistentFlags().StringVar(&globalFlags.networkInterface, "network-interface", nt, "Network interface to record in/outgoing packets.")
+	Command.PersistentFlags().StringVar(&globalFlags.clientNumPath, "client-num-path", filepath.Join(homeDir(), "client-num"), "File path to store client number.")
 }
 
 // Command implements 'agent' command.

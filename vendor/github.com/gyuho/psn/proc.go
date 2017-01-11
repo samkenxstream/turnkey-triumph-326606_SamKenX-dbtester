@@ -2,6 +2,7 @@ package psn
 
 import (
 	"fmt"
+	"io/ioutil"
 	"time"
 )
 
@@ -24,60 +25,94 @@ type Proc struct {
 	TransmitPacketsDiff  uint64
 	ReceiveBytesNumDiff  uint64
 	TransmitBytesNumDiff uint64
+
+	// Extra exists to support customized data query.
+	Extra []byte
 }
 
 // GetProc returns current 'Proc' data.
-func GetProc(pid int64, diskDevice string, networkInterface string) (Proc, error) {
+// PID is required.
+// Disk device, network interface, extra path are optional.
+func GetProc(opts ...FilterFunc) (Proc, error) {
+	ft := &EntryFilter{}
+	ft.applyOpts(opts)
+
+	if ft.PID == 0 {
+		return Proc{}, fmt.Errorf("unknown PID %d", ft.PID)
+	}
 	proc := Proc{UnixTS: time.Now().Unix()}
 
 	errc := make(chan error)
 	go func() {
 		// get process stats
-		ets, err := GetPS(WithPID(pid))
+		ets, err := GetPS(WithPID(ft.PID))
 		if err != nil {
 			errc <- err
 			return
 		}
 		if len(ets) != 1 {
-			errc <- fmt.Errorf("len(PID=%d entries) != 1 (got %d)", pid, len(ets))
+			errc <- fmt.Errorf("len(PID=%d entries) != 1 (got %d)", ft.PID, len(ets))
 			return
 		}
 		proc.PSEntry = ets[0]
 		errc <- nil
 	}()
-	go func() {
-		// get diskstats
-		ds, err := GetDS()
-		if err != nil {
-			errc <- err
-			return
-		}
-		for _, elem := range ds {
-			if elem.Device == diskDevice {
-				proc.DSEntry = elem
-				break
+
+	if ft.DiskDevice != "" {
+		go func() {
+			// get diskstats
+			ds, err := GetDS()
+			if err != nil {
+				errc <- err
+				return
 			}
-		}
-		errc <- nil
-	}()
-	go func() {
-		// get network I/O stats
-		ns, err := GetNS()
-		if err != nil {
-			errc <- err
-			return
-		}
-		for _, elem := range ns {
-			if elem.Interface == networkInterface {
-				proc.NSEntry = elem
-				break
+			for _, elem := range ds {
+				if elem.Device == ft.DiskDevice {
+					proc.DSEntry = elem
+					break
+				}
 			}
-		}
-		errc <- nil
-	}()
+			errc <- nil
+		}()
+	}
+
+	if ft.NetworkInterface != "" {
+		go func() {
+			// get network I/O stats
+			ns, err := GetNS()
+			if err != nil {
+				errc <- err
+				return
+			}
+			for _, elem := range ns {
+				if elem.Interface == ft.NetworkInterface {
+					proc.NSEntry = elem
+					break
+				}
+			}
+			errc <- nil
+		}()
+	}
+
+	if ft.ExtraPath != "" {
+		go func() {
+			f, err := openToRead(ft.ExtraPath)
+			if err != nil {
+				errc <- err
+				return
+			}
+			b, err := ioutil.ReadAll(f)
+			if err != nil {
+				errc <- err
+				return
+			}
+			proc.Extra = b
+			errc <- nil
+		}()
+	}
 
 	cnt := 0
-	for cnt != 3 {
+	for cnt != len(opts) {
 		err := <-errc
 		if err != nil {
 			return Proc{}, err
@@ -85,11 +120,15 @@ func GetProc(pid int64, diskDevice string, networkInterface string) (Proc, error
 		cnt++
 	}
 
-	if proc.DSEntry.Device == "" {
-		return Proc{}, fmt.Errorf("disk device %q was not found", diskDevice)
+	if ft.DiskDevice != "" {
+		if proc.DSEntry.Device == "" {
+			return Proc{}, fmt.Errorf("disk device %q was not found", ft.DiskDevice)
+		}
 	}
-	if proc.NSEntry.Interface == "" {
-		return Proc{}, fmt.Errorf("network interface %q was not found", networkInterface)
+	if ft.NetworkInterface != "" {
+		if proc.NSEntry.Interface == "" {
+			return Proc{}, fmt.Errorf("network interface %q was not found", ft.NetworkInterface)
+		}
 	}
 	return proc, nil
 }
@@ -118,6 +157,8 @@ func init() {
 		"TRANSMIT-PACKETS-DIFF",
 		"RECEIVE-BYTES-NUM-DIFF",
 		"TRANSMIT-BYTES-NUM-DIFF",
+
+		"EXTRA",
 	)
 
 	for i, v := range ProcHeader {
@@ -172,6 +213,8 @@ func (p *Proc) ToRow() (row []string) {
 	row[36] = fmt.Sprintf("%d", p.TransmitPacketsDiff)  // TRANSMIT-PACKETS-DIFF
 	row[37] = fmt.Sprintf("%d", p.ReceiveBytesNumDiff)  // RECEIVE-BYTES-NUM-DIFF
 	row[38] = fmt.Sprintf("%d", p.TransmitBytesNumDiff) // TRANSMIT-BYTES-NUM-DIFF
+
+	row[39] = string(p.Extra) // EXTRA
 
 	return
 }

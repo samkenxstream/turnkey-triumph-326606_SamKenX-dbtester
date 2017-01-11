@@ -1,5 +1,5 @@
-hash: 79e108074acefd584e2963e1c13d08ad27ac91ad481d791e98f5b99760f398b7
-updated: 2017-01-09T15:13:09.585723425-08:00
+hash: 06fcd602dbcf0dc12fd38949f48631affe37b90d830b7f670f4ae393ca833053
+updated: 2017-01-10T16:07:51.437343437-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -25,7 +25,7 @@ imports:
 - name: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - name: github.com/coreos/etcd
-  version: 8adfc06084c28320079a09ae4d08f09b29eebd04
+  version: f0fa5ec507b9e5fa39612627829189b2984f00bd
   subpackages:
   - auth/authpb
   - client
@@ -96,12 +96,12 @@ imports:
 - name: github.com/gyuho/dataframe
   version: 573cd728a011e5473510a6a1df0f39023c305e04
 - name: github.com/gyuho/psn
-  version: be5928dfa765874e1d3a3f9e70fcaa6a6fcd250f
+  version: 34f04cf9e967ef7afb040e55f0f6cc641c8974ba
   subpackages:
   - process
   - schema
 - name: github.com/hashicorp/consul
-  version: a9afa0c27f484dd19fe59a80444e64e5352c4408
+  version: 3e9c96d9965eae8a375f68433de9e0a4144ce823
   subpackages:
   - api
 - name: github.com/hashicorp/go-cleanhttp

@@ -45,36 +45,101 @@ func newValues(cfg Config) (v values, rerr error) {
 	return
 }
 
-func generateReport(cfg Config, h []ReqHandler, reqGen func(chan<- request)) {
-	var wg sync.WaitGroup
-	results := make(chan result)
-	requests := make(chan request, cfg.Step2.Clients)
-	bar := pb.New(cfg.Step2.TotalRequests)
-	pdoneC := printReport(results, cfg)
-	bar.Format("Bom !")
-	bar.Start()
-	for i := range h {
-		wg.Add(1)
+type benchmark struct {
+	cfg Config
+	bar *pb.ProgressBar
+
+	reqHandlers []ReqHandler
+	reqGen      func(chan<- request)
+	reqDone     func()
+	wg          sync.WaitGroup
+
+	resultch    chan result
+	reportDonec <-chan struct{}
+
+	mu           sync.RWMutex
+	inflightReqs chan request
+}
+
+func newBenchmark(cfg Config, reqHandlers []ReqHandler, reqDone func(), reqGen func(chan<- request)) (b *benchmark) {
+	rc := make(chan result)
+	b = &benchmark{
+		cfg:         cfg,
+		bar:         pb.New(cfg.Step2.TotalRequests),
+		reqHandlers: reqHandlers,
+		reqGen:      reqGen,
+		reqDone:     reqDone,
+		wg:          sync.WaitGroup{},
+		resultch:    rc,
+		reportDonec: printReport(rc, cfg),
+	}
+	b.inflightReqs = make(chan request, b.cfg.Step2.Clients)
+
+	b.bar.Format("Bom !")
+	b.bar.Start()
+	return
+}
+
+func (b *benchmark) reset(clientsN int, reqHandlers []ReqHandler, reqDone func(), reqGen func(chan<- request)) {
+	b.reqHandlers = reqHandlers
+	b.reqDone = reqDone
+	b.reqGen = reqGen
+
+	// inflight requests will be dropped!
+	b.mu.Lock()
+	b.inflightReqs = make(chan request, clientsN)
+	b.mu.Unlock()
+}
+
+func (b *benchmark) getInflightsReqs() (ch chan request) {
+	b.mu.RLock()
+	ch = b.inflightReqs
+	b.mu.RUnlock()
+	return
+}
+
+func (b *benchmark) startRequests() {
+	for i := range b.reqHandlers {
+		b.wg.Add(1)
 		go func(rh ReqHandler) {
-			defer wg.Done()
-			for req := range requests {
+			defer b.wg.Done()
+			for req := range b.getInflightsReqs() {
 				st := time.Now()
 				err := rh(context.Background(), &req)
 				var errStr string
 				if err != nil {
 					errStr = err.Error()
 				}
-				results <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
-				bar.Increment()
+				b.resultch <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
+				b.bar.Increment()
 			}
-		}(h[i])
+		}(b.reqHandlers[i])
 	}
-	go reqGen(requests)
-	wg.Wait()
-	bar.Finish()
+	go b.reqGen(b.getInflightsReqs())
+}
 
-	close(results)
-	<-pdoneC
+func (b *benchmark) waitRequestsEnd() {
+	b.wg.Wait()
+	if b.reqDone != nil {
+		b.reqDone() // cancel connections
+	}
+}
+
+func (b *benchmark) finishReports() {
+	b.bar.Finish()
+	close(b.resultch)
+	<-b.reportDonec
+}
+
+func (b *benchmark) waitAll() {
+	b.waitRequestsEnd()
+	b.finishReports()
+}
+
+func generateReport(cfg Config, h []ReqHandler, reqDone func(), reqGen func(chan<- request)) {
+	b := newBenchmark(cfg, h, reqDone, reqGen)
+	b.startRequests()
+	b.waitAll()
 }
 
 func step2(cfg Config) error {
@@ -82,15 +147,58 @@ func step2(cfg Config) error {
 	if err != nil {
 		return err
 	}
+
 	switch cfg.Step2.BenchType {
 	case "write":
-		h, done := newWriteHandlers(cfg)
-		if done != nil {
-			defer done()
+		plog.Println("write generateReport is started...")
+		if cfg.Step2.ClientsMax == 0 {
+			h, done := newWriteHandlers(cfg)
+			reqGen := func(inflightReqs chan<- request) { generateWrites(cfg, vals, inflightReqs) }
+			generateReport(cfg, h, done, reqGen)
+		} else {
+			// need client number increase
+			// TODO: currently, request range is 100000 (fixed)
+			// e.g. 2M requests, starts with clients 100, range 100K
+			// at 2M requests point, there will be 2K clients (20 * 100)
+			copied := cfg
+			copied.Step2.TotalRequests = 100000
+			h, done := newWriteHandlers(copied)
+			reqGen := func(inflightReqs chan<- request) { generateWrites(copied, vals, inflightReqs) }
+			b := newBenchmark(copied, h, done, reqGen)
+
+			reqCompleted := 0
+			for reqCompleted >= cfg.Step2.TotalRequests {
+				plog.Infof("signaling agent on client number %d", copied.Step2.Clients)
+				// signal agent on the client number
+				if err := bcastReq(copied, agentpb.Request_Heartbeat); err != nil {
+					return err
+				}
+
+				// generate request
+				b.startRequests()
+
+				// wait until 100000 requests are finished
+				// do not finish reports yet
+				b.waitRequestsEnd()
+
+				// update request handlers, generator
+				copied.Step2.Clients += copied.Step2.ClientsDelta
+				if copied.Step2.Clients > copied.Step2.ClientsMax {
+					copied.Step2.Clients = copied.Step2.ClientsMax
+				}
+				h, done = newWriteHandlers(copied)
+				reqGen = func(inflightReqs chan<- request) { generateWrites(copied, vals, inflightReqs) }
+				b.reset(copied.Step2.Clients, h, done, reqGen)
+				plog.Infof("updated client number %d", copied.Step2.Clients)
+
+				// after one range of requests are finished
+				reqCompleted += 100000
+			}
+
+			// finish reports
+			b.finishReports()
 		}
-		reqGen := func(reqs chan<- request) { generateWrites(cfg, vals, reqs) }
-		generateReport(cfg, h, reqGen)
-		plog.Println("generateReport is finished...")
+		plog.Println("write generateReport is finished...")
 
 		plog.Println("checking total keys on", cfg.DatabaseEndpoints)
 		var totalKeysFunc func([]string) map[string]int64
@@ -189,11 +297,10 @@ func step2(cfg Config) error {
 		}
 
 		h, done := newReadHandlers(cfg)
-		if done != nil {
-			defer done()
-		}
-		reqGen := func(reqs chan<- request) { generateReads(cfg, key, reqs) }
-		generateReport(cfg, h, reqGen)
+		reqGen := func(inflightReqs chan<- request) { generateReads(cfg, key, inflightReqs) }
+		generateReport(cfg, h, done, reqGen)
+		plog.Println("read generateReport is finished...")
+
 	case "read-oneshot":
 		key, value := sameKey(cfg.Step2.KeySize), vals.strings[0]
 		plog.Infof("writing key for read-oneshot [key: %q | database: %q]", key, cfg.Database)
@@ -226,9 +333,11 @@ func step2(cfg Config) error {
 		}
 
 		h := newReadOneshotHandlers(cfg)
-		reqGen := func(reqs chan<- request) { generateReads(cfg, key, reqs) }
-		generateReport(cfg, h, reqGen)
+		reqGen := func(inflightReqs chan<- request) { generateReads(cfg, key, inflightReqs) }
+		generateReport(cfg, h, nil, reqGen)
+		plog.Println("read-oneshot generateReport is finished...")
 	}
+
 	return nil
 }
 
@@ -448,8 +557,8 @@ func newReadOneshotHandlers(cfg Config) []ReqHandler {
 	return rhs
 }
 
-func generateReads(cfg Config, key string, requests chan<- request) {
-	defer close(requests)
+func generateReads(cfg Config, key string, inflightReqs chan<- request) {
+	defer close(inflightReqs)
 
 	var rateLimiter *rate.Limiter
 	if cfg.Step2.RequestsPerSecond > 0 {
@@ -464,33 +573,33 @@ func generateReads(cfg Config, key string, requests chan<- request) {
 		switch cfg.Database {
 		case "etcdv2":
 			// serializable read by default
-			requests <- request{etcdv2Op: etcdv2Op{key: key}}
+			inflightReqs <- request{etcdv2Op: etcdv2Op{key: key}}
 
 		case "etcdv3":
 			opts := []clientv3.OpOption{clientv3.WithRange("")}
 			if cfg.Step2.StaleRead {
 				opts = append(opts, clientv3.WithSerializable())
 			}
-			requests <- request{etcdv3Op: clientv3.OpGet(key, opts...)}
+			inflightReqs <- request{etcdv3Op: clientv3.OpGet(key, opts...)}
 
 		case "zookeeper", "zetcd":
 			op := zkOp{key: key}
 			if cfg.Step2.StaleRead {
 				op.staleRead = true
 			}
-			requests <- request{zkOp: op}
+			inflightReqs <- request{zkOp: op}
 
 		case "consul", "cetcd":
 			op := consulOp{key: key}
 			if cfg.Step2.StaleRead {
 				op.staleRead = true
 			}
-			requests <- request{consulOp: op}
+			inflightReqs <- request{consulOp: op}
 		}
 	}
 }
 
-func generateWrites(cfg Config, vals values, requests chan<- request) {
+func generateWrites(cfg Config, vals values, inflightReqs chan<- request) {
 	var rateLimiter *rate.Limiter
 	if cfg.Step2.RequestsPerSecond > 0 {
 		rateLimiter = rate.NewLimiter(rate.Limit(cfg.Step2.RequestsPerSecond), cfg.Step2.RequestsPerSecond)
@@ -498,7 +607,7 @@ func generateWrites(cfg Config, vals values, requests chan<- request) {
 
 	var wg sync.WaitGroup
 	defer func() {
-		close(requests)
+		close(inflightReqs)
 		wg.Wait()
 	}()
 
@@ -517,13 +626,13 @@ func generateWrites(cfg Config, vals values, requests chan<- request) {
 
 		switch cfg.Database {
 		case "etcdv2":
-			requests <- request{etcdv2Op: etcdv2Op{key: k, value: vs}}
+			inflightReqs <- request{etcdv2Op: etcdv2Op{key: k, value: vs}}
 		case "etcdv3":
-			requests <- request{etcdv3Op: clientv3.OpPut(k, vs)}
+			inflightReqs <- request{etcdv3Op: clientv3.OpPut(k, vs)}
 		case "zookeeper", "zetcd":
-			requests <- request{zkOp: zkOp{key: "/" + k, value: v}}
+			inflightReqs <- request{zkOp: zkOp{key: "/" + k, value: v}}
 		case "consul", "cetcd":
-			requests <- request{consulOp: consulOp{key: k, value: v}}
+			inflightReqs <- request{consulOp: consulOp{key: k, value: v}}
 		}
 	}
 }

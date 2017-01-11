@@ -22,8 +22,8 @@ import (
 	"github.com/gyuho/psn"
 )
 
-// collectMetrics starts collecting metrics.
-func collectMetrics(fs *flags, t *transporterServer) error {
+// startMetrics starts collecting metrics.
+func startMetrics(fs *flags, t *transporterServer) error {
 	if fs == nil || t == nil || t.cmd == nil {
 		return fmt.Errorf("cannot find process to track (%+v, %+v)", fs, t)
 	}
@@ -33,18 +33,19 @@ func collectMetrics(fs *flags, t *transporterServer) error {
 	if err := os.RemoveAll(fs.systemMetricsLog); err != nil {
 		return err
 	}
-
-	c := psn.NewCSV(fs.systemMetricsLog, t.pid, fs.diskDevice, fs.networkInterface)
-	if err := c.Add(); err != nil {
+	if err := toFile(fmt.Sprintf("%d", t.req.ClientNum), t.clientNumPath); err != nil {
 		return err
 	}
-	t.metricsCSV = c
+	t.metricsCSV = psn.NewCSV(fs.systemMetricsLog, t.pid, fs.diskDevice, fs.networkInterface, t.clientNumPath)
+	if err := t.metricsCSV.Add(); err != nil {
+		return err
+	}
 
 	go func() {
 		for {
 			select {
 			case <-time.After(time.Second):
-				if err := c.Add(); err != nil {
+				if err := t.metricsCSV.Add(); err != nil {
 					plog.Errorf("psn.CSV.Add error (%v)", err)
 					continue
 				}

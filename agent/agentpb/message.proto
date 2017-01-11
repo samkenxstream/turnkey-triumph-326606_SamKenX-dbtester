@@ -16,6 +16,7 @@ message Request {
 	enum Operation {
 		Start     = 0;
 		Stop      = 1;
+		Heartbeat = 2; 
 	}
 	enum Database {
 		etcdv2    = 0;
@@ -60,6 +61,9 @@ message Request {
 
 	// ZookeeperSnapCount is 100,000 by default.
 	int64 zookeeperSnapCount = 12;
+
+	// ClientNum is current number of clients.
+	int64 clientNum = 13;
 }
 
 message Response {

@@ -21,12 +21,15 @@ type CSV struct {
 	MinUnixTS int64
 	MaxUnixTS int64
 
+	// ExtraPath contains extra information.
+	ExtraPath string
+
 	// Rows are sorted by unix seconds.
 	Rows []Proc
 }
 
 // NewCSV returns a new CSV.
-func NewCSV(fpath string, pid int64, diskDevice string, networkInterface string) *CSV {
+func NewCSV(fpath string, pid int64, diskDevice string, networkInterface string, extraPath string) *CSV {
 	return &CSV{
 		FilePath:         fpath,
 		PID:              pid,
@@ -39,14 +42,20 @@ func NewCSV(fpath string, pid int64, diskDevice string, networkInterface string)
 		MinUnixTS: 0,
 		MaxUnixTS: 0,
 
-		Rows: []Proc{},
+		ExtraPath: extraPath,
+		Rows:      []Proc{},
 	}
 }
 
 // Add is to be called periodically to add a row to CSV.
 // It only appends to CSV. And it estimates empty rows by unix seconds.
 func (c *CSV) Add() error {
-	cur, err := GetProc(c.PID, c.DiskDevice, c.NetworkInterface)
+	cur, err := GetProc(
+		WithPID(c.PID),
+		WithDiskDevice(c.DiskDevice),
+		WithNetworkInterface(c.NetworkInterface),
+		WithExtraPath(c.ExtraPath),
+	)
 	if err != nil {
 		return err
 	}
@@ -93,6 +102,9 @@ func (c *CSV) Add() error {
 
 	// estimate the previous ones based on 'prev' and 'cur'
 	mid := prev
+
+	// Extra; just use the previous value
+	mid.Extra = prev.Extra
 
 	// PSEntry; just use average since some metrisc might decrease
 	mid.PSEntry.FD = prev.PSEntry.FD + (cur.PSEntry.FD-prev.PSEntry.FD)/2
@@ -393,6 +405,8 @@ func ReadCSV(fpath string) (*CSV, error) {
 			TransmitPacketsDiff:  transmitPacketsDiff,
 			ReceiveBytesNumDiff:  receiveBytesNumDiff,
 			TransmitBytesNumDiff: transmitBytesNumDiff,
+
+			Extra: []byte(row[ProcHeaderIndex["EXTRA"]]),
 		}
 		c.PID = proc.PSEntry.PID
 		c.DiskDevice = proc.DSEntry.Device

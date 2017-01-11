@@ -15,6 +15,7 @@
 package control
 
 import (
+	"fmt"
 	"io/ioutil"
 
 	"github.com/coreos/dbtester/agent/agentpb"
@@ -56,6 +57,8 @@ type Config struct {
 		StaleRead          bool   `yaml:"stale_read"`
 		Connections        int    `yaml:"connections"`
 		Clients            int    `yaml:"clients"`
+		ClientsDelta       int    `yaml:"clients_delta"`
+		ClientsMax         int    `yaml:"clients_max"`
 		KeySize            int    `yaml:"key_size"`
 		SameKey            bool   `yaml:"same_key"`
 		ValueSize          int    `yaml:"value_size"`
@@ -82,6 +85,27 @@ func ReadConfig(fpath string) (Config, error) {
 	rs := Config{}
 	if err := yaml.Unmarshal(bts, &rs); err != nil {
 		return Config{}, err
+	}
+
+	if rs.Step2.Connections != rs.Step2.Clients {
+		switch rs.Database {
+		case "etcdv2":
+			return Config{}, fmt.Errorf("connected %d != clients %d", rs.Step2.Connections, rs.Step2.Clients)
+
+		case "etcdv3":
+
+		case "zookeeper":
+			return Config{}, fmt.Errorf("connected %d != clients %d", rs.Step2.Connections, rs.Step2.Clients)
+
+		case "zetcd":
+			return Config{}, fmt.Errorf("connected %d != clients %d", rs.Step2.Connections, rs.Step2.Clients)
+
+		case "consul":
+			return Config{}, fmt.Errorf("connected %d != clients %d", rs.Step2.Connections, rs.Step2.Clients)
+
+		case "cetcd":
+			return Config{}, fmt.Errorf("connected %d != clients %d", rs.Step2.Connections, rs.Step2.Clients)
+		}
 	}
 
 	if rs.Step1.ZookeeperMaxClientCnxns == 0 {
@@ -128,6 +152,8 @@ func (cfg *Config) ToRequest() agentpb.Request {
 
 	req.ZookeeperMaxClientCnxns = cfg.Step1.ZookeeperMaxClientCnxns
 	req.ZookeeperSnapCount = cfg.Step1.ZookeeperSnapCount
+
+	req.ClientNum = int64(cfg.Step2.Clients)
 
 	return req
 }
