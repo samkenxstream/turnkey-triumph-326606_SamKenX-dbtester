@@ -1,4 +1,4 @@
-// Copyright 2016 CoreOS, Inc.
+// Copyright 2017 CoreOS, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,36 +30,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Command implements 'analyze' command.
-var Command = &cobra.Command{
-	Use:   "analyze",
-	Short: "Analyzes test dbtester test results.",
-	RunE:  commandFunc,
-}
-
-var configPath string
-
-func init() {
-	Command.PersistentFlags().StringVarP(&configPath, "config", "c", "", "YAML configuration file path.")
-}
-
-var columnsToAggregate = []string{
-	"UNIX-TS", "CPU-NUM", "VMRSS-NUM",
-	"READS-COMPLETED",
-	"READS-COMPLETED-DIFF",
-	"SECTORS-READ",
-	"SECTORS-READ-DIFF",
-	"WRITES-COMPLETED",
-	"WRITES-COMPLETED-DIFF",
-	"SECTORS-WRITTEN",
-	"SECTORS-WRITTEN-DIFF",
-	"RECEIVE-BYTES-NUM",
-	"RECEIVE-BYTES-NUM-DIFF",
-	"TRANSMIT-BYTES-NUM",
-	"TRANSMIT-BYTES-NUM-DIFF",
-	"EXTRA",
-}
-
 func commandFunc(cmd *cobra.Command, args []string) error {
 	cfg, err := ReadConfig(configPath)
 	if err != nil {
@@ -67,7 +37,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 	}
 
 	println()
-	plog.Println("Step 1: aggregating each database...")
+	plog.Println("Step 1: aggregating all system metrics CSV files from each database")
 	for step1Idx, elem := range cfg.Step1 {
 		var (
 			frames               = []dataframe.Frame{}
