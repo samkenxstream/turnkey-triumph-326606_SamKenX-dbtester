@@ -29,7 +29,7 @@ import (
 type flags struct {
 	agentLog         string
 	databaseLog      string
-	systemMetricsLog string
+	systemMetricsCSV string
 
 	javaExec   string
 	etcdExec   string
@@ -63,7 +63,7 @@ func init() {
 
 	Command.PersistentFlags().StringVar(&globalFlags.agentLog, "agent-log", filepath.Join(homeDir(), "agent.log"), "agent log path.")
 	Command.PersistentFlags().StringVar(&globalFlags.databaseLog, "database-log", filepath.Join(homeDir(), "database.log"), "Database log path.")
-	Command.PersistentFlags().StringVar(&globalFlags.systemMetricsLog, "system-metrics-log", filepath.Join(homeDir(), "system-metrics.csv"), "System metrics log path.")
+	Command.PersistentFlags().StringVar(&globalFlags.systemMetricsCSV, "system-metrics-csv", filepath.Join(homeDir(), "system-metrics.csv"), "System metrics log path.")
 
 	Command.PersistentFlags().StringVar(&globalFlags.javaExec, "java-exec", "/usr/bin/java", "Java executable binary path (needed for Zookeeper).")
 	Command.PersistentFlags().StringVar(&globalFlags.etcdExec, "etcd-exec", filepath.Join(os.Getenv("GOPATH"), "bin/etcd"), "etcd executable binary path.")

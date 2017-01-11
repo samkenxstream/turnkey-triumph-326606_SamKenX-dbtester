@@ -77,10 +77,10 @@ func uploadLog(fs *flags, t *transporterServer) error {
 		}
 	}
 
-	srcMonitorResultPath := fs.systemMetricsLog
-	dstMonitorResultPath := filepath.Base(fs.systemMetricsLog)
-	if !strings.HasPrefix(filepath.Base(fs.systemMetricsLog), t.req.TestName) {
-		dstMonitorResultPath = fmt.Sprintf("%s-%d-%s", t.req.TestName, t.req.ServerIndex+1, filepath.Base(fs.systemMetricsLog))
+	srcMonitorResultPath := fs.systemMetricsCSV
+	dstMonitorResultPath := filepath.Base(fs.systemMetricsCSV)
+	if !strings.HasPrefix(filepath.Base(fs.systemMetricsCSV), t.req.TestName) {
+		dstMonitorResultPath = fmt.Sprintf("%s-%d-%s", t.req.TestName, t.req.ServerIndex+1, filepath.Base(fs.systemMetricsCSV))
 	}
 	dstMonitorResultPath = filepath.Join(t.req.GoogleCloudStorageSubDirectory, dstMonitorResultPath)
 	plog.Infof("uploading monitor results [%q -> %q]", srcMonitorResultPath, dstMonitorResultPath)

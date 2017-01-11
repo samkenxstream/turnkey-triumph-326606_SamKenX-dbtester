@@ -30,13 +30,13 @@ func startMetrics(fs *flags, t *transporterServer) error {
 	plog.Infof("starting collecting metrics [database %q | PID: %d | disk device: %q | network interface: %q]",
 		t.req.Database, t.pid, fs.diskDevice, fs.networkInterface)
 
-	if err := os.RemoveAll(fs.systemMetricsLog); err != nil {
+	if err := os.RemoveAll(fs.systemMetricsCSV); err != nil {
 		return err
 	}
 	if err := toFile(fmt.Sprintf("%d", t.req.ClientNum), t.clientNumPath); err != nil {
 		return err
 	}
-	t.metricsCSV = psn.NewCSV(fs.systemMetricsLog, t.pid, fs.diskDevice, fs.networkInterface, t.clientNumPath)
+	t.metricsCSV = psn.NewCSV(fs.systemMetricsCSV, t.pid, fs.diskDevice, fs.networkInterface, t.clientNumPath)
 	if err := t.metricsCSV.Add(); err != nil {
 		return err
 	}
