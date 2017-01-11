@@ -57,6 +57,7 @@ var columnsToAggregate = []string{
 	"RECEIVE-BYTES-NUM-DIFF",
 	"TRANSMIT-BYTES-NUM",
 	"TRANSMIT-BYTES-NUM-DIFF",
+	"EXTRA",
 }
 
 func commandFunc(cmd *cobra.Command, args []string) error {
@@ -187,6 +188,8 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 								return err
 							}
 						}
+					case "EXTRA":
+						header = "CLIENT-NUM"
 					}
 
 					col.UpdateHeader(fmt.Sprintf("%s-%d", header, i+1))
