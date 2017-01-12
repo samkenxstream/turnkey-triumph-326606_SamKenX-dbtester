@@ -51,7 +51,7 @@ import:
   - vg/vgpdf
   - vg/vgsvg
 - package: github.com/gyuho/dataframe
-  version: 626846d3e46a45817a2054f5bd5704ac2abf5f6e
+  version: 20cf591006911781a1d84b1f2b8b16a54a55c212
 - package: github.com/gyuho/psn
   version: eb796de4d35872441498b7cd63d1a95246776163
   subpackages:

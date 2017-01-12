@@ -281,6 +281,16 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 		return err
 	}
 
+	// currently first columns are ordered as:
+	// UNIX-TS, SECOND, CLIENT-NUM, AVG-LATENCY-MS, AVG-THROUGHPUT
+
+	// re-order columns in the following order
+	reorder := []string{"CUMULATIVE-THROUGHPUT", "AVG-CPU", "AVG-VMRSS-MB", "AVG-READS-COMPLETED-DELTA", "AVG-SECTORS-READ-DELTA", "AVG-WRITES-COMPLETED-DELTA", "AVG-SECTORS-WRITTEN-DELTA", "AVG-RECEIVE-BYTES-NUM-DELTA", "AVG-TRANSMIT-BYTES-NUM-DELTA", "AVG-READS-COMPLETED", "AVG-SECTORS-READ", "AVG-WRITES-COMPLETED", "AVG-SECTORS-WRITTEN", "AVG-RECEIVE-BYTES-NUM", "AVG-TRANSMIT-BYTES-NUM"}
+	for i := len(reorder) - 1; i >= 0; i-- {
+		if err = data.allDataFrame.MoveColumn(reorder[i], 5); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
