@@ -89,7 +89,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 			t.proxyDatabaseLogfile = pf
 			plog.Infof("proxy-database log path: %q", proxyLog)
 		}
-		plog.Infof("system metrics log path: %q", globalFlags.systemMetricsLog)
+		plog.Infof("system metrics CSV path: %q", globalFlags.systemMetricsCSV)
 
 		switch r.Database {
 		case agentpb.Request_ZooKeeper:

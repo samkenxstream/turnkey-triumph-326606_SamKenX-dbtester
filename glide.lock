@@ -1,5 +1,5 @@
-hash: 06fcd602dbcf0dc12fd38949f48631affe37b90d830b7f670f4ae393ca833053
-updated: 2017-01-10T16:07:51.437343437-08:00
+hash: 2a81dc8af7f43f1d7f15f97b2c56eb737fc83b45b8c9c3191f27eb576088e3e4
+updated: 2017-01-12T14:57:32.173348155-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -25,7 +25,7 @@ imports:
 - name: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - name: github.com/coreos/etcd
-  version: f0fa5ec507b9e5fa39612627829189b2984f00bd
+  version: 0df543dbb38c9b4f5bd77868c30aa5520c8089a4
   subpackages:
   - auth/authpb
   - client
@@ -94,9 +94,9 @@ imports:
   - runtime/internal
   - utilities
 - name: github.com/gyuho/dataframe
-  version: 573cd728a011e5473510a6a1df0f39023c305e04
+  version: 70913b350b1ba6de1ed778a951d86a97d25699d7
 - name: github.com/gyuho/psn
-  version: 34f04cf9e967ef7afb040e55f0f6cc641c8974ba
+  version: eb796de4d35872441498b7cd63d1a95246776163
   subpackages:
   - process
   - schema
@@ -150,7 +150,7 @@ imports:
 - name: github.com/spf13/pflag
   version: 5ccb023bc27df288a957c5e994cd44fd19619465
 - name: github.com/ugorji/go
-  version: 9c7f9b7a2bc3a520f7c7b30b34b7f85f47fe27b6
+  version: ded73eae5db7e7a0ef6f55aace87a2873c5d2b74
   subpackages:
   - codec
 - name: golang.org/x/image

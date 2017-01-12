@@ -8,23 +8,26 @@ import (
 
 // Value represents the value in data frame.
 type Value interface {
-	// ToString parses Value to string. It returns false if not possible.
-	ToString() (string, bool)
+	// String parses Value to string. It returns false if not possible.
+	String() (string, bool)
 
-	// ToNumber parses Value to float64. It returns false if not possible.
-	ToNumber() (float64, bool)
+	// Number parses Value to float64. It returns false if not possible.
+	Number() (float64, bool)
 
-	// ToTime parses Value to time.Time based on the layout. It returns false if not possible.
-	ToTime(layout string) (time.Time, bool)
+	// Time parses Value to time.Time based on the layout. It returns false if not possible.
+	Time(layout string) (time.Time, bool)
 
-	// ToDuration parses Value to time.Duration. It returns false if not possible.
-	ToDuration() (time.Duration, bool)
+	// Duration parses Value to time.Duration. It returns false if not possible.
+	Duration() (time.Duration, bool)
 
 	// IsNil returns true if the Value is nil.
 	IsNil() bool
 
 	// EqualTo returns true if the Value is equal to v.
 	EqualTo(v Value) bool
+
+	// Copy copies Value.
+	Copy() Value
 }
 
 func NewStringValue(v interface{}) Value {
@@ -51,21 +54,21 @@ func NewStringValueNil() Value {
 
 type String string
 
-func (s String) ToString() (string, bool) {
+func (s String) String() (string, bool) {
 	return string(s), true
 }
 
-func (s String) ToNumber() (float64, bool) {
+func (s String) Number() (float64, bool) {
 	f, err := strconv.ParseFloat(string(s), 64)
 	return f, err == nil
 }
 
-func (s String) ToTime(layout string) (time.Time, bool) {
+func (s String) Time(layout string) (time.Time, bool) {
 	t, err := time.Parse(layout, string(s))
 	return t, err == nil
 }
 
-func (s String) ToDuration() (time.Duration, bool) {
+func (s String) Duration() (time.Duration, bool) {
 	d, err := time.ParseDuration(string(s))
 	return d, err == nil
 }
@@ -79,6 +82,10 @@ func (s String) EqualTo(v Value) bool {
 	return ok && s == tv
 }
 
+func (s String) Copy() Value {
+	return s
+}
+
 type ByStringAscending []Value
 
 func (vs ByStringAscending) Len() int {
@@ -90,8 +97,8 @@ func (vs ByStringAscending) Swap(i, j int) {
 }
 
 func (vs ByStringAscending) Less(i, j int) bool {
-	vs1, _ := vs[i].ToString()
-	vs2, _ := vs[j].ToString()
+	vs1, _ := vs[i].String()
+	vs2, _ := vs[j].String()
 	return vs1 < vs2
 }
 
@@ -106,8 +113,8 @@ func (vs ByStringDescending) Swap(i, j int) {
 }
 
 func (vs ByStringDescending) Less(i, j int) bool {
-	vs1, _ := vs[i].ToString()
-	vs2, _ := vs[j].ToString()
+	vs1, _ := vs[i].String()
+	vs2, _ := vs[j].String()
 	return vs1 > vs2
 }
 
@@ -122,8 +129,8 @@ func (vs ByNumberAscending) Swap(i, j int) {
 }
 
 func (vs ByNumberAscending) Less(i, j int) bool {
-	vs1, _ := vs[i].ToNumber()
-	vs2, _ := vs[j].ToNumber()
+	vs1, _ := vs[i].Number()
+	vs2, _ := vs[j].Number()
 	return vs1 < vs2
 }
 
@@ -138,8 +145,8 @@ func (vs ByNumberDescending) Swap(i, j int) {
 }
 
 func (vs ByNumberDescending) Less(i, j int) bool {
-	vs1, _ := vs[i].ToNumber()
-	vs2, _ := vs[j].ToNumber()
+	vs1, _ := vs[i].Number()
+	vs2, _ := vs[j].Number()
 	return vs1 > vs2
 }
 
@@ -154,8 +161,8 @@ func (vs ByDurationAscending) Swap(i, j int) {
 }
 
 func (vs ByDurationAscending) Less(i, j int) bool {
-	vs1, _ := vs[i].ToDuration()
-	vs2, _ := vs[j].ToDuration()
+	vs1, _ := vs[i].Duration()
+	vs2, _ := vs[j].Duration()
 	return vs1 < vs2
 }
 
@@ -170,7 +177,7 @@ func (vs ByDurationDescending) Swap(i, j int) {
 }
 
 func (vs ByDurationDescending) Less(i, j int) bool {
-	vs1, _ := vs[i].ToDuration()
-	vs2, _ := vs[j].ToDuration()
+	vs1, _ := vs[i].Duration()
+	vs2, _ := vs[j].Duration()
 	return vs1 > vs2
 }

@@ -1,4 +1,4 @@
-// Copyright 2016 CoreOS, Inc.
+// Copyright 2017 CoreOS, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,14 +16,47 @@ package analyze
 
 import (
 	"fmt"
-	"image/color"
 	"io"
 	"os"
 	"path/filepath"
-	"strings"
-
-	"github.com/gonum/plot/plotutil"
 )
+
+func openToRead(fpath string) (*os.File, error) {
+	f, err := os.OpenFile(fpath, os.O_RDONLY, 0444)
+	if err != nil {
+		return nil, err
+	}
+	return f, nil
+}
+
+func openToAppend(fpath string) (*os.File, error) {
+	f, err := os.OpenFile(fpath, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0777)
+	if err != nil {
+		return nil, err
+	}
+	return f, nil
+}
+
+func openToOverwrite(fpath string) (*os.File, error) {
+	f, err := os.OpenFile(fpath, os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0777)
+	if err != nil {
+		return nil, err
+	}
+	return f, nil
+}
+
+func toFile(txt, fpath string) error {
+	f, err := openToOverwrite(fpath)
+	if err != nil {
+		f, err = os.Create(fpath)
+		if err != nil {
+			return err
+		}
+	}
+	defer f.Close()
+	_, err = f.WriteString(txt)
+	return err
+}
 
 func copyFile(src, dst string) error {
 	if err := os.MkdirAll(filepath.Dir(dst), 0755); err != nil {
@@ -53,24 +86,4 @@ func copyFile(src, dst string) error {
 		return err
 	}
 	return nil
-}
-
-func getRGB(legend string, i int) color.Color {
-	legend = strings.ToLower(strings.TrimSpace(legend))
-	if strings.HasPrefix(legend, "etcd") {
-		return color.RGBA{24, 90, 169, 255} // blue
-	}
-	if strings.HasPrefix(legend, "zookeeper") {
-		return color.RGBA{38, 169, 24, 255} // green
-	}
-	if strings.HasPrefix(legend, "consul") {
-		return color.RGBA{198, 53, 53, 255} // red
-	}
-	if strings.HasPrefix(legend, "zetcd") {
-		return color.RGBA{251, 206, 0, 255} // yellow
-	}
-	if strings.HasPrefix(legend, "cetcd") {
-		return color.RGBA{116, 24, 169, 255} // purple
-	}
-	return plotutil.Color(i)
 }

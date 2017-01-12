@@ -2,7 +2,12 @@
 
 [![Build Status](https://img.shields.io/travis/coreos/dbtester.svg?style=flat-square)](https://travis-ci.org/coreos/dbtester) [![Godoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](https://godoc.org/github.com/coreos/dbtester)
 
-Distributed database tester.
+Distributed database tester
+
+- Database agent and runner are implemented at https://github.com/coreos/dbtester/tree/master/agent
+- Client is implemented at https://github.com/coreos/dbtester/tree/master/control
+- System metrics are collected via https://github.com/gyuho/psn
+- Data analysis is done via https://github.com/gyuho/dataframe and https://github.com/gonum/plot
 
 For etcd, we also recommend [etcd benchmark tool](https://github.com/coreos/etcd/tree/master/tools/benchmark).
 

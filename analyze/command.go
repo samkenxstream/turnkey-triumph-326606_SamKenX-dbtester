@@ -12,5 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package analyze analyzes the bench test results, specific to dbtester tests.
 package analyze
+
+import "github.com/spf13/cobra"
+
+// Command implements 'analyze' command.
+var Command = &cobra.Command{
+	Use:   "analyze",
+	Short: "Analyzes test dbtester test results.",
+	RunE:  commandFunc,
+}
+
+var configPath string
+
+func init() {
+	Command.PersistentFlags().StringVarP(&configPath, "config", "c", "", "YAML configuration file path.")
+}
+
+func commandFunc(cmd *cobra.Command, args []string) error {
+	return do(configPath)
+}
