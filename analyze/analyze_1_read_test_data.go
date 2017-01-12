@@ -22,19 +22,21 @@ import (
 )
 
 var sysMetricsColumnsToRead = []string{
-	"UNIX-TS", "CPU-NUM", "VMRSS-NUM",
+	"UNIX-TS",
+	"CPU-NUM",
+	"VMRSS-NUM",
 	"READS-COMPLETED",
-	"READS-COMPLETED-DIFF",
+	"READS-COMPLETED-DELTA",
 	"SECTORS-READ",
-	"SECTORS-READ-DIFF",
+	"SECTORS-READ-DELTA",
 	"WRITES-COMPLETED",
-	"WRITES-COMPLETED-DIFF",
+	"WRITES-COMPLETED-DELTA",
 	"SECTORS-WRITTEN",
-	"SECTORS-WRITTEN-DIFF",
+	"SECTORS-WRITTEN-DELTA",
 	"RECEIVE-BYTES-NUM",
-	"RECEIVE-BYTES-NUM-DIFF",
+	"RECEIVE-BYTES-NUM-DELTA",
 	"TRANSMIT-BYTES-NUM",
-	"TRANSMIT-BYTES-NUM-DIFF",
+	"TRANSMIT-BYTES-NUM-DELTA",
 	"EXTRA",
 }
 
@@ -57,7 +59,7 @@ func readSystemMetrics(fpath string) (data testData, err error) {
 	var unixTSColumn dataframe.Column
 	for _, name := range sysMetricsColumnsToRead {
 		var column dataframe.Column
-		column, err = originalFrame.GetColumn(name)
+		column, err = originalFrame.Column(name)
 		if err != nil {
 			return testData{}, err
 		}
@@ -74,9 +76,9 @@ func readSystemMetrics(fpath string) (data testData, err error) {
 	if !ok {
 		return testData{}, fmt.Errorf("FrontNonNil %s has empty Unix time %v", fpath, fv)
 	}
-	fs, ok := fv.ToString()
+	fs, ok := fv.String()
 	if !ok {
-		return testData{}, fmt.Errorf("cannot ToString %v", fv)
+		return testData{}, fmt.Errorf("cannot String %v", fv)
 	}
 	data.frontUnixTS, err = strconv.ParseInt(fs, 10, 64)
 	if err != nil {
@@ -88,9 +90,9 @@ func readSystemMetrics(fpath string) (data testData, err error) {
 	if !ok {
 		return testData{}, fmt.Errorf("BackNonNil %s has empty Unix time %v", fpath, fv)
 	}
-	bs, ok := bv.ToString()
+	bs, ok := bv.String()
 	if !ok {
-		return testData{}, fmt.Errorf("cannot ToString %v", bv)
+		return testData{}, fmt.Errorf("cannot String %v", bv)
 	}
 	data.lastUnixTS, err = strconv.ParseInt(bs, 10, 64)
 	if err != nil {

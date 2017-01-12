@@ -11,12 +11,12 @@ import (
 // aggSystemBenchMetrics aggregates all system metrics from 3+ nodes.
 func (data *analyzeData) aggSystemBenchMetrics() error {
 	plog.Println("STEP #3: aggregating system metrics and benchmark metrics")
-	colSys, err := data.sysAgg.GetColumn("UNIX-TS")
+	colSys, err := data.sysAgg.Column("UNIX-TS")
 	if err != nil {
 		return err
 	}
 
-	colBench, err := data.benchMetrics.frame.GetColumn("UNIX-TS")
+	colBench, err := data.benchMetrics.frame.Column("UNIX-TS")
 	if err != nil {
 		return err
 	}
@@ -29,23 +29,23 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 		return fmt.Errorf("BackNonNil %s has empty Unix time %v", data.benchMetrics.filePath, fv)
 	}
 
-	sysStartIdx, ok := colSys.FindValue(fv)
+	sysStartIdx, ok := colSys.FindFirst(fv)
 	if !ok {
 		return fmt.Errorf("%v is not found in system metrics results", fv)
 	}
-	sysEndIdx, ok := colSys.FindValue(bv)
+	sysEndIdx, ok := colSys.FindFirst(bv)
 	if !ok {
 		return fmt.Errorf("%v is not found in system metrics results", fv)
 	}
 	sysRowN := sysEndIdx - sysStartIdx + 1
 
 	var minBenchEndIdx int
-	for _, col := range data.benchMetrics.frame.GetColumns() {
+	for _, col := range data.benchMetrics.frame.Columns() {
 		if minBenchEndIdx == 0 {
-			minBenchEndIdx = col.RowNumber()
+			minBenchEndIdx = col.CountRow()
 		}
-		if minBenchEndIdx > col.RowNumber() {
-			minBenchEndIdx = col.RowNumber()
+		if minBenchEndIdx > col.CountRow() {
+			minBenchEndIdx = col.CountRow()
 		}
 	}
 	minBenchEndIdx--
@@ -70,9 +70,9 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 
 	// first, add bench metrics data
 	// UNIX-TS, AVG-LATENCY-MS, AVG-THROUGHPUT
-	for _, col := range data.benchMetrics.frame.GetColumns() {
+	for _, col := range data.benchMetrics.frame.Columns() {
 		// ALWAYS KEEP FROM FIRST ROW OF BENCHMARKS
-		if err = col.KeepRows(0, minBenchEndIdx); err != nil {
+		if err = col.Keep(0, minBenchEndIdx); err != nil {
 			return err
 		}
 		if err = data.sysBenchAgg.AddColumn(col); err != nil {
@@ -80,11 +80,11 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 		}
 	}
 
-	for _, col := range data.sysAgg.GetColumns() {
-		if col.GetHeader() == "UNIX-TS" {
+	for _, col := range data.sysAgg.Columns() {
+		if col.Header() == "UNIX-TS" {
 			continue
 		}
-		if err = col.KeepRows(sysStartIdx, sysEndIdx); err != nil {
+		if err = col.Keep(sysStartIdx, sysEndIdx); err != nil {
 			return err
 		}
 		if err = data.sysBenchAgg.AddColumn(col); err != nil {
@@ -98,32 +98,47 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 		cumulativeThroughputCol = dataframe.NewColumn("CUMULATIVE-THROUGHPUT")
 
 		systemMetricsSize = float64(len(data.sys))
-		avgCPUCol         = dataframe.NewColumn("AVG-CPU")
-		avgVMRSSMBCol     = dataframe.NewColumn("AVG-VMRSS-MB")
+
+		avgCPUCol     = dataframe.NewColumn("AVG-CPU")
+		avgVMRSSMBCol = dataframe.NewColumn("AVG-VMRSS-MB")
 	)
-	// iterate horizontally across all the columns
+
+	// compute average value of 3+ nodes
+	// by iterating each row (horizontally) for all the columns
 	for rowIdx := 0; rowIdx < minBenchEndIdx; rowIdx++ {
 		var (
 			cpuSum     float64
 			vmrssMBSum float64
 		)
-		for _, col := range data.sysBenchAgg.GetColumns() {
-			rv, err := col.GetValue(rowIdx)
+		for _, col := range data.sysBenchAgg.Columns() {
+			rv, err := col.Value(rowIdx)
 			if err != nil {
 				return err
 			}
-			vv, _ := rv.ToNumber()
+			vv, _ := rv.Number()
 
+			hd := col.Header()
 			switch {
-			case col.GetHeader() == "AVG-THROUGHPUT":
+			// cumulative values
+			case hd == "AVG-THROUGHPUT":
 				requestSum += int(vv)
 				cumulativeThroughputCol.PushBack(dataframe.NewStringValue(requestSum))
 
-			case strings.HasPrefix(col.GetHeader(), "CPU-"):
+			// average values (need sume first!)
+			case strings.HasPrefix(hd, "CPU-"):
+				// CPU-NUM was converted to CPU-1, CPU-2, CPU-3
 				cpuSum += vv
-
-			case strings.HasPrefix(col.GetHeader(), "VMRSS-MB-"):
+			case strings.HasPrefix(hd, "VMRSS-MB-"):
+				// VMRSS-NUM-NUM was converted to VMRSS-MB-1, VMRSS-MB-2, VMRSS-MB-3
 				vmrssMBSum += vv
+			case strings.HasPrefix(hd, "CPU-"):
+			case strings.HasPrefix(hd, "CPU-"):
+			case strings.HasPrefix(hd, "CPU-"):
+			case strings.HasPrefix(hd, "CPU-"):
+			case strings.HasPrefix(hd, "CPU-"):
+			case strings.HasPrefix(hd, "CPU-"):
+			case strings.HasPrefix(hd, "CPU-"):
+			case strings.HasPrefix(hd, "CPU-"):
 			}
 		}
 	}

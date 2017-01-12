@@ -69,32 +69,32 @@ func (data *analyzeData) aggSystemMetrics() error {
 	maxTS := fmt.Sprintf("%d", data.maxUnixTS)
 	data.sysAgg = dataframe.New()
 	for i := range data.sys {
-		uc, err := data.sys[i].frame.GetColumn("UNIX-TS")
+		uc, err := data.sys[i].frame.Column("UNIX-TS")
 		if err != nil {
 			return err
 		}
-		minTSIdx, ok := uc.FindValue(dataframe.NewStringValue(minTS))
+		minTSIdx, ok := uc.FindFirst(dataframe.NewStringValue(minTS))
 		if !ok {
 			return fmt.Errorf("%v does not exist in %s", minTS, data.sys[i].filePath)
 		}
-		maxTSIdx, ok := uc.FindValue(dataframe.NewStringValue(maxTS))
+		maxTSIdx, ok := uc.FindFirst(dataframe.NewStringValue(maxTS))
 		if !ok {
 			return fmt.Errorf("%v does not exist in %s", maxTS, data.sys[i].filePath)
 		}
 
-		for _, header := range data.sys[i].frame.GetHeader() {
+		for _, header := range data.sys[i].frame.Headers() {
 			if i > 0 && header == "UNIX-TS" {
 				// skip for other databases; we want to keep just one UNIX-TS column
 				continue
 			}
 
 			var col dataframe.Column
-			col, err = data.sys[i].frame.GetColumn(header)
+			col, err = data.sys[i].frame.Column(header)
 			if err != nil {
 				return err
 			}
 			// just keep rows from [min,maxUnixTS]
-			if err = col.KeepRows(minTSIdx, maxTSIdx+1); err != nil {
+			if err = col.Keep(minTSIdx, maxTSIdx+1); err != nil {
 				return err
 			}
 
@@ -113,16 +113,16 @@ func (data *analyzeData) aggSystemMetrics() error {
 				header = "VMRSS-MB"
 
 				// convert bytes to mb
-				colN := col.RowNumber()
+				colN := col.CountRow()
 				for rowIdx := 0; rowIdx < colN; rowIdx++ {
 					var rowV dataframe.Value
-					rowV, err = col.GetValue(rowIdx)
+					rowV, err = col.Value(rowIdx)
 					if err != nil {
 						return err
 					}
-					fv, _ := rowV.ToNumber()
+					fv, _ := rowV.Number()
 					frv := float64(fv) * 0.000001
-					if err = col.SetValue(rowIdx, dataframe.NewStringValue(fmt.Sprintf("%.2f", frv))); err != nil {
+					if err = col.Set(rowIdx, dataframe.NewStringValue(fmt.Sprintf("%.2f", frv))); err != nil {
 						return err
 					}
 				}

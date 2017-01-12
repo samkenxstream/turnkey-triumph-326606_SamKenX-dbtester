@@ -33,7 +33,7 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 	}
 
 	var unixTSColumn dataframe.Column
-	unixTSColumn, err = data.benchMetrics.frame.GetColumn("UNIX-TS")
+	unixTSColumn, err = data.benchMetrics.frame.Column("UNIX-TS")
 	if err != nil {
 		return err
 	}
@@ -43,9 +43,9 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 	if !ok {
 		return fmt.Errorf("FrontNonNil %s has empty Unix time %v", fpath, fv)
 	}
-	fs, ok := fv.ToString()
+	fs, ok := fv.String()
 	if !ok {
-		return fmt.Errorf("cannot ToString %v", fv)
+		return fmt.Errorf("cannot String %v", fv)
 	}
 	data.benchMetrics.frontUnixTS, err = strconv.ParseInt(fs, 10, 64)
 	if err != nil {
@@ -57,9 +57,9 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 	if !ok {
 		return fmt.Errorf("BackNonNil %s has empty Unix time %v", fpath, fv)
 	}
-	bs, ok := bv.ToString()
+	bs, ok := bv.String()
 	if !ok {
-		return fmt.Errorf("cannot ToString %v", bv)
+		return fmt.Errorf("cannot String %v", bv)
 	}
 	data.benchMetrics.lastUnixTS, err = strconv.ParseInt(bs, 10, 64)
 	if err != nil {

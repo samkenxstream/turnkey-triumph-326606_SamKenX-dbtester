@@ -28,3 +28,8 @@ var configPath string
 func init() {
 	Command.PersistentFlags().StringVarP(&configPath, "config", "c", "", "YAML configuration file path.")
 }
+
+func commandFunc(cmd *cobra.Command, args []string) error {
+
+	return nil
+}

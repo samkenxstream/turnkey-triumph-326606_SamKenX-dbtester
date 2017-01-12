@@ -9,7 +9,7 @@ import:
 - package: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - package: github.com/coreos/etcd
-  version: f0fa5ec507b9e5fa39612627829189b2984f00bd
+  version: 0df543dbb38c9b4f5bd77868c30aa5520c8089a4
   subpackages:
   - auth/authpb
   - client
@@ -51,9 +51,9 @@ import:
   - vg/vgpdf
   - vg/vgsvg
 - package: github.com/gyuho/dataframe
-  version: 573cd728a011e5473510a6a1df0f39023c305e04
+  version: 626846d3e46a45817a2054f5bd5704ac2abf5f6e
 - package: github.com/gyuho/psn
-  version: 34f04cf9e967ef7afb040e55f0f6cc641c8974ba
+  version: eb796de4d35872441498b7cd63d1a95246776163
   subpackages:
   - process
 - package: github.com/hashicorp/consul
