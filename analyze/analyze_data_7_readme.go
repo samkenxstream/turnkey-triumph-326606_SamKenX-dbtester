@@ -35,8 +35,6 @@ type READMEConfig struct {
 }
 
 func writeREADME(cfg READMEConfig) error {
-	plog.Printf("STEP #9: writing README to %q", cfg.OutputPath)
-
 	buf := new(bytes.Buffer)
 
 	buf.WriteString("\n\n")

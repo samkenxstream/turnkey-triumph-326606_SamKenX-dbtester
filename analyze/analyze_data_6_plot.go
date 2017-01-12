@@ -50,8 +50,6 @@ type PlotConfig struct {
 }
 
 func draw(cfg PlotConfig, frame dataframe.Frame) error {
-	plog.Printf("STEP #7: plotting %q", cfg.Title)
-
 	// frame now contains
 	// AVG-LATENCY-MS-etcd-v3.1-go1.7.4, AVG-LATENCY-MS-zookeeper-r3.4.9-java8, AVG-LATENCY-MS-consul-v0.7.2-go1.7.4
 	pl, err := plot.New()
@@ -87,7 +85,6 @@ func draw(cfg PlotConfig, frame dataframe.Frame) error {
 	pl.Add(ps...)
 
 	for _, outputPath := range cfg.OutputPathList {
-		plog.Printf("STEP #8: saving plot %q to %q", cfg.Title, outputPath)
 		if err = pl.Save(plotWidth, plotHeight, outputPath); err != nil {
 			return err
 		}

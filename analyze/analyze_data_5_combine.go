@@ -24,8 +24,6 @@ import (
 // So, slice should consist of aggregated data of etcd, Zookeeper, Consul, etc..
 // This combines them into one data frame.
 func combineAnalyzeData(header string, ds ...*analyzeData) (dataframe.Frame, error) {
-	plog.Printf("STEP #6: combining %d analyze data for header %q", len(ds), header)
-
 	minEndIndex := 0
 	columns := make([]dataframe.Column, len(ds))
 	for i, ad := range ds {

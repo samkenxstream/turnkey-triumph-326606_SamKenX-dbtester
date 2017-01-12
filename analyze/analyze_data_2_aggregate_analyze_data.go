@@ -44,7 +44,6 @@ type analyzeData struct {
 func readSystemMetricsAll(database string, output string, fpaths ...string) (data *analyzeData, err error) {
 	data = &analyzeData{database: database, csvOutputpath: output}
 	for i, fpath := range fpaths {
-		plog.Printf("STEP #1-%d: creating dataframe from %s", i, fpath)
 		sm, err := readSystemMetrics(fpath)
 		if err != nil {
 			return nil, err

@@ -24,8 +24,6 @@ import (
 // importBenchMetrics adds benchmark metrics from client-side
 // and aggregates this to system metrics by unix timestamps.
 func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
-	plog.Printf("STEP #2: importing benchmark dataframe from %s", fpath)
-
 	data.benchMetricsFilePath = fpath
 	data.benchMetrics.frame, err = dataframe.NewFromCSV(nil, fpath)
 	if err != nil {

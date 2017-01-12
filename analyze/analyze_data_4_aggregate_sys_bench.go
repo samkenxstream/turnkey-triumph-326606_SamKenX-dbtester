@@ -23,7 +23,6 @@ import (
 
 // aggSystemBenchMetrics aggregates all system metrics from 3+ nodes.
 func (data *analyzeData) aggSystemBenchMetrics() error {
-	plog.Println("STEP #3: aggregating system metrics and benchmark metrics")
 	colSys, err := data.sysAgg.Column("UNIX-TS")
 	if err != nil {
 		return err
@@ -106,7 +105,6 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 		}
 	}
 
-	plog.Println("STEP #4: computing average,cumulative values in system metrics and benchmark")
 	var (
 		requestSum              int
 		cumulativeThroughputCol = dataframe.NewColumn("CUMULATIVE-THROUGHPUT")
@@ -282,9 +280,25 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 
 	// currently first columns are ordered as:
 	// UNIX-TS, SECOND, CLIENT-NUM, AVG-LATENCY-MS, AVG-THROUGHPUT
-
-	// re-order columns in the following order
-	reorder := []string{"CUMULATIVE-THROUGHPUT", "AVG-CPU", "AVG-VMRSS-MB", "AVG-READS-COMPLETED-DELTA", "AVG-SECTORS-READ-DELTA", "AVG-WRITES-COMPLETED-DELTA", "AVG-SECTORS-WRITTEN-DELTA", "AVG-RECEIVE-BYTES-NUM-DELTA", "AVG-TRANSMIT-BYTES-NUM-DELTA", "AVG-READS-COMPLETED", "AVG-SECTORS-READ", "AVG-WRITES-COMPLETED", "AVG-SECTORS-WRITTEN", "AVG-RECEIVE-BYTES-NUM", "AVG-TRANSMIT-BYTES-NUM"}
+	//
+	// re-order columns in the following order, to make it more readable
+	reorder := []string{
+		"CUMULATIVE-THROUGHPUT",
+		"AVG-CPU",
+		"AVG-VMRSS-MB",
+		"AVG-READS-COMPLETED-DELTA",
+		"AVG-SECTORS-READ-DELTA",
+		"AVG-WRITES-COMPLETED-DELTA",
+		"AVG-SECTORS-WRITTEN-DELTA",
+		"AVG-RECEIVE-BYTES-NUM-DELTA",
+		"AVG-TRANSMIT-BYTES-NUM-DELTA",
+		"AVG-READS-COMPLETED",
+		"AVG-SECTORS-READ",
+		"AVG-WRITES-COMPLETED",
+		"AVG-SECTORS-WRITTEN",
+		"AVG-RECEIVE-BYTES-NUM",
+		"AVG-TRANSMIT-BYTES-NUM",
+	}
 	for i := len(reorder) - 1; i >= 0; i-- {
 		if err = data.allDataFrame.MoveColumn(reorder[i], 5); err != nil {
 			return err
@@ -294,6 +308,5 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 }
 
 func (data *analyzeData) save() error {
-	plog.Println("STEP #5: saving analyze data to %q", data.csvOutputpath)
 	return data.allDataFrame.CSV(data.csvOutputpath)
 }
