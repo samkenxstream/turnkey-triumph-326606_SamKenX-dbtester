@@ -16,7 +16,6 @@ package analyze
 
 import (
 	"fmt"
-
 	"strings"
 
 	"github.com/gyuho/dataframe"

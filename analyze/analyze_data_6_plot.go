@@ -15,13 +15,124 @@
 package analyze
 
 import (
+	"fmt"
+	"image/color"
+	"strings"
+
+	"github.com/gonum/plot"
+	"github.com/gonum/plot/plotter"
+	"github.com/gonum/plot/plotutil"
+	"github.com/gonum/plot/vg"
 	"github.com/gyuho/dataframe"
 )
 
-func plot(frame dataframe.Frame) error {
-	plog.Println("STEP #7: plotting...")
+var (
+	plotWidth  = 12 * vg.Inch
+	plotHeight = 8 * vg.Inch
+)
 
-	// TODO
+func init() {
+	plot.DefaultFont = "Helvetica"
+	plotter.DefaultLineStyle.Width = vg.Points(1.5)
+	plotter.DefaultGlyphStyle.Radius = vg.Points(2.0)
+}
 
+// PlotConfig defines what to plot.
+type PlotConfig struct {
+	Title string `yaml:"title"`
+	Lines []struct {
+		Column string `yaml:"column"`
+		Legend string `yaml:"legend"`
+	} `yaml:"lines"`
+	XAxis          string   `yaml:"x_axis"`
+	YAxis          string   `yaml:"y_axis"`
+	OutputPathList []string `yaml:"output_path_list"`
+}
+
+func draw(cfg PlotConfig, frame dataframe.Frame) error {
+	plog.Printf("STEP #7: plotting %q", cfg.Title)
+
+	// frame now contains
+	// AVG-LATENCY-MS-etcd-v3.1-go1.7.4, AVG-LATENCY-MS-zookeeper-r3.4.9-java8, AVG-LATENCY-MS-consul-v0.7.2-go1.7.4
+	pl, err := plot.New()
+	if err != nil {
+		return err
+	}
+	pl.Title.Text = cfg.Title
+	pl.X.Label.Text = cfg.XAxis
+	pl.Y.Label.Text = cfg.YAxis
+	pl.Legend.Top = true
+
+	var ps []plot.Plotter
+	for j, line := range cfg.Lines {
+		col, err := frame.Column(line.Column)
+		if err != nil {
+			return err
+		}
+		pt, err := points(col)
+		if err != nil {
+			return err
+		}
+
+		l, err := plotter.NewLine(pt)
+		if err != nil {
+			return err
+		}
+		l.Color = getRGB(line.Legend, j)
+		l.Dashes = plotutil.Dashes(j)
+		ps = append(ps, l)
+
+		pl.Legend.Add(line.Legend, l)
+	}
+	pl.Add(ps...)
+
+	for _, outputPath := range cfg.OutputPathList {
+		plog.Printf("STEP #8: saving plot %q to %q", cfg.Title, outputPath)
+		if err = pl.Save(plotWidth, plotHeight, outputPath); err != nil {
+			return err
+		}
+	}
 	return nil
+}
+
+func points(col dataframe.Column) (plotter.XYs, error) {
+	bv, ok := col.BackNonNil()
+	if !ok {
+		return nil, fmt.Errorf("BackNonNil not found")
+	}
+	rowN, ok := col.FindLast(bv)
+	if !ok {
+		return nil, fmt.Errorf("not found %v", bv)
+	}
+	pts := make(plotter.XYs, rowN)
+	for i := range pts {
+		v, err := col.Value(i)
+		if err != nil {
+			return nil, err
+		}
+		n, _ := v.Number()
+		pts[i].X = float64(i)
+		pts[i].Y = n
+	}
+	return pts, nil
+}
+
+func getRGB(legend string, i int) color.Color {
+	legend = strings.ToLower(strings.TrimSpace(legend))
+	if strings.HasPrefix(legend, "etcd") {
+		return color.RGBA{24, 90, 169, 255} // blue
+	}
+	if strings.HasPrefix(legend, "zookeeper") {
+		return color.RGBA{38, 169, 24, 255} // green
+	}
+	if strings.HasPrefix(legend, "consul") {
+		return color.RGBA{198, 53, 53, 255} // red
+	}
+	if strings.HasPrefix(legend, "zetcd") {
+		return color.RGBA{251, 206, 0, 255} // yellow
+	}
+	if strings.HasPrefix(legend, "cetcd") {
+		return color.RGBA{116, 24, 169, 255} // purple
+	}
+	return plotutil.Color(i)
 }

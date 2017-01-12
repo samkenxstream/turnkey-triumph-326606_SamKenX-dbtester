@@ -140,7 +140,7 @@ step3:
         - 20170101/02-avg-memory.svg
         - 20170101/02-avg-memory.png
 
-step4:
+readme:
   preface: |
     - Google Cloud Compute Engine
     - 3 machines(server) of 8 vCPUs + 16GB Memory + 375GB local SSD (SCSI)

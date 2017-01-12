@@ -36,16 +36,16 @@ func TestReadConfig(t *testing.T) {
 	if c.Step3[0].PlotList[0].OutputPathList[1] != "20170101/01-AVG-LATENCY-MS.png" {
 		t.Fatalf("unexpected %s", c.Step3[0].PlotList[0].OutputPathList[1])
 	}
-	if c.Step4.OutputPath != "20170101/README.md" {
-		t.Fatalf("unexpected %s", c.Step4.OutputPath)
+	if c.ReadMe.OutputPath != "20170101/README.md" {
+		t.Fatalf("unexpected %s", c.ReadMe.OutputPath)
 	}
-	if c.Step4.Results[0].Images[0].ImageTitle != "01-AVG-LATENCY-MS" {
-		t.Fatalf("unexpected %s", c.Step4.Results[0].Images[0].ImageTitle)
+	if c.ReadMe.Results[0].Images[0].ImageTitle != "01-AVG-LATENCY-MS" {
+		t.Fatalf("unexpected %s", c.ReadMe.Results[0].Images[0].ImageTitle)
 	}
-	if c.Step4.Results[0].Images[0].ImagePath != "20170101/01-AVG-LATENCY-MS.png" {
-		t.Fatalf("unexpected %s", c.Step4.Results[0].Images[0].ImagePath)
+	if c.ReadMe.Results[0].Images[0].ImagePath != "20170101/01-AVG-LATENCY-MS.png" {
+		t.Fatalf("unexpected %s", c.ReadMe.Results[0].Images[0].ImagePath)
 	}
-	if c.Step4.Results[0].Images[0].ImageType != "local" {
-		t.Fatalf("unexpected %s", c.Step4.Results[0].Images[0].ImageType)
+	if c.ReadMe.Results[0].Images[0].ImageType != "local" {
+		t.Fatalf("unexpected %s", c.ReadMe.Results[0].Images[0].ImageType)
 	}
 }
