@@ -125,7 +125,7 @@ step3:
         - 2017Q1-01-etcd-zookeeper-consul/04-read-2M-keys-linearizable/AVG-VMRSS-MB.svg
         - 2017Q1-01-etcd-zookeeper-consul/04-read-2M-keys-linearizable/AVG-VMRSS-MB.png
 
-step4:
+readme:
   preface: |
     - Google Cloud Compute Engine
     - 3 machines of 8 vCPUs + 1 6GB Memory + 50 GB SSD
@@ -142,7 +142,8 @@ step4:
     - cetcd v3.1 (Go 1.7.4)
 
   results:
-    - images:
+    - title: Linearizable-Read 2M keys, 1000-client (etcd v3.1 100-conn), 8-byte key, 256-byte value
+      images:
         - image_title: 2017Q1-01-etcd-zookeeper-consul/04-read-2M-keys-linearizable/AVG-LATENCY-MS
           image_path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-read-2M-keys-linearizable/AVG-LATENCY-MS.svg
           image_type: remote
