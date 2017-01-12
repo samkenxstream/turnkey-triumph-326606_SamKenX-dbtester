@@ -22,8 +22,9 @@ import (
 
 // READMEConfig defines how to write README.
 type READMEConfig struct {
-	Preface string `yaml:"preface"`
-	Results []struct {
+	Preface    string `yaml:"preface"`
+	OutputPath string `yaml:"output_path"`
+	Results    []struct {
 		Title  string
 		Images []struct {
 			ImageTitle string `yaml:"image_title"`
@@ -31,7 +32,6 @@ type READMEConfig struct {
 			ImageType  string `yaml:"image_type"`
 		} `yaml:"images"`
 	} `yaml:"results"`
-	OutputPath string `yaml:"output_path"`
 }
 
 func writeREADME(cfg READMEConfig) error {

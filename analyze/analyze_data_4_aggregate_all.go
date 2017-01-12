@@ -21,8 +21,8 @@ import (
 	"github.com/gyuho/dataframe"
 )
 
-// aggSystemBenchMetrics aggregates all system metrics from 3+ nodes.
-func (data *analyzeData) aggSystemBenchMetrics() error {
+// aggregateAll aggregates all system metrics from 3+ nodes.
+func (data *analyzeData) aggregateAll() error {
 	colSys, err := data.sysAgg.Column("UNIX-TS")
 	if err != nil {
 		return err
@@ -79,7 +79,7 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 	}
 
 	// aggregate all system-metrics and benchmark-metrics
-	data.allDataFrame = dataframe.New()
+	data.aggregated = dataframe.New()
 
 	// first, add bench metrics data
 	// UNIX-TS, AVG-LATENCY-MS, AVG-THROUGHPUT
@@ -88,7 +88,7 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 		if err = col.Keep(0, minBenchEndIdx); err != nil {
 			return err
 		}
-		if err = data.allDataFrame.AddColumn(col); err != nil {
+		if err = data.aggregated.AddColumn(col); err != nil {
 			return err
 		}
 	}
@@ -100,7 +100,7 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 		if err = col.Keep(sysStartIdx, sysEndIdx); err != nil {
 			return err
 		}
-		if err = data.allDataFrame.AddColumn(col); err != nil {
+		if err = data.aggregated.AddColumn(col); err != nil {
 			return err
 		}
 	}
@@ -146,7 +146,7 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 			transmitBytesNumSum      float64
 			transmitBytesNumDeltaSum float64
 		)
-		for _, col := range data.allDataFrame.Columns() {
+		for _, col := range data.aggregated.Columns() {
 			rv, err := col.Value(rowIdx)
 			if err != nil {
 				return err
@@ -210,59 +210,59 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 	}
 
 	// move CLIENT-NUM to second column
-	if err = data.allDataFrame.MoveColumn("CLIENT-NUM", 1); err != nil {
+	if err = data.aggregated.MoveColumn("CLIENT-NUM", 1); err != nil {
 		return err
 	}
 
 	// add all cumulative, average columns
-	if err = data.allDataFrame.AddColumn(cumulativeThroughputCol); err != nil {
+	if err = data.aggregated.AddColumn(cumulativeThroughputCol); err != nil {
 		return err
 	}
-	if err = data.allDataFrame.AddColumn(avgCPUCol); err != nil {
+	if err = data.aggregated.AddColumn(avgCPUCol); err != nil {
 		return err
 	}
-	if err = data.allDataFrame.AddColumn(avgVMRSSMBCol); err != nil {
+	if err = data.aggregated.AddColumn(avgVMRSSMBCol); err != nil {
 		return err
 	}
-	if err = data.allDataFrame.AddColumn(avgReadsCompletedCol); err != nil {
+	if err = data.aggregated.AddColumn(avgReadsCompletedCol); err != nil {
 		return err
 	}
-	if err = data.allDataFrame.AddColumn(avgReadsCompletedDeltaCol); err != nil {
+	if err = data.aggregated.AddColumn(avgReadsCompletedDeltaCol); err != nil {
 		return err
 	}
-	if err = data.allDataFrame.AddColumn(avgSectorsReadCol); err != nil {
+	if err = data.aggregated.AddColumn(avgSectorsReadCol); err != nil {
 		return err
 	}
-	if err = data.allDataFrame.AddColumn(avgSectorsReadDeltaCol); err != nil {
+	if err = data.aggregated.AddColumn(avgSectorsReadDeltaCol); err != nil {
 		return err
 	}
-	if err = data.allDataFrame.AddColumn(avgWritesCompletedCol); err != nil {
+	if err = data.aggregated.AddColumn(avgWritesCompletedCol); err != nil {
 		return err
 	}
-	if err = data.allDataFrame.AddColumn(avgWritesCompletedDeltaCol); err != nil {
+	if err = data.aggregated.AddColumn(avgWritesCompletedDeltaCol); err != nil {
 		return err
 	}
-	if err = data.allDataFrame.AddColumn(avgSectorsWrittenCol); err != nil {
+	if err = data.aggregated.AddColumn(avgSectorsWrittenCol); err != nil {
 		return err
 	}
-	if err = data.allDataFrame.AddColumn(avgSectorsWrittenDeltaCol); err != nil {
+	if err = data.aggregated.AddColumn(avgSectorsWrittenDeltaCol); err != nil {
 		return err
 	}
-	if err = data.allDataFrame.AddColumn(avgReceiveBytesNumCol); err != nil {
+	if err = data.aggregated.AddColumn(avgReceiveBytesNumCol); err != nil {
 		return err
 	}
-	if err = data.allDataFrame.AddColumn(avgReceiveBytesNumDeltaCol); err != nil {
+	if err = data.aggregated.AddColumn(avgReceiveBytesNumDeltaCol); err != nil {
 		return err
 	}
-	if err = data.allDataFrame.AddColumn(avgTransmitBytesNumCol); err != nil {
+	if err = data.aggregated.AddColumn(avgTransmitBytesNumCol); err != nil {
 		return err
 	}
-	if err = data.allDataFrame.AddColumn(avgTransmitBytesNumDeltaCol); err != nil {
+	if err = data.aggregated.AddColumn(avgTransmitBytesNumDeltaCol); err != nil {
 		return err
 	}
 
 	// add SECOND column
-	uc, err := data.allDataFrame.Column("UNIX-TS")
+	uc, err := data.aggregated.Column("UNIX-TS")
 	if err != nil {
 		return err
 	}
@@ -270,11 +270,11 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 	for i := 0; i < uc.CountRow(); i++ {
 		secondCol.PushBack(dataframe.NewStringValue(i))
 	}
-	if err = data.allDataFrame.AddColumn(secondCol); err != nil {
+	if err = data.aggregated.AddColumn(secondCol); err != nil {
 		return err
 	}
 	// move to 2nd column
-	if err = data.allDataFrame.MoveColumn("SECOND", 1); err != nil {
+	if err = data.aggregated.MoveColumn("SECOND", 1); err != nil {
 		return err
 	}
 
@@ -300,13 +300,22 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 		"AVG-TRANSMIT-BYTES-NUM",
 	}
 	for i := len(reorder) - 1; i >= 0; i-- {
-		if err = data.allDataFrame.MoveColumn(reorder[i], 5); err != nil {
+		if err = data.aggregated.MoveColumn(reorder[i], 5); err != nil {
 			return err
 		}
+	}
+
+	for _, col := range data.aggregated.Columns() {
+		// since we will have same headers from different databases
+		col.UpdateHeader(makeHeader(col.Header(), data.databaseTag))
 	}
 	return nil
 }
 
 func (data *analyzeData) save() error {
-	return data.allDataFrame.CSV(data.csvOutputpath)
+	return data.aggregated.CSV(data.csvOutputpath)
+}
+
+func makeHeader(column string, tag string) string {
+	return fmt.Sprintf("%s-%s", column, tag)
 }

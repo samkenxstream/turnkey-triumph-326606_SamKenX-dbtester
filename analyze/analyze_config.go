@@ -20,42 +20,26 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// TODO: deprecate un-used fields
-
-// Step1 defines how to aggregate data from each machine.
-type Step1 []struct {
-	DataPathList      []string `yaml:"data_path_list"`
-	DataBenchmarkPath string   `yaml:"data_benchmark_path"`
-	OutputPath        string   `yaml:"output_path"`
-}
-
-// Step2 defines how to aggregate the data of each aggregated from Step1.
-type Step2 []struct {
-	DataList []struct {
-		Path string `yaml:"path"`
-		Name string `yaml:"name"`
-	} `yaml:"data_list"`
-	OutputPath string `yaml:"output_path"`
-}
-
-// Step3 defines how to plot graphs.
-type Step3 []struct {
-	DataPath string       `yaml:"data_path"`
-	PlotList []PlotConfig `yaml:"plot_list"`
+// RawData defines how to aggregate data from each machine.
+type RawData struct {
+	Legend                     string   `yaml:"legend"`
+	DatabaseTag                string   `yaml:"database_tag"`
+	OutputPath                 string   `yaml:"output_path"`
+	SourceSystemMetricsPaths   []string `yaml:"source_system_metrics_paths"`
+	SourceBenchmarkMetricsPath string   `yaml:"source_benchmark_metrics_path"`
 }
 
 // Config defines analyze configuration.
 type Config struct {
-	Titles []string `yaml:"titles"`
-
-	Step1        Step1        `yaml:"step1"`
-	Step2        Step2        `yaml:"step2"`
-	Step3        Step3        `yaml:"step3"`
-	READMEConfig READMEConfig `yaml:"readme"`
+	Title             string       `yaml:"title"`
+	AllAggregatedPath string       `yaml:"all_aggregated_path"`
+	RawData           []RawData    `yaml:"raw_data"`
+	PlotList          []PlotConfig `yaml:"plot_list"`
+	READMEConfig      READMEConfig `yaml:"readme"`
 }
 
-// ReadConfig reads analyze configuration.
-func ReadConfig(fpath string) (Config, error) {
+// readConfig reads analyze configuration.
+func readConfig(fpath string) (Config, error) {
 	bts, err := ioutil.ReadFile(fpath)
 	if err != nil {
 		return Config{}, err

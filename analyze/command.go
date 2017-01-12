@@ -30,6 +30,5 @@ func init() {
 }
 
 func commandFunc(cmd *cobra.Command, args []string) error {
-
-	return nil
+	return do(configPath)
 }

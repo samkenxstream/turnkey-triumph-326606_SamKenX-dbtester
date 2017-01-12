@@ -21,28 +21,29 @@ import (
 )
 
 type analyzeData struct {
-	database string
+	databaseTag string
+	legend      string
 
 	minUnixTS int64
 	maxUnixTS int64
 	sys       []testData
 
 	// aggregated frame within [min,maxUnixTS] from sys
-	sysAgg dataframe.Frame
-
+	sysAgg               dataframe.Frame
 	benchMetricsFilePath string
 	benchMetrics         testData
 
 	// aggregated from sysAgg and benchMetrics
-	allDataFrame  dataframe.Frame
+	aggregated dataframe.Frame
+
 	csvOutputpath string
 }
 
 // readSystemMetricsAll reads all system metric files
 // (e.g. if cluster is 3-node, read all 3 files).
 // It returns minimum and maximum common unix second and a list of frames.
-func readSystemMetricsAll(database string, output string, fpaths ...string) (data *analyzeData, err error) {
-	data = &analyzeData{database: database, csvOutputpath: output}
+func readSystemMetricsAll(fpaths ...string) (data *analyzeData, err error) {
+	data = &analyzeData{}
 	for i, fpath := range fpaths {
 		sm, err := readSystemMetrics(fpath)
 		if err != nil {

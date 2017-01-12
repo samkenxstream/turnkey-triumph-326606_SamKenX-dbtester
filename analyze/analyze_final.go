@@ -14,14 +14,73 @@
 
 package analyze
 
-/*
-plog.Printf("STEP #1-%d: creating dataframe from %s", i, fpath)
-plog.Printf("STEP #2: importing benchmark dataframe from %s", fpath)
-plog.Println("STEP #3: aggregating system metrics and benchmark metrics")
-plog.Println("STEP #4: computing average,cumulative values in system metrics and benchmark")
-plog.Println("STEP #5: saving analyze data to %q", data.csvOutputpath)
-plog.Printf("STEP #6: combining %d analyze data for header %q", len(ds), header)
-plog.Printf("STEP #7: plotting %q", cfg.Title)
-plog.Printf("STEP #8: saving plot %q to %q", cfg.Title, outputPath)
-plog.Printf("STEP #9: writing README to %q", cfg.OutputPath)
-*/
+import "github.com/gyuho/dataframe"
+
+type allAggregatedData struct {
+	title          string
+	data           []*analyzeData
+	databaseTags   []string
+	headerToLegend map[string]string
+}
+
+func do(configPath string) error {
+	cfg, err := readConfig(configPath)
+	if err != nil {
+		return err
+	}
+
+	all := &allAggregatedData{
+		title:          cfg.Title,
+		data:           make([]*analyzeData, 0, len(cfg.RawData)),
+		headerToLegend: make(map[string]string),
+	}
+	for _, elem := range cfg.RawData {
+		plog.Printf("reading system metrics data for %s (%q)", elem.DatabaseTag, elem.Legend)
+		ad, err := readSystemMetricsAll(elem.SourceSystemMetricsPaths...)
+		if err != nil {
+			return err
+		}
+		ad.databaseTag = elem.DatabaseTag
+		ad.legend = elem.Legend
+		ad.csvOutputpath = elem.OutputPath
+
+		if err = ad.aggSystemMetrics(); err != nil {
+			return err
+		}
+		if err = ad.importBenchMetrics(elem.SourceBenchmarkMetricsPath); err != nil {
+			return err
+		}
+		if err = ad.aggregateAll(); err != nil {
+			return err
+		}
+		if err = ad.save(); err != nil {
+			return err
+		}
+
+		all.data = append(all.data, ad)
+		all.databaseTags = append(all.databaseTags, elem.DatabaseTag)
+		for _, hd := range ad.aggregated.Headers() {
+			all.headerToLegend[hd] = elem.Legend
+		}
+	}
+
+	plog.Println("combining data for plotting")
+	for _, plotConfig := range cfg.PlotList {
+		plog.Printf("plotting %q", plotConfig.Column)
+		var columns []dataframe.Column
+		for i, ad := range all.data {
+			tag := all.databaseTags[i]
+			col, err := ad.aggregated.Column(makeHeader(plotConfig.Column, tag))
+			if err != nil {
+				return err
+			}
+			columns = append(columns, col)
+		}
+		if err = all.draw(plotConfig, columns...); err != nil {
+			return err
+		}
+	}
+
+	plog.Printf("writing README at %q", cfg.READMEConfig.OutputPath)
+	return writeREADME(cfg.READMEConfig)
+}

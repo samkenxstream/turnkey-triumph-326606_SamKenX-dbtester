@@ -16,36 +16,47 @@ package analyze
 
 import "testing"
 
-func TestReadConfig(t *testing.T) {
-	c, err := ReadConfig("test.yaml")
+func Test_readConfig(t *testing.T) {
+	c, err := readConfig("analyze_config.yaml")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if c.Step1[0].DataPathList[0] != "20170101/01-etcd-1-monitor.csv" {
-		t.Fatalf("unexpected %s", c.Step1[0].DataPathList[0])
+	if c.Title != `Write 2M keys, 1000-client (etcd v3.1 100-conn), 8-byte key, 256-byte value` {
+		t.Fatalf("unexpected Title %q", c.Title)
 	}
-	if c.Step2[0].DataList[0].Path != "20170101/01-etcd-aggregated.csv" {
-		t.Fatalf("unexpected %s", c.Step2[0].DataList[0].Path)
+	if c.AllAggregatedPath != "2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/aggregated.csv" {
+		t.Fatalf("unexpected AllAggregatedPath %q", c.AllAggregatedPath)
 	}
-	if c.Step3[0].PlotList[0].Lines[0].Column != "AVG-LATENCY-MS-etcd-v3" {
-		t.Fatalf("unexpected %s", c.Step3[0].PlotList[0].Lines[0].Column)
+
+	if c.RawData[0].Legend != "etcd v3.1 (Go 1.7.4)" {
+		t.Fatalf("unexpected c.RawData[0].Legend %q", c.RawData[0].Legend)
 	}
-	if c.Step3[0].PlotList[0].YAxis != "Latency(millisecond)" {
-		t.Fatalf("unexpected %s", c.Step3[0].PlotList[0].YAxis)
+	if c.RawData[0].DatabaseTag != "etcd-v3.1-go1.7.4" {
+		t.Fatalf("unexpected c.RawData[0].DatabaseTag %q", c.RawData[0].DatabaseTag)
 	}
-	if c.Step3[0].PlotList[0].OutputPathList[1] != "20170101/01-AVG-LATENCY-MS.png" {
-		t.Fatalf("unexpected %s", c.Step3[0].PlotList[0].OutputPathList[1])
+	if c.RawData[0].OutputPath != "2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/etcd-v3.1-go1.7.4-aggregated.csv" {
+		t.Fatalf("unexpected c.RawData[0].OutputPath %q", c.RawData[0].OutputPath)
 	}
-	if c.ReadMe.OutputPath != "20170101/README.md" {
-		t.Fatalf("unexpected %s", c.ReadMe.OutputPath)
+	if c.RawData[0].SourceSystemMetricsPaths[0] != "2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/etcd-v3.1-go1.7.4-1-system-metrics.csv" {
+		t.Fatalf("unexpected c.RawData[0].SourceSystemMetricsPaths[0] %q", c.RawData[0].SourceSystemMetricsPaths[0])
 	}
-	if c.ReadMe.Results[0].Images[0].ImageTitle != "01-AVG-LATENCY-MS" {
-		t.Fatalf("unexpected %s", c.ReadMe.Results[0].Images[0].ImageTitle)
+	if c.RawData[0].SourceBenchmarkMetricsPath != "2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/etcd-v3.1-go1.7.4-bench-result-timeseries.csv" {
+		t.Fatalf("unexpected c.RawData[0].SourceBenchmarkMetricsPath %q", c.RawData[0].SourceBenchmarkMetricsPath)
 	}
-	if c.ReadMe.Results[0].Images[0].ImagePath != "20170101/01-AVG-LATENCY-MS.png" {
-		t.Fatalf("unexpected %s", c.ReadMe.Results[0].Images[0].ImagePath)
+	if c.RawData[1].DatabaseTag != "zookeeper-r3.4.9-java8" {
+		t.Fatalf("unexpected c.RawData[1].DatabaseTag %q", c.RawData[1].DatabaseTag)
 	}
-	if c.ReadMe.Results[0].Images[0].ImageType != "local" {
-		t.Fatalf("unexpected %s", c.ReadMe.Results[0].Images[0].ImageType)
+
+	if c.READMEConfig.OutputPath != "2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/README.md" {
+		t.Fatalf("unexpected %s", c.READMEConfig.OutputPath)
+	}
+	if c.READMEConfig.Results[0].Images[0].ImageTitle != "2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-LATENCY-MS" {
+		t.Fatalf("unexpected %s", c.READMEConfig.Results[0].Images[0].ImageTitle)
+	}
+	if c.READMEConfig.Results[0].Images[0].ImagePath != "https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-LATENCY-MS.svg" {
+		t.Fatalf("unexpected %s", c.READMEConfig.Results[0].Images[0].ImagePath)
+	}
+	if c.READMEConfig.Results[0].Images[0].ImageType != "remote" {
+		t.Fatalf("unexpected %s", c.READMEConfig.Results[0].Images[0].ImageType)
 	}
 }

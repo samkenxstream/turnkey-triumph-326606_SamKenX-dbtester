@@ -39,34 +39,26 @@ func init() {
 
 // PlotConfig defines what to plot.
 type PlotConfig struct {
-	Title string `yaml:"title"`
-	Lines []struct {
-		Column string `yaml:"column"`
-		Legend string `yaml:"legend"`
-	} `yaml:"lines"`
+	Column         string   `yaml:"column"`
 	XAxis          string   `yaml:"x_axis"`
 	YAxis          string   `yaml:"y_axis"`
 	OutputPathList []string `yaml:"output_path_list"`
 }
 
-func draw(cfg PlotConfig, frame dataframe.Frame) error {
+func (all *allAggregatedData) draw(cfg PlotConfig, cols ...dataframe.Column) error {
 	// frame now contains
 	// AVG-LATENCY-MS-etcd-v3.1-go1.7.4, AVG-LATENCY-MS-zookeeper-r3.4.9-java8, AVG-LATENCY-MS-consul-v0.7.2-go1.7.4
 	pl, err := plot.New()
 	if err != nil {
 		return err
 	}
-	pl.Title.Text = cfg.Title
+	pl.Title.Text = fmt.Sprintf("%s, %s", all.title, cfg.YAxis)
 	pl.X.Label.Text = cfg.XAxis
 	pl.Y.Label.Text = cfg.YAxis
 	pl.Legend.Top = true
 
 	var ps []plot.Plotter
-	for j, line := range cfg.Lines {
-		col, err := frame.Column(line.Column)
-		if err != nil {
-			return err
-		}
+	for i, col := range cols {
 		pt, err := points(col)
 		if err != nil {
 			return err
@@ -76,11 +68,11 @@ func draw(cfg PlotConfig, frame dataframe.Frame) error {
 		if err != nil {
 			return err
 		}
-		l.Color = getRGB(line.Legend, j)
-		l.Dashes = plotutil.Dashes(j)
+		l.Color = getRGB(all.headerToLegend[col.Header()], i)
+		l.Dashes = plotutil.Dashes(i)
 		ps = append(ps, l)
 
-		pl.Legend.Add(line.Legend, l)
+		pl.Legend.Add(all.headerToLegend[col.Header()], l)
 	}
 	pl.Add(ps...)
 
