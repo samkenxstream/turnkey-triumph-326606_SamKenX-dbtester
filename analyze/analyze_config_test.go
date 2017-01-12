@@ -24,6 +24,9 @@ func Test_readConfig(t *testing.T) {
 	if c.Title != `Write 2M keys, 1000-client (etcd v3.1 100-conn), 8-byte key, 256-byte value` {
 		t.Fatalf("unexpected Title %q", c.Title)
 	}
+	if c.WorkDir != "2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys" {
+		t.Fatalf("unexpected WorkDir %q", c.WorkDir)
+	}
 	if c.AllAggregatedPath != "2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/aggregated.csv" {
 		t.Fatalf("unexpected AllAggregatedPath %q", c.AllAggregatedPath)
 	}

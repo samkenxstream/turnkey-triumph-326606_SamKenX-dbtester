@@ -32,6 +32,7 @@ type RawData struct {
 // Config defines analyze configuration.
 type Config struct {
 	Title             string       `yaml:"title"`
+	WorkDir           string       `yaml:"work_dir"`
 	AllAggregatedPath string       `yaml:"all_aggregated_path"`
 	RawData           []RawData    `yaml:"raw_data"`
 	PlotList          []PlotConfig `yaml:"plot_list"`

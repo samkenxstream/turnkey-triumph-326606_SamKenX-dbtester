@@ -14,7 +14,11 @@
 
 package analyze
 
-import "github.com/gyuho/dataframe"
+import (
+	"path/filepath"
+
+	"github.com/gyuho/dataframe"
+)
 
 type allAggregatedData struct {
 	title          string
@@ -77,6 +81,15 @@ func do(configPath string) error {
 			columns = append(columns, col)
 		}
 		if err = all.draw(plotConfig, columns...); err != nil {
+			return err
+		}
+
+		plog.Printf("saving %q to a separate CSV", plotConfig.Column)
+		nf, err := dataframe.NewFromColumns(nil, columns...)
+		if err != nil {
+			return err
+		}
+		if err = nf.CSV(filepath.Join(cfg.WorkDir, plotConfig.Column+".csv")); err != nil {
 			return err
 		}
 	}
