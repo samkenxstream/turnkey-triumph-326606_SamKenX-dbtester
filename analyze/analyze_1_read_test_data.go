@@ -37,7 +37,7 @@ var sysMetricsColumnsToRead = []string{
 	"RECEIVE-BYTES-NUM-DELTA",
 	"TRANSMIT-BYTES-NUM",
 	"TRANSMIT-BYTES-NUM-DELTA",
-	"EXTRA",
+	"EXTRA", // will be converted to 'CLIENT-NUM'
 }
 
 type testData struct {

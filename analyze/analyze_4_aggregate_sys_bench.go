@@ -1,3 +1,17 @@
+// Copyright 2017 CoreOS, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package analyze
 
 import (
@@ -97,18 +111,42 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 		requestSum              int
 		cumulativeThroughputCol = dataframe.NewColumn("CUMULATIVE-THROUGHPUT")
 
-		systemMetricsSize = float64(len(data.sys))
+		sampleSize = float64(len(data.sys))
 
-		avgCPUCol     = dataframe.NewColumn("AVG-CPU")
-		avgVMRSSMBCol = dataframe.NewColumn("AVG-VMRSS-MB")
+		avgCPUCol                   = dataframe.NewColumn("AVG-CPU")                      // from CPU-NUM
+		avgVMRSSMBCol               = dataframe.NewColumn("AVG-VMRSS-MB")                 // from VMRSS-NUM
+		avgReadsCompletedCol        = dataframe.NewColumn("AVG-READS-COMPLETED")          // from READS-COMPLETED
+		avgReadsCompletedDeltaCol   = dataframe.NewColumn("AVG-READS-COMPLETED-DELTA")    // from READS-COMPLETED-DELTA
+		avgSectorsReadCol           = dataframe.NewColumn("AVG-SECTORS-READ")             // from SECTORS-READ
+		avgSectorsReadDeltaCol      = dataframe.NewColumn("AVG-SECTORS-READ-DELTA")       // from SECTORS-READ-DELTA
+		avgWritesCompletedCol       = dataframe.NewColumn("AVG-WRITES-COMPLETED")         // from WRITES-COMPLETED
+		avgWritesCompletedDeltaCol  = dataframe.NewColumn("AVG-WRITES-COMPLETED-DELTA")   // from WRITES-COMPLETED-DELTA
+		avgSectorsWrittenCol        = dataframe.NewColumn("AVG-SECTORS-WRITTEN")          // from SECTORS-WRITTEN
+		avgSectorsWrittenDeltaCol   = dataframe.NewColumn("AVG-SECTORS-WRITTEN-DELTA")    // from SECTORS-WRITTEN-DELTA
+		avgReceiveBytesNumCol       = dataframe.NewColumn("AVG-RECEIVE-BYTES-NUM")        // from RECEIVE-BYTES-NUM
+		avgReceiveBytesNumDeltaCol  = dataframe.NewColumn("AVG-RECEIVE-BYTES-NUM-DELTA")  // from RECEIVE-BYTES-NUM-DELTA
+		avgTransmitBytesNumCol      = dataframe.NewColumn("AVG-TRANSMIT-BYTES-NUM")       // from TRANSMIT-BYTES-NUM
+		avgTransmitBytesNumDeltaCol = dataframe.NewColumn("AVG-TRANSMIT-BYTES-NUM-DELTA") // from TRANSMIT-BYTES-NUM-DELTA
 	)
 
 	// compute average value of 3+ nodes
 	// by iterating each row (horizontally) for all the columns
 	for rowIdx := 0; rowIdx < minBenchEndIdx; rowIdx++ {
 		var (
-			cpuSum     float64
-			vmrssMBSum float64
+			cpuSum                   float64
+			vmrssMBSum               float64
+			readsCompletedSum        float64
+			readsCompletedDeltaSum   float64
+			sectorsReadSum           float64
+			sectorsReadDeltaSum      float64
+			writesCompletedSum       float64
+			writesCompletedDeltaSum  float64
+			sectorsWrittenSum        float64
+			sectorsWrittenDeltaSum   float64
+			receiveBytesNumSum       float64
+			receiveBytesNumDeltaSum  float64
+			transmitBytesNumSum      float64
+			transmitBytesNumDeltaSum float64
 		)
 		for _, col := range data.sysBenchAgg.Columns() {
 			rv, err := col.Value(rowIdx)
@@ -131,16 +169,115 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 			case strings.HasPrefix(hd, "VMRSS-MB-"):
 				// VMRSS-NUM-NUM was converted to VMRSS-MB-1, VMRSS-MB-2, VMRSS-MB-3
 				vmrssMBSum += vv
-			case strings.HasPrefix(hd, "CPU-"):
-			case strings.HasPrefix(hd, "CPU-"):
-			case strings.HasPrefix(hd, "CPU-"):
-			case strings.HasPrefix(hd, "CPU-"):
-			case strings.HasPrefix(hd, "CPU-"):
-			case strings.HasPrefix(hd, "CPU-"):
-			case strings.HasPrefix(hd, "CPU-"):
-			case strings.HasPrefix(hd, "CPU-"):
+			case strings.HasPrefix(hd, "READS-COMPLETED-DELTA-"): // match this first!
+				readsCompletedDeltaSum += vv
+			case strings.HasPrefix(hd, "READS-COMPLETED-"):
+				readsCompletedSum += vv
+			case strings.HasPrefix(hd, "SECTORS-READ-DELTA-"):
+				sectorsReadDeltaSum += vv
+			case strings.HasPrefix(hd, "SECTORS-READ-"):
+				sectorsReadSum += vv
+			case strings.HasPrefix(hd, "WRITES-COMPLETED-DELTA-"):
+				writesCompletedDeltaSum += vv
+			case strings.HasPrefix(hd, "WRITES-COMPLETED-"):
+				writesCompletedSum += vv
+			case strings.HasPrefix(hd, "SECTORS-WRITTEN-DELTA-"):
+				sectorsWrittenDeltaSum += vv
+			case strings.HasPrefix(hd, "SECTORS-WRITTEN-"):
+				sectorsWrittenSum += vv
+			case strings.HasPrefix(hd, "RECEIVE-BYTES-NUM-DELTA-"):
+				receiveBytesNumDeltaSum += vv
+			case strings.HasPrefix(hd, "RECEIVE-BYTES-NUM-"):
+				receiveBytesNumSum += vv
+			case strings.HasPrefix(hd, "TRANSMIT-BYTES-NUM-DELTA-"):
+				transmitBytesNumDeltaSum += vv
+			case strings.HasPrefix(hd, "TRANSMIT-BYTES-NUM-"):
+				transmitBytesNumSum += vv
 			}
 		}
+		avgCPUCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", cpuSum/sampleSize)))
+		avgVMRSSMBCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", vmrssMBSum/sampleSize)))
+		avgReadsCompletedCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", readsCompletedSum/sampleSize)))
+		avgReadsCompletedDeltaCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", readsCompletedDeltaSum/sampleSize)))
+		avgSectorsReadCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", sectorsReadSum/sampleSize)))
+		avgSectorsReadDeltaCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", sectorsReadDeltaSum/sampleSize)))
+		avgWritesCompletedCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", writesCompletedSum/sampleSize)))
+		avgWritesCompletedDeltaCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", writesCompletedDeltaSum/sampleSize)))
+		avgSectorsWrittenCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", sectorsWrittenSum/sampleSize)))
+		avgSectorsWrittenDeltaCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", sectorsWrittenDeltaSum/sampleSize)))
+		avgReceiveBytesNumCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", receiveBytesNumSum/sampleSize)))
+		avgReceiveBytesNumDeltaCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", receiveBytesNumDeltaSum/sampleSize)))
+		avgTransmitBytesNumCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", transmitBytesNumSum/sampleSize)))
+		avgTransmitBytesNumDeltaCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", transmitBytesNumDeltaSum/sampleSize)))
+	}
+
+	// move CLIENT-NUM to second column
+	if err = data.sysBenchAgg.MoveColumn("CLIENT-NUM", 1); err != nil {
+		return err
+	}
+
+	// add all cumulative, average columns
+	if err = data.sysBenchAgg.AddColumn(cumulativeThroughputCol); err != nil {
+		return err
+	}
+	if err = data.sysBenchAgg.AddColumn(avgCPUCol); err != nil {
+		return err
+	}
+	if err = data.sysBenchAgg.AddColumn(avgVMRSSMBCol); err != nil {
+		return err
+	}
+	if err = data.sysBenchAgg.AddColumn(avgReadsCompletedCol); err != nil {
+		return err
+	}
+	if err = data.sysBenchAgg.AddColumn(avgReadsCompletedDeltaCol); err != nil {
+		return err
+	}
+	if err = data.sysBenchAgg.AddColumn(avgSectorsReadCol); err != nil {
+		return err
+	}
+	if err = data.sysBenchAgg.AddColumn(avgSectorsReadDeltaCol); err != nil {
+		return err
+	}
+	if err = data.sysBenchAgg.AddColumn(avgWritesCompletedCol); err != nil {
+		return err
+	}
+	if err = data.sysBenchAgg.AddColumn(avgWritesCompletedDeltaCol); err != nil {
+		return err
+	}
+	if err = data.sysBenchAgg.AddColumn(avgSectorsWrittenCol); err != nil {
+		return err
+	}
+	if err = data.sysBenchAgg.AddColumn(avgSectorsWrittenDeltaCol); err != nil {
+		return err
+	}
+	if err = data.sysBenchAgg.AddColumn(avgReceiveBytesNumCol); err != nil {
+		return err
+	}
+	if err = data.sysBenchAgg.AddColumn(avgReceiveBytesNumDeltaCol); err != nil {
+		return err
+	}
+	if err = data.sysBenchAgg.AddColumn(avgTransmitBytesNumCol); err != nil {
+		return err
+	}
+	if err = data.sysBenchAgg.AddColumn(avgTransmitBytesNumDeltaCol); err != nil {
+		return err
+	}
+
+	// add SECOND column
+	uc, err := data.sysBenchAgg.Column("UNIX-TS")
+	if err != nil {
+		return err
+	}
+	secondCol := dataframe.NewColumn("SECOND")
+	for i := 0; i < uc.CountRow(); i++ {
+		secondCol.PushBack(dataframe.NewStringValue(i))
+	}
+	if err = data.sysBenchAgg.AddColumn(secondCol); err != nil {
+		return err
+	}
+	// move to 2nd column
+	if err = data.sysBenchAgg.MoveColumn("SECOND", 1); err != nil {
+		return err
 	}
 
 	return nil
