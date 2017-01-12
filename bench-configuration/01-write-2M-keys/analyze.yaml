@@ -58,6 +58,48 @@ plot_list:
   - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-VMRSS-MB.svg
   - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-VMRSS-MB.png
 
+- column: AVG-READS-COMPLETED-DELTA
+  x_axis: Second
+  y_axis: Disk Reads
+  output_path_list:
+    - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-READS-COMPLETED-DELTA.svg
+    - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-READS-COMPLETED-DELTA.png
+
+- column: AVG-SECTORS-READ-DELTA
+  x_axis: Second
+  y_axis: Sectors Read
+  output_path_list:
+  - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-SECTORS-READ-DELTA.svg
+  - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-SECTORS-READ-DELTA.png
+
+- column: AVG-WRITES-COMPLETED-DELTA
+  x_axis: Second
+  y_axis: Disk Writes
+  output_path_list:
+  - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-WRITES-COMPLETED-DELTA.svg
+  - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-WRITES-COMPLETED-DELTA.png
+
+- column: AVG-SECTORS-WRITTEN-DELTA
+  x_axis: Second
+  y_axis: Sectors Written
+  output_path_list:
+  - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-SECTORS-WRITTEN-DELTA.svg
+  - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-SECTORS-WRITTEN-DELTA.png
+
+- column: AVG-RECEIVE-BYTES-NUM-DELTA
+  x_axis: Second
+  y_axis: Network Receive(bytes)
+  output_path_list:
+    - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-RECEIVE-BYTES-NUM-DELTA.svg
+    - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-RECEIVE-BYTES-NUM-DELTA.png
+
+- column: AVG-TRANSMIT-BYTES-NUM-DELTA
+  x_axis: Second
+  y_axis: Network Transmit(bytes)
+  output_path_list:
+  - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-TRANSMIT-BYTES-NUM-DELTA.svg
+  - 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-TRANSMIT-BYTES-NUM-DELTA.png
+
 readme:
   preface: |
     - Google Cloud Compute Engine
@@ -78,15 +120,43 @@ readme:
   results:
   - title: Write 2M keys, 1000-client (etcd v3.1 100-conn), 8-byte key, 256-byte value
     images:
+
     - image_title: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-LATENCY-MS
       image_path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-LATENCY-MS.svg
       image_type: remote
+
     - image_title: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-THROUGHPUT
       image_path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-THROUGHPUT.svg
       image_type: remote
+
     - image_title: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-CPU
       image_path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-CPU.svg
       image_type: remote
+
     - image_title: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-VMRSS-MB
       image_path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-VMRSS-MB.svg
+      image_type: remote
+
+    - image_title: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-READS-COMPLETED-DELTA
+      image_path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-READS-COMPLETED-DELTA.svg
+      image_type: remote
+
+    - image_title: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-SECTORS-READ-DELTA
+      image_path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-SECTORS-READ-DELTA.svg
+      image_type: remote
+
+    - image_title: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-WRITES-COMPLETED-DELTA
+      image_path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-WRITES-COMPLETED-DELTA.svg
+      image_type: remote
+
+    - image_title: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-SECTORS-WRITTEN-DELTA
+      image_path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-SECTORS-WRITTEN-DELTA.svg
+      image_type: remote
+
+    - image_title: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-RECEIVE-BYTES-NUM-DELTA
+      image_path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-RECEIVE-BYTES-NUM-DELTA.svg
+      image_type: remote
+
+    - image_title: 2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-TRANSMIT-BYTES-NUM-DELTA
+      image_path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-2M-keys/AVG-TRANSMIT-BYTES-NUM-DELTA.svg
       image_type: remote
