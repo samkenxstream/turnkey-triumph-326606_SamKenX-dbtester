@@ -1,5 +1,5 @@
-hash: 1f07596980d7799300df7dd8d540400e61a41ac9579eb234255d74c68abf6ae7
-updated: 2017-01-11T19:37:15.684451129-08:00
+hash: 2a81dc8af7f43f1d7f15f97b2c56eb737fc83b45b8c9c3191f27eb576088e3e4
+updated: 2017-01-12T14:57:32.173348155-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -94,7 +94,7 @@ imports:
   - runtime/internal
   - utilities
 - name: github.com/gyuho/dataframe
-  version: 20cf591006911781a1d84b1f2b8b16a54a55c212
+  version: 70913b350b1ba6de1ed778a951d86a97d25699d7
 - name: github.com/gyuho/psn
   version: eb796de4d35872441498b7cd63d1a95246776163
   subpackages:
