@@ -32,14 +32,15 @@ type analyzeData struct {
 	benchMetrics         testData
 
 	// aggregated from sysAgg and benchMetrics
-	sysBenchAgg dataframe.Frame
+	allDataFrame  dataframe.Frame
+	csvOutputpath string
 }
 
 // readSystemMetricsAll reads all system metric files
 // (e.g. if cluster is 3-node, read all 3 files).
 // It returns minimum and maximum common unix second and a list of frames.
-func readSystemMetricsAll(fpaths ...string) (data *analyzeData, err error) {
-	data = &analyzeData{}
+func readSystemMetricsAll(output string, fpaths ...string) (data *analyzeData, err error) {
+	data = &analyzeData{csvOutputpath: output}
 	for i, fpath := range fpaths {
 		plog.Printf("STEP #1-%d: creating dataframe from %s", i, fpath)
 		sm, err := readSystemMetrics(fpath)

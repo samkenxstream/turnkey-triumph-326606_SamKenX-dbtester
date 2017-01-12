@@ -62,6 +62,7 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 			minBenchEndIdx = col.CountRow()
 		}
 	}
+	// this is index, so decrement by 1 to make it as valid index
 	minBenchEndIdx--
 
 	// sysStartIdx 3, sysEndIdx 9, sysRowN 7, minBenchEndIdx 5 (5+1 < 7)
@@ -80,7 +81,7 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 	}
 
 	// aggregate all system-metrics and benchmark-metrics
-	data.sysBenchAgg = dataframe.New()
+	data.allDataFrame = dataframe.New()
 
 	// first, add bench metrics data
 	// UNIX-TS, AVG-LATENCY-MS, AVG-THROUGHPUT
@@ -89,7 +90,7 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 		if err = col.Keep(0, minBenchEndIdx); err != nil {
 			return err
 		}
-		if err = data.sysBenchAgg.AddColumn(col); err != nil {
+		if err = data.allDataFrame.AddColumn(col); err != nil {
 			return err
 		}
 	}
@@ -101,7 +102,7 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 		if err = col.Keep(sysStartIdx, sysEndIdx); err != nil {
 			return err
 		}
-		if err = data.sysBenchAgg.AddColumn(col); err != nil {
+		if err = data.allDataFrame.AddColumn(col); err != nil {
 			return err
 		}
 	}
@@ -148,7 +149,7 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 			transmitBytesNumSum      float64
 			transmitBytesNumDeltaSum float64
 		)
-		for _, col := range data.sysBenchAgg.Columns() {
+		for _, col := range data.allDataFrame.Columns() {
 			rv, err := col.Value(rowIdx)
 			if err != nil {
 				return err
@@ -212,59 +213,59 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 	}
 
 	// move CLIENT-NUM to second column
-	if err = data.sysBenchAgg.MoveColumn("CLIENT-NUM", 1); err != nil {
+	if err = data.allDataFrame.MoveColumn("CLIENT-NUM", 1); err != nil {
 		return err
 	}
 
 	// add all cumulative, average columns
-	if err = data.sysBenchAgg.AddColumn(cumulativeThroughputCol); err != nil {
+	if err = data.allDataFrame.AddColumn(cumulativeThroughputCol); err != nil {
 		return err
 	}
-	if err = data.sysBenchAgg.AddColumn(avgCPUCol); err != nil {
+	if err = data.allDataFrame.AddColumn(avgCPUCol); err != nil {
 		return err
 	}
-	if err = data.sysBenchAgg.AddColumn(avgVMRSSMBCol); err != nil {
+	if err = data.allDataFrame.AddColumn(avgVMRSSMBCol); err != nil {
 		return err
 	}
-	if err = data.sysBenchAgg.AddColumn(avgReadsCompletedCol); err != nil {
+	if err = data.allDataFrame.AddColumn(avgReadsCompletedCol); err != nil {
 		return err
 	}
-	if err = data.sysBenchAgg.AddColumn(avgReadsCompletedDeltaCol); err != nil {
+	if err = data.allDataFrame.AddColumn(avgReadsCompletedDeltaCol); err != nil {
 		return err
 	}
-	if err = data.sysBenchAgg.AddColumn(avgSectorsReadCol); err != nil {
+	if err = data.allDataFrame.AddColumn(avgSectorsReadCol); err != nil {
 		return err
 	}
-	if err = data.sysBenchAgg.AddColumn(avgSectorsReadDeltaCol); err != nil {
+	if err = data.allDataFrame.AddColumn(avgSectorsReadDeltaCol); err != nil {
 		return err
 	}
-	if err = data.sysBenchAgg.AddColumn(avgWritesCompletedCol); err != nil {
+	if err = data.allDataFrame.AddColumn(avgWritesCompletedCol); err != nil {
 		return err
 	}
-	if err = data.sysBenchAgg.AddColumn(avgWritesCompletedDeltaCol); err != nil {
+	if err = data.allDataFrame.AddColumn(avgWritesCompletedDeltaCol); err != nil {
 		return err
 	}
-	if err = data.sysBenchAgg.AddColumn(avgSectorsWrittenCol); err != nil {
+	if err = data.allDataFrame.AddColumn(avgSectorsWrittenCol); err != nil {
 		return err
 	}
-	if err = data.sysBenchAgg.AddColumn(avgSectorsWrittenDeltaCol); err != nil {
+	if err = data.allDataFrame.AddColumn(avgSectorsWrittenDeltaCol); err != nil {
 		return err
 	}
-	if err = data.sysBenchAgg.AddColumn(avgReceiveBytesNumCol); err != nil {
+	if err = data.allDataFrame.AddColumn(avgReceiveBytesNumCol); err != nil {
 		return err
 	}
-	if err = data.sysBenchAgg.AddColumn(avgReceiveBytesNumDeltaCol); err != nil {
+	if err = data.allDataFrame.AddColumn(avgReceiveBytesNumDeltaCol); err != nil {
 		return err
 	}
-	if err = data.sysBenchAgg.AddColumn(avgTransmitBytesNumCol); err != nil {
+	if err = data.allDataFrame.AddColumn(avgTransmitBytesNumCol); err != nil {
 		return err
 	}
-	if err = data.sysBenchAgg.AddColumn(avgTransmitBytesNumDeltaCol); err != nil {
+	if err = data.allDataFrame.AddColumn(avgTransmitBytesNumDeltaCol); err != nil {
 		return err
 	}
 
 	// add SECOND column
-	uc, err := data.sysBenchAgg.Column("UNIX-TS")
+	uc, err := data.allDataFrame.Column("UNIX-TS")
 	if err != nil {
 		return err
 	}
@@ -272,13 +273,17 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 	for i := 0; i < uc.CountRow(); i++ {
 		secondCol.PushBack(dataframe.NewStringValue(i))
 	}
-	if err = data.sysBenchAgg.AddColumn(secondCol); err != nil {
+	if err = data.allDataFrame.AddColumn(secondCol); err != nil {
 		return err
 	}
 	// move to 2nd column
-	if err = data.sysBenchAgg.MoveColumn("SECOND", 1); err != nil {
+	if err = data.allDataFrame.MoveColumn("SECOND", 1); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (data *analyzeData) save() error {
+	return data.allDataFrame.CSV(data.csvOutputpath)
 }
