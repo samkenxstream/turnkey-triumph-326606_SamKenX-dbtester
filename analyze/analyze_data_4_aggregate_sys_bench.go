@@ -285,5 +285,6 @@ func (data *analyzeData) aggSystemBenchMetrics() error {
 }
 
 func (data *analyzeData) save() error {
+	plog.Println("STEP #5: saving analyze data to %q", data.csvOutputpath)
 	return data.allDataFrame.CSV(data.csvOutputpath)
 }

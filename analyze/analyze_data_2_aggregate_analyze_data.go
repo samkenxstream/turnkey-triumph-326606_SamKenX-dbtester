@@ -21,6 +21,8 @@ import (
 )
 
 type analyzeData struct {
+	database string
+
 	minUnixTS int64
 	maxUnixTS int64
 	sys       []testData
@@ -39,8 +41,8 @@ type analyzeData struct {
 // readSystemMetricsAll reads all system metric files
 // (e.g. if cluster is 3-node, read all 3 files).
 // It returns minimum and maximum common unix second and a list of frames.
-func readSystemMetricsAll(output string, fpaths ...string) (data *analyzeData, err error) {
-	data = &analyzeData{csvOutputpath: output}
+func readSystemMetricsAll(database string, output string, fpaths ...string) (data *analyzeData, err error) {
+	data = &analyzeData{database: database, csvOutputpath: output}
 	for i, fpath := range fpaths {
 		plog.Printf("STEP #1-%d: creating dataframe from %s", i, fpath)
 		sm, err := readSystemMetrics(fpath)
