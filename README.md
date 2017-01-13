@@ -7,7 +7,9 @@ Distributed database tester
 - Database agent and runner are implemented at https://github.com/coreos/dbtester/tree/master/agent
 - Client is implemented at https://github.com/coreos/dbtester/tree/master/control
 - System metrics are collected via https://github.com/gyuho/psn
-- Data analysis is done via https://github.com/gyuho/dataframe and https://github.com/gonum/plot
+- Data analysis is done via https://github.com/coreos/dbtester/tree/master/analyze
+  - https://github.com/gyuho/dataframe
+  - https://github.com/gonum/plot
 
 For etcd, we also recommend [etcd benchmark tool](https://github.com/coreos/etcd/tree/master/tools/benchmark).
 
