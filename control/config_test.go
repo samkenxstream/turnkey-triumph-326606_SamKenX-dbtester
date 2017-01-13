@@ -51,11 +51,21 @@ func TestReadConfig(t *testing.T) {
 	if c.GoogleCloudStorageSubDirectory != "2016041501" {
 		t.Fatalf("unexpected %s", c.GoogleCloudStorageSubDirectory)
 	}
-	if c.ResultPathTimeSeries != "bench-result-timeseries.csv" {
-		t.Fatalf("unexpected %s", c.ResultPathTimeSeries)
+
+	if c.ControlLogPath != "control.log" {
+		t.Fatalf("unexpected %v", c.ControlLogPath)
 	}
-	if c.ResultPathLog != "bench-result.log" {
-		t.Fatalf("unexpected %v", c.ResultPathLog)
+	if c.ControlLatencyThroughputTimeseriesPath != "control-latency-throughput-timeseries.csv" {
+		t.Fatalf("unexpected %s", c.ControlLatencyThroughputTimeseriesPath)
+	}
+	if c.ControlLatencyDistributionSummaryPath != "control-latency-distribution-summary.csv" {
+		t.Fatalf("unexpected %s", c.ControlLatencyDistributionSummaryPath)
+	}
+	if c.ControlLatencyDistributionPercentilePath != "control-latency-distribution-percentile.csv" {
+		t.Fatalf("unexpected %s", c.ControlLatencyDistributionPercentilePath)
+	}
+	if c.ControlLatencyDistributionAllPath != "control-latency-distribution-all.csv" {
+		t.Fatalf("unexpected %s", c.ControlLatencyDistributionAllPath)
 	}
 
 	if c.Step1.SkipStartDatabase {

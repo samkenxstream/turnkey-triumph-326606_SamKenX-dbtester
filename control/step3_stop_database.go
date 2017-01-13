@@ -15,17 +15,18 @@
 package control
 
 import (
-	"testing"
-	"time"
+	"fmt"
+
+	"github.com/coreos/dbtester/agent/agentpb"
 )
 
-func TestGetTimeseries(t *testing.T) {
-	sp := newSecondPoints()
-	now := time.Now()
-	sp.Add(now, time.Second)
-	sp.Add(now.Add(5*time.Second), time.Second)
-	n := sp.getTimeSeries().Len()
-	if n < 3 {
-		t.Fatalf("expected at 6 points of time series, got %s", sp.getTimeSeries())
+func step3StopDatabase(cfg Config) error {
+	switch cfg.Step3.Action {
+	case "stop":
+		plog.Info("step 3: stopping databases...")
+		return bcastReq(cfg, agentpb.Request_Stop)
+
+	default:
+		return fmt.Errorf("unknown %q", cfg.Step3.Action)
 	}
 }

@@ -20,17 +20,14 @@ import (
 	"sync"
 	"time"
 
-	"golang.org/x/net/context"
-	"golang.org/x/time/rate"
-	"google.golang.org/grpc"
-
 	"github.com/cheggaaa/pb"
 	"github.com/coreos/dbtester/agent/agentpb"
 	"github.com/coreos/etcd/clientv3"
+	"github.com/coreos/etcd/pkg/report"
 	consulapi "github.com/hashicorp/consul/api"
+	"golang.org/x/net/context"
+	"golang.org/x/time/rate"
 )
-
-func step1(cfg Config) error { return bcastReq(cfg, agentpb.Request_Start) }
 
 type values struct {
 	bytes      [][]byte
@@ -47,22 +44,22 @@ func newValues(cfg Config) (v values, rerr error) {
 
 type benchmark struct {
 	cfg Config
-	bar *pb.ProgressBar
+
+	bar        *pb.ProgressBar
+	report     report.Report
+	reportDone <-chan report.Stats
+	stats      report.Stats
 
 	reqHandlers []ReqHandler
 	reqGen      func(chan<- request)
 	reqDone     func()
 	wg          sync.WaitGroup
 
-	resultch    chan result
-	reportDonec <-chan struct{}
-
 	mu           sync.RWMutex
 	inflightReqs chan request
 }
 
 func newBenchmark(cfg Config, reqHandlers []ReqHandler, reqDone func(), reqGen func(chan<- request)) (b *benchmark) {
-	rc := make(chan result)
 	b = &benchmark{
 		cfg:         cfg,
 		bar:         pb.New(cfg.Step2.TotalRequests),
@@ -70,13 +67,12 @@ func newBenchmark(cfg Config, reqHandlers []ReqHandler, reqDone func(), reqGen f
 		reqGen:      reqGen,
 		reqDone:     reqDone,
 		wg:          sync.WaitGroup{},
-		resultch:    rc,
-		reportDonec: printReport(rc, cfg),
 	}
 	b.inflightReqs = make(chan request, b.cfg.Step2.Clients)
 
 	b.bar.Format("Bom !")
 	b.bar.Start()
+	b.report = report.NewReport("%4.4f")
 	return
 }
 
@@ -106,16 +102,13 @@ func (b *benchmark) startRequests() {
 			for req := range b.getInflightsReqs() {
 				st := time.Now()
 				err := rh(context.Background(), &req)
-				var errStr string
-				if err != nil {
-					errStr = err.Error()
-				}
-				b.resultch <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
+				b.report.Results() <- report.Result{Err: err, Start: st, End: time.Now()}
 				b.bar.Increment()
 			}
 		}(b.reqHandlers[i])
 	}
 	go b.reqGen(b.getInflightsReqs())
+	b.reportDone = b.report.Stats()
 }
 
 func (b *benchmark) waitRequestsEnd() {
@@ -126,9 +119,10 @@ func (b *benchmark) waitRequestsEnd() {
 }
 
 func (b *benchmark) finishReports() {
+	close(b.report.Results())
 	b.bar.Finish()
-	close(b.resultch)
-	<-b.reportDonec
+	st := <-b.reportDone
+	b.stats = st
 }
 
 func (b *benchmark) waitAll() {
@@ -136,13 +130,36 @@ func (b *benchmark) waitAll() {
 	b.finishReports()
 }
 
+func printStats(st report.Stats) {
+	if len(st.Lats) > 0 {
+		fmt.Printf("Total: %v\n", st.Total)
+		fmt.Printf("Slowest: %f secs\n", st.Slowest)
+		fmt.Printf("Fastest: %f secs\n", st.Fastest)
+		fmt.Printf("Average: %f secs\n", st.Average)
+		fmt.Printf("Requests/sec: %4.4f\n", st.RPS)
+	}
+}
+
+func saveStats(cfg Config, st report.Stats) {
+	// save time-series
+	ts := st.TimeSeries
+	for _, point := range ts {
+		_ = point.Timestamp
+		_ = point.AvgLatency
+		_ = point.ThroughPut
+	}
+}
+
 func generateReport(cfg Config, h []ReqHandler, reqDone func(), reqGen func(chan<- request)) {
 	b := newBenchmark(cfg, h, reqDone, reqGen)
 	b.startRequests()
 	b.waitAll()
+
+	printStats(b.stats)
+	saveStats(cfg, b.stats)
 }
 
-func step2(cfg Config) error {
+func step2StressDatabase(cfg Config) error {
 	vals, err := newValues(cfg)
 	if err != nil {
 		return err
@@ -338,75 +355,6 @@ func step2(cfg Config) error {
 		plog.Println("read-oneshot generateReport is finished...")
 	}
 
-	return nil
-}
-
-func step3(cfg Config) error {
-	switch cfg.Step3.Action {
-	case "stop":
-		plog.Info("step 3: stopping databases...")
-		return bcastReq(cfg, agentpb.Request_Stop)
-
-	default:
-		return fmt.Errorf("unknown %q", cfg.Step3.Action)
-	}
-}
-
-func bcastReq(cfg Config, op agentpb.Request_Operation) error {
-	req := cfg.ToRequest()
-	req.Operation = op
-
-	donec, errc := make(chan struct{}), make(chan error)
-	for i := range cfg.PeerIPs {
-		go func(i int) {
-			if err := sendReq(cfg.AgentEndpoints[i], req, i); err != nil {
-				errc <- err
-			} else {
-				donec <- struct{}{}
-			}
-		}(i)
-		time.Sleep(time.Second)
-	}
-
-	var errs []error
-	for cnt := 0; cnt != len(cfg.PeerIPs); cnt++ {
-		select {
-		case <-donec:
-		case err := <-errc:
-			errs = append(errs, err)
-		}
-	}
-	if len(errs) > 0 {
-		return errs[0]
-	}
-
-	return nil
-}
-
-func sendReq(ep string, req agentpb.Request, i int) error {
-	req.ServerIndex = uint32(i)
-	req.ZookeeperMyID = uint32(i + 1)
-
-	plog.Infof("sending message [index: %d | operation: %q | database: %q | endpoint: %q]", i, req.Operation, req.Database, ep)
-
-	conn, err := grpc.Dial(ep, grpc.WithInsecure())
-	if err != nil {
-		plog.Errorf("grpc.Dial connecting error (%v) [index: %d | endpoint: %q]", err, i, ep)
-		return err
-	}
-
-	defer conn.Close()
-
-	cli := agentpb.NewTransporterClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second) // Consul takes longer
-	resp, err := cli.Transfer(ctx, &req)
-	cancel()
-	if err != nil {
-		plog.Errorf("cli.Transfer error (%v) [index: %d | endpoint: %q]", err, i, ep)
-		return err
-	}
-
-	plog.Infof("got response [index: %d | endpoint: %q | response: %+v]", i, ep, resp)
 	return nil
 }
 
