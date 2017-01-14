@@ -54,10 +54,10 @@ func (data *analyzeData) aggregateAll() error {
 	var minBenchEndIdx int
 	for _, col := range data.benchMetrics.frame.Columns() {
 		if minBenchEndIdx == 0 {
-			minBenchEndIdx = col.CountRow()
+			minBenchEndIdx = col.Count()
 		}
-		if minBenchEndIdx > col.CountRow() {
-			minBenchEndIdx = col.CountRow()
+		if minBenchEndIdx > col.Count() {
+			minBenchEndIdx = col.Count()
 		}
 	}
 	// this is index, so decrement by 1 to make it as valid index
@@ -267,7 +267,7 @@ func (data *analyzeData) aggregateAll() error {
 		return err
 	}
 	secondCol := dataframe.NewColumn("SECOND")
-	for i := 0; i < uc.CountRow(); i++ {
+	for i := 0; i < uc.Count(); i++ {
 		secondCol.PushBack(dataframe.NewStringValue(i))
 	}
 	if err = data.aggregated.AddColumn(secondCol); err != nil {

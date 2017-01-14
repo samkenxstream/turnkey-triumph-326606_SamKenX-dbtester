@@ -24,19 +24,19 @@ import (
 )
 
 func step4UploadLogs(cfg Config) error {
-	if err := uploadToGoogle(cfg.ControlLogPath, cfg); err != nil {
+	if err := uploadToGoogle(cfg.Log, cfg); err != nil {
 		return err
 	}
-	if err := uploadToGoogle(cfg.ControlLatencyThroughputTimeseriesPath, cfg); err != nil {
+	if err := uploadToGoogle(cfg.DataLatencyThroughputTimeseries, cfg); err != nil {
 		return err
 	}
-	if err := uploadToGoogle(cfg.ControlLatencyDistributionSummaryPath, cfg); err != nil {
+	if err := uploadToGoogle(cfg.DataLatencyDistributionSummary, cfg); err != nil {
 		return err
 	}
-	if err := uploadToGoogle(cfg.ControlLatencyDistributionPercentilePath, cfg); err != nil {
+	if err := uploadToGoogle(cfg.DataLatencyDistributionPercentile, cfg); err != nil {
 		return err
 	}
-	if err := uploadToGoogle(cfg.ControlLatencyDistributionAllPath, cfg); err != nil {
+	if err := uploadToGoogle(cfg.DataLatencyDistributionAll, cfg); err != nil {
 		return err
 	}
 	return nil

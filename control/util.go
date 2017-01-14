@@ -401,3 +401,11 @@ func walkDir(targetDir string) ([]filepathSize, error) {
 
 	return fs, nil
 }
+
+func openToOverwrite(fpath string) (*os.File, error) {
+	f, err := os.OpenFile(fpath, os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0777)
+	if err != nil {
+		return nil, err
+	}
+	return f, nil
+}

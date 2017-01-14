@@ -41,11 +41,11 @@ type Config struct {
 	AgentEndpoints    []string
 	DatabaseEndpoints []string
 
-	ControlLogPath                           string `yaml:"control_log_path"`
-	ControlLatencyThroughputTimeseriesPath   string `yaml:"control_latency_throughput_timeseries_path"`
-	ControlLatencyDistributionSummaryPath    string `yaml:"control_latency_distribution_summary_path"`
-	ControlLatencyDistributionPercentilePath string `yaml:"control_latency_distribution_percentile_path"`
-	ControlLatencyDistributionAllPath        string `yaml:"control_latency_distribution_all_path"`
+	Log                               string `yaml:"control_log"`
+	DataLatencyDistributionSummary    string `yaml:"data_latency_distribution_summary"`
+	DataLatencyDistributionPercentile string `yaml:"data_latency_distribution_percentile"`
+	DataLatencyDistributionAll        string `yaml:"data_latency_distribution_all"`
+	DataLatencyThroughputTimeseries   string `yaml:"data_latency_throughput_timeseries"`
 
 	// https://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html
 	Step1 struct {

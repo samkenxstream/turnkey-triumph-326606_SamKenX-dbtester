@@ -52,20 +52,20 @@ func TestReadConfig(t *testing.T) {
 		t.Fatalf("unexpected %s", c.GoogleCloudStorageSubDirectory)
 	}
 
-	if c.ControlLogPath != "control.log" {
-		t.Fatalf("unexpected %v", c.ControlLogPath)
+	if c.Log != "control.log" {
+		t.Fatalf("unexpected %v", c.Log)
 	}
-	if c.ControlLatencyThroughputTimeseriesPath != "control-latency-throughput-timeseries.csv" {
-		t.Fatalf("unexpected %s", c.ControlLatencyThroughputTimeseriesPath)
+	if c.DataLatencyDistributionSummary != "data-latency-distribution-summary.csv" {
+		t.Fatalf("unexpected %s", c.DataLatencyDistributionSummary)
 	}
-	if c.ControlLatencyDistributionSummaryPath != "control-latency-distribution-summary.csv" {
-		t.Fatalf("unexpected %s", c.ControlLatencyDistributionSummaryPath)
+	if c.DataLatencyDistributionPercentile != "data-latency-distribution-percentile.csv" {
+		t.Fatalf("unexpected %s", c.DataLatencyDistributionPercentile)
 	}
-	if c.ControlLatencyDistributionPercentilePath != "control-latency-distribution-percentile.csv" {
-		t.Fatalf("unexpected %s", c.ControlLatencyDistributionPercentilePath)
+	if c.DataLatencyDistributionAll != "data-latency-distribution-all.csv" {
+		t.Fatalf("unexpected %s", c.DataLatencyDistributionAll)
 	}
-	if c.ControlLatencyDistributionAllPath != "control-latency-distribution-all.csv" {
-		t.Fatalf("unexpected %s", c.ControlLatencyDistributionAllPath)
+	if c.DataLatencyThroughputTimeseries != "data-latency-throughput-timeseries.csv" {
+		t.Fatalf("unexpected %s", c.DataLatencyThroughputTimeseries)
 	}
 
 	if c.Step1.SkipStartDatabase {
