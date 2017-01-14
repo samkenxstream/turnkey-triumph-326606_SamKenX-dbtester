@@ -41,7 +41,7 @@ type Config struct {
 	AgentEndpoints    []string
 	DatabaseEndpoints []string
 
-	Log                               string `yaml:"control_log"`
+	Log                               string `yaml:"log"`
 	DataLatencyDistributionSummary    string `yaml:"data_latency_distribution_summary"`
 	DataLatencyDistributionPercentile string `yaml:"data_latency_distribution_percentile"`
 	DataLatencyDistributionAll        string `yaml:"data_latency_distribution_all"`
