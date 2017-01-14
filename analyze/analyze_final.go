@@ -89,7 +89,7 @@ func do(configPath string) error {
 		if err != nil {
 			return err
 		}
-		if err = nf.CSV(filepath.Join(cfg.WorkDir, plotConfig.Column+".csv")); err != nil {
+		if err = nf.CSV(filepath.Join(cfg.WorkDir, "data-"+plotConfig.Column+".csv")); err != nil {
 			return err
 		}
 	}
