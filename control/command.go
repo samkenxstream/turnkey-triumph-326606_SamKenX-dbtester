@@ -17,11 +17,9 @@ package control
 import (
 	"fmt"
 	"io/ioutil"
-	"path/filepath"
 	"strings"
 	"time"
 
-	"github.com/coreos/dbtester/remotestorage"
 	"github.com/spf13/cobra"
 )
 
@@ -84,7 +82,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 	println()
 	if !cfg.Step1.SkipStartDatabase {
 		plog.Info("step 1: starting databases...")
-		if err = step1(cfg); err != nil {
+		if err = step1StartDatabase(cfg); err != nil {
 			return err
 		}
 	}
@@ -93,62 +91,18 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 		println()
 		time.Sleep(5 * time.Second)
 		plog.Info("step 2: starting tests...")
-		if err = step2(cfg); err != nil {
+		if err = step2StressDatabase(cfg); err != nil {
 			return err
 		}
 	}
 
 	println()
 	time.Sleep(5 * time.Second)
-	if err := step3(cfg); err != nil {
+	if err := step3StopDatabase(cfg); err != nil {
 		return err
 	}
 
-	{
-		u, err := remotestorage.NewGoogleCloudStorage([]byte(cfg.GoogleCloudStorageKey), cfg.GoogleCloudProjectName)
-		if err != nil {
-			plog.Fatal(err)
-		}
-		srcCSVResultPath := cfg.ResultPathTimeSeries
-		dstCSVResultPath := filepath.Base(cfg.ResultPathTimeSeries)
-		if !strings.HasPrefix(dstCSVResultPath, cfg.TestName) {
-			dstCSVResultPath = fmt.Sprintf("%s-%s", cfg.TestName, dstCSVResultPath)
-		}
-		dstCSVResultPath = filepath.Join(cfg.GoogleCloudStorageSubDirectory, dstCSVResultPath)
-
-		var uerr error
-		for k := 0; k < 15; k++ {
-			if uerr = u.UploadFile(cfg.GoogleCloudStorageBucketName, srcCSVResultPath, dstCSVResultPath); uerr != nil {
-				plog.Printf("#%d: UploadFile error %v", k, uerr)
-				time.Sleep(2 * time.Second)
-				continue
-			}
-			break
-		}
-	}
-	{
-		u, err := remotestorage.NewGoogleCloudStorage([]byte(cfg.GoogleCloudStorageKey), cfg.GoogleCloudProjectName)
-		if err != nil {
-			plog.Fatal(err)
-		}
-
-		srcCSVResultPath := cfg.ResultPathLog
-		dstCSVResultPath := filepath.Base(cfg.ResultPathLog)
-		if !strings.HasPrefix(dstCSVResultPath, cfg.TestName) {
-			dstCSVResultPath = fmt.Sprintf("%s-%s", cfg.TestName, dstCSVResultPath)
-		}
-		dstCSVResultPath = filepath.Join(cfg.GoogleCloudStorageSubDirectory, dstCSVResultPath)
-
-		var uerr error
-		for k := 0; k < 15; k++ {
-			if uerr = u.UploadFile(cfg.GoogleCloudStorageBucketName, srcCSVResultPath, dstCSVResultPath); uerr != nil {
-				plog.Printf("#%d: UploadFile error %v", k, uerr)
-				time.Sleep(2 * time.Second)
-				continue
-			}
-			break
-		}
-	}
-
-	return nil
+	println()
+	time.Sleep(3 * time.Second)
+	return step4UploadLogs(cfg)
 }

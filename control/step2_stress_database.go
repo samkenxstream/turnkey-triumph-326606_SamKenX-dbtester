@@ -16,21 +16,20 @@ package control
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"sync"
 	"time"
 
-	"golang.org/x/net/context"
-	"golang.org/x/time/rate"
-	"google.golang.org/grpc"
-
 	"github.com/cheggaaa/pb"
 	"github.com/coreos/dbtester/agent/agentpb"
 	"github.com/coreos/etcd/clientv3"
+	"github.com/coreos/etcd/pkg/report"
+	"github.com/gyuho/dataframe"
 	consulapi "github.com/hashicorp/consul/api"
+	"golang.org/x/net/context"
+	"golang.org/x/time/rate"
 )
-
-func step1(cfg Config) error { return bcastReq(cfg, agentpb.Request_Start) }
 
 type values struct {
 	bytes      [][]byte
@@ -47,22 +46,22 @@ func newValues(cfg Config) (v values, rerr error) {
 
 type benchmark struct {
 	cfg Config
-	bar *pb.ProgressBar
+
+	bar        *pb.ProgressBar
+	report     report.Report
+	reportDone <-chan report.Stats
+	stats      report.Stats
 
 	reqHandlers []ReqHandler
 	reqGen      func(chan<- request)
 	reqDone     func()
 	wg          sync.WaitGroup
 
-	resultch    chan result
-	reportDonec <-chan struct{}
-
 	mu           sync.RWMutex
 	inflightReqs chan request
 }
 
 func newBenchmark(cfg Config, reqHandlers []ReqHandler, reqDone func(), reqGen func(chan<- request)) (b *benchmark) {
-	rc := make(chan result)
 	b = &benchmark{
 		cfg:         cfg,
 		bar:         pb.New(cfg.Step2.TotalRequests),
@@ -70,13 +69,12 @@ func newBenchmark(cfg Config, reqHandlers []ReqHandler, reqDone func(), reqGen f
 		reqGen:      reqGen,
 		reqDone:     reqDone,
 		wg:          sync.WaitGroup{},
-		resultch:    rc,
-		reportDonec: printReport(rc, cfg),
 	}
 	b.inflightReqs = make(chan request, b.cfg.Step2.Clients)
 
 	b.bar.Format("Bom !")
 	b.bar.Start()
+	b.report = report.NewReport("%4.4f")
 	return
 }
 
@@ -106,16 +104,13 @@ func (b *benchmark) startRequests() {
 			for req := range b.getInflightsReqs() {
 				st := time.Now()
 				err := rh(context.Background(), &req)
-				var errStr string
-				if err != nil {
-					errStr = err.Error()
-				}
-				b.resultch <- result{errStr: errStr, duration: time.Since(st), happened: time.Now()}
+				b.report.Results() <- report.Result{Err: err, Start: st, End: time.Now()}
 				b.bar.Increment()
 			}
 		}(b.reqHandlers[i])
 	}
 	go b.reqGen(b.getInflightsReqs())
+	b.reportDone = b.report.Stats()
 }
 
 func (b *benchmark) waitRequestsEnd() {
@@ -126,9 +121,10 @@ func (b *benchmark) waitRequestsEnd() {
 }
 
 func (b *benchmark) finishReports() {
+	close(b.report.Results())
 	b.bar.Finish()
-	close(b.resultch)
-	<-b.reportDonec
+	st := <-b.reportDone
+	b.stats = st
 }
 
 func (b *benchmark) waitAll() {
@@ -136,13 +132,189 @@ func (b *benchmark) waitAll() {
 	b.finishReports()
 }
 
+func printStats(st report.Stats) {
+	// to be piped to cfg.Log via stdout when dbtester executed
+	if len(st.Lats) > 0 {
+		fmt.Printf("Total: %v\n", st.Total)
+		fmt.Printf("Slowest: %f secs\n", st.Slowest)
+		fmt.Printf("Fastest: %f secs\n", st.Fastest)
+		fmt.Printf("Average: %f secs\n", st.Average)
+		fmt.Printf("Requests/sec: %4.4f\n", st.RPS)
+	}
+}
+
+func saveDataLatencyDistributionSummary(cfg Config, st report.Stats) {
+	fr := dataframe.New()
+
+	c1 := dataframe.NewColumn("TOTAL-SECONDS")
+	c1.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", st.Total.Seconds())))
+	if err := fr.AddColumn(c1); err != nil {
+		plog.Fatal(err)
+	}
+
+	c2 := dataframe.NewColumn("SLOWEST-LATENCY-MS")
+	c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*st.Slowest)))
+	if err := fr.AddColumn(c2); err != nil {
+		plog.Fatal(err)
+	}
+
+	c3 := dataframe.NewColumn("FASTEST-LATENCY-MS")
+	c3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*st.Fastest)))
+	if err := fr.AddColumn(c3); err != nil {
+		plog.Fatal(err)
+	}
+
+	c4 := dataframe.NewColumn("AVERAGE-LATENCY-MS")
+	c4.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*st.Average)))
+	if err := fr.AddColumn(c4); err != nil {
+		plog.Fatal(err)
+	}
+
+	c5 := dataframe.NewColumn("STDDEV-LATENCY-MS")
+	c5.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*st.Stddev)))
+	if err := fr.AddColumn(c5); err != nil {
+		plog.Fatal(err)
+	}
+
+	c6 := dataframe.NewColumn("REQUESTS-PER-SECOND")
+	c6.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*st.RPS)))
+	if err := fr.AddColumn(c6); err != nil {
+		plog.Fatal(err)
+	}
+
+	for errName, errN := range st.ErrorDist {
+		errcol := dataframe.NewColumn(fmt.Sprintf("ERROR: %q", errName))
+		errcol.PushBack(dataframe.NewStringValue(errN))
+		if err := fr.AddColumn(errcol); err != nil {
+			plog.Fatal(err)
+		}
+	}
+
+	if err := fr.CSVHorizontal(cfg.DataLatencyDistributionSummary); err != nil {
+		plog.Fatal(err)
+	}
+}
+
+func saveDataLatencyDistributionPercentile(cfg Config, st report.Stats) {
+	pctls, seconds := report.Percentiles(st.Lats)
+	c1 := dataframe.NewColumn("LATENCY-PERCENTILE")
+	c2 := dataframe.NewColumn("LATENCY-MS")
+	for i := range pctls {
+		c1.PushBack(dataframe.NewStringValue(fmt.Sprintf("p-%f", pctls[i])))
+		c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", 1000*seconds[i])))
+	}
+
+	fr := dataframe.New()
+	if err := fr.AddColumn(c1); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr.AddColumn(c2); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr.CSVHorizontal(cfg.DataLatencyDistributionPercentile); err != nil {
+		plog.Fatal(err)
+	}
+}
+
+func saveDataLatencyDistributionAll(cfg Config, st report.Stats) {
+	min := int64(math.MaxInt64)
+	max := int64(-100000)
+	rm := make(map[int64]int64)
+	for _, lt := range st.Lats {
+		// convert second(float64) to millisecond
+		ms := lt * 1000
+
+		// truncate all digits below 10ms
+		// (e.g. 125.11ms becomes 120ms)
+		v := int64(math.Trunc(ms/10) * 10)
+		if _, ok := rm[v]; !ok {
+			rm[v] = 1
+		} else {
+			rm[v]++
+		}
+
+		if min > v {
+			min = v
+		}
+		if max < v {
+			max = v
+		}
+	}
+
+	c1 := dataframe.NewColumn("LATENCY-MS")
+	c2 := dataframe.NewColumn("COUNT")
+	cur := min
+	for {
+		c1.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", int64(cur))))
+		v, ok := rm[cur]
+		if ok {
+			c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", v)))
+		} else {
+			c2.PushBack(dataframe.NewStringValue("0"))
+		}
+		cur += 10
+		if cur-10 == max { // was last point
+			break
+		}
+	}
+	fr := dataframe.New()
+	if err := fr.AddColumn(c1); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr.AddColumn(c2); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr.CSV(cfg.DataLatencyDistributionAll); err != nil {
+		plog.Fatal(err)
+	}
+}
+
+func saveDataLatencyThroughputTimeseries(cfg Config, st report.Stats) {
+	c1 := dataframe.NewColumn("UNIX-TS")
+	c2 := dataframe.NewColumn("AVG-LATENCY-MS")
+	c3 := dataframe.NewColumn("AVG-THROUGHPUT")
+	for i := range st.TimeSeries {
+		c1.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", st.TimeSeries[i].Timestamp)))
+		c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(st.TimeSeries[i].AvgLatency))))
+		c3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", st.TimeSeries[i].ThroughPut)))
+	}
+
+	fr := dataframe.New()
+	if err := fr.AddColumn(c1); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr.AddColumn(c2); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr.AddColumn(c3); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr.CSV(cfg.DataLatencyThroughputTimeseries); err != nil {
+		plog.Fatal(err)
+	}
+}
+
 func generateReport(cfg Config, h []ReqHandler, reqDone func(), reqGen func(chan<- request)) {
 	b := newBenchmark(cfg, h, reqDone, reqGen)
 	b.startRequests()
 	b.waitAll()
+
+	printStats(b.stats)
+
+	// cfg.DataLatencyDistributionSummary
+	saveDataLatencyDistributionSummary(cfg, b.stats)
+
+	// cfg.DataLatencyDistributionPercentile
+	saveDataLatencyDistributionPercentile(cfg, b.stats)
+
+	// cfg.DataLatencyDistributionAll
+	saveDataLatencyDistributionAll(cfg, b.stats)
+
+	// cfg.DataLatencyThroughputTimeseries
+	saveDataLatencyThroughputTimeseries(cfg, b.stats)
 }
 
-func step2(cfg Config) error {
+func step2StressDatabase(cfg Config) error {
 	vals, err := newValues(cfg)
 	if err != nil {
 		return err
@@ -338,75 +510,6 @@ func step2(cfg Config) error {
 		plog.Println("read-oneshot generateReport is finished...")
 	}
 
-	return nil
-}
-
-func step3(cfg Config) error {
-	switch cfg.Step3.Action {
-	case "stop":
-		plog.Info("step 3: stopping databases...")
-		return bcastReq(cfg, agentpb.Request_Stop)
-
-	default:
-		return fmt.Errorf("unknown %q", cfg.Step3.Action)
-	}
-}
-
-func bcastReq(cfg Config, op agentpb.Request_Operation) error {
-	req := cfg.ToRequest()
-	req.Operation = op
-
-	donec, errc := make(chan struct{}), make(chan error)
-	for i := range cfg.PeerIPs {
-		go func(i int) {
-			if err := sendReq(cfg.AgentEndpoints[i], req, i); err != nil {
-				errc <- err
-			} else {
-				donec <- struct{}{}
-			}
-		}(i)
-		time.Sleep(time.Second)
-	}
-
-	var errs []error
-	for cnt := 0; cnt != len(cfg.PeerIPs); cnt++ {
-		select {
-		case <-donec:
-		case err := <-errc:
-			errs = append(errs, err)
-		}
-	}
-	if len(errs) > 0 {
-		return errs[0]
-	}
-
-	return nil
-}
-
-func sendReq(ep string, req agentpb.Request, i int) error {
-	req.ServerIndex = uint32(i)
-	req.ZookeeperMyID = uint32(i + 1)
-
-	plog.Infof("sending message [index: %d | operation: %q | database: %q | endpoint: %q]", i, req.Operation, req.Database, ep)
-
-	conn, err := grpc.Dial(ep, grpc.WithInsecure())
-	if err != nil {
-		plog.Errorf("grpc.Dial connecting error (%v) [index: %d | endpoint: %q]", err, i, ep)
-		return err
-	}
-
-	defer conn.Close()
-
-	cli := agentpb.NewTransporterClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second) // Consul takes longer
-	resp, err := cli.Transfer(ctx, &req)
-	cancel()
-	if err != nil {
-		plog.Errorf("cli.Transfer error (%v) [index: %d | endpoint: %q]", err, i, ep)
-		return err
-	}
-
-	plog.Infof("got response [index: %d | endpoint: %q | response: %+v]", i, ep, resp)
 	return nil
 }
 

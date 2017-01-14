@@ -1,5 +1,5 @@
-hash: 36954914126819f13ba66c1917307f6a9c1f943a62c29105b6217c92588cff59
-updated: 2017-01-12T15:20:14.976246037-08:00
+hash: f82efd3e82e7400ea8a6fc49ff27d6b1d503897fdb1dc5bfc16590fb4bc613a3
+updated: 2017-01-13T16:50:25.345743055-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -25,7 +25,7 @@ imports:
 - name: github.com/cheggaaa/pb
   version: 6e9d17711bb763b26b68b3931d47f24c1323abab
 - name: github.com/coreos/etcd
-  version: 0df543dbb38c9b4f5bd77868c30aa5520c8089a4
+  version: 118fd18eb64a7777593809a07c2bf7ceb175a866
   subpackages:
   - auth/authpb
   - client
@@ -34,6 +34,7 @@ imports:
   - etcdserver/etcdserverpb
   - mvcc/mvccpb
   - pkg/pathutil
+  - pkg/report
   - pkg/tlsutil
   - pkg/types
 - name: github.com/coreos/go-systemd
@@ -94,7 +95,7 @@ imports:
   - runtime/internal
   - utilities
 - name: github.com/gyuho/dataframe
-  version: 56f562d96950b2963bba85d2fad3c3de37ba7d2b
+  version: 93b7746e9c7a253625583ea4860733b6b94f56f1
 - name: github.com/gyuho/psn
   version: eb796de4d35872441498b7cd63d1a95246776163
   subpackages:
@@ -196,7 +197,7 @@ imports:
   - storage/v1
   - transport
 - name: google.golang.org/appengine
-  version: 8758a385849434ba5eac8aeedcf5192c5a0f5f10
+  version: 9e2ad0873f358c54296ccdc5116b0652c98226d1
   subpackages:
   - internal
   - internal/app_identity

@@ -16,8 +16,11 @@ peer_ips:
 agent_port: 3500
 database_port: 2181
 
-result_path_time_series: bench-result-timeseries.csv
-result_path_log: bench-result.log
+log: control.log
+data_latency_distribution_summary: data-latency-distribution-summary.csv
+data_latency_distribution_percentile: data-latency-distribution-percentile.csv
+data_latency_distribution_all: data-latency-distribution-all.csv
+data_latency_throughput_timeseries: data-latency-throughput-timeseries.csv
 
 # start database by sending RPC calls to agents
 step1:

@@ -1,4 +1,4 @@
-// Copyright 2017 CoreOS, Inc.
+// Copyright 2016 The etcd Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,29 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package control
+package report
 
 import (
 	"bytes"
 	"encoding/csv"
 	"fmt"
+	"log"
 	"math"
 	"sort"
 	"sync"
 	"time"
 )
 
-type timeSeries struct {
-	timestamp  int64
-	avgLatency time.Duration
-	throughPut int64
+type DataPoint struct {
+	Timestamp  int64
+	AvgLatency time.Duration
+	ThroughPut int64
 }
 
-type TimeSeries []timeSeries
+type TimeSeries []DataPoint
 
 func (t TimeSeries) Swap(i, j int)      { t[i], t[j] = t[j], t[i] }
 func (t TimeSeries) Len() int           { return len(t) }
-func (t TimeSeries) Less(i, j int) bool { return t[i].timestamp < t[j].timestamp }
+func (t TimeSeries) Less(i, j int) bool { return t[i].Timestamp < t[j].Timestamp }
 
 type secondPoint struct {
 	totalLatency time.Duration
@@ -59,7 +60,7 @@ func (sp *secondPoints) Add(ts time.Time, lat time.Duration) {
 		sp.tm[tk] = secondPoint{totalLatency: lat, count: 1}
 	} else {
 		v.totalLatency += lat
-		v.count++
+		v.count += 1
 		sp.tm[tk] = v
 	}
 }
@@ -95,10 +96,10 @@ func (sp *secondPoints) getTimeSeries() TimeSeries {
 		if v.count > 0 {
 			lat = time.Duration(v.totalLatency) / time.Duration(v.count)
 		}
-		tslice[i] = timeSeries{
-			timestamp:  k,
-			avgLatency: lat,
-			throughPut: v.count,
+		tslice[i] = DataPoint{
+			Timestamp:  k,
+			AvgLatency: lat,
+			ThroughPut: v.count,
 		}
 		i++
 	}
@@ -111,23 +112,23 @@ func (ts TimeSeries) String() string {
 	buf := new(bytes.Buffer)
 	wr := csv.NewWriter(buf)
 	if err := wr.Write([]string{"UNIX-TS", "AVG-LATENCY-MS", "AVG-THROUGHPUT"}); err != nil {
-		plog.Fatal(err)
+		log.Fatal(err)
 	}
 	rows := [][]string{}
 	for i := range ts {
 		row := []string{
-			fmt.Sprintf("%d", ts[i].timestamp),
-			fmt.Sprintf("%f", toMillisecond(ts[i].avgLatency)),
-			fmt.Sprintf("%d", ts[i].throughPut),
+			fmt.Sprintf("%d", ts[i].Timestamp),
+			fmt.Sprintf("%s", ts[i].AvgLatency),
+			fmt.Sprintf("%d", ts[i].ThroughPut),
 		}
 		rows = append(rows, row)
 	}
 	if err := wr.WriteAll(rows); err != nil {
-		plog.Fatal(err)
+		log.Fatal(err)
 	}
 	wr.Flush()
 	if err := wr.Error(); err != nil {
-		plog.Fatal(err)
+		log.Fatal(err)
 	}
-	return buf.String()
+	return fmt.Sprintf("\nSample in one second (unix latency throughput):\n%s", buf.String())
 }

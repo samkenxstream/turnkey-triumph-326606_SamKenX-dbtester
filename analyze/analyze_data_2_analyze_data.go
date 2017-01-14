@@ -116,7 +116,7 @@ func (data *analyzeData) aggSystemMetrics() error {
 				header = "VMRSS-MB"
 
 				// convert bytes to mb
-				colN := col.CountRow()
+				colN := col.Count()
 				for rowIdx := 0; rowIdx < colN; rowIdx++ {
 					var rowV dataframe.Value
 					rowV, err = col.Value(rowIdx)

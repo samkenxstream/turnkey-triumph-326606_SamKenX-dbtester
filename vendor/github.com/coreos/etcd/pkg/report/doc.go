@@ -1,4 +1,4 @@
-// Copyright 2017 CoreOS, Inc.
+// Copyright 2016 The etcd Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,20 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package control
-
-import (
-	"testing"
-	"time"
-)
-
-func TestGetTimeseries(t *testing.T) {
-	sp := newSecondPoints()
-	now := time.Now()
-	sp.Add(now, time.Second)
-	sp.Add(now.Add(5*time.Second), time.Second)
-	n := sp.getTimeSeries().Len()
-	if n < 3 {
-		t.Fatalf("expected at 6 points of time series, got %s", sp.getTimeSeries())
-	}
-}
+// Package report generates human-readable benchmark reports.
+package report
