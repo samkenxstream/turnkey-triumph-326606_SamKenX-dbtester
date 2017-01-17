@@ -408,9 +408,9 @@ func step2StressDatabase(cfg Config) error {
 				if copied.Step2.Clients > copied.Step2.ConnectionsClientsMax {
 					copied.Step2.Clients = copied.Step2.ConnectionsClientsMax
 				}
-				h, done = newWriteHandlers(copied)
+				h2, done2 := newWriteHandlers(copied)
 				reqGen = func(inflightReqs chan<- request) { generateWrites(copied, vals, inflightReqs) }
-				b.reset(copied.Step2.Clients, h, done, reqGen)
+				b.reset(copied.Step2.Clients, h2, done2, reqGen)
 				plog.Infof("updated client number %d", copied.Step2.Clients)
 
 				// after one range of requests are finished
@@ -607,6 +607,8 @@ func newReadHandlers(cfg Config) (rhs []ReqHandler, done func()) {
 }
 
 func newWriteHandlers(cfg Config) (rhs []ReqHandler, done func()) {
+	plog.Infof("creating new write handlers with %+v", cfg)
+
 	rhs = make([]ReqHandler, cfg.Step2.Clients)
 	switch cfg.Database {
 	case "etcdv2":
@@ -668,6 +670,12 @@ func newWriteHandlers(cfg Config) (rhs []ReqHandler, done func()) {
 		conns := mustCreateConnsConsul(cfg.DatabaseEndpoints, cfg.Step2.Connections)
 		for i := range conns {
 			rhs[i] = newPutConsul(conns[i])
+		}
+	}
+
+	for k := range rhs {
+		if rhs[k] == nil {
+			plog.Fatalf("%d-th write handler is nil!", k)
 		}
 	}
 	return
