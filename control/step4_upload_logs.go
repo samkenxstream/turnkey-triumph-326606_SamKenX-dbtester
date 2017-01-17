@@ -58,7 +58,6 @@ func uploadToGoogle(path string, cfg Config) error {
 	}
 	dstPath = filepath.Join(cfg.GoogleCloudStorageSubDirectory, dstPath)
 
-	plog.Infof("uploading %q to %q", srcPath, dstPath)
 	var uerr error
 	for k := 0; k < 30; k++ {
 		if uerr = u.UploadFile(cfg.GoogleCloudStorageBucketName, srcPath, dstPath); uerr != nil {
@@ -68,7 +67,5 @@ func uploadToGoogle(path string, cfg Config) error {
 		}
 		break
 	}
-	plog.Infof("uploaded %q to %q", srcPath, dstPath)
-
 	return uerr
 }
