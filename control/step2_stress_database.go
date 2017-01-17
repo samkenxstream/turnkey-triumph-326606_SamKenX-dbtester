@@ -382,6 +382,9 @@ func step2StressDatabase(cfg Config) error {
 			// TODO: currently, request range is 100000 (fixed)
 			// e.g. 2M requests, starts with clients 100, range 100K
 			// at 2M requests point, there will be 2K clients (20 * 100)
+			if cfg.Step2.Connections != cfg.Step2.Clients {
+				plog.Panicf("expected same connections %d != clients %d", cfg.Step2.Connections, cfg.Step2.Clients)
+			}
 			copied := cfg
 			copied.Step2.TotalRequests = 100000
 			h, done := newWriteHandlers(copied)
@@ -404,8 +407,10 @@ func step2StressDatabase(cfg Config) error {
 				b.waitRequestsEnd()
 
 				// update request handlers, generator
+				copied.Step2.Connections += copied.Step2.ConnectionsClientsDelta
 				copied.Step2.Clients += copied.Step2.ConnectionsClientsDelta
 				if copied.Step2.Clients > copied.Step2.ConnectionsClientsMax {
+					copied.Step2.Connections = copied.Step2.ConnectionsClientsMax
 					copied.Step2.Clients = copied.Step2.ConnectionsClientsMax
 				}
 				h2, done2 := newWriteHandlers(copied)
@@ -675,7 +680,7 @@ func newWriteHandlers(cfg Config) (rhs []ReqHandler, done func()) {
 
 	for k := range rhs {
 		if rhs[k] == nil {
-			plog.Fatalf("%d-th write handler is nil!", k)
+			plog.Panicf("%d-th write handler is nil (out of %d)", k, len(rhs))
 		}
 	}
 	return
