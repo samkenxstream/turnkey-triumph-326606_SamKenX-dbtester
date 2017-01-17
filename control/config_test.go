@@ -55,6 +55,9 @@ func TestReadConfig(t *testing.T) {
 	if c.Log != "control.log" {
 		t.Fatalf("unexpected %v", c.Log)
 	}
+	if c.DataLatencyAll != "data-latency-all.csv" {
+		t.Fatalf("unexpected %s", c.DataLatencyAll)
+	}
 	if c.DataLatencyDistributionSummary != "data-latency-distribution-summary.csv" {
 		t.Fatalf("unexpected %s", c.DataLatencyDistributionSummary)
 	}
