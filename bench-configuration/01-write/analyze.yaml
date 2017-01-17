@@ -1,4 +1,4 @@
-title: Write 2M keys, 1000-client, 8-byte key, 256-byte value
+title: Write 2M keys, 8-byte key, 256-byte value
 work_dir: 2017Q1-01-etcd-zookeeper-consul/01-write
 all_aggregated_path: 2017Q1-01-etcd-zookeeper-consul/01-write/data-aggregated.csv
 
