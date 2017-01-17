@@ -338,21 +338,24 @@ func generateReport(cfg Config, h []ReqHandler, reqDone func(), reqGen func(chan
 	b.waitAll()
 
 	printStats(b.stats)
+	saveAllStats(cfg, b.stats)
+}
 
+func saveAllStats(cfg Config, stats report.Stats) {
 	// cfg.DataLatencyAll
-	saveDataLatencyAll(cfg, b.stats)
+	saveDataLatencyAll(cfg, stats)
 
 	// cfg.DataLatencyDistributionSummary
-	saveDataLatencyDistributionSummary(cfg, b.stats)
+	saveDataLatencyDistributionSummary(cfg, stats)
 
 	// cfg.DataLatencyDistributionPercentile
-	saveDataLatencyDistributionPercentile(cfg, b.stats)
+	saveDataLatencyDistributionPercentile(cfg, stats)
 
 	// cfg.DataLatencyDistributionAll
-	saveDataLatencyDistributionAll(cfg, b.stats)
+	saveDataLatencyDistributionAll(cfg, stats)
 
 	// cfg.DataLatencyThroughputTimeseries
-	saveDataLatencyThroughputTimeseries(cfg, b.stats)
+	saveDataLatencyThroughputTimeseries(cfg, stats)
 }
 
 func step2StressDatabase(cfg Config) error {
@@ -410,6 +413,9 @@ func step2StressDatabase(cfg Config) error {
 
 			// finish reports
 			b.finishReports()
+
+			printStats(b.stats)
+			saveAllStats(cfg, b.stats)
 		}
 		plog.Println("write generateReport is finished...")
 
