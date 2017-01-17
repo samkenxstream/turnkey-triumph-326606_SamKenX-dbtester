@@ -104,5 +104,10 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 
 	println()
 	time.Sleep(3 * time.Second)
-	return step4UploadLogs(cfg)
+	if err := step4UploadLogs(cfg); err != nil {
+		return err
+	}
+
+	plog.Info("all done!")
+	return nil
 }
