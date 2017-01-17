@@ -68,7 +68,7 @@ func NewServer() agentpb.TransporterServer {
 
 func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*agentpb.Response, error) {
 	if r != nil {
-		plog.Infof("received gRPC request %q with database %q", r.Operation, r.Database)
+		plog.Infof("received gRPC request %q with database %q (clients: %d)", r.Operation, r.Database, r.ClientNum)
 	}
 
 	if r.Operation == agentpb.Request_Start {
@@ -116,6 +116,9 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 
 		// re-use configurations for next requests
 		t.req = *r
+	}
+	if r.Operation == agentpb.Request_Heartbeat {
+		t.req.ClientNum = r.ClientNum
 	}
 
 	switch r.Operation {
@@ -229,6 +232,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 		}
 
 	case agentpb.Request_Heartbeat:
+		plog.Infof("overwriting clients num %d to %q", t.req.ClientNum, t.clientNumPath)
 		if err := toFile(fmt.Sprintf("%d", t.req.ClientNum), t.clientNumPath); err != nil {
 			return nil, err
 		}
