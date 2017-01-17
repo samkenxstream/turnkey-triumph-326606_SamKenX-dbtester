@@ -50,8 +50,9 @@ type Config struct {
 	// https://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html
 	Step1 struct {
 		SkipStartDatabase       bool  `yaml:"skip_start_database"`
-		ZookeeperMaxClientCnxns int64 `yaml:"zookeeper_max_client_connections"`
+		EtcdSnapCount           int64 `yaml:"etcd_snap_count"`
 		ZookeeperSnapCount      int64 `yaml:"zookeeper_snap_count"`
+		ZookeeperMaxClientCnxns int64 `yaml:"zookeeper_max_client_connections"`
 	} `yaml:"step1"`
 
 	Step2 struct {
