@@ -141,6 +141,29 @@ func printStats(st report.Stats) {
 		fmt.Printf("Fastest: %f secs\n", st.Fastest)
 		fmt.Printf("Average: %f secs\n", st.Average)
 		fmt.Printf("Requests/sec: %4.4f\n", st.RPS)
+
+	}
+	if len(st.ErrorDist) > 0 {
+		for k, v := range st.ErrorDist {
+			fmt.Printf("ERROR %q : %d\n", k, v)
+		}
+	} else {
+		fmt.Println("ERRRO: 0")
+	}
+}
+
+func saveDataLatencyAll(cfg Config, st report.Stats) {
+	fr := dataframe.New()
+	c1 := dataframe.NewColumn("LATENCY-MS")
+	// latencies are sorted in ascending order in seconds (from etcd)
+	for _, lat := range st.Lats {
+		c1.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*lat)))
+	}
+	if err := fr.AddColumn(c1); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr.CSV(cfg.DataLatencyAll); err != nil {
+		plog.Fatal(err)
 	}
 }
 
@@ -213,6 +236,7 @@ func saveDataLatencyDistributionPercentile(cfg Config, st report.Stats) {
 		if strings.HasSuffix(pct, ".0") {
 			pct = strings.Replace(pct, ".0", "", -1)
 		}
+
 		c1.PushBack(dataframe.NewStringValue(pct))
 		c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", 1000*seconds[i])))
 	}
@@ -224,7 +248,7 @@ func saveDataLatencyDistributionPercentile(cfg Config, st report.Stats) {
 	if err := fr.AddColumn(c2); err != nil {
 		plog.Fatal(err)
 	}
-	if err := fr.CSVHorizontal(cfg.DataLatencyDistributionPercentile); err != nil {
+	if err := fr.CSV(cfg.DataLatencyDistributionPercentile); err != nil {
 		plog.Fatal(err)
 	}
 }
@@ -313,6 +337,9 @@ func generateReport(cfg Config, h []ReqHandler, reqDone func(), reqGen func(chan
 	b.waitAll()
 
 	printStats(b.stats)
+
+	// cfg.DataLatencyAll
+	saveDataLatencyAll(cfg, b.stats)
 
 	// cfg.DataLatencyDistributionSummary
 	saveDataLatencyDistributionSummary(cfg, b.stats)
