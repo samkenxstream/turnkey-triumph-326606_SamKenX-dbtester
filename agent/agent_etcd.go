@@ -48,6 +48,8 @@ func startEtcd(fs *flags, t *transporterServer) error {
 		"--name", names[t.req.ServerIndex],
 		"--data-dir", fs.etcdDataDir,
 
+		"--snapshot-count", t.req.EtcdSnapCount,
+
 		"--listen-client-urls", clientURLs[t.req.ServerIndex],
 		"--advertise-client-urls", clientURLs[t.req.ServerIndex],
 
