@@ -62,10 +62,11 @@ type benchmark struct {
 	inflightReqs chan request
 }
 
-func newBenchmark(cfg Config, reqHandlers []ReqHandler, reqDone func(), reqGen func(chan<- request)) (b *benchmark) {
+// pass totalN in case that 'cfg' is manipulated
+func newBenchmark(totalN int, cfg Config, reqHandlers []ReqHandler, reqDone func(), reqGen func(chan<- request)) (b *benchmark) {
 	b = &benchmark{
 		cfg:         cfg,
-		bar:         pb.New(cfg.Step2.TotalRequests),
+		bar:         pb.New(totalN),
 		reqHandlers: reqHandlers,
 		reqGen:      reqGen,
 		reqDone:     reqDone,
@@ -332,26 +333,29 @@ func saveDataLatencyThroughputTimeseries(cfg Config, st report.Stats) {
 }
 
 func generateReport(cfg Config, h []ReqHandler, reqDone func(), reqGen func(chan<- request)) {
-	b := newBenchmark(cfg, h, reqDone, reqGen)
+	b := newBenchmark(cfg.Step2.TotalRequests, cfg, h, reqDone, reqGen)
 	b.startRequests()
 	b.waitAll()
 
 	printStats(b.stats)
+	saveAllStats(cfg, b.stats)
+}
 
+func saveAllStats(cfg Config, stats report.Stats) {
 	// cfg.DataLatencyAll
-	saveDataLatencyAll(cfg, b.stats)
+	saveDataLatencyAll(cfg, stats)
 
 	// cfg.DataLatencyDistributionSummary
-	saveDataLatencyDistributionSummary(cfg, b.stats)
+	saveDataLatencyDistributionSummary(cfg, stats)
 
 	// cfg.DataLatencyDistributionPercentile
-	saveDataLatencyDistributionPercentile(cfg, b.stats)
+	saveDataLatencyDistributionPercentile(cfg, stats)
 
 	// cfg.DataLatencyDistributionAll
-	saveDataLatencyDistributionAll(cfg, b.stats)
+	saveDataLatencyDistributionAll(cfg, stats)
 
 	// cfg.DataLatencyThroughputTimeseries
-	saveDataLatencyThroughputTimeseries(cfg, b.stats)
+	saveDataLatencyThroughputTimeseries(cfg, stats)
 }
 
 func step2StressDatabase(cfg Config) error {
@@ -376,7 +380,7 @@ func step2StressDatabase(cfg Config) error {
 			copied.Step2.TotalRequests = 100000
 			h, done := newWriteHandlers(copied)
 			reqGen := func(inflightReqs chan<- request) { generateWrites(copied, vals, inflightReqs) }
-			b := newBenchmark(copied, h, done, reqGen)
+			b := newBenchmark(cfg.Step2.TotalRequests, copied, h, done, reqGen)
 
 			reqCompleted := 0
 			for reqCompleted <= cfg.Step2.TotalRequests {
@@ -409,6 +413,9 @@ func step2StressDatabase(cfg Config) error {
 
 			// finish reports
 			b.finishReports()
+
+			printStats(b.stats)
+			saveAllStats(cfg, b.stats)
 		}
 		plog.Println("write generateReport is finished...")
 
