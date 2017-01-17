@@ -81,6 +81,9 @@ func newBenchmark(totalN int, cfg Config, reqHandlers []ReqHandler, reqDone func
 }
 
 func (b *benchmark) reset(clientsN int, reqHandlers []ReqHandler, reqDone func(), reqGen func(chan<- request)) {
+	if len(reqHandlers) == 0 {
+		panic(fmt.Errorf("got 0 reqHandlers"))
+	}
 	b.reqHandlers = reqHandlers
 	b.reqDone = reqDone
 	b.reqGen = reqGen
@@ -104,6 +107,9 @@ func (b *benchmark) startRequests() {
 		go func(rh ReqHandler) {
 			defer b.wg.Done()
 			for req := range b.getInflightsReqs() {
+				if rh == nil {
+					panic(fmt.Errorf("got nil rh"))
+				}
 				st := time.Now()
 				err := rh(context.Background(), &req)
 				b.report.Results() <- report.Result{Err: err, Start: st, End: time.Now()}
