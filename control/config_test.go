@@ -20,7 +20,7 @@ import (
 )
 
 func TestReadConfig(t *testing.T) {
-	c, err := ReadConfig("test.yaml")
+	c, err := ReadConfig("config_test.yaml")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,11 +71,14 @@ func TestReadConfig(t *testing.T) {
 	if c.Step1.SkipStartDatabase {
 		t.Fatalf("unexpected %v", c.Step1.SkipStartDatabase)
 	}
-	if c.Step1.ZookeeperMaxClientCnxns != 5000 {
-		t.Fatalf("unexpected %d", c.Step1.ZookeeperMaxClientCnxns)
+	if c.Step1.EtcdSnapCount != 100000 {
+		t.Fatalf("unexpected %d", c.Step1.EtcdSnapCount)
 	}
 	if c.Step1.ZookeeperSnapCount != 100000 {
 		t.Fatalf("unexpected %d", c.Step1.ZookeeperSnapCount)
+	}
+	if c.Step1.ZookeeperMaxClientCnxns != 5000 {
+		t.Fatalf("unexpected %d", c.Step1.ZookeeperMaxClientCnxns)
 	}
 
 	if c.Step2.SkipStressDatabase {

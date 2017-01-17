@@ -50,8 +50,9 @@ type Config struct {
 	// https://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html
 	Step1 struct {
 		SkipStartDatabase       bool  `yaml:"skip_start_database"`
-		ZookeeperMaxClientCnxns int64 `yaml:"zookeeper_max_client_connections"`
+		EtcdSnapCount           int64 `yaml:"etcd_snap_count"`
 		ZookeeperSnapCount      int64 `yaml:"zookeeper_snap_count"`
+		ZookeeperMaxClientCnxns int64 `yaml:"zookeeper_max_client_connections"`
 	} `yaml:"step1"`
 
 	Step2 struct {
@@ -75,8 +76,9 @@ type Config struct {
 }
 
 var (
-	defaultZookeeperMaxClientCnxns int64 = 5000
+	defaultEtcdSnapCount           int64 = 100000
 	defaultZookeeperSnapCount      int64 = 100000
+	defaultZookeeperMaxClientCnxns int64 = 5000
 )
 
 // ReadConfig reads control configuration file.
@@ -111,11 +113,14 @@ func ReadConfig(fpath string) (Config, error) {
 		}
 	}
 
-	if rs.Step1.ZookeeperMaxClientCnxns == 0 {
-		rs.Step1.ZookeeperMaxClientCnxns = defaultZookeeperMaxClientCnxns
+	if rs.Step1.EtcdSnapCount == 0 {
+		rs.Step1.EtcdSnapCount = defaultEtcdSnapCount
 	}
 	if rs.Step1.ZookeeperSnapCount == 0 {
 		rs.Step1.ZookeeperSnapCount = defaultZookeeperSnapCount
+	}
+	if rs.Step1.ZookeeperMaxClientCnxns == 0 {
+		rs.Step1.ZookeeperMaxClientCnxns = defaultZookeeperMaxClientCnxns
 	}
 
 	return rs, nil
@@ -153,8 +158,9 @@ func (cfg *Config) ToRequest() agentpb.Request {
 
 	req.PeerIPString = cfg.PeerIPString
 
-	req.ZookeeperMaxClientCnxns = cfg.Step1.ZookeeperMaxClientCnxns
+	req.EtcdSnapCount = cfg.Step1.EtcdSnapCount
 	req.ZookeeperSnapCount = cfg.Step1.ZookeeperSnapCount
+	req.ZookeeperMaxClientCnxns = cfg.Step1.ZookeeperMaxClientCnxns
 
 	req.ClientNum = int64(cfg.Step2.Clients)
 

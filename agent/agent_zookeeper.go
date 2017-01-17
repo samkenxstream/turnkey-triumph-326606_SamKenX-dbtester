@@ -113,8 +113,8 @@ func startZookeeper(fs *flags, t *transporterServer) error {
 	cfg := zkConfigDefault
 	cfg.DataDir = fs.zkDataDir
 	cfg.Peers = peers
-	cfg.MaxClientCnxns = t.req.ZookeeperMaxClientCnxns
 	cfg.SnapCount = t.req.ZookeeperSnapCount
+	cfg.MaxClientCnxns = t.req.ZookeeperMaxClientCnxns
 
 	tpl := template.Must(template.New("zkTemplate").Parse(zkTemplate))
 	buf := new(bytes.Buffer)

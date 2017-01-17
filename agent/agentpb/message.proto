@@ -55,15 +55,18 @@ message Request {
 	// ZookeeperMyID is myid that needs to be stored as a file in the remote machine.
 	uint32 zookeeperMyID   = 10;
 
-	// ZookeeperMaxClientCnxns limits the number of concurrent connections
-	// (at the socket level) that a single client, identified by IP address.
-	int64 zookeeperMaxClientCnxns = 11;
+	// EtcdSnapCount is 100,000 by default.
+	int64 etcdSnapCount = 11;
 
 	// ZookeeperSnapCount is 100,000 by default.
 	int64 zookeeperSnapCount = 12;
 
+	// ZookeeperMaxClientCnxns limits the number of concurrent connections
+	// (at the socket level) that a single client, identified by IP address.
+	int64 zookeeperMaxClientCnxns = 13;
+
 	// ClientNum is current number of clients.
-	int64 clientNum = 13;
+	int64 clientNum = 14;
 }
 
 message Response {

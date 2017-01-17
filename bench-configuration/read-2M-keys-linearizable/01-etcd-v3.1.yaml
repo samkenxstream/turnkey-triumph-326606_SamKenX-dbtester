@@ -25,15 +25,16 @@ data_latency_throughput_timeseries: data-latency-throughput-timeseries.csv
 # start database by sending RPC calls to agents
 step1:
     skip_start_database: false
-    zookeeper_max_client_connections: 5000
+    etcd_snap_count: 100000
     zookeeper_snap_count: 100000
+    zookeeper_max_client_connections: 5000
 
 # start benchmark
 step2:
     skip_stress_database: false
     bench_type: read
     stale_read: false
-    connections: 100
+    connections: 1000
     clients: 1000
     clients_delta: 0
     clients_max: 0 # if not 0, increase clients per 100K requests (only for writes)
