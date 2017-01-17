@@ -74,7 +74,7 @@ func newBenchmark(cfg Config, reqHandlers []ReqHandler, reqDone func(), reqGen f
 
 	b.bar.Format("Bom !")
 	b.bar.Start()
-	b.report = report.NewReport("%4.4f")
+	b.report = report.NewReportSample("%4.4f")
 	return
 }
 
