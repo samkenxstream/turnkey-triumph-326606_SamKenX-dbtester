@@ -14,6 +14,7 @@ peer_ips:
 agent_port: 3500
 database_port: 2379
 
+# these will saved where 'dbtester control' command runs
 log: control.log
 data_latency_distribution_summary: data-latency-distribution-summary.csv
 data_latency_distribution_percentile: data-latency-distribution-percentile.csv
