@@ -34,8 +34,8 @@ step2:
     skip_stress_database: false
     bench_type: write
     stale_read: true
-    connections: 1000
-    clients: 1000
+    connections: 100
+    clients: 100
     connections_clients_delta: 100
     connections_clients_max: 2000
     key_size: 8
