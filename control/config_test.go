@@ -20,7 +20,7 @@ import (
 )
 
 func TestReadConfig(t *testing.T) {
-	c, err := ReadConfig("test.yaml")
+	c, err := ReadConfig("config_test.yaml")
 	if err != nil {
 		t.Fatal(err)
 	}
