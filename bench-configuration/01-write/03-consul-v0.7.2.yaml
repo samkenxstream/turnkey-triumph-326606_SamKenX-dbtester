@@ -1,20 +1,18 @@
-database: etcdv3
-test_name: etcd-v3.1-go1.7.4
+database: consul
+test_name: consul-v0.7.2-go1.7.4
 
 google_cloud_project_name: etcd-development
 google_cloud_storage_key_path: /home/gyuho/gcloud-key.json # need this only in 'control' side
 google_cloud_storage_bucket_name: dbtester-results
-google_cloud_storage_sub_directory: 2017Q1-01-etcd-zookeeper-consul/04-read-2M-keys-linearizable
-# google_cloud_storage_sub_directory: 2017Q1-01-etcd-zookeeper-consul/05-read-2M-keys-linearizable-1000QPS
-# google_cloud_storage_sub_directory: 2017Q1-01-etcd-zookeeper-consul/06-read-500K-keys-linearizable-1CONN
+google_cloud_storage_sub_directory: 2017Q1-01-etcd-zookeeper-consul/01-write
 
 peer_ips:
-    - 10.240.0.20
-    - 10.240.0.21
-    - 10.240.0.22
+    - 10.240.0.30
+    - 10.240.0.31
+    - 10.240.0.35
 
 agent_port: 3500
-database_port: 2379
+database_port: 8500
 
 log: control.log
 data_latency_distribution_summary: data-latency-distribution-summary.csv
@@ -32,12 +30,12 @@ step1:
 # start benchmark
 step2:
     skip_stress_database: false
-    bench_type: read
-    stale_read: false
+    bench_type: write
+    stale_read: true
     connections: 1000
     clients: 1000
-    connections_clients_delta: 0
-    connections_clients_max: 0
+    connections_clients_delta: 100
+    connections_clients_max: 2000
     key_size: 8
     value_size: 256
     total_requests: 2000000

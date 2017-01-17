@@ -56,18 +56,18 @@ type Config struct {
 	} `yaml:"step1"`
 
 	Step2 struct {
-		SkipStressDatabase bool   `yaml:"skip_stress_database"`
-		BenchType          string `yaml:"bench_type"`
-		StaleRead          bool   `yaml:"stale_read"`
-		Connections        int    `yaml:"connections"`
-		Clients            int    `yaml:"clients"`
-		ClientsDelta       int    `yaml:"clients_delta"`
-		ClientsMax         int    `yaml:"clients_max"`
-		KeySize            int    `yaml:"key_size"`
-		SameKey            bool   `yaml:"same_key"`
-		ValueSize          int    `yaml:"value_size"`
-		TotalRequests      int    `yaml:"total_requests"`
-		RequestsPerSecond  int    `yaml:"requests_per_second"`
+		SkipStressDatabase      bool   `yaml:"skip_stress_database"`
+		BenchType               string `yaml:"bench_type"`
+		StaleRead               bool   `yaml:"stale_read"`
+		Connections             int    `yaml:"connections"`
+		Clients                 int    `yaml:"clients"`
+		ConnectionsClientsDelta int    `yaml:"connections_clients_delta"`
+		ConnectionsClientsMax   int    `yaml:"connections_clients_max"`
+		KeySize                 int    `yaml:"key_size"`
+		SameKey                 bool   `yaml:"same_key"`
+		ValueSize               int    `yaml:"value_size"`
+		TotalRequests           int    `yaml:"total_requests"`
+		RequestsPerSecond       int    `yaml:"requests_per_second"`
 	} `yaml:"step2"`
 
 	Step3 struct {

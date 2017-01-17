@@ -323,7 +323,7 @@ func step2StressDatabase(cfg Config) error {
 	switch cfg.Step2.BenchType {
 	case "write":
 		plog.Println("write generateReport is started...")
-		if cfg.Step2.ClientsMax == 0 {
+		if cfg.Step2.ConnectionsClientsMax == 0 {
 			h, done := newWriteHandlers(cfg)
 			reqGen := func(inflightReqs chan<- request) { generateWrites(cfg, vals, inflightReqs) }
 			generateReport(cfg, h, done, reqGen)
@@ -354,9 +354,9 @@ func step2StressDatabase(cfg Config) error {
 				b.waitRequestsEnd()
 
 				// update request handlers, generator
-				copied.Step2.Clients += copied.Step2.ClientsDelta
-				if copied.Step2.Clients > copied.Step2.ClientsMax {
-					copied.Step2.Clients = copied.Step2.ClientsMax
+				copied.Step2.Clients += copied.Step2.ConnectionsClientsDelta
+				if copied.Step2.Clients > copied.Step2.ConnectionsClientsMax {
+					copied.Step2.Clients = copied.Step2.ConnectionsClientsMax
 				}
 				h, done = newWriteHandlers(copied)
 				reqGen = func(inflightReqs chan<- request) { generateWrites(copied, vals, inflightReqs) }
