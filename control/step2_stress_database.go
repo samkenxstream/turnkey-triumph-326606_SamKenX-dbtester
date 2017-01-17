@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -182,9 +183,17 @@ func saveDataLatencyDistributionSummary(cfg Config, st report.Stats) {
 		plog.Fatal(err)
 	}
 
-	for errName, errN := range st.ErrorDist {
-		errcol := dataframe.NewColumn(fmt.Sprintf("ERROR: %q", errName))
-		errcol.PushBack(dataframe.NewStringValue(errN))
+	if len(st.ErrorDist) > 0 {
+		for errName, errN := range st.ErrorDist {
+			errcol := dataframe.NewColumn(fmt.Sprintf("ERROR: %q", errName))
+			errcol.PushBack(dataframe.NewStringValue(errN))
+			if err := fr.AddColumn(errcol); err != nil {
+				plog.Fatal(err)
+			}
+		}
+	} else {
+		errcol := dataframe.NewColumn("ERROR")
+		errcol.PushBack(dataframe.NewStringValue("0"))
 		if err := fr.AddColumn(errcol); err != nil {
 			plog.Fatal(err)
 		}
@@ -200,7 +209,11 @@ func saveDataLatencyDistributionPercentile(cfg Config, st report.Stats) {
 	c1 := dataframe.NewColumn("LATENCY-PERCENTILE")
 	c2 := dataframe.NewColumn("LATENCY-MS")
 	for i := range pctls {
-		c1.PushBack(dataframe.NewStringValue(fmt.Sprintf("p-%f", pctls[i])))
+		pct := fmt.Sprintf("p%.1f", pctls[i])
+		if strings.HasSuffix(pct, ".0") {
+			pct = strings.Replace(pct, ".0", "", -1)
+		}
+		c1.PushBack(dataframe.NewStringValue(pct))
 		c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", 1000*seconds[i])))
 	}
 
