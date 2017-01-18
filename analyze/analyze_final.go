@@ -71,26 +71,49 @@ func do(configPath string) error {
 	plog.Println("combining data for plotting")
 	for _, plotConfig := range cfg.PlotList {
 		plog.Printf("plotting %q", plotConfig.Column)
-		var columns []dataframe.Column
+		var dataColumns []dataframe.Column
+		var clientNumColumns []dataframe.Column
 		for i, ad := range all.data {
+			tag := all.databaseTags[i]
+
 			col, err := ad.aggregated.Column(plotConfig.Column)
 			if err != nil {
 				return err
 			}
-			tag := all.databaseTags[i]
 			col.UpdateHeader(makeHeader(plotConfig.Column, tag))
-			columns = append(columns, col)
+			dataColumns = append(dataColumns, col)
+
+			avgCol, err := ad.aggregated.Column("AVG-CLIENT-NUM")
+			if err != nil {
+				return err
+			}
+			avgCol.UpdateHeader(makeHeader("AVG-CLIENT-NUM", tag))
+			clientNumColumns = append(clientNumColumns, avgCol)
 		}
-		if err = all.draw(plotConfig, columns...); err != nil {
+		if err = all.draw(plotConfig, dataColumns...); err != nil {
 			return err
 		}
 
-		plog.Printf("saving %q to a separate CSV", plotConfig.Column)
-		nf, err := dataframe.NewFromColumns(nil, columns...)
+		plog.Printf("saving data for %q of all database", plotConfig.Column)
+		nf, err := dataframe.NewFromColumns(nil, dataColumns...)
 		if err != nil {
 			return err
 		}
 		if err = nf.CSV(filepath.Join(cfg.WorkDir, plotConfig.Column+".csv")); err != nil {
+			return err
+		}
+
+		plog.Printf("saving data for %q of all database (by client number)", plotConfig.Column)
+		nf2 := dataframe.New()
+		for i := range clientNumColumns {
+			if err := nf2.AddColumn(clientNumColumns[i]); err != nil {
+				return err
+			}
+			if err := nf2.AddColumn(dataColumns[i]); err != nil {
+				return err
+			}
+		}
+		if err = nf2.CSV(filepath.Join(cfg.WorkDir, plotConfig.Column+"-BY-CLIENT-NUM"+".csv")); err != nil {
 			return err
 		}
 	}
