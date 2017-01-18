@@ -74,9 +74,6 @@ type Stats struct {
 type Report interface {
 	Results() chan<- Result
 
-	// Run returns results in print-friendly format.
-	Run() <-chan string
-
 	// Stats returns results in raw data.
 	Stats() <-chan Stats
 }
@@ -96,16 +93,6 @@ func NewReportSample(precision string) Report {
 }
 
 func (r *report) Results() chan<- Result { return r.results }
-
-func (r *report) Run() <-chan string {
-	donec := make(chan string, 1)
-	go func() {
-		defer close(donec)
-		r.processResults()
-		donec <- r.String()
-	}()
-	return donec
-}
 
 func (r *report) Stats() <-chan Stats {
 	donec := make(chan Stats, 1)
@@ -177,9 +164,7 @@ func (r *reportRate) String() string {
 
 func (r *report) processResult(res *Result) {
 	if res.Err != nil {
-		errs := res.Err.Error()
-		v := r.errorDist[errs]
-		r.errorDist[errs] = v + 1
+		r.errorDist[res.Err.Error()]++
 		return
 	}
 	dur := res.Duration()
