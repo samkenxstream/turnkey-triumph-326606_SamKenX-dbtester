@@ -147,7 +147,6 @@ func printStats(st report.Stats) {
 		fmt.Printf("Fastest: %f secs\n", st.Fastest)
 		fmt.Printf("Average: %f secs\n", st.Average)
 		fmt.Printf("Requests/sec: %4.4f\n", st.RPS)
-
 	}
 	if len(st.ErrorDist) > 0 {
 		for k, v := range st.ErrorDist {
@@ -417,6 +416,7 @@ func step2StressDatabase(cfg Config) error {
 
 			combined.Average = combined.AvgTotal / float64(len(combined.Lats))
 			combined.RPS = float64(len(combined.Lats)) / combined.Total.Seconds()
+			plog.Printf("got total %d data points and total %f seconds (RPS %f)", len(combined.Lats), combined.Total.Seconds(), combined.RPS)
 
 			for i := range combined.Lats {
 				dev := combined.Lats[i] - combined.Average
