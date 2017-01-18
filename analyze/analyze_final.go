@@ -64,7 +64,7 @@ func do(configPath string) error {
 		all.data = append(all.data, ad)
 		all.databaseTags = append(all.databaseTags, elem.DatabaseTag)
 		for _, hd := range ad.aggregated.Headers() {
-			all.headerToLegend[hd] = elem.Legend
+			all.headerToLegend[makeHeader(hd, elem.DatabaseTag)] = elem.Legend
 		}
 	}
 
@@ -73,11 +73,12 @@ func do(configPath string) error {
 		plog.Printf("plotting %q", plotConfig.Column)
 		var columns []dataframe.Column
 		for i, ad := range all.data {
-			tag := all.databaseTags[i]
-			col, err := ad.aggregated.Column(makeHeader(plotConfig.Column, tag))
+			col, err := ad.aggregated.Column(plotConfig.Column)
 			if err != nil {
 				return err
 			}
+			tag := all.databaseTags[i]
+			col.UpdateHeader(makeHeader(plotConfig.Column, tag))
 			columns = append(columns, col)
 		}
 		if err = all.draw(plotConfig, columns...); err != nil {
