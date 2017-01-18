@@ -49,7 +49,7 @@ step2:
     key_size: 8
     same_key: true
     value_size: 256
-    total_requests: 3000000
+    total_requests: 2000000
     requests_per_second: 100
 
 # after benchmark

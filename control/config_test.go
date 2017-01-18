@@ -105,7 +105,7 @@ func TestReadConfig(t *testing.T) {
 	if !c.Step2.StaleRead {
 		t.Fatalf("unexpected %v", c.Step2.StaleRead)
 	}
-	if c.Step2.TotalRequests != 3000000 {
+	if c.Step2.TotalRequests != 2000000 {
 		t.Fatalf("unexpected %d", c.Step2.TotalRequests)
 	}
 	if c.Step2.RequestsPerSecond != 100 {
