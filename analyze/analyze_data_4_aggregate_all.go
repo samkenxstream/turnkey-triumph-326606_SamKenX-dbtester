@@ -111,6 +111,7 @@ func (data *analyzeData) aggregateAll() error {
 
 		sampleSize = float64(len(data.sys))
 
+		avgClientNumCol             = dataframe.NewColumn("AVG-CLIENT-NUM")               // from CLIENT-NUM
 		avgCPUCol                   = dataframe.NewColumn("AVG-CPU")                      // from CPU-NUM
 		avgVMRSSMBCol               = dataframe.NewColumn("AVG-VMRSS-MB")                 // from VMRSS-NUM
 		avgReadsCompletedCol        = dataframe.NewColumn("AVG-READS-COMPLETED")          // from READS-COMPLETED
@@ -131,6 +132,7 @@ func (data *analyzeData) aggregateAll() error {
 	// by iterating each row (horizontally) for all the columns
 	for rowIdx := 0; rowIdx < minBenchEndIdx; rowIdx++ {
 		var (
+			clientNumSum             float64
 			cpuSum                   float64
 			vmrssMBSum               float64
 			readsCompletedSum        float64
@@ -161,6 +163,8 @@ func (data *analyzeData) aggregateAll() error {
 				cumulativeThroughputCol.PushBack(dataframe.NewStringValue(requestSum))
 
 			// average values (need sume first!)
+			case strings.HasPrefix(hd, "CLIENT-NUM-"):
+				clientNumSum += vv
 			case strings.HasPrefix(hd, "CPU-"):
 				// CPU-NUM was converted to CPU-1, CPU-2, CPU-3
 				cpuSum += vv
@@ -193,6 +197,7 @@ func (data *analyzeData) aggregateAll() error {
 				transmitBytesNumSum += vv
 			}
 		}
+		avgClientNumCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", clientNumSum/sampleSize)))
 		avgCPUCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", cpuSum/sampleSize)))
 		avgVMRSSMBCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", vmrssMBSum/sampleSize)))
 		avgReadsCompletedCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", readsCompletedSum/sampleSize)))
@@ -209,13 +214,11 @@ func (data *analyzeData) aggregateAll() error {
 		avgTransmitBytesNumDeltaCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", transmitBytesNumDeltaSum/sampleSize)))
 	}
 
-	// move CLIENT-NUM to second column
-	if err = data.aggregated.MoveColumn("CLIENT-NUM", 1); err != nil {
-		return err
-	}
-
 	// add all cumulative, average columns
 	if err = data.aggregated.AddColumn(cumulativeThroughputCol); err != nil {
+		return err
+	}
+	if err = data.aggregated.AddColumn(avgClientNumCol); err != nil {
 		return err
 	}
 	if err = data.aggregated.AddColumn(avgCPUCol); err != nil {
@@ -277,9 +280,13 @@ func (data *analyzeData) aggregateAll() error {
 	if err = data.aggregated.MoveColumn("SECOND", 1); err != nil {
 		return err
 	}
+	// move to 3rd column
+	if err = data.aggregated.MoveColumn("AVG-CLIENT-NUM", 2); err != nil {
+		return err
+	}
 
 	// currently first columns are ordered as:
-	// UNIX-TS, SECOND, CLIENT-NUM, AVG-LATENCY-MS, AVG-THROUGHPUT
+	// UNIX-TS, SECOND, AVG-CLIENT-NUM, AVG-LATENCY-MS, AVG-THROUGHPUT
 	//
 	// re-order columns in the following order, to make it more readable
 	reorder := []string{
