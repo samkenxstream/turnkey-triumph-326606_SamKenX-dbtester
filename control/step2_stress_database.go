@@ -399,12 +399,20 @@ func step2StressDatabase(cfg Config) error {
 
 			plog.Info("combining all reports")
 
-			combined := report.Stats{}
+			combined := report.Stats{ErrorDist: make(map[string]int)}
 			for _, st := range stats {
 				combined.AvgTotal += st.AvgTotal
 				combined.Total += st.Total
 				combined.Lats = append(combined.Lats, st.Lats...)
 				combined.TimeSeries = append(combined.TimeSeries, st.TimeSeries...)
+
+				for k, v := range st.ErrorDist {
+					if _, ok := combined.ErrorDist[k]; !ok {
+						combined.ErrorDist[k] = v
+					} else {
+						combined.ErrorDist[k] += v
+					}
+				}
 			}
 
 			combined.Average = combined.AvgTotal / float64(len(combined.Lats))
@@ -801,20 +809,4 @@ func generateWrites(cfg Config, startIdx int, vals values, inflightReqs chan<- r
 			inflightReqs <- request{consulOp: consulOp{key: k, value: v}}
 		}
 	}
-}
-
-func assignRequest(ranges []int, total int) (rs []int) {
-	reqEach := total / (len(ranges) + 1)
-	reqEach = (reqEach / 100000) * 100000
-	curSum := 0
-	rs = make([]int, len(ranges))
-	for i := range ranges {
-		if i < len(ranges)-1 {
-			rs[i] = reqEach
-			curSum += reqEach
-		} else {
-			rs[i] = total - curSum
-		}
-	}
-	return
 }
