@@ -375,7 +375,7 @@ func step2StressDatabase(cfg Config) error {
 		plog.Println("write generateReport is started...")
 		if cfg.Step2.ConnectionsClientsMax == 0 {
 			h, done := newWriteHandlers(cfg)
-			reqGen := func(inflightReqs chan<- request) { generateWrites(cfg, vals, inflightReqs) }
+			reqGen := func(inflightReqs chan<- request) { generateWrites(cfg, 0, vals, inflightReqs) }
 			generateReport(cfg, h, done, reqGen)
 		} else {
 			// need client number increase
@@ -388,7 +388,7 @@ func step2StressDatabase(cfg Config) error {
 			copied := cfg
 			copied.Step2.TotalRequests = 100000
 			h, done := newWriteHandlers(copied)
-			reqGen := func(inflightReqs chan<- request) { generateWrites(copied, vals, inflightReqs) }
+			reqGen := func(inflightReqs chan<- request) { generateWrites(copied, 0, vals, inflightReqs) }
 			b := newBenchmark(cfg.Step2.TotalRequests, copied, h, done, reqGen)
 
 			reqCompleted := 0
@@ -413,13 +413,13 @@ func step2StressDatabase(cfg Config) error {
 					copied.Step2.Connections = copied.Step2.ConnectionsClientsMax
 					copied.Step2.Clients = copied.Step2.ConnectionsClientsMax
 				}
-				h2, done2 := newWriteHandlers(copied)
-				reqGen = func(inflightReqs chan<- request) { generateWrites(copied, vals, inflightReqs) }
-				b.reset(copied.Step2.Clients, h2, done2, reqGen)
+				h, done = newWriteHandlers(copied)
+				reqCompleted += 100000
+				reqGen = func(inflightReqs chan<- request) { generateWrites(copied, reqCompleted, vals, inflightReqs) }
+				b.reset(copied.Step2.Clients, h, done, reqGen)
 				plog.Infof("updated client number %d", copied.Step2.Clients)
 
 				// after one range of requests are finished
-				reqCompleted += 100000
 			}
 
 			// finish reports
@@ -768,7 +768,7 @@ func generateReads(cfg Config, key string, inflightReqs chan<- request) {
 	}
 }
 
-func generateWrites(cfg Config, vals values, inflightReqs chan<- request) {
+func generateWrites(cfg Config, startIdx int, vals values, inflightReqs chan<- request) {
 	var rateLimiter *rate.Limiter
 	if cfg.Step2.RequestsPerSecond > 0 {
 		rateLimiter = rate.NewLimiter(rate.Limit(cfg.Step2.RequestsPerSecond), cfg.Step2.RequestsPerSecond)
@@ -781,7 +781,7 @@ func generateWrites(cfg Config, vals values, inflightReqs chan<- request) {
 	}()
 
 	for i := 0; i < cfg.Step2.TotalRequests; i++ {
-		k := sequentialKey(cfg.Step2.KeySize, i)
+		k := sequentialKey(cfg.Step2.KeySize, i+startIdx)
 		if cfg.Step2.SameKey {
 			k = sameKey(cfg.Step2.KeySize)
 		}
