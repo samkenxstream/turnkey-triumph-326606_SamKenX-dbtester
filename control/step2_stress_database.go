@@ -159,20 +159,20 @@ func printStats(st report.Stats) {
 	}
 }
 
-func saveDataLatencyAll(cfg Config, st report.Stats) {
-	fr := dataframe.New()
-	c1 := dataframe.NewColumn("LATENCY-MS")
-	// latencies are sorted in ascending order in seconds (from etcd)
-	for _, lat := range st.Lats {
-		c1.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*lat)))
-	}
-	if err := fr.AddColumn(c1); err != nil {
-		plog.Fatal(err)
-	}
-	if err := fr.CSV(cfg.DataLatencyAll); err != nil {
-		plog.Fatal(err)
-	}
-}
+// func saveDataLatencyAll(cfg Config, st report.Stats) {
+// 	fr := dataframe.New()
+// 	c1 := dataframe.NewColumn("LATENCY-MS")
+// 	// latencies are sorted in ascending order in seconds (from etcd)
+// 	for _, lat := range st.Lats {
+// 		c1.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*lat)))
+// 	}
+// 	if err := fr.AddColumn(c1); err != nil {
+// 		plog.Fatal(err)
+// 	}
+// 	if err := fr.CSV(cfg.DataLatencyAll); err != nil {
+// 		plog.Fatal(err)
+// 	}
+// }
 
 func saveDataLatencyDistributionSummary(cfg Config, st report.Stats) {
 	fr := dataframe.New()
@@ -349,7 +349,7 @@ func generateReport(cfg Config, h []ReqHandler, reqDone func(), reqGen func(chan
 
 func saveAllStats(cfg Config, stats report.Stats) {
 	// cfg.DataLatencyAll
-	saveDataLatencyAll(cfg, stats)
+	// saveDataLatencyAll(cfg, stats)
 
 	// cfg.DataLatencyDistributionSummary
 	saveDataLatencyDistributionSummary(cfg, stats)

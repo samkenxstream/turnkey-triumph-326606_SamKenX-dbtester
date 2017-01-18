@@ -42,7 +42,6 @@ type Config struct {
 	DatabaseEndpoints []string
 
 	Log                               string `yaml:"log"`
-	DataLatencyAll                    string `yaml:"data_latency_all"`
 	DataLatencyDistributionSummary    string `yaml:"data_latency_distribution_summary"`
 	DataLatencyDistributionPercentile string `yaml:"data_latency_distribution_percentile"`
 	DataLatencyDistributionAll        string `yaml:"data_latency_distribution_all"`

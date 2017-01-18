@@ -15,7 +15,6 @@ agent_port: 3500
 database_port: 2379
 
 log: control.log
-data_latency_all: data-latency-all.csv
 data_latency_distribution_summary: data-latency-distribution-summary.csv
 data_latency_distribution_percentile: data-latency-distribution-percentile.csv
 data_latency_distribution_all: data-latency-distribution-all.csv
