@@ -93,7 +93,7 @@ func TestReadConfig(t *testing.T) {
 	if c.Step2.Connections != 1 {
 		t.Fatalf("unexpected %d", c.Step2.Connections)
 	}
-	if !reflect.DeepEqual(c.Step2.ConnectionsClients, []int{1, 10, 50, 100, 300, 500, 700, 1000, 1500, 2000, 2500}) {
+	if !reflect.DeepEqual(c.Step2.ConnectionsClients, []int{1, 5, 10, 50, 100, 300, 500, 700, 1000}) {
 		t.Fatalf("unexpected %d", c.Step2.ConnectionsClients)
 	}
 	if c.Step2.KeySize != 8 {

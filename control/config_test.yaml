@@ -36,6 +36,7 @@ step2:
     clients: 1
     connections_clients: # if specified, connections, clients are overwritten
     - 1
+    - 5
     - 10
     - 50
     - 100
@@ -43,9 +44,6 @@ step2:
     - 500
     - 700
     - 1000
-    - 1500
-    - 2000
-    - 2500
     key_size: 8
     same_key: true
     value_size: 256

@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -77,6 +78,7 @@ func newBenchmark(totalN int, clientsN int, reqHandlers []ReqHandler, reqDone fu
 	return
 }
 
+// only useful when multiple ranges of requests are run with one report
 func (b *benchmark) reset(clientsN int, reqHandlers []ReqHandler, reqDone func(), reqGen func(chan<- request)) {
 	if len(reqHandlers) == 0 {
 		panic(fmt.Errorf("got 0 reqHandlers"))
@@ -365,53 +367,60 @@ func step2StressDatabase(cfg Config) error {
 			// therefore, we give more requests to the last config
 			rs := assignRequest(cfg.Step2.ConnectionsClients, cfg.Step2.TotalRequests)
 
-			// 1st request
-			copied := cfg
-			copied.Step2.Connections = cfg.Step2.ConnectionsClients[0]
-			copied.Step2.Clients = cfg.Step2.ConnectionsClients[0]
-			copied.Step2.TotalRequests = rs[0]
-			plog.Infof("signaling agent with client number %d", copied.Step2.Clients)
-			if err := bcastReq(copied, agentpb.Request_Heartbeat); err != nil {
-				return err
-			}
-			h, done := newWriteHandlers(copied)
-			reqGen := func(inflightReqs chan<- request) { generateWrites(copied, 0, vals, inflightReqs) }
-			b := newBenchmark(cfg.Step2.TotalRequests, cfg.Step2.ConnectionsClients[0], h, done, reqGen)
+			var stats []report.Stats
+			reqCompleted := 0
+			for i := 0; i < len(rs); i++ {
+				copied := cfg
+				copied.Step2.Connections = cfg.Step2.ConnectionsClients[i]
+				copied.Step2.Clients = cfg.Step2.ConnectionsClients[i]
+				copied.Step2.TotalRequests = rs[i]
 
-			// wait until 1st requests are finished
-			// do not end reports yet
-			b.startRequests()
-			b.waitRequestsEnd()
-
-			// from 2nd request
-			reqCompleted := copied.Step2.TotalRequests
-			for i := 1; i < len(rs); i++ {
-				copied2 := cfg
-				copied2.Step2.Connections = cfg.Step2.ConnectionsClients[i]
-				copied2.Step2.Clients = cfg.Step2.ConnectionsClients[i]
-				copied2.Step2.TotalRequests = rs[i]
-				plog.Infof("signaling agent with client number %d", copied2.Step2.Clients)
-				if err := bcastReq(copied2, agentpb.Request_Heartbeat); err != nil {
+				plog.Infof("signaling agent with client number %d", copied.Step2.Clients)
+				if err := bcastReq(copied, agentpb.Request_Heartbeat); err != nil {
 					return err
 				}
-				h, done = newWriteHandlers(copied2)
-				reqGen = func(inflightReqs chan<- request) { generateWrites(copied2, reqCompleted, vals, inflightReqs) }
-				b.reset(copied2.Step2.Clients, h, done, reqGen)
-				plog.Infof("updated client number %d", copied2.Step2.Clients)
+
+				h, done := newWriteHandlers(copied)
+				reqGen := func(inflightReqs chan<- request) { generateWrites(copied, reqCompleted, vals, inflightReqs) }
+				b := newBenchmark(copied.Step2.TotalRequests, copied.Step2.Clients, h, done, reqGen)
 
 				// wait until rs[i] requests are finished
 				// do not end reports yet
 				b.startRequests()
 				b.waitRequestsEnd()
 
+				// finish reports
+				b.finishReports()
+				printStats(b.stats)
+
 				reqCompleted += rs[i]
+				stats = append(stats, b.stats)
 			}
 
-			// finish reports
-			b.finishReports()
+			combined := report.Stats{}
+			for _, st := range stats {
+				combined.AvgTotal += st.AvgTotal
+				combined.Total += st.Total
+				combined.Lats = append(combined.Lats, st.Lats...)
+				combined.TimeSeries = append(combined.TimeSeries, st.TimeSeries...)
+			}
 
-			printStats(b.stats)
-			saveAllStats(cfg, b.stats)
+			combined.Average = combined.AvgTotal / float64(len(combined.Lats))
+			combined.RPS = float64(len(combined.Lats)) / combined.Total.Seconds()
+
+			for i := range combined.Lats {
+				dev := combined.Lats[i] - combined.Average
+				combined.Stddev += dev * dev
+			}
+			combined.Stddev = math.Sqrt(combined.Stddev / float64(len(combined.Lats)))
+
+			sort.Float64s(combined.Lats)
+			if len(combined.Lats) > 0 {
+				combined.Fastest = combined.Lats[0]
+				combined.Slowest = combined.Lats[len(combined.Lats)-1]
+			}
+
+			saveAllStats(cfg, combined)
 		}
 
 		plog.Println("write generateReport is finished...")
@@ -792,6 +801,7 @@ func generateWrites(cfg Config, startIdx int, vals values, inflightReqs chan<- r
 
 func assignRequest(ranges []int, total int) (rs []int) {
 	reqEach := total / (len(ranges) + 1)
+	reqEach = (reqEach / 100000) * 100000
 	curSum := 0
 	rs = make([]int, len(ranges))
 	for i := range ranges {
