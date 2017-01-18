@@ -612,8 +612,6 @@ func newReadHandlers(cfg Config) (rhs []ReqHandler, done func()) {
 }
 
 func newWriteHandlers(cfg Config) (rhs []ReqHandler, done func()) {
-	plog.Infof("creating new write handlers with %+v", cfg)
-
 	rhs = make([]ReqHandler, cfg.Step2.Clients)
 	switch cfg.Database {
 	case "etcdv2":
