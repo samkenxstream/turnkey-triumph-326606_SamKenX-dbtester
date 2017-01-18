@@ -87,14 +87,14 @@ func TestReadConfig(t *testing.T) {
 	if c.Step2.BenchType != "write" {
 		t.Fatalf("unexpected %s", c.Step2.BenchType)
 	}
-	if c.Step2.Clients != 100 {
+	if c.Step2.Clients != 1 {
 		t.Fatalf("unexpected %d", c.Step2.Clients)
 	}
-	if c.Step2.ConnectionsClientsDelta != 100 {
-		t.Fatalf("unexpected %d", c.Step2.ConnectionsClientsDelta)
+	if c.Step2.Connections != 1 {
+		t.Fatalf("unexpected %d", c.Step2.Connections)
 	}
-	if c.Step2.ConnectionsClientsMax != 2000 {
-		t.Fatalf("unexpected %d", c.Step2.ConnectionsClientsMax)
+	if !reflect.DeepEqual(c.Step2.ConnectionsClients, []int{1, 10, 50, 100, 300, 500, 700, 1000, 1500, 2000, 2500}) {
+		t.Fatalf("unexpected %d", c.Step2.ConnectionsClients)
 	}
 	if c.Step2.KeySize != 8 {
 		t.Fatalf("unexpected %d", c.Step2.KeySize)
@@ -102,13 +102,10 @@ func TestReadConfig(t *testing.T) {
 	if !c.Step2.SameKey {
 		t.Fatalf("unexpected %v", c.Step2.SameKey)
 	}
-	if c.Step2.Connections != 100 {
-		t.Fatalf("unexpected %d", c.Step2.Connections)
-	}
 	if !c.Step2.StaleRead {
 		t.Fatalf("unexpected %v", c.Step2.StaleRead)
 	}
-	if c.Step2.TotalRequests != 2000000 {
+	if c.Step2.TotalRequests != 3000000 {
 		t.Fatalf("unexpected %d", c.Step2.TotalRequests)
 	}
 	if c.Step2.RequestsPerSecond != 100 {
