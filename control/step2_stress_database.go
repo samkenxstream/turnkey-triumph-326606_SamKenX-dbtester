@@ -392,7 +392,7 @@ func step2StressDatabase(cfg Config) error {
 			b := newBenchmark(cfg.Step2.TotalRequests, copied, h, done, reqGen)
 
 			reqCompleted := 0
-			for reqCompleted <= cfg.Step2.TotalRequests {
+			for reqCompleted < cfg.Step2.TotalRequests {
 				plog.Infof("signaling agent on client number %d", copied.Step2.Clients)
 				// signal agent on the client number
 				if err := bcastReq(copied, agentpb.Request_Heartbeat); err != nil {
