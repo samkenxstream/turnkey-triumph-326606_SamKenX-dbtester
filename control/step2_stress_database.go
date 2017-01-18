@@ -397,6 +397,8 @@ func step2StressDatabase(cfg Config) error {
 				stats = append(stats, b.stats)
 			}
 
+			plog.Info("combining all reports")
+
 			combined := report.Stats{}
 			for _, st := range stats {
 				combined.AvgTotal += st.AvgTotal
@@ -420,6 +422,8 @@ func step2StressDatabase(cfg Config) error {
 				combined.Slowest = combined.Lats[len(combined.Lats)-1]
 			}
 
+			plog.Info("combined all reports")
+			printStats(combined)
 			saveAllStats(cfg, combined)
 		}
 
