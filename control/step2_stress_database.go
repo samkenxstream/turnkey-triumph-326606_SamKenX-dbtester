@@ -792,6 +792,7 @@ func generateWrites(cfg Config, startIdx int, vals values, inflightReqs chan<- r
 
 func assignRequest(ranges []int, total int) (rs []int) {
 	reqEach := total / (len(ranges) + 1)
+	reqEach = (reqEach / 100000) * 100000
 	curSum := 0
 	rs = make([]int, len(ranges))
 	for i := range ranges {

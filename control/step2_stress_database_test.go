@@ -20,19 +20,19 @@ import (
 )
 
 func Test_assignRequest(t *testing.T) {
-	ranges := []int{1, 10, 50, 100, 300, 500, 700, 1000, 1500, 2000, 2500}
+	ranges := []int{1, 5, 10, 50, 100, 300, 500, 700, 1000}
 	total := 2000000
 	rs := assignRequest(ranges, total)
-	expected := []int{166666, 166666, 166666, 166666, 166666, 166666, 166666, 166666, 166666, 166666, 333340}
+	expected := []int{200000, 200000, 200000, 200000, 200000, 200000, 200000, 200000, 400000}
+	if !reflect.DeepEqual(rs, expected) {
+		t.Fatalf("expected %+v, got %+v", expected, rs)
+	}
+
 	cur := 0
 	for _, v := range expected {
 		cur += v
 	}
 	if cur != total {
 		t.Fatalf("sum must be %d, got %d", total, cur)
-	}
-
-	if !reflect.DeepEqual(rs, expected) {
-		t.Fatalf("expected %+v, got %+v", expected, rs)
 	}
 }
