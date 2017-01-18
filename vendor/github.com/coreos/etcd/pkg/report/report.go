@@ -177,7 +177,9 @@ func (r *reportRate) String() string {
 
 func (r *report) processResult(res *Result) {
 	if res.Err != nil {
-		r.errorDist[res.Err.Error()]++
+		errs := res.Err.Error()
+		v := r.errorDist[errs]
+		r.errorDist[errs] = v + 1
 		return
 	}
 	dur := res.Duration()
