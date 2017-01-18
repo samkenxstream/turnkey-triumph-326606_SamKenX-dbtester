@@ -32,14 +32,24 @@ step2:
     skip_stress_database: false
     bench_type: write
     stale_read: true
-    connections: 100
-    clients: 100
-    connections_clients_delta: 100
-    connections_clients_max: 2000 # if not 0, increase clients per 100K requests (only for writes)
+    connections: 1
+    clients: 1
+    connections_clients: # if specified, connections, clients are overwritten
+    - 1
+    - 10
+    - 50
+    - 100
+    - 300
+    - 500
+    - 700
+    - 1000
+    - 1500
+    - 2000
+    - 2500
     key_size: 8
     same_key: true
     value_size: 256
-    total_requests: 2000000
+    total_requests: 3000000
     requests_per_second: 100
 
 # after benchmark

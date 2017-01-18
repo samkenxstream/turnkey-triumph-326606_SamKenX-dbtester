@@ -1,4 +1,4 @@
-title: Write 2M keys, 8-byte key, 256-byte value
+title: Write 3M keys, 8-byte key, 256-byte value
 work_dir: 2017Q1-01-etcd-zookeeper-consul/01-write
 all_aggregated_path: 2017Q1-01-etcd-zookeeper-consul/01-write/data-aggregated.csv
 
@@ -119,7 +119,7 @@ readme:
 
   output_path: 2017Q1-01-etcd-zookeeper-consul/01-write/README.md
   results:
-  - title: Write 2M keys, 8-byte key, 256-byte value
+  - title: Write 3M keys, 8-byte key, 256-byte value
     images:
 
     - image_title: 2017Q1-01-etcd-zookeeper-consul/01-write/AVG-LATENCY-MS

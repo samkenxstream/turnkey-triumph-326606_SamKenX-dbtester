@@ -46,8 +46,6 @@ func newValues(cfg Config) (v values, rerr error) {
 }
 
 type benchmark struct {
-	cfg Config
-
 	bar        *pb.ProgressBar
 	report     report.Report
 	reportDone <-chan report.Stats
@@ -63,16 +61,15 @@ type benchmark struct {
 }
 
 // pass totalN in case that 'cfg' is manipulated
-func newBenchmark(totalN int, cfg Config, reqHandlers []ReqHandler, reqDone func(), reqGen func(chan<- request)) (b *benchmark) {
+func newBenchmark(totalN int, clientsN int, reqHandlers []ReqHandler, reqDone func(), reqGen func(chan<- request)) (b *benchmark) {
 	b = &benchmark{
-		cfg:         cfg,
 		bar:         pb.New(totalN),
 		reqHandlers: reqHandlers,
 		reqGen:      reqGen,
 		reqDone:     reqDone,
 		wg:          sync.WaitGroup{},
 	}
-	b.inflightReqs = make(chan request, b.cfg.Step2.Clients)
+	b.inflightReqs = make(chan request, clientsN)
 
 	b.bar.Format("Bom !")
 	b.bar.Start()
@@ -158,21 +155,6 @@ func printStats(st report.Stats) {
 		fmt.Println("ERRRO: 0")
 	}
 }
-
-// func saveDataLatencyAll(cfg Config, st report.Stats) {
-// 	fr := dataframe.New()
-// 	c1 := dataframe.NewColumn("LATENCY-MS")
-// 	// latencies are sorted in ascending order in seconds (from etcd)
-// 	for _, lat := range st.Lats {
-// 		c1.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*lat)))
-// 	}
-// 	if err := fr.AddColumn(c1); err != nil {
-// 		plog.Fatal(err)
-// 	}
-// 	if err := fr.CSV(cfg.DataLatencyAll); err != nil {
-// 		plog.Fatal(err)
-// 	}
-// }
 
 func saveDataLatencyDistributionSummary(cfg Config, st report.Stats) {
 	fr := dataframe.New()
@@ -339,7 +321,7 @@ func saveDataLatencyThroughputTimeseries(cfg Config, st report.Stats) {
 }
 
 func generateReport(cfg Config, h []ReqHandler, reqDone func(), reqGen func(chan<- request)) {
-	b := newBenchmark(cfg.Step2.TotalRequests, cfg, h, reqDone, reqGen)
+	b := newBenchmark(cfg.Step2.TotalRequests, cfg.Step2.Clients, h, reqDone, reqGen)
 	b.startRequests()
 	b.waitAll()
 
@@ -348,9 +330,6 @@ func generateReport(cfg Config, h []ReqHandler, reqDone func(), reqGen func(chan
 }
 
 func saveAllStats(cfg Config, stats report.Stats) {
-	// cfg.DataLatencyAll
-	// saveDataLatencyAll(cfg, stats)
-
 	// cfg.DataLatencyDistributionSummary
 	saveDataLatencyDistributionSummary(cfg, stats)
 
@@ -373,53 +352,59 @@ func step2StressDatabase(cfg Config) error {
 	switch cfg.Step2.BenchType {
 	case "write":
 		plog.Println("write generateReport is started...")
-		if cfg.Step2.ConnectionsClientsMax == 0 {
+
+		// fixed number of clients,connections
+		if len(cfg.Step2.ConnectionsClients) == 0 {
 			h, done := newWriteHandlers(cfg)
 			reqGen := func(inflightReqs chan<- request) { generateWrites(cfg, 0, vals, inflightReqs) }
 			generateReport(cfg, h, done, reqGen)
+
 		} else {
-			// need client number increase
-			// TODO: currently, request range is 100000 (fixed)
-			// e.g. 2M requests, starts with clients 100, range 100K
-			// at 2M requests point, there will be 2K clients (20 * 100)
-			if cfg.Step2.Connections != cfg.Step2.Clients {
-				plog.Panicf("expected same connections %d != clients %d", cfg.Step2.Connections, cfg.Step2.Clients)
-			}
+			// out of clients,connections ranges,
+			// we expect the last number to be the peak
+			// therefore, we give more requests to the last config
+			rs := assignRequest(cfg.Step2.ConnectionsClients, cfg.Step2.TotalRequests)
+
+			// 1st request
 			copied := cfg
-			copied.Step2.TotalRequests = 100000
+			copied.Step2.Connections = cfg.Step2.ConnectionsClients[0]
+			copied.Step2.Clients = cfg.Step2.ConnectionsClients[0]
+			copied.Step2.TotalRequests = rs[0]
+			plog.Infof("signaling agent with client number %d", copied.Step2.Clients)
+			if err := bcastReq(copied, agentpb.Request_Heartbeat); err != nil {
+				return err
+			}
 			h, done := newWriteHandlers(copied)
 			reqGen := func(inflightReqs chan<- request) { generateWrites(copied, 0, vals, inflightReqs) }
-			b := newBenchmark(cfg.Step2.TotalRequests, copied, h, done, reqGen)
+			b := newBenchmark(cfg.Step2.TotalRequests, cfg.Step2.ConnectionsClients[0], h, done, reqGen)
 
-			reqCompleted := 0
-			for reqCompleted < cfg.Step2.TotalRequests {
-				plog.Infof("signaling agent on client number %d", copied.Step2.Clients)
-				// signal agent on the client number
-				if err := bcastReq(copied, agentpb.Request_Heartbeat); err != nil {
+			// wait until 1st requests are finished
+			// do not end reports yet
+			b.startRequests()
+			b.waitRequestsEnd()
+
+			// from 2nd request
+			reqCompleted := copied.Step2.TotalRequests
+			for i := 1; i < len(rs); i++ {
+				copied2 := cfg
+				copied2.Step2.Connections = cfg.Step2.ConnectionsClients[i]
+				copied2.Step2.Clients = cfg.Step2.ConnectionsClients[i]
+				copied2.Step2.TotalRequests = rs[i]
+				plog.Infof("signaling agent with client number %d", copied2.Step2.Clients)
+				if err := bcastReq(copied2, agentpb.Request_Heartbeat); err != nil {
 					return err
 				}
+				h, done = newWriteHandlers(copied2)
+				reqGen = func(inflightReqs chan<- request) { generateWrites(copied2, reqCompleted, vals, inflightReqs) }
+				b.reset(copied2.Step2.Clients, h, done, reqGen)
+				plog.Infof("updated client number %d", copied2.Step2.Clients)
 
-				// generate request
+				// wait until rs[i] requests are finished
+				// do not end reports yet
 				b.startRequests()
-
-				// wait until 100000 requests are finished
-				// do not finish reports yet
 				b.waitRequestsEnd()
 
-				// update request handlers, generator
-				copied.Step2.Connections += copied.Step2.ConnectionsClientsDelta
-				copied.Step2.Clients += copied.Step2.ConnectionsClientsDelta
-				if copied.Step2.Clients > copied.Step2.ConnectionsClientsMax {
-					copied.Step2.Connections = copied.Step2.ConnectionsClientsMax
-					copied.Step2.Clients = copied.Step2.ConnectionsClientsMax
-				}
-				h, done = newWriteHandlers(copied)
-				reqCompleted += 100000
-				reqGen = func(inflightReqs chan<- request) { generateWrites(copied, reqCompleted, vals, inflightReqs) }
-				b.reset(copied.Step2.Clients, h, done, reqGen)
-				plog.Infof("updated client number %d", copied.Step2.Clients)
-
-				// after one range of requests are finished
+				reqCompleted += rs[i]
 			}
 
 			// finish reports
@@ -428,6 +413,7 @@ func step2StressDatabase(cfg Config) error {
 			printStats(b.stats)
 			saveAllStats(cfg, b.stats)
 		}
+
 		plog.Println("write generateReport is finished...")
 
 		plog.Println("checking total keys on", cfg.DatabaseEndpoints)
@@ -802,4 +788,19 @@ func generateWrites(cfg Config, startIdx int, vals values, inflightReqs chan<- r
 			inflightReqs <- request{consulOp: consulOp{key: k, value: v}}
 		}
 	}
+}
+
+func assignRequest(ranges []int, total int) (rs []int) {
+	reqEach := total / (len(ranges) + 1)
+	curSum := 0
+	rs = make([]int, len(ranges))
+	for i := range ranges {
+		if i < len(ranges)-1 {
+			rs[i] = reqEach
+			curSum += reqEach
+		} else {
+			rs[i] = total - curSum
+		}
+	}
+	return
 }

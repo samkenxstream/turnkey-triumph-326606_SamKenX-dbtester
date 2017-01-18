@@ -35,8 +35,7 @@ step2:
     stale_read: true
     connections: 100
     clients: 1000
-    connections_clients_delta: 0
-    connections_clients_max: 0
+    connections_clients: []
     key_size: 8
     value_size: 256
     total_requests: 2000000
