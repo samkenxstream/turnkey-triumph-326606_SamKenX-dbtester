@@ -19,7 +19,9 @@ import (
 	"path/filepath"
 	"reflect"
 	"sort"
+	"strings"
 
+	humanize "github.com/dustin/go-humanize"
 	"github.com/gyuho/dataframe"
 )
 
@@ -69,6 +71,172 @@ func do(configPath string) error {
 		for _, hd := range ad.aggregated.Headers() {
 			all.headerToLegend[makeHeader(hd, elem.DatabaseTag)] = elem.Legend
 		}
+	}
+
+	plog.Println("saving data to %q", cfg.AllAggregatedPath)
+	var (
+		readsCompletedDeltaSumColumns   []dataframe.Column
+		sectorsReadDeltaSumColumns      []dataframe.Column
+		writesCompletedDeltaSumColumns  []dataframe.Column
+		sectorsWrittenDeltaSumColumns   []dataframe.Column
+		receiveBytesNumDeltaSumColumns  []dataframe.Column
+		receiveBytesColumns             []dataframe.Column
+		transmitBytesNumDeltaSumColumns []dataframe.Column
+		transmitBytesColumns            []dataframe.Column
+	)
+	for _, ad := range all.data {
+		var (
+			legend                   string
+			readsCompletedDeltaSum   float64
+			sectorsReadDeltaSum      float64
+			writesCompletedDeltaSum  float64
+			sectorsWrittenDeltaSum   float64
+			receiveBytesNumDeltaSum  float64
+			transmitBytesNumDeltaSum float64
+		)
+		for _, col := range ad.aggregated.Columns() {
+			hdr := col.Header()
+			legend = all.headerToLegend[hdr]
+
+			switch {
+			case strings.HasPrefix(hdr, "READS-COMPLETED-DELTA-"):
+				cnt := col.Count()
+				for j := 0; j < cnt; j++ {
+					vv, err := col.Value(j)
+					if err != nil {
+						return err
+					}
+					fv, _ := vv.Number()
+					readsCompletedDeltaSum += fv
+				}
+			case strings.HasPrefix(hdr, "SECTORS-READS-DELTA-"):
+				cnt := col.Count()
+				for j := 0; j < cnt; j++ {
+					vv, err := col.Value(j)
+					if err != nil {
+						return err
+					}
+					fv, _ := vv.Number()
+					sectorsReadDeltaSum += fv
+				}
+			case strings.HasPrefix(hdr, "WRITES-COMPLETED-DELTA-"):
+				cnt := col.Count()
+				for j := 0; j < cnt; j++ {
+					vv, err := col.Value(j)
+					if err != nil {
+						return err
+					}
+					fv, _ := vv.Number()
+					writesCompletedDeltaSum += fv
+				}
+			case strings.HasPrefix(hdr, "SECTORS-WRITTEN-DELTA-"):
+				cnt := col.Count()
+				for j := 0; j < cnt; j++ {
+					vv, err := col.Value(j)
+					if err != nil {
+						return err
+					}
+					fv, _ := vv.Number()
+					sectorsWrittenDeltaSum += fv
+				}
+			case strings.HasPrefix(hdr, "RECEIVE-BYTES-NUM-DELTA-"):
+				cnt := col.Count()
+				for j := 0; j < cnt; j++ {
+					vv, err := col.Value(j)
+					if err != nil {
+						return err
+					}
+					fv, _ := vv.Number()
+					receiveBytesNumDeltaSum += fv
+				}
+			case strings.HasPrefix(hdr, "TRANSMIT-BYTES-NUM-DELTA-"):
+				cnt := col.Count()
+				for j := 0; j < cnt; j++ {
+					vv, err := col.Value(j)
+					if err != nil {
+						return err
+					}
+					fv, _ := vv.Number()
+					transmitBytesNumDeltaSum += fv
+				}
+			}
+		}
+
+		col1 := dataframe.NewColumn("READS-COMPLETED-DELTA-SUM-" + makeTag(legend))
+		col1.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", uint64(readsCompletedDeltaSum))))
+		readsCompletedDeltaSumColumns = append(readsCompletedDeltaSumColumns, col1)
+
+		col2 := dataframe.NewColumn("SECTORS-READS-DELTA-SUM-" + makeTag(legend))
+		col2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", uint64(sectorsReadDeltaSum))))
+		sectorsReadDeltaSumColumns = append(sectorsReadDeltaSumColumns, col2)
+
+		col3 := dataframe.NewColumn("WRITES-COMPLETED-DELTA-SUM-" + makeTag(legend))
+		col3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", uint64(writesCompletedDeltaSum))))
+		writesCompletedDeltaSumColumns = append(writesCompletedDeltaSumColumns, col3)
+
+		col4 := dataframe.NewColumn("SECTORS-WRITTEN-DELTA-SUM-" + makeTag(legend))
+		col4.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", uint64(sectorsWrittenDeltaSum))))
+		sectorsWrittenDeltaSumColumns = append(sectorsWrittenDeltaSumColumns, col4)
+
+		col5 := dataframe.NewColumn("RECEIVE-BYTES-SUM-" + makeTag(legend))
+		col5.PushBack(dataframe.NewStringValue(humanize.Bytes(uint64(receiveBytesNumDeltaSum))))
+		receiveBytesNumDeltaSumColumns = append(receiveBytesNumDeltaSumColumns, col5)
+
+		col6 := dataframe.NewColumn("RECEIVE-BYTES-NUM-DELTA-SUM-" + makeTag(legend))
+		col6.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", uint64(receiveBytesNumDeltaSum))))
+		receiveBytesColumns = append(receiveBytesColumns, col6)
+
+		col7 := dataframe.NewColumn("TRANSMIT-BYTES-SUM-" + makeTag(legend))
+		col7.PushBack(dataframe.NewStringValue(humanize.Bytes(uint64(transmitBytesNumDeltaSum))))
+		transmitBytesNumDeltaSumColumns = append(transmitBytesNumDeltaSumColumns, col7)
+
+		col8 := dataframe.NewColumn("TRANSMIT-BYTES-NUM-DELTA-SUM-" + makeTag(legend))
+		col8.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", uint64(transmitBytesNumDeltaSum))))
+		transmitBytesColumns = append(transmitBytesColumns, col8)
+	}
+	aggDf := dataframe.New()
+	for _, col := range readsCompletedDeltaSumColumns {
+		if err := aggDf.AddColumn(col); err != nil {
+			return err
+		}
+	}
+	for _, col := range sectorsReadDeltaSumColumns {
+		if err := aggDf.AddColumn(col); err != nil {
+			return err
+		}
+	}
+	for _, col := range writesCompletedDeltaSumColumns {
+		if err := aggDf.AddColumn(col); err != nil {
+			return err
+		}
+	}
+	for _, col := range sectorsWrittenDeltaSumColumns {
+		if err := aggDf.AddColumn(col); err != nil {
+			return err
+		}
+	}
+	for _, col := range receiveBytesNumDeltaSumColumns {
+		if err := aggDf.AddColumn(col); err != nil {
+			return err
+		}
+	}
+	for _, col := range receiveBytesColumns {
+		if err := aggDf.AddColumn(col); err != nil {
+			return err
+		}
+	}
+	for _, col := range transmitBytesNumDeltaSumColumns {
+		if err := aggDf.AddColumn(col); err != nil {
+			return err
+		}
+	}
+	for _, col := range transmitBytesColumns {
+		if err := aggDf.AddColumn(col); err != nil {
+			return err
+		}
+	}
+	if err := aggDf.CSVHorizontal(cfg.AllAggregatedPath); err != nil {
+		return err
 	}
 
 	plog.Println("combining data for plotting")
