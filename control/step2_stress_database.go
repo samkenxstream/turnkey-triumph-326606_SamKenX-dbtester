@@ -296,14 +296,18 @@ func saveDataLatencyDistributionAll(cfg Config, st report.Stats) {
 	}
 }
 
-func saveDataLatencyThroughputTimeseries(cfg Config, st report.Stats) {
+func saveDataLatencyThroughputTimeseries(cfg Config, st report.Stats, tsToClientN map[int64]int) {
 	c1 := dataframe.NewColumn("UNIX-TS")
 	c2 := dataframe.NewColumn("CONTROL-CLIENT-NUM")
 	c3 := dataframe.NewColumn("AVG-LATENCY-MS")
 	c4 := dataframe.NewColumn("AVG-THROUGHPUT")
 	for i := range st.TimeSeries {
 		c1.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", st.TimeSeries[i].Timestamp)))
-		c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", cfg.Step2.Clients)))
+		if len(tsToClientN) == 0 {
+			c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", cfg.Step2.Clients)))
+		} else {
+			c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", tsToClientN[st.TimeSeries[i].Timestamp])))
+		}
 		c3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(st.TimeSeries[i].AvgLatency))))
 		c4.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", st.TimeSeries[i].ThroughPut)))
 	}
@@ -332,10 +336,10 @@ func generateReport(cfg Config, h []ReqHandler, reqDone func(), reqGen func(chan
 	b.waitAll()
 
 	printStats(b.stats)
-	saveAllStats(cfg, b.stats)
+	saveAllStats(cfg, b.stats, nil)
 }
 
-func saveAllStats(cfg Config, stats report.Stats) {
+func saveAllStats(cfg Config, stats report.Stats, tsToClientN map[int64]int) {
 	// cfg.DataLatencyDistributionSummary
 	saveDataLatencyDistributionSummary(cfg, stats)
 
@@ -346,7 +350,7 @@ func saveAllStats(cfg Config, stats report.Stats) {
 	saveDataLatencyDistributionAll(cfg, stats)
 
 	// cfg.DataLatencyThroughputTimeseries
-	saveDataLatencyThroughputTimeseries(cfg, stats)
+	saveDataLatencyThroughputTimeseries(cfg, stats, tsToClientN)
 }
 
 func step2StressDatabase(cfg Config) error {
@@ -393,9 +397,10 @@ func step2StressDatabase(cfg Config) error {
 				b.startRequests()
 				b.waitRequestsEnd()
 
-				// finish reports
+				plog.Print("finishing reports...")
+				now := time.Now()
 				b.finishReports()
-				printStats(b.stats)
+				plog.Printf("finished reports... took %v", time.Since(now))
 
 				reqCompleted += rs[i]
 				stats = append(stats, b.stats)
@@ -403,12 +408,19 @@ func step2StressDatabase(cfg Config) error {
 
 			plog.Info("combining all reports")
 
+			tsToClientN := make(map[int64]int, cfg.Step2.TotalRequests)
 			combined := report.Stats{ErrorDist: make(map[string]int)}
-			for _, st := range stats {
+			for i, st := range stats {
+
 				combined.AvgTotal += st.AvgTotal
 				combined.Total += st.Total
 				combined.Lats = append(combined.Lats, st.Lats...)
 				combined.TimeSeries = append(combined.TimeSeries, st.TimeSeries...)
+
+				clientsN := cfg.Step2.ConnectionsClients[i]
+				for _, v := range st.TimeSeries {
+					tsToClientN[v.Timestamp] = clientsN
+				}
 
 				for k, v := range st.ErrorDist {
 					if _, ok := combined.ErrorDist[k]; !ok {
@@ -437,7 +449,7 @@ func step2StressDatabase(cfg Config) error {
 
 			plog.Info("combined all reports")
 			printStats(combined)
-			saveAllStats(cfg, combined)
+			saveAllStats(cfg, combined, tsToClientN)
 		}
 
 		plog.Println("write generateReport is finished...")
