@@ -330,3 +330,12 @@ func (data *analyzeData) save() error {
 func makeHeader(column string, tag string) string {
 	return fmt.Sprintf("%s-%s", column, tag)
 }
+
+func makeTag(legend string) string {
+	legend = strings.ToLower(legend)
+	legend = strings.Replace(legend, "go ", "go", -1)
+	legend = strings.Replace(legend, "java ", "java", -1)
+	legend = strings.Replace(legend, "(", "", -1)
+	legend = strings.Replace(legend, ")", "", -1)
+	return strings.Replace(legend, " ", "-", -1)
+}
