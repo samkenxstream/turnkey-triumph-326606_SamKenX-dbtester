@@ -17,9 +17,8 @@ package analyze
 import (
 	"fmt"
 	"path/filepath"
-	"sort"
-
 	"reflect"
+	"sort"
 
 	"github.com/gyuho/dataframe"
 )
