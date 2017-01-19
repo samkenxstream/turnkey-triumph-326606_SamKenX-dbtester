@@ -191,7 +191,7 @@ func saveDataLatencyDistributionSummary(cfg Config, st report.Stats) {
 	}
 
 	c6 := dataframe.NewColumn("REQUESTS-PER-SECOND")
-	c6.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*st.RPS)))
+	c6.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", st.RPS)))
 	if err := fr.AddColumn(c6); err != nil {
 		plog.Fatal(err)
 	}
