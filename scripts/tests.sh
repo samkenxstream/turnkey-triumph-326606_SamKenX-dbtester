@@ -6,12 +6,12 @@ if ! [[ "$0" =~ "scripts/tests.sh" ]]; then
     exit 255
 fi
 
-IGNORE_PKGS="(vendor)"
+IGNORE_PKGS="(agent|vendor|remotestorage)"
 TESTS=`find . -name \*_test.go | while read a; do dirname $a; done | sort | uniq | egrep -v "$IGNORE_PKGS"`
 
 echo "Running tests...";
-go test -v -cover -cpu 1,2,4 $TESTS;
-go test -v -cover -cpu 1,2,4 -race $TESTS;
+go test -v $TESTS;
+go test -v -race $TESTS;
 
 echo "Checking gofmt..."
 fmtRes=$(gofmt -l -s $TESTS 2>&1 >/dev/null)

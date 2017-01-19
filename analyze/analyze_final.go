@@ -73,7 +73,7 @@ func do(configPath string) error {
 		}
 	}
 
-	plog.Println("saving data to %q", cfg.AllAggregatedPath)
+	plog.Printf("saving data to %q", cfg.AllAggregatedPath)
 	var (
 		readsCompletedDeltaSumColumns   []dataframe.Column
 		sectorsReadDeltaSumColumns      []dataframe.Column
