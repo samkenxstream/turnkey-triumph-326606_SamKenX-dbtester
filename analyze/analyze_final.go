@@ -15,7 +15,9 @@
 package analyze
 
 import (
+	"fmt"
 	"path/filepath"
+	"sort"
 
 	"github.com/gyuho/dataframe"
 )
@@ -95,17 +97,20 @@ func do(configPath string) error {
 		}
 
 		plog.Printf("saving data for %q of all database", plotConfig.Column)
-		nf, err := dataframe.NewFromColumns(nil, dataColumns...)
+		nf1, err := dataframe.NewFromColumns(nil, dataColumns...)
 		if err != nil {
 			return err
 		}
-		if err = nf.CSV(filepath.Join(cfg.WorkDir, plotConfig.Column+".csv")); err != nil {
+		if err = nf1.CSV(filepath.Join(cfg.WorkDir, plotConfig.Column+".csv")); err != nil {
 			return err
 		}
 
 		plog.Printf("saving data for %q of all database (by client number)", plotConfig.Column)
 		nf2 := dataframe.New()
 		for i := range clientNumColumns {
+			if clientNumColumns[i].Count() != dataColumns[i].Count() {
+				return fmt.Errorf("clientNumColumns[i].Count() %d != dataColumns[i].Count() %d", clientNumColumns[i].Count(), dataColumns[i].Count())
+			}
 			if err := nf2.AddColumn(clientNumColumns[i]); err != nil {
 				return err
 			}
@@ -114,6 +119,53 @@ func do(configPath string) error {
 			}
 		}
 		if err = nf2.CSV(filepath.Join(cfg.WorkDir, plotConfig.Column+"-BY-CLIENT-NUM"+".csv")); err != nil {
+			return err
+		}
+
+		plog.Printf("aggregating data for %q of all database (by client number)", plotConfig.Column)
+		nf3 := dataframe.New()
+		for i := range clientNumColumns {
+			n := clientNumColumns[i].Count()
+			allData := make(map[int]float64)
+			for j := 0; j < n; j++ {
+				v1, err := clientNumColumns[i].Value(j)
+				if err != nil {
+					return err
+				}
+				num, _ := v1.Number()
+
+				v2, err := dataColumns[i].Value(j)
+				if err != nil {
+					return err
+				}
+				data, _ := v2.Number()
+
+				if v, ok := allData[int(num)]; ok {
+					allData[int(num)] = (v + data) / 2
+				} else {
+					allData[int(num)] = data
+				}
+			}
+			var allKeys []int
+			for k := range allData {
+				allKeys = append(allKeys, k)
+			}
+			sort.Ints(allKeys)
+
+			col1 := dataframe.NewColumn(clientNumColumns[i].Header())
+			col2 := dataframe.NewColumn(dataColumns[i].Header())
+			for j := range allKeys {
+				col1.PushBack(dataframe.NewStringValue(allKeys[j]))
+				col2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.4f", allData[allKeys[j]])))
+			}
+			if err := nf3.AddColumn(col1); err != nil {
+				return err
+			}
+			if err := nf3.AddColumn(col2); err != nil {
+				return err
+			}
+		}
+		if err = nf3.CSV(filepath.Join(cfg.WorkDir, plotConfig.Column+"-BY-CLIENT-NUM-aggregated"+".csv")); err != nil {
 			return err
 		}
 	}
