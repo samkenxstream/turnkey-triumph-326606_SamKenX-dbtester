@@ -298,12 +298,14 @@ func saveDataLatencyDistributionAll(cfg Config, st report.Stats) {
 
 func saveDataLatencyThroughputTimeseries(cfg Config, st report.Stats) {
 	c1 := dataframe.NewColumn("UNIX-TS")
-	c2 := dataframe.NewColumn("AVG-LATENCY-MS")
-	c3 := dataframe.NewColumn("AVG-THROUGHPUT")
+	c2 := dataframe.NewColumn("CONTROL-CLIENT-NUM")
+	c3 := dataframe.NewColumn("AVG-LATENCY-MS")
+	c4 := dataframe.NewColumn("AVG-THROUGHPUT")
 	for i := range st.TimeSeries {
 		c1.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", st.TimeSeries[i].Timestamp)))
-		c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(st.TimeSeries[i].AvgLatency))))
-		c3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", st.TimeSeries[i].ThroughPut)))
+		c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", cfg.Step2.Clients)))
+		c3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(st.TimeSeries[i].AvgLatency))))
+		c4.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", st.TimeSeries[i].ThroughPut)))
 	}
 
 	fr := dataframe.New()
@@ -314,6 +316,9 @@ func saveDataLatencyThroughputTimeseries(cfg Config, st report.Stats) {
 		plog.Fatal(err)
 	}
 	if err := fr.AddColumn(c3); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr.AddColumn(c4); err != nil {
 		plog.Fatal(err)
 	}
 	if err := fr.CSV(cfg.DataLatencyThroughputTimeseries); err != nil {
