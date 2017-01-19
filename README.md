@@ -58,7 +58,7 @@ All logs and results can be found at https://console.cloud.google.com/storage/br
 <br><br>
 ##### Write 2M keys, 8-byte key, 256-byte value
 
-clients increase from 100 to 2000
+clients increase from 1 to 1000
 
 <img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write/AVG-LATENCY-MS.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write/AVG-LATENCY-MS">
 
