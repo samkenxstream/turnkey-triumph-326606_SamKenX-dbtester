@@ -383,10 +383,12 @@ func step2StressDatabase(cfg Config) error {
 				copied.Step2.Clients = cfg.Step2.ConnectionsClients[i]
 				copied.Step2.TotalRequests = rs[i]
 
-				plog.Infof("signaling agent with client number %d", copied.Step2.Clients)
-				if err := bcastReq(copied, agentpb.Request_Heartbeat); err != nil {
-					return err
-				}
+				go func() {
+					plog.Infof("signaling agent with client number %d", copied.Step2.Clients)
+					if err := bcastReq(copied, agentpb.Request_Heartbeat); err != nil {
+						plog.Panic(err)
+					}
+				}()
 
 				h, done := newWriteHandlers(copied)
 				reqGen := func(inflightReqs chan<- request) { generateWrites(copied, reqCompleted, vals, inflightReqs) }
