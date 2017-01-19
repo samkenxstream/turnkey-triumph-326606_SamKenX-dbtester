@@ -17,6 +17,7 @@ package analyze
 import (
 	"fmt"
 	"path/filepath"
+	"reflect"
 	"sort"
 
 	"github.com/gyuho/dataframe"
@@ -124,6 +125,7 @@ func do(configPath string) error {
 
 		plog.Printf("aggregating data for %q of all database (by client number)", plotConfig.Column)
 		nf3 := dataframe.New()
+		var firstKeys []int
 		for i := range clientNumColumns {
 			n := clientNumColumns[i].Count()
 			allData := make(map[int]float64)
@@ -152,14 +154,26 @@ func do(configPath string) error {
 			}
 			sort.Ints(allKeys)
 
-			col1 := dataframe.NewColumn(clientNumColumns[i].Header())
+			if i == 0 {
+				firstKeys = allKeys
+			}
+			if !reflect.DeepEqual(firstKeys, allKeys) {
+				return fmt.Errorf("all keys must be %+v, got %+v", firstKeys, allKeys)
+			}
+
+			if i == 0 {
+				// col1 := dataframe.NewColumn(clientNumColumns[i].Header())
+				col1 := dataframe.NewColumn("CONTROL-CLIENT-NUM")
+				for j := range allKeys {
+					col1.PushBack(dataframe.NewStringValue(allKeys[j]))
+				}
+				if err := nf3.AddColumn(col1); err != nil {
+					return err
+				}
+			}
 			col2 := dataframe.NewColumn(dataColumns[i].Header())
 			for j := range allKeys {
-				col1.PushBack(dataframe.NewStringValue(allKeys[j]))
 				col2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.4f", allData[allKeys[j]])))
-			}
-			if err := nf3.AddColumn(col1); err != nil {
-				return err
 			}
 			if err := nf3.AddColumn(col2); err != nil {
 				return err
