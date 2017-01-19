@@ -71,10 +71,17 @@ func do(configPath string) error {
 	plog.Println("combining data for plotting")
 	for _, plotConfig := range cfg.PlotList {
 		plog.Printf("plotting %q", plotConfig.Column)
-		var dataColumns []dataframe.Column
 		var clientNumColumns []dataframe.Column
+		var dataColumns []dataframe.Column
 		for i, ad := range all.data {
 			tag := all.databaseTags[i]
+
+			avgCol, err := ad.aggregated.Column("CONTROL-CLIENT-NUM")
+			if err != nil {
+				return err
+			}
+			avgCol.UpdateHeader(makeHeader("CONTROL-CLIENT-NUM", tag))
+			clientNumColumns = append(clientNumColumns, avgCol)
 
 			col, err := ad.aggregated.Column(plotConfig.Column)
 			if err != nil {
@@ -82,13 +89,6 @@ func do(configPath string) error {
 			}
 			col.UpdateHeader(makeHeader(plotConfig.Column, tag))
 			dataColumns = append(dataColumns, col)
-
-			avgCol, err := ad.aggregated.Column("AVG-CLIENT-NUM")
-			if err != nil {
-				return err
-			}
-			avgCol.UpdateHeader(makeHeader("AVG-CLIENT-NUM", tag))
-			clientNumColumns = append(clientNumColumns, avgCol)
 		}
 		if err = all.draw(plotConfig, dataColumns...); err != nil {
 			return err

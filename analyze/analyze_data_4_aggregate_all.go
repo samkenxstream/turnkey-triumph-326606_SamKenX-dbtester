@@ -281,6 +281,10 @@ func (data *analyzeData) aggregateAll() error {
 		return err
 	}
 	// move to 3rd column
+	if err = data.aggregated.MoveColumn("CONTROL-CLIENT-NUM", 2); err != nil {
+		return err
+	}
+	// move to 3rd column
 	if err = data.aggregated.MoveColumn("AVG-CLIENT-NUM", 2); err != nil {
 		return err
 	}
