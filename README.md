@@ -41,7 +41,7 @@ Below is latency distribution.
 |:-:|:-:|:-:|:-:|:-:|
 | Total | 49.9517 sec | 57.648 sec | 196.5391 sec |
 | Slowest latency | 219.4978 ms | 3673.511 ms | 3456.8632 ms |
-| Fastest latency | 2.4053 ms | 1.3334 sec | 11.6683 ms |
+| Fastest latency | 2.4053 ms | 1.3334 ms | 11.6683 ms |
 | Average latency | 24.9106 ms | 25.6085 ms | 98.0761 ms |
 | 10th percentile | 15.252641 ms | 8.694673 ms | 58.773931 ms |
 | 90th percentile | 34.603153 ms | 21.260465 ms | 155.155478 ms |
