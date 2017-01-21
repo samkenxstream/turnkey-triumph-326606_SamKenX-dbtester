@@ -33,6 +33,34 @@ All logs and results can be found at https://console.cloud.google.com/storage/br
 - cetcd v3.1 (Go 1.7.4)
 
 <br><br>
+
+
+Below is latency distribution.
+
+| Write 2M | etcd | Zookeeper | Consul |
+|:-:|:-:|:-:|:-:|:-:|
+| Total | 49.9517 sec | 57.648 sec | 196.5391 sec |
+| Slowest latency | 219.4978 ms | 3673.511 ms | 3456.8632 ms |
+| Fastest latency | 2.4053 ms | 1.3334 sec | 11.6683 ms |
+| Average latency | 24.9106 ms | 25.6085 ms | 98.0761 ms |
+| 10th percentile | 15.252641 ms | 8.694673 ms | 58.773931 ms |
+| 90th percentile | 34.603153 ms | 21.260465 ms | 155.155478 ms |
+| 95th percentile | 58.790464 ms | 38.915503 ms | 228.378322 ms |
+| 99th percentile | 109.932998 ms | 249.609641 ms | 397.145186 ms |
+| 99.9th percentile | 163.174532 ms | 1791.313948 ms | 2063.012564 ms |
+
+| Write 2M, 1000QPS | etcd | Zookeeper | Consul |
+|:-:|:-:|:-:|:-:|:-:|
+| Total | 1999.0071 sec | 2001.5838 sec | 2136.9951 sec |
+| Slowest latency | 266.4827 ms | 2391.7506 ms | 16507.9402 ms |
+| Fastest latency | 1.1254 ms | 0.8987 ms | 3.2398 ms |
+| Average latency | 2.9778 ms | 6.6063 ms | 209.3409 ms |
+| 10th percentile | 1.673424 ms | 1.168258 ms | 8.883748 ms |
+| 90th percentile | 4.249615 ms | 2.169022 ms | 192.123086 ms |
+| 95th percentile | 4.869974 ms | 2.547155 ms | 203.922319 ms |
+| 99th percentile | 6.493646 ms | 39.196783 ms | 4457.758814 ms |
+| 99.9th percentile | 26.053565 ms | 1205.014692 ms | 12980.91952 ms |
+
 ##### Write 2M keys, 1000-client (etcd 100 TCP conns), 8-byte key, 256-byte value
 
 <img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-LATENCY-MS.svg" alt="2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-LATENCY-MS">
