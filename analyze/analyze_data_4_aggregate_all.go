@@ -290,16 +290,20 @@ func (data *analyzeData) aggregateAll() error {
 	if err = data.aggregated.AddColumn(secondCol); err != nil {
 		return err
 	}
-	// move to 2nd column
+	// move to 2th column
 	if err = data.aggregated.MoveColumn("SECOND", 1); err != nil {
 		return err
 	}
-	// move to 3rd column
+	// move to 3th column
 	if err = data.aggregated.MoveColumn("CONTROL-CLIENT-NUM", 2); err != nil {
 		return err
 	}
-	// move to 3rd column
+	// move to 3th column
 	if err = data.aggregated.MoveColumn("AVG-CLIENT-NUM", 2); err != nil {
+		return err
+	}
+	// move to 6th column
+	if err = data.aggregated.MoveColumn("AVG-THROUGHPUT", 5); err != nil {
 		return err
 	}
 
@@ -326,8 +330,9 @@ func (data *analyzeData) aggregateAll() error {
 		"AVG-RECEIVE-BYTES-NUM",
 		"AVG-TRANSMIT-BYTES-NUM",
 	}
+	// move to 7th
 	for i := len(reorder) - 1; i >= 0; i-- {
-		if err = data.aggregated.MoveColumn(reorder[i], 5); err != nil {
+		if err = data.aggregated.MoveColumn(reorder[i], 6); err != nil {
 			return err
 		}
 	}

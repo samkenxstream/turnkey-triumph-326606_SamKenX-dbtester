@@ -22,11 +22,13 @@ import (
 
 // RawData defines how to aggregate data from each machine.
 type RawData struct {
-	Legend                     string   `yaml:"legend"`
-	DatabaseTag                string   `yaml:"database_tag"`
-	OutputPath                 string   `yaml:"output_path"`
-	SourceSystemMetricsPaths   []string `yaml:"source_system_metrics_paths"`
-	SourceBenchmarkMetricsPath string   `yaml:"source_benchmark_metrics_path"`
+	Legend                  string   `yaml:"legend"`
+	DatabaseTag             string   `yaml:"database_tag"`
+	OutputPath              string   `yaml:"output_path"`
+	DataSystemMetricsPaths  []string `yaml:"data_system_metrics_paths"`
+	DataBenchmarkPercentile string   `yaml:"data_benchmark_percentile"`
+	DataBenchmarkSummary    string   `yaml:"data_benchmark_summary"`
+	DataBenchmarkThroughput string   `yaml:"data_benchmark_throughput"`
 }
 
 // Config defines analyze configuration.
