@@ -45,6 +45,20 @@ plot_list:
   - 2017Q1-01-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-THROUGHPUT.svg
   - 2017Q1-01-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-THROUGHPUT.png
 
+- column: AVG-VOLUNTARY-CTXT-SWITCHES
+  x_axis: Second
+  y_axis: CPU(%)
+  output_path_list:
+  - 2017Q1-01-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-VOLUNTARY-CTXT-SWITCHES.svg
+  - 2017Q1-01-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-VOLUNTARY-CTXT-SWITCHES.png
+
+- column: AVG-NON-VOLUNTARY-CTXT-SWITCHES
+  x_axis: Second
+  y_axis: CPU(%)
+  output_path_list:
+  - 2017Q1-01-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-NON-VOLUNTARY-CTXT-SWITCHES.svg
+  - 2017Q1-01-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-NON-VOLUNTARY-CTXT-SWITCHES.png
+
 - column: AVG-CPU
   x_axis: Second
   y_axis: CPU(%)
@@ -128,6 +142,14 @@ readme:
 
     - image_title: 2017Q1-01-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-THROUGHPUT
       image_path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-THROUGHPUT.svg
+      image_type: remote
+
+    - image_title: 2017Q1-01-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-VOLUNTARY-CTXT-SWITCHES
+      image_path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-VOLUNTARY-CTXT-SWITCHES.svg
+      image_type: remote
+
+    - image_title: 2017Q1-01-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-NON-VOLUNTARY-CTXT-SWITCHES
+      image_path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-NON-VOLUNTARY-CTXT-SWITCHES.svg
       image_type: remote
 
     - image_title: 2017Q1-01-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-CPU
