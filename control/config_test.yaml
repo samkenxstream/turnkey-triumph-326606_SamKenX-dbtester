@@ -36,18 +36,14 @@ step2:
     clients: 1
     connections_clients: # if specified, connections, clients are overwritten
     - 1
-    - 5
     - 10
     - 50
     - 100
-    - 300
     - 500
-    - 700
     - 1000
-    key_size: 8
-    same_key: true
-    value_size: 256
-    total_requests: 2000000
+    key_size: 256
+    value_size: 1024
+    total_requests: 100000
     requests_per_second: 100
 
 # after benchmark

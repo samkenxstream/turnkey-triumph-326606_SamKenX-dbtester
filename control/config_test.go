@@ -93,25 +93,27 @@ func TestReadConfig(t *testing.T) {
 	if c.Step2.Connections != 1 {
 		t.Fatalf("unexpected %d", c.Step2.Connections)
 	}
-	if !reflect.DeepEqual(c.Step2.ConnectionsClients, []int{1, 5, 10, 50, 100, 300, 500, 700, 1000}) {
+	if !reflect.DeepEqual(c.Step2.ConnectionsClients, []int{1, 10, 50, 100, 500, 1000}) {
 		t.Fatalf("unexpected %d", c.Step2.ConnectionsClients)
 	}
-	if c.Step2.KeySize != 8 {
+	if c.Step2.KeySize != 256 {
 		t.Fatalf("unexpected %d", c.Step2.KeySize)
 	}
-	if !c.Step2.SameKey {
+	if c.Step2.SameKey {
 		t.Fatalf("unexpected %v", c.Step2.SameKey)
+	}
+	if c.Step2.ValueSize != 1024 {
+		t.Fatalf("unexpected %d", c.Step2.ValueSize)
 	}
 	if !c.Step2.StaleRead {
 		t.Fatalf("unexpected %v", c.Step2.StaleRead)
 	}
-	if c.Step2.TotalRequests != 2000000 {
+	if c.Step2.TotalRequests != 100000 {
 		t.Fatalf("unexpected %d", c.Step2.TotalRequests)
 	}
 	if c.Step2.RequestsPerSecond != 100 {
 		t.Fatalf("unexpected %d", c.Step2.RequestsPerSecond)
 	}
-
 	if c.Step3.Action != "stop" {
 		t.Fatalf("unexpected %v", c.Step3.Action)
 	}
