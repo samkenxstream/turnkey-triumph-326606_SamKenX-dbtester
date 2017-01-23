@@ -47,14 +47,14 @@ plot_list:
 
 - column: AVG-VOLUNTARY-CTXT-SWITCHES
   x_axis: Second
-  y_axis: CPU(%)
+  y_axis: Voluntary Context Switches
   output_path_list:
   - 2017Q1-01-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-VOLUNTARY-CTXT-SWITCHES.svg
   - 2017Q1-01-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-VOLUNTARY-CTXT-SWITCHES.png
 
 - column: AVG-NON-VOLUNTARY-CTXT-SWITCHES
   x_axis: Second
-  y_axis: CPU(%)
+  y_axis: Non-voluntary Context Switches
   output_path_list:
   - 2017Q1-01-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-NON-VOLUNTARY-CTXT-SWITCHES.svg
   - 2017Q1-01-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-NON-VOLUNTARY-CTXT-SWITCHES.png
