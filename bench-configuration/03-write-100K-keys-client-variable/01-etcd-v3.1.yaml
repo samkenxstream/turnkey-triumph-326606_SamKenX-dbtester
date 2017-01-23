@@ -4,7 +4,7 @@ test_name: etcd-v3.1-go1.7.4
 google_cloud_project_name: etcd-development
 google_cloud_storage_key_path: /home/gyuho/gcloud-key.json # need this only in 'control' side
 google_cloud_storage_bucket_name: dbtester-results
-google_cloud_storage_sub_directory: 2017Q1-02-etcd-zookeeper-consul/04-read-2M-keys-linearizable
+google_cloud_storage_sub_directory: 2017Q1-01-etcd-zookeeper-consul/03-write-100K-keys-client-variable
 
 peer_ips:
     - 10.240.0.20
@@ -31,14 +31,20 @@ step1:
 # start benchmark
 step2:
     skip_stress_database: false
-    bench_type: read
-    stale_read: false
-    connections: 1000
-    clients: 1000
-    connections_clients: []
-    key_size: 8
-    value_size: 256
-    total_requests: 2000000
+    bench_type: write
+    stale_read: true
+    connections: 1
+    clients: 1
+    connections_clients: # if specified, connections, clients are overwritten
+    - 1
+    - 10
+    - 50
+    - 100
+    - 500
+    - 1000
+    key_size: 256
+    value_size: 1024
+    total_requests: 100000
     requests_per_second: 0
     etcdv3_compaction_cycle: 0
 
