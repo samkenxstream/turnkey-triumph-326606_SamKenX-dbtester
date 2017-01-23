@@ -23,6 +23,8 @@ import (
 
 var sysMetricsColumnsToRead = []string{
 	"UNIX-TS",
+	"VOLUNTARY-CTXT-SWITCHES",
+	"NON-VOLUNTARY-CTXT-SWITCHES",
 	"CPU-NUM",
 	"VMRSS-NUM",
 	"READS-COMPLETED",

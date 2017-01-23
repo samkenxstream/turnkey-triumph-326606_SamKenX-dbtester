@@ -62,7 +62,7 @@ plot_list:
 readme:
   preface: |
     - Google Cloud Compute Engine
-    - 3 machines of 8 vCPUs + 1 6GB Memory + 50 GB SSD
+    - 3 machines of 8 vCPUs + 16 GB Memory + 50 GB SSD
     - 1 machine(client) of 16 vCPUs + 30 GB Memory + 50 GB SSD
     - Ubuntu 16.10
     - etcd v3.1 (Go 1.7.4)

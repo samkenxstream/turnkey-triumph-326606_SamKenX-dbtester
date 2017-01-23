@@ -111,21 +111,23 @@ func (data *analyzeData) aggregateAll() error {
 
 		sampleSize = float64(len(data.sys))
 
-		avgClientNumCol             = dataframe.NewColumn("AVG-CLIENT-NUM")               // from CLIENT-NUM
-		avgCPUCol                   = dataframe.NewColumn("AVG-CPU")                      // from CPU-NUM
-		avgVMRSSMBCol               = dataframe.NewColumn("AVG-VMRSS-MB")                 // from VMRSS-NUM
-		avgReadsCompletedCol        = dataframe.NewColumn("AVG-READS-COMPLETED")          // from READS-COMPLETED
-		avgReadsCompletedDeltaCol   = dataframe.NewColumn("AVG-READS-COMPLETED-DELTA")    // from READS-COMPLETED-DELTA
-		avgSectorsReadCol           = dataframe.NewColumn("AVG-SECTORS-READ")             // from SECTORS-READ
-		avgSectorsReadDeltaCol      = dataframe.NewColumn("AVG-SECTORS-READ-DELTA")       // from SECTORS-READ-DELTA
-		avgWritesCompletedCol       = dataframe.NewColumn("AVG-WRITES-COMPLETED")         // from WRITES-COMPLETED
-		avgWritesCompletedDeltaCol  = dataframe.NewColumn("AVG-WRITES-COMPLETED-DELTA")   // from WRITES-COMPLETED-DELTA
-		avgSectorsWrittenCol        = dataframe.NewColumn("AVG-SECTORS-WRITTEN")          // from SECTORS-WRITTEN
-		avgSectorsWrittenDeltaCol   = dataframe.NewColumn("AVG-SECTORS-WRITTEN-DELTA")    // from SECTORS-WRITTEN-DELTA
-		avgReceiveBytesNumCol       = dataframe.NewColumn("AVG-RECEIVE-BYTES-NUM")        // from RECEIVE-BYTES-NUM
-		avgReceiveBytesNumDeltaCol  = dataframe.NewColumn("AVG-RECEIVE-BYTES-NUM-DELTA")  // from RECEIVE-BYTES-NUM-DELTA
-		avgTransmitBytesNumCol      = dataframe.NewColumn("AVG-TRANSMIT-BYTES-NUM")       // from TRANSMIT-BYTES-NUM
-		avgTransmitBytesNumDeltaCol = dataframe.NewColumn("AVG-TRANSMIT-BYTES-NUM-DELTA") // from TRANSMIT-BYTES-NUM-DELTA
+		avgClientNumCol             = dataframe.NewColumn("AVG-CLIENT-NUM")                  // from CLIENT-NUM
+		avgVolCtxSwitchCol          = dataframe.NewColumn("AVG-VOLUNTARY-CTXT-SWITCHES")     // from VOLUNTARY-CTXT-SWITCHES
+		avgNonVolCtxSwitchCol       = dataframe.NewColumn("AVG-NON-VOLUNTARY-CTXT-SWITCHES") // from NON-VOLUNTARY-CTXT-SWITCHES
+		avgCPUCol                   = dataframe.NewColumn("AVG-CPU")                         // from CPU-NUM
+		avgVMRSSMBCol               = dataframe.NewColumn("AVG-VMRSS-MB")                    // from VMRSS-NUM
+		avgReadsCompletedCol        = dataframe.NewColumn("AVG-READS-COMPLETED")             // from READS-COMPLETED
+		avgReadsCompletedDeltaCol   = dataframe.NewColumn("AVG-READS-COMPLETED-DELTA")       // from READS-COMPLETED-DELTA
+		avgSectorsReadCol           = dataframe.NewColumn("AVG-SECTORS-READ")                // from SECTORS-READ
+		avgSectorsReadDeltaCol      = dataframe.NewColumn("AVG-SECTORS-READ-DELTA")          // from SECTORS-READ-DELTA
+		avgWritesCompletedCol       = dataframe.NewColumn("AVG-WRITES-COMPLETED")            // from WRITES-COMPLETED
+		avgWritesCompletedDeltaCol  = dataframe.NewColumn("AVG-WRITES-COMPLETED-DELTA")      // from WRITES-COMPLETED-DELTA
+		avgSectorsWrittenCol        = dataframe.NewColumn("AVG-SECTORS-WRITTEN")             // from SECTORS-WRITTEN
+		avgSectorsWrittenDeltaCol   = dataframe.NewColumn("AVG-SECTORS-WRITTEN-DELTA")       // from SECTORS-WRITTEN-DELTA
+		avgReceiveBytesNumCol       = dataframe.NewColumn("AVG-RECEIVE-BYTES-NUM")           // from RECEIVE-BYTES-NUM
+		avgReceiveBytesNumDeltaCol  = dataframe.NewColumn("AVG-RECEIVE-BYTES-NUM-DELTA")     // from RECEIVE-BYTES-NUM-DELTA
+		avgTransmitBytesNumCol      = dataframe.NewColumn("AVG-TRANSMIT-BYTES-NUM")          // from TRANSMIT-BYTES-NUM
+		avgTransmitBytesNumDeltaCol = dataframe.NewColumn("AVG-TRANSMIT-BYTES-NUM-DELTA")    // from TRANSMIT-BYTES-NUM-DELTA
 	)
 
 	// compute average value of 3+ nodes
@@ -133,6 +135,8 @@ func (data *analyzeData) aggregateAll() error {
 	for rowIdx := 0; rowIdx < minBenchEndIdx; rowIdx++ {
 		var (
 			clientNumSum             float64
+			volCtxSwitchSum          float64
+			nonVolCtxSwitchSum       float64
 			cpuSum                   float64
 			vmrssMBSum               float64
 			readsCompletedSum        float64
@@ -165,11 +169,13 @@ func (data *analyzeData) aggregateAll() error {
 			// average values (need sume first!)
 			case strings.HasPrefix(hd, "CLIENT-NUM-"):
 				clientNumSum += vv
-			case strings.HasPrefix(hd, "CPU-"):
-				// CPU-NUM was converted to CPU-1, CPU-2, CPU-3
+			case strings.HasPrefix(hd, "VOLUNTARY-CTXT-SWITCHES-"):
+				volCtxSwitchSum += vv
+			case strings.HasPrefix(hd, "NON-VOLUNTARY-CTXT-SWITCHES-"):
+				nonVolCtxSwitchSum += vv
+			case strings.HasPrefix(hd, "CPU-"): // CPU-NUM was converted to CPU-1, CPU-2, CPU-3
 				cpuSum += vv
-			case strings.HasPrefix(hd, "VMRSS-MB-"):
-				// VMRSS-NUM-NUM was converted to VMRSS-MB-1, VMRSS-MB-2, VMRSS-MB-3
+			case strings.HasPrefix(hd, "VMRSS-MB-"): // VMRSS-NUM-NUM was converted to VMRSS-MB-1, VMRSS-MB-2, VMRSS-MB-3
 				vmrssMBSum += vv
 			case strings.HasPrefix(hd, "READS-COMPLETED-DELTA-"): // match this first!
 				readsCompletedDeltaSum += vv
@@ -198,6 +204,8 @@ func (data *analyzeData) aggregateAll() error {
 			}
 		}
 		avgClientNumCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", clientNumSum/sampleSize)))
+		avgVolCtxSwitchCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", volCtxSwitchSum/sampleSize)))
+		avgNonVolCtxSwitchCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", nonVolCtxSwitchSum/sampleSize)))
 		avgCPUCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", cpuSum/sampleSize)))
 		avgVMRSSMBCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", vmrssMBSum/sampleSize)))
 		avgReadsCompletedCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", readsCompletedSum/sampleSize)))
@@ -219,6 +227,12 @@ func (data *analyzeData) aggregateAll() error {
 		return err
 	}
 	if err = data.aggregated.AddColumn(avgClientNumCol); err != nil {
+		return err
+	}
+	if err = data.aggregated.AddColumn(avgVolCtxSwitchCol); err != nil {
+		return err
+	}
+	if err = data.aggregated.AddColumn(avgNonVolCtxSwitchCol); err != nil {
 		return err
 	}
 	if err = data.aggregated.AddColumn(avgCPUCol); err != nil {
@@ -295,6 +309,8 @@ func (data *analyzeData) aggregateAll() error {
 	// re-order columns in the following order, to make it more readable
 	reorder := []string{
 		"CUMULATIVE-THROUGHPUT",
+		"AVG-VOLUNTARY-CTXT-SWITCHES",
+		"AVG-NON-VOLUNTARY-CTXT-SWITCHES",
 		"AVG-CPU",
 		"AVG-VMRSS-MB",
 		"AVG-READS-COMPLETED-DELTA",

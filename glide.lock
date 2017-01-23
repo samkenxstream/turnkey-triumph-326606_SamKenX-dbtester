@@ -1,5 +1,5 @@
-hash: 868c7e7765df31f1a95fcb083a749ec42d78acf51c7f055084c0df4b40c04bdf
-updated: 2017-01-17T10:18:15.866149504-08:00
+hash: fbfd7f9325aae2182e293f1acf2de3e5be3f322221e9a9ec0e3fcdbf801232de
+updated: 2017-01-23T13:32:56.468519546-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -38,7 +38,7 @@ imports:
   - pkg/tlsutil
   - pkg/types
 - name: github.com/coreos/go-systemd
-  version: bfdc81d0d7e0fb19447b08571f63b774495251ce
+  version: 48702e0da86bd25e76cfef347e2adeb434a0d0a6
   subpackages:
   - journal
 - name: github.com/coreos/pkg
@@ -66,13 +66,13 @@ imports:
   - jsonpb
   - proto
 - name: github.com/gonum/floats
-  version: 9fe75c11ab14e9efe0445ce5b96ac8fd552be30c
+  version: b87c65fd450a3f7a8875a16e4b2dbf5556ede4f1
 - name: github.com/gonum/internal
-  version: 3065419bb46aefed1d66b0c951f2ef01da74fcbe
+  version: aa14b654e75da6e47f3c563fbda889112fe5ac94
   subpackages:
-  - asm
+  - asm/f64
 - name: github.com/gonum/plot
-  version: 235bd2a77303194e06d44c3ae432ac676bf041d0
+  version: 0a603a9b2d3cc81f4736b30c5155495fb900700d
   subpackages:
   - palette
   - plotter
@@ -97,9 +97,8 @@ imports:
 - name: github.com/gyuho/dataframe
   version: 0654e1bff71a2c46f30d603f30b3621dd599ec50
 - name: github.com/gyuho/psn
-  version: eb796de4d35872441498b7cd63d1a95246776163
+  version: 1828fc5fa67ec73c201469411b9a5e51a3ecd008
   subpackages:
-  - process
   - schema
 - name: github.com/hashicorp/consul
   version: 8d57727ff0d113a97c89a992e4681680f95cbf03
@@ -155,7 +154,7 @@ imports:
   subpackages:
   - codec
 - name: golang.org/x/image
-  version: 1ff62c92167a10494f3e0b1e77cb67860a6ac43a
+  version: 83686c547965220f8b5d75e83ddc67d73420a89f
   subpackages:
   - draw
   - font
@@ -197,7 +196,7 @@ imports:
   - storage/v1
   - transport
 - name: google.golang.org/appengine
-  version: 9e2ad0873f358c54296ccdc5116b0652c98226d1
+  version: a2c54d2174c17540446e0ced57d9d459af61bc1c
   subpackages:
   - internal
   - internal/app_identity
