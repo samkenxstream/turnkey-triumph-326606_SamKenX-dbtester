@@ -1,5 +1,5 @@
-hash: 4207c0d50214ba34e19ca963da4a87a628caa48b110be9c73f01b15707e62f10
-updated: 2017-01-23T13:25:19.734997277-08:00
+hash: fbfd7f9325aae2182e293f1acf2de3e5be3f322221e9a9ec0e3fcdbf801232de
+updated: 2017-01-23T13:32:56.468519546-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -72,7 +72,7 @@ imports:
   subpackages:
   - asm/f64
 - name: github.com/gonum/plot
-  version: 235bd2a77303194e06d44c3ae432ac676bf041d0
+  version: 0a603a9b2d3cc81f4736b30c5155495fb900700d
   subpackages:
   - palette
   - plotter

@@ -39,7 +39,7 @@ import:
   - jsonpb
   - proto
 - package: github.com/gonum/plot
-  version: 235bd2a77303194e06d44c3ae432ac676bf041d0
+  version: 0a603a9b2d3cc81f4736b30c5155495fb900700d
   subpackages:
   - palette
   - plotter
