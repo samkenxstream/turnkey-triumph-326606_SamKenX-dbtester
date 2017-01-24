@@ -16,6 +16,7 @@ package control
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/coreos/dbtester/agent/agentpb"
 )
@@ -24,7 +25,16 @@ func step3StopDatabase(cfg Config) error {
 	switch cfg.Step3.Action {
 	case "stop":
 		plog.Info("step 3: stopping databases...")
-		return bcastReq(cfg, agentpb.Request_Stop)
+		var err error
+		for i := 0; i < 5; i++ {
+			if err = bcastReq(cfg, agentpb.Request_Stop); err != nil {
+				plog.Warningf("STOP failed at %s", cfg.PeerIPs[i])
+				time.Sleep(300 * time.Millisecond)
+				continue
+			}
+			break
+		}
+		return err
 
 	default:
 		return fmt.Errorf("unknown %q", cfg.Step3.Action)
