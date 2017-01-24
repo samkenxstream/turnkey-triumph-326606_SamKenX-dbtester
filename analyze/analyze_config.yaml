@@ -125,7 +125,7 @@ readme:
     - 1 machine(client) of 16 vCPUs + 30 GB Memory + 150 GB SSD
     - Ubuntu 16.10
     - etcd v3.1 (Go 1.7.4)
-    - Zookeepr r3.4.9
+    - Zookeeper r3.4.9
       - Java 8
       - Java(TM) SE Runtime Environment (build 1.8.0_111-b14)
       - Java HotSpot(TM) 64-Bit Server VM (build 25.111-b14, mixed mode)
