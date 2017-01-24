@@ -28,4 +28,3 @@ unset GOROOT
 echo $GOPATH
 export GOROOT=/usr/local/go
 go version
-
