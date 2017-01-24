@@ -38,7 +38,7 @@ step2:
     connections_clients: []
     key_size: 256
     value_size: 1024
-    total_requests: 100000
+    total_requests: 1000000
     requests_per_second: 0
     etcdv3_compaction_cycle: 0
 
