@@ -15,7 +15,7 @@ For etcd, we also recommend [etcd benchmark tool](https://github.com/coreos/etcd
 
 All logs and results can be found at https://console.cloud.google.com/storage/browser/dbtester-results
 
-<br><br>
+<br><br><hr>
 ##### Write 1M keys, 1000-client, 256-byte key, 1KB value
 
 - Google Cloud Compute Engine
