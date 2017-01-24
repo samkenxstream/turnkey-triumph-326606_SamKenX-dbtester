@@ -19,8 +19,7 @@ For etcd, we also recommend [etcd benchmark tool](https://github.com/coreos/etcd
 All logs and results can be found at https://console.cloud.google.com/storage/browser/dbtester-results
 
 - Google Cloud Compute Engine
-- 3 machines of 8 vCPUs + 1 6GB Memory + 50 GB SSD
-- 1 machine(client) of 16 vCPUs + 30 GB Memory + 50 GB SSD
+- 4 machines of 16 vCPUs + 30 GB Memory + 150 GB SSD (1 for client)
 - Ubuntu 16.10
 - etcd v3.1 (Go 1.7.4)
 - Zookeeper r3.4.9
@@ -32,103 +31,60 @@ All logs and results can be found at https://console.cloud.google.com/storage/br
 - zetcd v3.1 (Go 1.7.4)
 - cetcd v3.1 (Go 1.7.4)
 
-<br><br>
-
-
-Below is latency distribution.
-
-| Write 2M | etcd | Zookeeper | Consul |
-|:-:|:-:|:-:|:-:|:-:|
-| Total | 49.9517 sec | 57.648 sec | 196.5391 sec |
-| Slowest latency | 219.4978 ms | 3673.511 ms | 3456.8632 ms |
-| Fastest latency | 2.4053 ms | 1.3334 ms | 11.6683 ms |
-| Average latency | 24.9106 ms | 25.6085 ms | 98.0761 ms |
-| 10th percentile | 15.252641 ms | 8.694673 ms | 58.773931 ms |
-| 90th percentile | 34.603153 ms | 21.260465 ms | 155.155478 ms |
-| 95th percentile | 58.790464 ms | 38.915503 ms | 228.378322 ms |
-| 99th percentile | 109.932998 ms | 249.609641 ms | 397.145186 ms |
-| 99.9th percentile | 163.174532 ms | 1791.313948 ms | 2063.012564 ms |
-
-| Write 2M, 1000QPS | etcd | Zookeeper | Consul |
-|:-:|:-:|:-:|:-:|:-:|
-| Total | 1999.0071 sec | 2001.5838 sec | 2136.9951 sec |
-| Slowest latency | 266.4827 ms | 2391.7506 ms | 16507.9402 ms |
-| Fastest latency | 1.1254 ms | 0.8987 ms | 3.2398 ms |
-| Average latency | 2.9778 ms | 6.6063 ms | 209.3409 ms |
-| 10th percentile | 1.673424 ms | 1.168258 ms | 8.883748 ms |
-| 90th percentile | 4.249615 ms | 2.169022 ms | 192.123086 ms |
-| 95th percentile | 4.869974 ms | 2.547155 ms | 203.922319 ms |
-| 99th percentile | 6.493646 ms | 39.196783 ms | 4457.758814 ms |
-| 99.9th percentile | 26.053565 ms | 1205.014692 ms | 12980.91952 ms |
-
-##### Write 2M keys, 1000-client (etcd 100 TCP conns), 8-byte key, 256-byte value
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-LATENCY-MS.svg" alt="2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-LATENCY-MS">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-THROUGHPUT.svg" alt="2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-THROUGHPUT">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-CPU.svg" alt="2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-CPU">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-VMRSS-MB.svg" alt="2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-VMRSS-MB">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-READS-COMPLETED-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-READS-COMPLETED-DELTA">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-SECTORS-READ-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-SECTORS-READ-DELTA">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-WRITES-COMPLETED-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-WRITES-COMPLETED-DELTA">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-SECTORS-WRITTEN-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-SECTORS-WRITTEN-DELTA">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-RECEIVE-BYTES-NUM-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-RECEIVE-BYTES-NUM-DELTA">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-TRANSMIT-BYTES-NUM-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/00-write-2M-keys/AVG-TRANSMIT-BYTES-NUM-DELTA">
 
 
 <br><br>
-##### Write 2M keys 1000QPS, 1000-client (etcd 100 TCP conns), 8-byte key, 256-byte value
+##### Write 1M keys, 1000-client, 256-byte key, 1KB value
 
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-LATENCY-MS.svg" alt="2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-LATENCY-MS">
+```
++------------------------------+-------------------+------------------------+-----------------------+
+|                              | etcd-v3.1-go1.7.4 | zookeeper-r3.4.9-java8 | consul-v0.7.2-go1.7.4 |
++------------------------------+-------------------+------------------------+-----------------------+
+|    READS-COMPLETED-DELTA     |         6         |           6            |          15           |
+|   SECTORS-READS-DELTA-SUM    |         0         |           0            |           0           |
+|  WRITES-COMPLETED-DELTA-SUM  |       96474       |         77628          |        940695         |
+|  SECTORS-WRITTEN-DELTA-SUM   |      542512       |        9387436         |       41272068        |
+|      RECEIVE-BYTES-SUM       |      4.9 GB       |         5.1 GB         |        7.7 GB         |
+| RECEIVE-BYTES-NUM-DELTA-SUM  |    4879653590     |       5061811231       |      7744263649       |
+|      TRANSMIT-BYTES-SUM      |      3.7 GB       |         4.1 GB         |        6.5 GB         |
+| TRANSMIT-BYTES-NUM-DELTA-SUM |    3749247743     |       4050548646       |      6518060316       |
+|        TOTAL-SECONDS         |     36.2024 s     |       62.0373 s        |      467.9311 s       |
+|        AVG-THROUGHPUT        |    27622.4453     |       15951.5555       |       2137.0667       |
+|       SLOWEST-LATENCY        |    246.4560 ms    |      6650.0930 ms      |     30388.9318 ms     |
+|       FASTEST-LATENCY        |     5.3413 ms     |       1.7698 ms        |      21.5605 ms       |
+|         AVG-LATENCY          |    36.1057 ms     |       37.7865 ms       |      467.4253 ms      |
+|             p10              |   13.712090 ms    |      11.923543 ms      |     65.910086 ms      |
+|             p25              |   16.625779 ms    |      14.581663 ms      |     77.221971 ms      |
+|             p50              |   22.306160 ms    |      19.217649 ms      |     120.663354 ms     |
+|             p75              |   40.376905 ms    |      23.642903 ms      |     716.373543 ms     |
+|             p90              |   65.849751 ms    |      28.756700 ms      |    1068.038406 ms     |
+|             p95              |   137.545464 ms   |      59.868096 ms      |    1080.751412 ms     |
+|             p99              |   177.127309 ms   |     544.858078 ms      |    2686.919571 ms     |
+|            p99.9             |   198.540415 ms   |     2457.827147 ms     |    19041.188919 ms    |
++------------------------------+-------------------+------------------------+-----------------------+
+```
 
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-THROUGHPUT.svg" alt="2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-THROUGHPUT">
 
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-CPU.svg" alt="2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-CPU">
+<img src="https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-LATENCY-MS.svg" alt="2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-LATENCY-MS">
 
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-VMRSS-MB.svg" alt="2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-VMRSS-MB">
+<img src="https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-THROUGHPUT.svg" alt="2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-THROUGHPUT">
 
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-READS-COMPLETED-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-READS-COMPLETED-DELTA">
+<img src="https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-CPU.svg" alt="2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-CPU">
 
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-SECTORS-READ-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-SECTORS-READ-DELTA">
+<img src="https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-VOLUNTARY-CTXT-SWITCHES.svg" alt="2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-VOLUNTARY-CTXT-SWITCHES">
 
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-WRITES-COMPLETED-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-WRITES-COMPLETED-DELTA">
+<img src="https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-NON-VOLUNTARY-CTXT-SWITCHES.svg" alt="2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-NON-VOLUNTARY-CTXT-SWITCHES">
 
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-SECTORS-WRITTEN-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-SECTORS-WRITTEN-DELTA">
+<img src="https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-VMRSS-MB.svg" alt="2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-VMRSS-MB">
 
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-RECEIVE-BYTES-NUM-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-RECEIVE-BYTES-NUM-DELTA">
+<img src="https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-READS-COMPLETED-DELTA.svg" alt="2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-READS-COMPLETED-DELTA">
 
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-TRANSMIT-BYTES-NUM-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/02-write-2M-keys-rate-limited/AVG-TRANSMIT-BYTES-NUM-DELTA">
+<img src="https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-SECTORS-READ-DELTA.svg" alt="2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-SECTORS-READ-DELTA">
 
+<img src="https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-WRITES-COMPLETED-DELTA.svg" alt="2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-WRITES-COMPLETED-DELTA">
 
-<br><br>
-##### Write 2M keys, 8-byte key, 256-byte value
+<img src="https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-SECTORS-WRITTEN-DELTA.svg" alt="2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-SECTORS-WRITTEN-DELTA">
 
-clients increase from 1 to 1000
+<img src="https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-RECEIVE-BYTES-NUM-DELTA.svg" alt="2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-RECEIVE-BYTES-NUM-DELTA">
 
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write/AVG-LATENCY-MS.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write/AVG-LATENCY-MS">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write/AVG-THROUGHPUT.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write/AVG-THROUGHPUT">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write/AVG-CPU.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write/AVG-CPU">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write/AVG-VMRSS-MB.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write/AVG-VMRSS-MB">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write/AVG-READS-COMPLETED-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write/AVG-READS-COMPLETED-DELTA">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write/AVG-SECTORS-READ-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write/AVG-SECTORS-READ-DELTA">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write/AVG-WRITES-COMPLETED-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write/AVG-WRITES-COMPLETED-DELTA">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write/AVG-SECTORS-WRITTEN-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write/AVG-SECTORS-WRITTEN-DELTA">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write/AVG-RECEIVE-BYTES-NUM-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write/AVG-RECEIVE-BYTES-NUM-DELTA">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write/AVG-TRANSMIT-BYTES-NUM-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write/AVG-TRANSMIT-BYTES-NUM-DELTA">
+<img src="https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-TRANSMIT-BYTES-NUM-DELTA.svg" alt="2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-TRANSMIT-BYTES-NUM-DELTA">
