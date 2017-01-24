@@ -1,4 +1,4 @@
-title: Write 1M keys, 1000-client (etcd 100 TCP conns), 256-byte key, 1KB value
+title: Write 1M keys, 1000-client, 256-byte key, 1KB value
 work_dir: 2017Q1-01-etcd-zookeeper-consul/02-write-1M-keys-rate-limited
 all_aggregated_path: 2017Q1-01-etcd-zookeeper-consul/02-write-1M-keys-rate-limited/aggregated.csv
 
@@ -121,8 +121,7 @@ plot_list:
 readme:
   preface: |
     - Google Cloud Compute Engine
-    - 3 machines of 8 vCPUs + 16 GB Memory + 150 GB SSD
-    - 1 machine(client) of 16 vCPUs + 30 GB Memory + 150 GB SSD
+    - 4 machines of 16 vCPUs + 30 GB Memory + 150 GB SSD (1 for client)
     - Ubuntu 16.10
     - etcd v3.1 (Go 1.7.4)
     - Zookeepr r3.4.9
@@ -136,7 +135,7 @@ readme:
 
   output_path: 2017Q1-01-etcd-zookeeper-consul/02-write-1M-keys-rate-limited/README.md
   results:
-  - title: Write 1M keys, 1000-client (etcd v3.1 100-conn), 256-byte key, 1KB value
+  - title: Write 1M keys, 1000-client, 256-byte key, 1KB value
     images:
 
     - image_title: 2017Q1-01-etcd-zookeeper-consul/02-write-1M-keys-rate-limited/AVG-LATENCY-MS
