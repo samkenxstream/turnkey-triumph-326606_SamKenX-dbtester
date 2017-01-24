@@ -16,6 +16,10 @@ package control
 
 func assignRequest(ranges []int, total int) (rs []int) {
 	reqEach := int(float64(total) / float64(len(ranges)))
+	// truncate 10000th digits
+	if reqEach > 10000 {
+		reqEach = (reqEach / 10000) * 10000
+	}
 	// truncate 1000th digits
 	if reqEach > 1000 {
 		reqEach = (reqEach / 1000) * 1000
