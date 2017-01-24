@@ -19,7 +19,6 @@ import (
 	"time"
 
 	"github.com/coreos/dbtester/agent/agentpb"
-
 	"google.golang.org/grpc"
 )
 

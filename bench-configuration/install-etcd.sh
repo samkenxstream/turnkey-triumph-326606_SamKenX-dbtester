@@ -4,8 +4,6 @@ set -e
 <<COMMENT
 GIT_PATH=github.com/coreos/etcd
 
-# USER_NAME=gyuho
-# BRANCH_NAME=test
 USER_NAME=coreos
 BRANCH_NAME=release-3.1
 

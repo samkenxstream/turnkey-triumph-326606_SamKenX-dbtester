@@ -7,9 +7,9 @@ google_cloud_storage_bucket_name: dbtester-results
 google_cloud_storage_sub_directory: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys
 
 peer_ips:
-    - 10.240.0.25
-    - 10.240.0.27
-    - 10.240.0.28
+    - 10.99.157.153
+    - 10.99.157.135
+    - 10.99.157.143
 
 agent_port: 3500
 database_port: 2181

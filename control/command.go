@@ -99,7 +99,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 	println()
 	time.Sleep(5 * time.Second)
 	if err := step3StopDatabase(cfg); err != nil {
-		return err
+		plog.Warning(err)
 	}
 
 	println()
