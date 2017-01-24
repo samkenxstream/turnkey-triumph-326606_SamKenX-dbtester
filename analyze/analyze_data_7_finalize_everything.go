@@ -447,7 +447,7 @@ func do(configPath string) error {
 		tw.Append(row)
 	}
 	tw.SetAutoFormatHeaders(false)
-	tw.SetAlignment(tablewriter.ALIGN_CENTER)
+	tw.SetAlignment(tablewriter.ALIGN_RIGHT)
 	tw.Render()
 	if err := toFile(buf.String(), changeExtToTxt(cfg.AllAggregatedPath)); err != nil {
 		return err
