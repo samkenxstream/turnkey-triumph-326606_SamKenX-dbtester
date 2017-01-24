@@ -130,8 +130,6 @@ readme:
       - Java HotSpot(TM) 64-Bit Server VM (build 25.111-b14, mixed mode)
       - javac 1.8.0_111
     - Consul v0.7.2 (Go 1.7.4)
-    - zetcd v3.1 (Go 1.7.4)
-    - cetcd v3.1 (Go 1.7.4)
 
   output_path: 2017Q1-01-etcd-zookeeper-consul/03-write-1M-keys-client-variable/README.md
   results:
