@@ -50,8 +50,13 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 		return err
 	}
 
+	nc := dataframe.NewColumn("UNIX-TS")
+	for i := 0; i < unixTSColumn.Count(); i++ {
+		nc.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", data.benchMetrics.frontUnixTS+int64(i))))
+	}
+
 	// get last(maximum) unix second
-	bv, ok := unixTSColumn.BackNonNil()
+	bv, ok := nc.BackNonNil()
 	if !ok {
 		return fmt.Errorf("BackNonNil %s has empty Unix time %v", fpath, fv)
 	}
@@ -64,5 +69,16 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 		return err
 	}
 
+	if ok = data.benchMetrics.frame.DeleteColumn("UNIX-TS"); !ok {
+		return fmt.Errorf("UNIX-TS column is not deleted %v", data.benchMetrics.frame.Headers())
+	}
+
+	// overwrite duplicate timestamps
+	if err = data.benchMetrics.frame.AddColumn(nc); err != nil {
+		return err
+	}
+	if err = data.benchMetrics.frame.MoveColumn("UNIX-TS", 0); err != nil {
+		return err
+	}
 	return
 }
