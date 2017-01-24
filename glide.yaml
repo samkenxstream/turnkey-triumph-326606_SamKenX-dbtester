@@ -54,7 +54,7 @@ import:
 - package: github.com/gyuho/dataframe
   version: 0654e1bff71a2c46f30d603f30b3621dd599ec50
 - package: github.com/gyuho/psn
-  version: 1828fc5fa67ec73c201469411b9a5e51a3ecd008
+  version: 5cd1061aaaf19d6cd8fa32239500b09516f67a14
 - package: github.com/hashicorp/consul
   version: 8d57727ff0d113a97c89a992e4681680f95cbf03
   subpackages:
@@ -106,3 +106,5 @@ import:
   version: a4bde12657593d5e90d0533a3e4fd95e635124cb
   subpackages:
   - rate
+- package: github.com/olekukonko/tablewriter
+  version: a0225b3f23b5ce0cbec6d7a66a968f8a59eca9c4

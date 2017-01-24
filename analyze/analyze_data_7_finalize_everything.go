@@ -15,6 +15,7 @@
 package analyze
 
 import (
+	"bytes"
 	"encoding/csv"
 	"fmt"
 	"path/filepath"
@@ -24,6 +25,7 @@ import (
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/gyuho/dataframe"
+	"github.com/olekukonko/tablewriter"
 )
 
 type allAggregatedData struct {
@@ -232,7 +234,7 @@ func do(configPath string) error {
 			for _, row := range rows {
 				switch row[0] {
 				case "TOTAL-SECONDS":
-					row10TotalSeconds = append(row10TotalSeconds, row[1])
+					row10TotalSeconds = append(row10TotalSeconds, fmt.Sprintf("%s s", row[1]))
 				case "REQUESTS-PER-SECOND":
 					row11AverageThroughput = append(row11AverageThroughput, row[1])
 				case "SLOWEST-LATENCY-MS":
@@ -293,14 +295,7 @@ func do(configPath string) error {
 		}
 	}
 
-	plog.Printf("saving data to %q", cfg.AllAggregatedPath)
-	file, err := openToOverwrite(cfg.AllAggregatedPath)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-	wr := csv.NewWriter(file)
-	if err := wr.WriteAll([][]string{
+	aggRows := [][]string{
 		row1Header,
 		row2ReadsCompletedDeltaSum,
 		row3SectorsReadDeltaSum,
@@ -323,7 +318,15 @@ func do(configPath string) error {
 		row20p95,
 		row21p99,
 		row22p999,
-	}); err != nil {
+	}
+	plog.Printf("saving data to %q", cfg.AllAggregatedPath)
+	file, err := openToOverwrite(cfg.AllAggregatedPath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	wr := csv.NewWriter(file)
+	if err := wr.WriteAll(aggRows); err != nil {
 		return err
 	}
 	wr.Flush()
@@ -443,7 +446,24 @@ func do(configPath string) error {
 			return err
 		}
 	}
+	buf := new(bytes.Buffer)
+	tw := tablewriter.NewWriter(buf)
+	tw.SetHeader(aggRows[0])
+	for _, row := range aggRows[1:] {
+		tw.Append(row)
+	}
+	tw.SetAutoFormatHeaders(false)
+	tw.SetAlignment(tablewriter.ALIGN_CENTER)
+	tw.Render()
+	if err := toFile(buf.String(), changeExtToTxt(cfg.AllAggregatedPath)); err != nil {
+		return err
+	}
 
 	plog.Printf("writing README at %q", cfg.READMEConfig.OutputPath)
-	return writeREADME(cfg.READMEConfig)
+	return writeREADME(buf.String(), cfg.READMEConfig)
+}
+
+func changeExtToTxt(fpath string) string {
+	ext := filepath.Ext(fpath)
+	return strings.Replace(fpath, ext, ".txt", -1)
 }

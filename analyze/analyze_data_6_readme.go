@@ -34,7 +34,7 @@ type READMEConfig struct {
 	} `yaml:"results"`
 }
 
-func writeREADME(cfg READMEConfig) error {
+func writeREADME(summary string, cfg READMEConfig) error {
 	buf := new(bytes.Buffer)
 
 	buf.WriteString("\n\n")
@@ -43,7 +43,9 @@ func writeREADME(cfg READMEConfig) error {
 
 	for _, result := range cfg.Results {
 		buf.WriteString(fmt.Sprintf("<br><br>\n##### %s", result.Title))
-		buf.WriteString("\n\n")
+		buf.WriteString("\n\n```\n")
+		buf.WriteString(summary)
+		buf.WriteString("```\n\n\n")
 		for _, img := range result.Images {
 			imgPath := ""
 			switch img.ImageType {
