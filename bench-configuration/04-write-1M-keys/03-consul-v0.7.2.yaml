@@ -9,7 +9,7 @@ google_cloud_storage_sub_directory: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-
 peer_ips:
     - 10.240.0.30
     - 10.240.0.31
-    - 10.240.0.35
+    - 10.240.0.33
 
 agent_port: 3500
 database_port: 8500
