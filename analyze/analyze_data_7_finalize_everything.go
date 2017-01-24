@@ -15,6 +15,7 @@
 package analyze
 
 import (
+	"encoding/csv"
 	"fmt"
 	"path/filepath"
 	"reflect"
@@ -44,12 +45,12 @@ func do(configPath string) error {
 		headerToLegend: make(map[string]string),
 	}
 	for _, elem := range cfg.RawData {
-		plog.Printf("reading system metrics data for %s (%q)", elem.DatabaseTag, elem.Legend)
+		plog.Printf("reading system metrics data for %s (%q)", makeTag(elem.Legend), elem.Legend)
 		ad, err := readSystemMetricsAll(elem.DataSystemMetricsPaths...)
 		if err != nil {
 			return err
 		}
-		ad.databaseTag = elem.DatabaseTag
+		ad.databaseTag = makeTag(elem.Legend)
 		ad.legend = elem.Legend
 		ad.csvOutputpath = elem.OutputPath
 
@@ -67,9 +68,9 @@ func do(configPath string) error {
 		}
 
 		all.data = append(all.data, ad)
-		all.databaseTags = append(all.databaseTags, elem.DatabaseTag)
+		all.databaseTags = append(all.databaseTags, makeTag(elem.Legend))
 		for _, hd := range ad.aggregated.Headers() {
-			all.headerToLegend[makeHeader(hd, elem.DatabaseTag)] = elem.Legend
+			all.headerToLegend[makeHeader(hd, makeTag(elem.Legend))] = elem.Legend
 		}
 	}
 
@@ -97,8 +98,6 @@ func do(configPath string) error {
 	row7ReceiveBytesNumDeltaSum := []string{"RECEIVE-BYTES-NUM-DELTA-SUM"}
 	row8TransmitBytesSum := []string{"TRANSMIT-BYTES-SUM"}
 	row9TransmitBytesNumDeltaSum := []string{"TRANSMIT-BYTES-NUM-DELTA-SUM"}
-	row10AverageThroughput := []string{"AVG-THROUGHPUT"}
-	row11AverageLatency := []string{"AVG-LATENCY"}
 
 	// iterate each database's all data
 	for _, ad := range all.data {
@@ -188,10 +187,147 @@ func do(configPath string) error {
 		row9TransmitBytesNumDeltaSum = append(row9TransmitBytesNumDeltaSum, fmt.Sprintf("%d", uint64(transmitBytesNumDeltaSum)))
 	}
 
-	aggDf := dataframe.New()
+	row10TotalSeconds := []string{"TOTAL-SECONDS"}       // TOTAL-SECONDS
+	row11AverageThroughput := []string{"AVG-THROUGHPUT"} // REQUESTS-PER-SECOND
+	row12SlowestLatency := []string{"SLOWEST-LATENCY"}   // SLOWEST-LATENCY-MS
+	row13FastestLatency := []string{"FASTEST-LATENCY"}   // FASTEST-LATENCY-MS
+	row14AverageLatency := []string{"AVG-LATENCY"}       // AVERAGE-LATENCY-MS
+	row15p10 := []string{"p10"}                          // p10
+	row16p25 := []string{"p25"}                          // p25
+	row17p50 := []string{"p50"}                          // p50
+	row18p75 := []string{"p75"}                          // p75
+	row19p90 := []string{"p90"}                          // p90
+	row20p95 := []string{"p95"}                          // p95
+	row21p99 := []string{"p99"}                          // p99
+	row22p999 := []string{"p99.9"}                       // p99.9
+
+	for i, rcfg := range cfg.RawData {
+		tag := makeTag(rcfg.Legend)
+		if tag != row1Header[i+1] {
+			return fmt.Errorf("analyze config has different order; expected %q, got %q", row1Header[i+1], tag)
+		}
+
+		{
+			f, err := openToRead(rcfg.DataBenchmarkLatencySummary)
+			if err != nil {
+				return err
+			}
+			defer f.Close()
+
+			rd := csv.NewReader(f)
+
+			// FieldsPerRecord is the number of expected fields per record.
+			// If FieldsPerRecord is positive, Read requires each record to
+			// have the given number of fields. If FieldsPerRecord is 0, Read sets it to
+			// the number of fields in the first record, so that future records must
+			// have the same field count. If FieldsPerRecord is negative, no check is
+			// made and records may have a variable number of fields.
+			rd.FieldsPerRecord = -1
+
+			rows, err := rd.ReadAll()
+			if err != nil {
+				return err
+			}
+
+			for _, row := range rows {
+				switch row[0] {
+				case "TOTAL-SECONDS":
+					row10TotalSeconds = append(row10TotalSeconds, row[1])
+				case "REQUESTS-PER-SECOND":
+					row11AverageThroughput = append(row11AverageThroughput, row[1])
+				case "SLOWEST-LATENCY-MS":
+					row12SlowestLatency = append(row12SlowestLatency, fmt.Sprintf("%s ms", row[1]))
+				case "FASTEST-LATENCY-MS":
+					row13FastestLatency = append(row13FastestLatency, fmt.Sprintf("%s ms", row[1]))
+				case "AVERAGE-LATENCY-MS":
+					row14AverageLatency = append(row14AverageLatency, fmt.Sprintf("%s ms", row[1]))
+				}
+			}
+		}
+
+		{
+			f, err := openToRead(rcfg.DataBenchmarkLatencyPercentile)
+			if err != nil {
+				return err
+			}
+			defer f.Close()
+
+			rd := csv.NewReader(f)
+
+			// FieldsPerRecord is the number of expected fields per record.
+			// If FieldsPerRecord is positive, Read requires each record to
+			// have the given number of fields. If FieldsPerRecord is 0, Read sets it to
+			// the number of fields in the first record, so that future records must
+			// have the same field count. If FieldsPerRecord is negative, no check is
+			// made and records may have a variable number of fields.
+			rd.FieldsPerRecord = -1
+
+			rows, err := rd.ReadAll()
+			if err != nil {
+				return err
+			}
+
+			for ri, row := range rows {
+				if ri == 0 {
+					continue // skip header
+				}
+				switch row[0] {
+				case "p10":
+					row15p10 = append(row15p10, fmt.Sprintf("%s ms", row[1]))
+				case "p25":
+					row16p25 = append(row16p25, fmt.Sprintf("%s ms", row[1]))
+				case "p50":
+					row17p50 = append(row17p50, fmt.Sprintf("%s ms", row[1]))
+				case "p75":
+					row18p75 = append(row18p75, fmt.Sprintf("%s ms", row[1]))
+				case "p90":
+					row19p90 = append(row19p90, fmt.Sprintf("%s ms", row[1]))
+				case "p95":
+					row20p95 = append(row20p95, fmt.Sprintf("%s ms", row[1]))
+				case "p99":
+					row21p99 = append(row21p99, fmt.Sprintf("%s ms", row[1]))
+				case "p99.9":
+					row22p999 = append(row22p999, fmt.Sprintf("%s ms", row[1]))
+				}
+			}
+		}
+	}
 
 	plog.Printf("saving data to %q", cfg.AllAggregatedPath)
-	if err := aggDf.CSVHorizontal(cfg.AllAggregatedPath); err != nil {
+	file, err := openToOverwrite(cfg.AllAggregatedPath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	wr := csv.NewWriter(file)
+	if err := wr.WriteAll([][]string{
+		row1Header,
+		row2ReadsCompletedDeltaSum,
+		row3SectorsReadDeltaSum,
+		row4WritesCompletedDeltaSum,
+		row5SectorsWrittenDeltaSum,
+		row6ReceiveBytesSum,
+		row7ReceiveBytesNumDeltaSum,
+		row8TransmitBytesSum,
+		row9TransmitBytesNumDeltaSum,
+		row10TotalSeconds,
+		row11AverageThroughput,
+		row12SlowestLatency,
+		row13FastestLatency,
+		row14AverageLatency,
+		row15p10,
+		row16p25,
+		row17p50,
+		row18p75,
+		row19p90,
+		row20p95,
+		row21p99,
+		row22p999,
+	}); err != nil {
+		return err
+	}
+	wr.Flush()
+	if err := wr.Error(); err != nil {
 		return err
 	}
 
