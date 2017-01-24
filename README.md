@@ -13,10 +13,10 @@ Distributed database tester
 
 For etcd, we also recommend [etcd benchmark tool](https://github.com/coreos/etcd/tree/master/tools/benchmark).
 
-<br><br><hr>
-### Latest Results
-
 All logs and results can be found at https://console.cloud.google.com/storage/browser/dbtester-results
+
+<br><br>
+##### Write 1M keys, 1000-client, 256-byte key, 1KB value
 
 - Google Cloud Compute Engine
 - 4 machines of 16 vCPUs + 30 GB Memory + 150 GB SSD (1 for client)
@@ -28,13 +28,7 @@ All logs and results can be found at https://console.cloud.google.com/storage/br
   - Java HotSpot(TM) 64-Bit Server VM (build 25.111-b14, mixed mode)
   - javac 1.8.0_111
 - Consul v0.7.2 (Go 1.7.4)
-- zetcd v3.1 (Go 1.7.4)
-- cetcd v3.1 (Go 1.7.4)
 
-
-
-<br><br>
-##### Write 1M keys, 1000-client, 256-byte key, 1KB value
 
 ```
 +----------------------------+--------------------+------------------------+-----------------------+

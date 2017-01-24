@@ -38,11 +38,11 @@ func writeREADME(summary string, cfg READMEConfig) error {
 	buf := new(bytes.Buffer)
 
 	buf.WriteString("\n\n")
-	buf.WriteString(cfg.Preface)
-	buf.WriteString("\n\n\n")
 
 	for _, result := range cfg.Results {
 		buf.WriteString(fmt.Sprintf("<br><br>\n##### %s", result.Title))
+		buf.WriteString("\n\n")
+		buf.WriteString(cfg.Preface)
 		buf.WriteString("\n\n```\n")
 		buf.WriteString(summary)
 		buf.WriteString("```\n\n\n")
