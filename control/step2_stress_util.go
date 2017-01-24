@@ -15,8 +15,16 @@
 package control
 
 func assignRequest(ranges []int, total int) (rs []int) {
-	reqEach := total / (len(ranges) + 1)
-	reqEach = (reqEach / 100000) * 100000
+	reqEach := int(float64(total) / float64(len(ranges)))
+	// truncate 10000th digits
+	if reqEach > 10000 {
+		reqEach = (reqEach / 10000) * 10000
+	}
+	// truncate 1000th digits
+	if reqEach > 1000 {
+		reqEach = (reqEach / 1000) * 1000
+	}
+
 	curSum := 0
 	rs = make([]int, len(ranges))
 	for i := range ranges {

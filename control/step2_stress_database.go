@@ -166,32 +166,32 @@ func saveDataLatencyDistributionSummary(cfg Config, st report.Stats) {
 		plog.Fatal(err)
 	}
 
-	c2 := dataframe.NewColumn("SLOWEST-LATENCY-MS")
-	c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*st.Slowest)))
+	c2 := dataframe.NewColumn("REQUESTS-PER-SECOND")
+	c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", st.RPS)))
 	if err := fr.AddColumn(c2); err != nil {
 		plog.Fatal(err)
 	}
 
-	c3 := dataframe.NewColumn("FASTEST-LATENCY-MS")
-	c3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*st.Fastest)))
+	c3 := dataframe.NewColumn("SLOWEST-LATENCY-MS")
+	c3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*st.Slowest)))
 	if err := fr.AddColumn(c3); err != nil {
 		plog.Fatal(err)
 	}
 
-	c4 := dataframe.NewColumn("AVERAGE-LATENCY-MS")
-	c4.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*st.Average)))
+	c4 := dataframe.NewColumn("FASTEST-LATENCY-MS")
+	c4.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*st.Fastest)))
 	if err := fr.AddColumn(c4); err != nil {
 		plog.Fatal(err)
 	}
 
-	c5 := dataframe.NewColumn("STDDEV-LATENCY-MS")
-	c5.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*st.Stddev)))
+	c5 := dataframe.NewColumn("AVERAGE-LATENCY-MS")
+	c5.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*st.Average)))
 	if err := fr.AddColumn(c5); err != nil {
 		plog.Fatal(err)
 	}
 
-	c6 := dataframe.NewColumn("REQUESTS-PER-SECOND")
-	c6.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", st.RPS)))
+	c6 := dataframe.NewColumn("STDDEV-LATENCY-MS")
+	c6.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*st.Stddev)))
 	if err := fr.AddColumn(c6); err != nil {
 		plog.Fatal(err)
 	}

@@ -107,20 +107,20 @@ func points(col dataframe.Column) (plotter.XYs, error) {
 }
 
 func getRGB(legend string, i int) color.Color {
-	legend = strings.ToLower(strings.TrimSpace(legend))
-	if strings.HasPrefix(legend, "etcd") {
+	tag := makeTag(legend)
+	if strings.HasPrefix(tag, "etcd") {
 		return color.RGBA{24, 90, 169, 255} // blue
 	}
-	if strings.HasPrefix(legend, "zookeeper") {
+	if strings.HasPrefix(tag, "zookeeper") {
 		return color.RGBA{38, 169, 24, 255} // green
 	}
-	if strings.HasPrefix(legend, "consul") {
+	if strings.HasPrefix(tag, "consul") {
 		return color.RGBA{198, 53, 53, 255} // red
 	}
-	if strings.HasPrefix(legend, "zetcd") {
+	if strings.HasPrefix(tag, "zetcd") {
 		return color.RGBA{251, 206, 0, 255} // yellow
 	}
-	if strings.HasPrefix(legend, "cetcd") {
+	if strings.HasPrefix(tag, "cetcd") {
 		return color.RGBA{116, 24, 169, 255} // purple
 	}
 	return plotutil.Color(i)
