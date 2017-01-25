@@ -21,6 +21,13 @@ import (
 	"path/filepath"
 )
 
+func maxFloat64(a, b float64) float64 {
+	if a > b {
+		return a
+	}
+	return b
+}
+
 func openToRead(fpath string) (*os.File, error) {
 	f, err := os.OpenFile(fpath, os.O_RDONLY, 0444)
 	if err != nil {
