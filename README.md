@@ -41,6 +41,8 @@ All logs and results can be found at https://console.cloud.google.com/storage/br
 |  SECTORS-WRITTEN-DELTA-SUM |             542512 |                9221640 |              41272068 |
 |          RECEIVE-BYTES-SUM |             4.9 GB |                 5.3 GB |                7.7 GB |
 |         TRANSMIT-BYTES-SUM |             3.7 GB |                 4.2 GB |                6.5 GB |
+|              MAX-CPU-USAGE |           291.56 % |               363.65 % |              226.18 % |
+|           MAX-MEMORY-USAGE |         1198.60 MB |             4688.05 MB |            4329.38 MB |
 |              TOTAL-SECONDS |        36.2024 sec |            61.0944 sec |          467.9311 sec |
 |             AVG-THROUGHPUT | 27622.4453 req/sec |     16298.0557 req/sec |     2137.0667 req/sec |
 |            SLOWEST-LATENCY |        246.4560 ms |           5570.6375 ms |         30388.9318 ms |
@@ -109,6 +111,8 @@ All logs and results can be found at https://console.cloud.google.com/storage/br
 |  SECTORS-WRITTEN-DELTA-SUM |           2262752 |               14830288 |              81718092 |
 |          RECEIVE-BYTES-SUM |            5.8 GB |                 5.8 GB |                6.0 GB |
 |         TRANSMIT-BYTES-SUM |            4.6 GB |                 4.7 GB |                4.7 GB |
+|              MAX-CPU-USAGE |           52.02 % |                46.67 % |               84.40 % |
+|           MAX-MEMORY-USAGE |        1626.60 MB |             3568.49 MB |            3936.74 MB |
 |              TOTAL-SECONDS |      999.0083 sec |          1000.5091 sec |         1195.0587 sec |
 |             AVG-THROUGHPUT | 1000.9927 req/sec |       998.8554 req/sec |      836.7790 req/sec |
 |            SLOWEST-LATENCY |       198.1010 ms |           2392.6933 ms |         23594.1354 ms |
@@ -179,6 +183,8 @@ All logs and results can be found at https://console.cloud.google.com/storage/br
 |  SECTORS-WRITTEN-DELTA-SUM |           1175004 |               14572148 |              32486700 |
 |          RECEIVE-BYTES-SUM |            5.2 GB |                 5.4 GB |                8.9 GB |
 |         TRANSMIT-BYTES-SUM |            4.1 GB |                 4.3 GB |                7.7 GB |
+|              MAX-CPU-USAGE |           56.53 % |                56.39 % |               56.33 % |
+|           MAX-MEMORY-USAGE |        1472.87 MB |             3652.64 MB |            4561.35 MB |
 |              TOTAL-SECONDS |      570.7510 sec |           477.1301 sec |         1056.0748 sec |
 |             AVG-THROUGHPUT | 1752.0775 req/sec |      2090.3063 req/sec |      946.9027 req/sec |
 |            SLOWEST-LATENCY |       556.0183 ms |           3654.9846 ms |         17465.0180 ms |
@@ -249,6 +255,8 @@ All logs and results can be found at https://console.cloud.google.com/storage/br
 |  SECTORS-WRITTEN-DELTA-SUM |                  0 |                      0 |                     0 |
 |          RECEIVE-BYTES-SUM |             5.1 GB |                 5.3 GB |                5.6 GB |
 |         TRANSMIT-BYTES-SUM |             3.9 GB |                 4.2 GB |                4.4 GB |
+|              MAX-CPU-USAGE |           362.72 % |               388.31 % |              282.29 % |
+|           MAX-MEMORY-USAGE |         1213.43 MB |             9291.73 MB |            4523.80 MB |
 |              TOTAL-SECONDS |        40.8774 sec |            30.3340 sec |          164.0401 sec |
 |             AVG-THROUGHPUT | 24463.3803 req/sec |     32964.2605 req/sec |     6096.0706 req/sec |
 |            SLOWEST-LATENCY |        150.4056 ms |           1565.8847 ms |          7306.8885 ms |
@@ -318,6 +326,8 @@ All logs and results can be found at https://console.cloud.google.com/storage/br
 |  SECTORS-WRITTEN-DELTA-SUM |                 0 |                      0 |                     0 |
 |          RECEIVE-BYTES-SUM |            6.5 GB |                 5.8 GB |                6.4 GB |
 |         TRANSMIT-BYTES-SUM |            5.2 GB |                 4.7 GB |                5.1 GB |
+|              MAX-CPU-USAGE |           91.10 % |                64.88 % |              147.91 % |
+|           MAX-MEMORY-USAGE |        1694.38 MB |             2842.88 MB |            4231.91 MB |
 |              TOTAL-SECONDS |      999.0582 sec |           999.8117 sec |         1040.1450 sec |
 |             AVG-THROUGHPUT | 1000.9427 req/sec |       999.5752 req/sec |      961.4044 req/sec |
 |            SLOWEST-LATENCY |        56.0360 ms |           2635.4569 ms |          8546.8756 ms |
@@ -388,6 +398,8 @@ All logs and results can be found at https://console.cloud.google.com/storage/br
 |  SECTORS-WRITTEN-DELTA-SUM |                 0 |                      0 |                     0 |
 |          RECEIVE-BYTES-SUM |            5.4 GB |                 5.5 GB |                5.8 GB |
 |         TRANSMIT-BYTES-SUM |            4.2 GB |                 4.4 GB |                4.5 GB |
+|              MAX-CPU-USAGE |          135.68 % |               122.75 % |              124.26 % |
+|           MAX-MEMORY-USAGE |        1333.86 MB |             6610.87 MB |            4790.88 MB |
 |              TOTAL-SECONDS |      276.4103 sec |           185.1561 sec |          582.4233 sec |
 |             AVG-THROUGHPUT | 3617.8096 req/sec |      5400.8493 req/sec |     1716.9642 req/sec |
 |            SLOWEST-LATENCY |       155.0781 ms |           2140.8240 ms |          5637.2541 ms |

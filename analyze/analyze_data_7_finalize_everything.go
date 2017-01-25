@@ -98,6 +98,8 @@ func do(configPath string) error {
 	row04SectorsWrittenDeltaSum := []string{"SECTORS-WRITTEN-DELTA-SUM"}
 	row05ReceiveBytesSum := []string{"RECEIVE-BYTES-SUM"}
 	row06TransmitBytesSum := []string{"TRANSMIT-BYTES-SUM"}
+	row07MaxCPUUsage := []string{"MAX-CPU-USAGE"}
+	row08MaxMemoryUsage := []string{"MAX-MEMORY-USAGE"}
 
 	// iterate each database's all data
 	for _, ad := range all.data {
@@ -109,10 +111,11 @@ func do(configPath string) error {
 			sectorsWrittenDeltaSum   float64
 			receiveBytesNumDeltaSum  float64
 			transmitBytesNumDeltaSum float64
+			maxAvgCPU                float64
+			maxAvgVMRSSMBs           []float64
 		)
 		for _, col := range ad.aggregated.Columns() {
 			hdr := col.Header()
-
 			switch {
 			case strings.HasPrefix(hdr, "READS-COMPLETED-DELTA-"):
 				cnt := col.Count()
@@ -174,6 +177,26 @@ func do(configPath string) error {
 					fv, _ := vv.Number()
 					transmitBytesNumDeltaSum += fv
 				}
+			case strings.HasPrefix(hdr, "AVG-CPU-"):
+				cnt := col.Count()
+				for j := 0; j < cnt; j++ {
+					vv, err := col.Value(j)
+					if err != nil {
+						return err
+					}
+					fv, _ := vv.Number()
+					maxAvgCPU = maxFloat64(maxAvgCPU, fv)
+				}
+			case strings.HasPrefix(hdr, "AVG-VMRSS-MB-"):
+				cnt := col.Count()
+				for j := 0; j < cnt; j++ {
+					vv, err := col.Value(j)
+					if err != nil {
+						return err
+					}
+					fv, _ := vv.Number()
+					maxAvgVMRSSMBs = append(maxAvgVMRSSMBs, fv)
+				}
 			}
 		}
 
@@ -183,21 +206,26 @@ func do(configPath string) error {
 		row04SectorsWrittenDeltaSum = append(row04SectorsWrittenDeltaSum, fmt.Sprintf("%d", uint64(sectorsWrittenDeltaSum)))
 		row05ReceiveBytesSum = append(row05ReceiveBytesSum, humanize.Bytes(uint64(receiveBytesNumDeltaSum)))
 		row06TransmitBytesSum = append(row06TransmitBytesSum, humanize.Bytes(uint64(transmitBytesNumDeltaSum)))
+		row07MaxCPUUsage = append(row07MaxCPUUsage, fmt.Sprintf("%.2f %%", maxAvgCPU))
+
+		// linux sometimes returns overflowed value...
+		sort.Float64s(maxAvgVMRSSMBs)
+		row08MaxMemoryUsage = append(row08MaxMemoryUsage, fmt.Sprintf("%.2f MB", maxAvgVMRSSMBs[len(maxAvgVMRSSMBs)-2]))
 	}
 
-	row07TotalSeconds := []string{"TOTAL-SECONDS"}       // TOTAL-SECONDS
-	row08AverageThroughput := []string{"AVG-THROUGHPUT"} // REQUESTS-PER-SECOND
-	row09SlowestLatency := []string{"SLOWEST-LATENCY"}   // SLOWEST-LATENCY-MS
-	row10FastestLatency := []string{"FASTEST-LATENCY"}   // FASTEST-LATENCY-MS
-	row11AverageLatency := []string{"AVG-LATENCY"}       // AVERAGE-LATENCY-MS
-	row12p10 := []string{"Latency p10"}                  // p10
-	row13p25 := []string{"Latency p25"}                  // p25
-	row14p50 := []string{"Latency p50"}                  // p50
-	row15p75 := []string{"Latency p75"}                  // p75
-	row16p90 := []string{"Latency p90"}                  // p90
-	row17p95 := []string{"Latency p95"}                  // p95
-	row18p99 := []string{"Latency p99"}                  // p99
-	row19p999 := []string{"Latency p99.9"}               // p99.9
+	row09TotalSeconds := []string{"TOTAL-SECONDS"}       // TOTAL-SECONDS
+	row10AverageThroughput := []string{"AVG-THROUGHPUT"} // REQUESTS-PER-SECOND
+	row11SlowestLatency := []string{"SLOWEST-LATENCY"}   // SLOWEST-LATENCY-MS
+	row12FastestLatency := []string{"FASTEST-LATENCY"}   // FASTEST-LATENCY-MS
+	row13AverageLatency := []string{"AVG-LATENCY"}       // AVERAGE-LATENCY-MS
+	row14p10 := []string{"Latency p10"}                  // p10
+	row15p25 := []string{"Latency p25"}                  // p25
+	row16p50 := []string{"Latency p50"}                  // p50
+	row17p75 := []string{"Latency p75"}                  // p75
+	row18p90 := []string{"Latency p90"}                  // p90
+	row19p95 := []string{"Latency p95"}                  // p95
+	row20p99 := []string{"Latency p99"}                  // p99
+	row21p999 := []string{"Latency p99.9"}               // p99.9
 
 	for i, rcfg := range cfg.RawData {
 		tag := makeTag(rcfg.Legend)
@@ -230,15 +258,15 @@ func do(configPath string) error {
 			for _, row := range rows {
 				switch row[0] {
 				case "TOTAL-SECONDS":
-					row07TotalSeconds = append(row07TotalSeconds, fmt.Sprintf("%s sec", row[1]))
+					row09TotalSeconds = append(row09TotalSeconds, fmt.Sprintf("%s sec", row[1]))
 				case "REQUESTS-PER-SECOND":
-					row08AverageThroughput = append(row08AverageThroughput, fmt.Sprintf("%s req/sec", row[1]))
+					row10AverageThroughput = append(row10AverageThroughput, fmt.Sprintf("%s req/sec", row[1]))
 				case "SLOWEST-LATENCY-MS":
-					row09SlowestLatency = append(row09SlowestLatency, fmt.Sprintf("%s ms", row[1]))
+					row11SlowestLatency = append(row11SlowestLatency, fmt.Sprintf("%s ms", row[1]))
 				case "FASTEST-LATENCY-MS":
-					row10FastestLatency = append(row10FastestLatency, fmt.Sprintf("%s ms", row[1]))
+					row12FastestLatency = append(row12FastestLatency, fmt.Sprintf("%s ms", row[1]))
 				case "AVERAGE-LATENCY-MS":
-					row11AverageLatency = append(row11AverageLatency, fmt.Sprintf("%s ms", row[1]))
+					row13AverageLatency = append(row13AverageLatency, fmt.Sprintf("%s ms", row[1]))
 				}
 			}
 		}
@@ -271,21 +299,21 @@ func do(configPath string) error {
 				}
 				switch row[0] {
 				case "p10":
-					row12p10 = append(row12p10, fmt.Sprintf("%s ms", row[1]))
+					row14p10 = append(row14p10, fmt.Sprintf("%s ms", row[1]))
 				case "p25":
-					row13p25 = append(row13p25, fmt.Sprintf("%s ms", row[1]))
+					row15p25 = append(row15p25, fmt.Sprintf("%s ms", row[1]))
 				case "p50":
-					row14p50 = append(row14p50, fmt.Sprintf("%s ms", row[1]))
+					row16p50 = append(row16p50, fmt.Sprintf("%s ms", row[1]))
 				case "p75":
-					row15p75 = append(row15p75, fmt.Sprintf("%s ms", row[1]))
+					row17p75 = append(row17p75, fmt.Sprintf("%s ms", row[1]))
 				case "p90":
-					row16p90 = append(row16p90, fmt.Sprintf("%s ms", row[1]))
+					row18p90 = append(row18p90, fmt.Sprintf("%s ms", row[1]))
 				case "p95":
-					row17p95 = append(row17p95, fmt.Sprintf("%s ms", row[1]))
+					row19p95 = append(row19p95, fmt.Sprintf("%s ms", row[1]))
 				case "p99":
-					row18p99 = append(row18p99, fmt.Sprintf("%s ms", row[1]))
+					row20p99 = append(row20p99, fmt.Sprintf("%s ms", row[1]))
 				case "p99.9":
-					row19p999 = append(row19p999, fmt.Sprintf("%s ms", row[1]))
+					row21p999 = append(row21p999, fmt.Sprintf("%s ms", row[1]))
 				}
 			}
 		}
@@ -299,19 +327,21 @@ func do(configPath string) error {
 		row04SectorsWrittenDeltaSum,
 		row05ReceiveBytesSum,
 		row06TransmitBytesSum,
-		row07TotalSeconds,
-		row08AverageThroughput,
-		row09SlowestLatency,
-		row10FastestLatency,
-		row11AverageLatency,
-		row12p10,
-		row13p25,
-		row14p50,
-		row15p75,
-		row16p90,
-		row17p95,
-		row18p99,
-		row19p999,
+		row07MaxCPUUsage,
+		row08MaxMemoryUsage,
+		row09TotalSeconds,
+		row10AverageThroughput,
+		row11SlowestLatency,
+		row12FastestLatency,
+		row13AverageLatency,
+		row14p10,
+		row15p25,
+		row16p50,
+		row17p75,
+		row18p90,
+		row19p95,
+		row20p99,
+		row21p999,
 	}
 	plog.Printf("saving data to %q", cfg.AllAggregatedPath)
 	file, err := openToOverwrite(cfg.AllAggregatedPath)
