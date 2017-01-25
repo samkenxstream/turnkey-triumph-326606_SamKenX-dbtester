@@ -16,7 +16,6 @@ package analyze
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/gyuho/dataframe"
 )
@@ -25,60 +24,162 @@ import (
 // and aggregates this to system metrics by unix timestamps.
 func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 	data.benchMetricsFilePath = fpath
-	data.benchMetrics.frame, err = dataframe.NewFromCSV(nil, fpath)
+
+	var tdf dataframe.Frame
+	tdf, err = dataframe.NewFromCSV(nil, fpath)
 	if err != nil {
 		return
 	}
 
-	var unixTSColumn dataframe.Column
-	unixTSColumn, err = data.benchMetrics.frame.Column("UNIX-TS")
+	var oldTSCol dataframe.Column
+	oldTSCol, err = tdf.Column("UNIX-TS")
 	if err != nil {
 		return err
 	}
 
 	// get first(minimum) unix second
-	fv, ok := unixTSColumn.FrontNonNil()
+	fv1, ok := oldTSCol.FrontNonNil()
 	if !ok {
-		return fmt.Errorf("FrontNonNil %s has empty Unix time %v", fpath, fv)
+		return fmt.Errorf("FrontNonNil %s has empty Unix time %v", fpath, fv1)
 	}
-	fs, ok := fv.String()
+	ivv1, ok := fv1.Int64()
 	if !ok {
-		return fmt.Errorf("cannot String %v", fv)
+		return fmt.Errorf("cannot Int64 %v", fv1)
 	}
-	data.benchMetrics.frontUnixTS, err = strconv.ParseInt(fs, 10, 64)
-	if err != nil {
-		return err
-	}
-
-	nc := dataframe.NewColumn("UNIX-TS")
-	for i := 0; i < unixTSColumn.Count(); i++ {
-		nc.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", data.benchMetrics.frontUnixTS+int64(i))))
-	}
+	data.benchMetrics.frontUnixTS = int64(ivv1)
 
 	// get last(maximum) unix second
-	bv, ok := nc.BackNonNil()
+	fv2, ok := oldTSCol.BackNonNil()
 	if !ok {
-		return fmt.Errorf("BackNonNil %s has empty Unix time %v", fpath, fv)
+		return fmt.Errorf("BackNonNil %s has empty Unix time %v", fpath, fv2)
 	}
-	bs, ok := bv.String()
+	ivv2, ok := fv2.Int64()
 	if !ok {
-		return fmt.Errorf("cannot String %v", bv)
+		return fmt.Errorf("cannot Int64 %v", fv2)
 	}
-	data.benchMetrics.lastUnixTS, err = strconv.ParseInt(bs, 10, 64)
+	data.benchMetrics.lastUnixTS = int64(ivv2)
+
+	// UNIX-TS, CONTROL-CLIENT-NUM, AVG-LATENCY-MS, AVG-THROUGHPUT
+	var oldControlClientNumCol dataframe.Column
+	oldControlClientNumCol, err = tdf.Column("CONTROL-CLIENT-NUM")
+	if err != nil {
+		return err
+	}
+	var oldAvgLatencyMSCol dataframe.Column
+	oldAvgLatencyMSCol, err = tdf.Column("AVG-LATENCY-MS")
+	if err != nil {
+		return err
+	}
+	var oldAvgThroughputCol dataframe.Column
+	oldAvgThroughputCol, err = tdf.Column("AVG-THROUGHPUT")
 	if err != nil {
 		return err
 	}
 
-	if ok = data.benchMetrics.frame.DeleteColumn("UNIX-TS"); !ok {
-		return fmt.Errorf("UNIX-TS column is not deleted %v", data.benchMetrics.frame.Headers())
+	type rowData struct {
+		clientN    int64
+		latency    float64
+		throughput float64
+	}
+	tsToData := make(map[int64]rowData)
+	for i := 0; i < oldTSCol.Count(); i++ {
+		tv, err := oldTSCol.Value(i)
+		if err != nil {
+			return err
+		}
+		ts, ok := tv.Int64()
+		if !ok {
+			return fmt.Errorf("cannot Int64 %v", tv)
+		}
+
+		cv, err := oldControlClientNumCol.Value(i)
+		if err != nil {
+			return err
+		}
+		clientN, ok := cv.Int64()
+		if !ok {
+			return fmt.Errorf("cannot Int64 %v", cv)
+		}
+		cn := int64(clientN)
+
+		lv, err := oldAvgLatencyMSCol.Value(i)
+		if err != nil {
+			return err
+		}
+		dataLat, ok := lv.Float64()
+		if !ok {
+			return fmt.Errorf("cannot Float64 %v", lv)
+		}
+
+		hv, err := oldAvgThroughputCol.Value(i)
+		if err != nil {
+			return err
+		}
+		dataThr, ok := hv.Float64()
+		if !ok {
+			return fmt.Errorf("cannot Float64 %v", hv)
+		}
+
+		if v, ok := tsToData[ts]; !ok {
+			tsToData[ts] = rowData{clientN: cn, latency: dataLat, throughput: dataThr}
+		} else {
+			oldCn := v.clientN
+			if oldCn != cn {
+				return fmt.Errorf("different client number with same timestamps! %d != %d", oldCn, cn)
+			}
+			tsToData[ts] = rowData{clientN: cn, latency: (v.latency + dataLat) / 2.0, throughput: (v.throughput + dataThr) / 2.0}
+		}
 	}
 
-	// overwrite duplicate timestamps
-	if err = data.benchMetrics.frame.AddColumn(nc); err != nil {
+	// UNIX-TS, CONTROL-CLIENT-NUM, AVG-LATENCY-MS, AVG-THROUGHPUT
+	// aggregate duplicate benchmark timestamps with average values
+	// OR fill in missing timestamps with zero values
+	//
+	// expected row number
+	rowN := data.benchMetrics.lastUnixTS - data.benchMetrics.frontUnixTS + 1
+	newTSCol := dataframe.NewColumn("UNIX-TS")
+	newControlClientNumCol := dataframe.NewColumn("CONTROL-CLIENT-NUM")
+	newAvgLatencyCol := dataframe.NewColumn("AVG-LATENCY-MS")
+	newAvgThroughputCol := dataframe.NewColumn("AVG-THROUGHPUT")
+	for i := int64(0); i < rowN; i++ {
+		ts := data.benchMetrics.frontUnixTS + i
+		newTSCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", ts)))
+
+		v, ok := tsToData[ts]
+		if !ok {
+			prev, pok := tsToData[ts-1]
+			if !pok {
+				prev, pok = tsToData[ts+1]
+				if !pok {
+					return fmt.Errorf("benchmark missing a lot of rows around %d", ts)
+				}
+			}
+			newControlClientNumCol.PushBack(dataframe.NewStringValue(prev.clientN))
+
+			// just add empty values
+			newAvgLatencyCol.PushBack(dataframe.NewStringValue("0.0"))
+			newAvgThroughputCol.PushBack(dataframe.NewStringValue(0))
+		} else {
+			newControlClientNumCol.PushBack(dataframe.NewStringValue(v.clientN))
+			newAvgLatencyCol.PushBack(dataframe.NewStringValue(v.latency))
+			newAvgThroughputCol.PushBack(dataframe.NewStringValue(v.throughput))
+		}
+	}
+
+	df := dataframe.New()
+	if err = df.AddColumn(newTSCol); err != nil {
 		return err
 	}
-	if err = data.benchMetrics.frame.MoveColumn("UNIX-TS", 0); err != nil {
+	if err = df.AddColumn(newControlClientNumCol); err != nil {
 		return err
 	}
+	if err = df.AddColumn(newAvgLatencyCol); err != nil {
+		return err
+	}
+	if err = df.AddColumn(newAvgThroughputCol); err != nil {
+		return err
+	}
+
+	data.benchMetrics.frame = df
 	return
 }

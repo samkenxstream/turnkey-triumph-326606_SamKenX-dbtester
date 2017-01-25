@@ -36,14 +36,13 @@ func (data *analyzeData) aggregateAll() error {
 	if !ok {
 		return fmt.Errorf("FrontNonNil %s has empty Unix time %v", data.benchMetrics.filePath, fv)
 	}
-	bv, ok := colBench.BackNonNil()
-	if !ok {
-		return fmt.Errorf("BackNonNil %s has empty Unix time %v", data.benchMetrics.filePath, fv)
-	}
-
 	sysStartIdx, ok := colSys.FindFirst(fv)
 	if !ok {
 		return fmt.Errorf("%v is not found in system metrics results", fv)
+	}
+	bv, ok := colBench.BackNonNil()
+	if !ok {
+		return fmt.Errorf("BackNonNil %s has empty Unix time %v", data.benchMetrics.filePath, fv)
 	}
 	sysEndIdx, ok := colSys.FindFirst(bv)
 	if !ok {
@@ -64,10 +63,14 @@ func (data *analyzeData) aggregateAll() error {
 	minBenchEndIdx--
 
 	// sysStartIdx 3, sysEndIdx 9, sysRowN 7, minBenchEndIdx 5 (5+1 < 7)
-	// THEN sysEndIdx = 3 + 5 = 8
+	// so benchmark has 6 rows, but system metrics has 7 rows; benchmark is short of rows
+	// so we should keep system metrics [3, 9)
+	// THEN sysEndIdx = 3 + 5 = 8 (keep [3, 8+1))
 	//
 	// sysStartIdx 3, sysEndIdx 7, sysRowN 5, minBenchEndIdx 5 (5+1 > 5)
-	// THEN minBenchEndIdx = 7 - 3 = 4
+	// so benchmark has 6 rows, but system metrics has 5 rows; system metrics is short of rows
+	// so we should keep benchmark [0, 5)
+	// THEN minBenchEndIdx = 7 - 3 = 4 (keep [0, 4+1))
 	if minBenchEndIdx+1 < sysRowN {
 		// benchmark is short of rows
 		// adjust system-metrics rows to benchmark-metrics
@@ -85,19 +88,19 @@ func (data *analyzeData) aggregateAll() error {
 	// UNIX-TS, AVG-LATENCY-MS, AVG-THROUGHPUT
 	for _, col := range data.benchMetrics.frame.Columns() {
 		// ALWAYS KEEP FROM FIRST ROW OF BENCHMARKS
-		if err = col.Keep(0, minBenchEndIdx); err != nil {
+		// keeps from [a, b)
+		if err = col.Keep(0, minBenchEndIdx+1); err != nil {
 			return err
 		}
 		if err = data.aggregated.AddColumn(col); err != nil {
 			return err
 		}
 	}
-
 	for _, col := range data.sysAgg.Columns() {
 		if col.Header() == "UNIX-TS" {
 			continue
 		}
-		if err = col.Keep(sysStartIdx, sysEndIdx); err != nil {
+		if err = col.Keep(sysStartIdx, sysEndIdx+1); err != nil {
 			return err
 		}
 		if err = data.aggregated.AddColumn(col); err != nil {
@@ -132,7 +135,7 @@ func (data *analyzeData) aggregateAll() error {
 
 	// compute average value of 3+ nodes
 	// by iterating each row (horizontally) for all the columns
-	for rowIdx := 0; rowIdx < minBenchEndIdx; rowIdx++ {
+	for rowIdx := 0; rowIdx < minBenchEndIdx+1; rowIdx++ {
 		var (
 			clientNumSum             float64
 			volCtxSwitchSum          float64
@@ -157,13 +160,12 @@ func (data *analyzeData) aggregateAll() error {
 			if err != nil {
 				return err
 			}
-			vv, _ := rv.Number()
+			vv, _ := rv.Float64()
 
 			hd := col.Header()
 			switch {
 			// cumulative values
 			case hd == "AVG-THROUGHPUT":
-				requestSum += int(vv)
 				cumulativeThroughputCol.PushBack(dataframe.NewStringValue(requestSum))
 
 			// average values (need sume first!)
@@ -203,6 +205,7 @@ func (data *analyzeData) aggregateAll() error {
 				transmitBytesNumSum += vv
 			}
 		}
+
 		avgClientNumCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", clientNumSum/sampleSize)))
 		avgVolCtxSwitchCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", volCtxSwitchSum/sampleSize)))
 		avgNonVolCtxSwitchCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", nonVolCtxSwitchSum/sampleSize)))
