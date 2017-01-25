@@ -99,7 +99,7 @@ func points(col dataframe.Column) (plotter.XYs, error) {
 		if err != nil {
 			return nil, err
 		}
-		n, _ := v.Number()
+		n, _ := v.Float64()
 		pts[i].X = float64(i)
 		pts[i].Y = n
 	}

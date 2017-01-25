@@ -123,7 +123,7 @@ func (data *analyzeData) aggSystemMetrics() error {
 					if err != nil {
 						return err
 					}
-					fv, _ := rowV.Number()
+					fv, _ := rowV.Float64()
 					frv := float64(fv) * 0.000001
 					if err = col.Set(rowIdx, dataframe.NewStringValue(fmt.Sprintf("%.2f", frv))); err != nil {
 						return err

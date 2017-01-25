@@ -124,7 +124,7 @@ func do(configPath string) error {
 					if err != nil {
 						return err
 					}
-					fv, _ := vv.Number()
+					fv, _ := vv.Float64()
 					readsCompletedDeltaSum += fv
 				}
 			case strings.HasPrefix(hdr, "SECTORS-READS-DELTA-"):
@@ -134,7 +134,7 @@ func do(configPath string) error {
 					if err != nil {
 						return err
 					}
-					fv, _ := vv.Number()
+					fv, _ := vv.Float64()
 					sectorsReadDeltaSum += fv
 				}
 			case strings.HasPrefix(hdr, "WRITES-COMPLETED-DELTA-"):
@@ -144,7 +144,7 @@ func do(configPath string) error {
 					if err != nil {
 						return err
 					}
-					fv, _ := vv.Number()
+					fv, _ := vv.Float64()
 					writesCompletedDeltaSum += fv
 				}
 			case strings.HasPrefix(hdr, "SECTORS-WRITTEN-DELTA-"):
@@ -154,7 +154,7 @@ func do(configPath string) error {
 					if err != nil {
 						return err
 					}
-					fv, _ := vv.Number()
+					fv, _ := vv.Float64()
 					sectorsWrittenDeltaSum += fv
 				}
 			case strings.HasPrefix(hdr, "RECEIVE-BYTES-NUM-DELTA-"):
@@ -164,7 +164,7 @@ func do(configPath string) error {
 					if err != nil {
 						return err
 					}
-					fv, _ := vv.Number()
+					fv, _ := vv.Float64()
 					receiveBytesNumDeltaSum += fv
 				}
 			case strings.HasPrefix(hdr, "TRANSMIT-BYTES-NUM-DELTA-"):
@@ -174,7 +174,7 @@ func do(configPath string) error {
 					if err != nil {
 						return err
 					}
-					fv, _ := vv.Number()
+					fv, _ := vv.Float64()
 					transmitBytesNumDeltaSum += fv
 				}
 			case strings.HasPrefix(hdr, "AVG-CPU-"):
@@ -184,7 +184,7 @@ func do(configPath string) error {
 					if err != nil {
 						return err
 					}
-					fv, _ := vv.Number()
+					fv, _ := vv.Float64()
 					maxAvgCPU = maxFloat64(maxAvgCPU, fv)
 				}
 			case strings.HasPrefix(hdr, "AVG-VMRSS-MB-"):
@@ -194,7 +194,7 @@ func do(configPath string) error {
 					if err != nil {
 						return err
 					}
-					fv, _ := vv.Number()
+					fv, _ := vv.Float64()
 					maxAvgVMRSSMBs = append(maxAvgVMRSSMBs, fv)
 				}
 			}
@@ -208,7 +208,7 @@ func do(configPath string) error {
 		row06TransmitBytesSum = append(row06TransmitBytesSum, humanize.Bytes(uint64(transmitBytesNumDeltaSum)))
 		row07MaxCPUUsage = append(row07MaxCPUUsage, fmt.Sprintf("%.2f %%", maxAvgCPU))
 
-		// linux sometimes returns overflowed value...
+		// TODO: linux sometimes returns overflowed value...
 		sort.Float64s(maxAvgVMRSSMBs)
 		row08MaxMemoryUsage = append(row08MaxMemoryUsage, fmt.Sprintf("%.2f MB", maxAvgVMRSSMBs[len(maxAvgVMRSSMBs)-2]))
 	}
@@ -397,7 +397,12 @@ func do(configPath string) error {
 		nf2 := dataframe.New()
 		for i := range clientNumColumns {
 			if clientNumColumns[i].Count() != dataColumns[i].Count() {
-				return fmt.Errorf("clientNumColumns[i].Count() %d != dataColumns[i].Count() %d", clientNumColumns[i].Count(), dataColumns[i].Count())
+				return fmt.Errorf("%q row count %d != %q row count %d",
+					clientNumColumns[i].Header(),
+					clientNumColumns[i].Count(),
+					dataColumns[i].Header(),
+					dataColumns[i].Count(),
+				)
 			}
 			if err := nf2.AddColumn(clientNumColumns[i]); err != nil {
 				return err
@@ -421,13 +426,13 @@ func do(configPath string) error {
 				if err != nil {
 					return err
 				}
-				num, _ := v1.Number()
+				num, _ := v1.Int64()
 
 				v2, err := dataColumns[i].Value(j)
 				if err != nil {
 					return err
 				}
-				data, _ := v2.Number()
+				data, _ := v2.Float64()
 
 				if v, ok := allData[int(num)]; ok {
 					allData[int(num)] = (v + data) / 2
@@ -449,7 +454,6 @@ func do(configPath string) error {
 			}
 
 			if i == 0 {
-				// col1 := dataframe.NewColumn(clientNumColumns[i].Header())
 				col1 := dataframe.NewColumn("CONTROL-CLIENT-NUM")
 				for j := range allKeys {
 					col1.PushBack(dataframe.NewStringValue(allKeys[j]))
