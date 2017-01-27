@@ -23,11 +23,21 @@ import (
 
 // aggregateAll aggregates all system metrics from 3+ nodes.
 func (data *analyzeData) aggregateAll() error {
+	// TODO: UNIX-TS from pkg/report data is time.Time.Unix
+	// UNIX-TS from psn.CSV data is time.Time.UnixNano
+	// we need some kind of way to combine those with matching timestamps
+	//
+	// this is unix "nano-seconds"
 	colSys, err := data.sysAgg.Column("UNIX-TS")
 	if err != nil {
 		return err
 	}
 
+	// TODO: UNIX-TS from pkg/report data is time.Time.Unix
+	// UNIX-TS from psn.CSV data is time.Time.UnixNano
+	// we need some kind of way to combine those with matching timestamps
+	//
+	// this is unix "seconds"
 	colBench, err := data.benchMetrics.frame.Column("UNIX-TS")
 	if err != nil {
 		return err

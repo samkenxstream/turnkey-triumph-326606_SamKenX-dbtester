@@ -72,6 +72,11 @@ func (data *analyzeData) aggSystemMetrics() error {
 	maxTS := fmt.Sprintf("%d", data.maxUnixTS)
 	data.sysAgg = dataframe.New()
 	for i := range data.sys {
+		// TODO: UNIX-TS from pkg/report data is time.Time.Unix
+		// UNIX-TS from psn.CSV data is time.Time.UnixNano
+		// we need some kind of way to combine those with matching timestamps
+		//
+		// this is unix nanoseconds
 		uc, err := data.sys[i].frame.Column("UNIX-TS")
 		if err != nil {
 			return err
