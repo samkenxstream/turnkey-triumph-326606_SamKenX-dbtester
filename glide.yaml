@@ -54,7 +54,7 @@ import:
 - package: github.com/gyuho/dataframe
   version: ff668fdbafb3657733c2402b7de165265f179abf
 - package: github.com/gyuho/psn
-  version: 6c36a28085341b3ee3adbad19dc619482bcb9bae
+  version: 5a0ffadd2ecaca939e373bf01aa45ac66c8fa2c0
 - package: github.com/hashicorp/consul
   version: 8d57727ff0d113a97c89a992e4681680f95cbf03
   subpackages:
