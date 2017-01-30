@@ -145,6 +145,7 @@ func startZookeeper(fs *flags, t *transporterServer) error {
 		return err
 	}
 	t.cmd = cmd
+	t.cmdWait = make(chan struct{})
 	t.pid = int64(cmd.Process.Pid)
 	plog.Infof("started database %q (PID: %d)", cs, t.pid)
 

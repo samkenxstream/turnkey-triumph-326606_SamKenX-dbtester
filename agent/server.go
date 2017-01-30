@@ -35,11 +35,17 @@ type transporterServer struct {
 	proxyDatabaseLogfile *os.File
 	clientNumPath        string
 
+	// cmd is the main process that's running the database
 	cmd *exec.Cmd
+	// cmdWait channel is closed
+	// after database process is closed
+	cmdWait chan struct{}
+
 	pid int64
 
-	proxyCmd *exec.Cmd
-	proxyPid int64
+	proxyCmd     *exec.Cmd
+	proxyCmdWait chan struct{}
+	proxyPid     int64
 
 	metricsCSV *psn.CSV
 
@@ -136,6 +142,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 					return nil, err
 				}
 				go func() {
+					defer close(t.proxyCmdWait)
 					if err := t.proxyCmd.Wait(); err != nil {
 						plog.Errorf("cmd.Wait %q returned error %v", t.proxyCmd.Path, err)
 						return
@@ -148,6 +155,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 					return nil, err
 				}
 				go func() {
+					defer close(t.proxyCmdWait)
 					if err := t.proxyCmd.Wait(); err != nil {
 						plog.Errorf("cmd.Wait %q returned error %v", t.proxyCmd.Path, err)
 						return
@@ -170,6 +178,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 		}
 
 		go func() {
+			defer close(t.cmdWait)
 			if err := t.cmd.Wait(); err != nil {
 				plog.Errorf("cmd.Wait %q returned error %v", t.cmd.Path, err)
 				return
@@ -200,6 +209,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 		if err := syscall.Kill(int(t.pid), syscall.SIGTERM); err != nil {
 			plog.Warningf("syscall.Kill failed with %v", err)
 		}
+		<-t.cmdWait
 		if t.databaseLogFile != nil {
 			t.databaseLogFile.Sync()
 			t.databaseLogFile.Close()
@@ -216,6 +226,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 			if err := syscall.Kill(int(t.proxyPid), syscall.SIGTERM); err != nil {
 				plog.Warningf("syscall.Kill failed with %v", err)
 			}
+			<-t.proxyCmdWait
 			plog.Infof("stopped binary proxy for %q [PID: %d]", t.req.Database.String(), t.pid)
 		}
 		if t.proxyDatabaseLogfile != nil {
