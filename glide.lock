@@ -1,5 +1,5 @@
-hash: 4116299d560d964583b5216b22d605346043715e09738d9c9de11082da04968a
-updated: 2017-01-27T10:08:57.703007143-08:00
+hash: a742783c5966644247e12ddcda9629965818fdd68e659a0866f279a88d49290f
+updated: 2017-01-27T15:23:50.941693612-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -95,7 +95,7 @@ imports:
   - runtime/internal
   - utilities
 - name: github.com/gyuho/dataframe
-  version: ff668fdbafb3657733c2402b7de165265f179abf
+  version: e715fd4225590f6558961c316924e56a8a2647b0
 - name: github.com/gyuho/psn
   version: 5a0ffadd2ecaca939e373bf01aa45ac66c8fa2c0
   subpackages:
@@ -107,7 +107,7 @@ imports:
 - name: github.com/hashicorp/go-cleanhttp
   version: ad28ea4487f05916463e2423a55166280e8254b5
 - name: github.com/hashicorp/serf
-  version: dd495d0562345a767bd13ce49420c860d6c312d1
+  version: 44157f9dfdbcf6d9e20fcfd52cfee348dbc467ee
   subpackages:
   - coordinate
 - name: github.com/inconshreveable/mousetrap

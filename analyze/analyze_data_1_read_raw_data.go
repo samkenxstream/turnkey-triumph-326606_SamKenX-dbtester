@@ -69,6 +69,11 @@ func readSystemMetrics(fpath string) (data testData, err error) {
 			return testData{}, err
 		}
 		if name == "UNIX-TS" {
+			// TODO: UNIX-TS from pkg/report data is time.Time.Unix
+			// UNIX-TS from psn.CSV data is time.Time.UnixNano
+			// we need some kind of way to combine those with matching timestamps
+			//
+			// this unixTSColumn is unix nanoseconds
 			unixTSColumn = column
 		}
 	}
