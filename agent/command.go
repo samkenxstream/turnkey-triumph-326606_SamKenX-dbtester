@@ -20,6 +20,7 @@ import (
 	"path/filepath"
 
 	"github.com/coreos/dbtester/agent/agentpb"
+	"github.com/coreos/dbtester/pkg/ntp"
 	"github.com/coreos/pkg/capnslog"
 	"github.com/gyuho/psn"
 	"github.com/spf13/cobra"
@@ -91,6 +92,10 @@ var Command = &cobra.Command{
 }
 
 func commandFunc(cmd *cobra.Command, args []string) error {
+	no, nerr := ntp.DefaultSync()
+	plog.Infof("npt update output: %q", no)
+	plog.Infof("npt update error: %v", nerr)
+
 	f, err := openToAppend(globalFlags.agentLog)
 	if err != nil {
 		return err
