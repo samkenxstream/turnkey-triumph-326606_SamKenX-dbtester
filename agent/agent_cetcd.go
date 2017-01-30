@@ -49,6 +49,7 @@ func startCetcd(fs *flags, t *transporterServer) error {
 		return err
 	}
 	t.proxyCmd = cmd
+	t.proxyCmdWait = make(chan struct{})
 	t.proxyPid = int64(cmd.Process.Pid)
 	plog.Infof("started database %q (PID: %d)", cs, t.pid)
 
