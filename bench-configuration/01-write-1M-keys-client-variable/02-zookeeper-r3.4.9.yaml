@@ -4,7 +4,7 @@ test_name: zookeeper-r3.4.9-java8
 google_cloud_project_name: etcd-development
 google_cloud_storage_key_path: /home/gyuho/gcloud-key.json # need this only in 'control' side
 google_cloud_storage_bucket_name: dbtester-results
-google_cloud_storage_sub_directory: 2017Q1-02-etcd-zookeeper-consul/read-1M-keys-linearizable
+google_cloud_storage_sub_directory: 2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable
 
 peer_ips:
     - 10.240.0.25
@@ -25,17 +25,19 @@ data_latency_throughput_timeseries: data-latency-throughput-timeseries.csv
 step1:
     skip_start_database: false
     etcd_snap_count: 100000
+    etcd_quota_size_bytes: 8000000000
     zookeeper_snap_count: 100000
     zookeeper_max_client_connections: 5000
 
 # start benchmark
 step2:
     skip_stress_database: false
-    bench_type: read
-    stale_read: false
-    connections: 1000
-    clients: 1000
-    connections_clients: []
+    bench_type: write
+    stale_read: true
+    connections: 1
+    clients: 1
+    # if specified, connections, clients are overwritten
+    connections_clients: [1, 3, 5, 10, 50, 100, 500, 700, 1000]
     key_size: 256
     value_size: 1024
     total_requests: 1000000

@@ -4,7 +4,7 @@ test_name: etcd-v3.1-go1.7.4
 google_cloud_project_name: etcd-development
 google_cloud_storage_key_path: /home/gyuho/gcloud-key.json # need this only in 'control' side
 google_cloud_storage_bucket_name: dbtester-results
-google_cloud_storage_sub_directory: 2017Q1-02-etcd-zookeeper-consul/read-1M-keys-linearizable
+google_cloud_storage_sub_directory: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client
 
 peer_ips:
     - 10.240.0.20
@@ -25,14 +25,15 @@ data_latency_throughput_timeseries: data-latency-throughput-timeseries.csv
 step1:
     skip_start_database: false
     etcd_snap_count: 100000
+    etcd_quota_size_bytes: 8000000000
     zookeeper_snap_count: 100000
     zookeeper_max_client_connections: 5000
 
 # start benchmark
 step2:
     skip_stress_database: false
-    bench_type: read
-    stale_read: false
+    bench_type: write
+    stale_read: true
     connections: 1000
     clients: 1000
     connections_clients: []
