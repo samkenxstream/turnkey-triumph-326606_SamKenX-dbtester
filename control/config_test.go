@@ -74,6 +74,9 @@ func TestReadConfig(t *testing.T) {
 	if c.Step1.EtcdSnapCount != 100000 {
 		t.Fatalf("unexpected %d", c.Step1.EtcdSnapCount)
 	}
+	if c.Step1.EtcdQuotaSizeBytes != 8000000000 {
+		t.Fatalf("unexpected %d", c.Step1.EtcdQuotaSizeBytes)
+	}
 	if c.Step1.ZookeeperSnapCount != 100000 {
 		t.Fatalf("unexpected %d", c.Step1.ZookeeperSnapCount)
 	}

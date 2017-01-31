@@ -58,15 +58,19 @@ message Request {
 	// EtcdSnapCount is 100,000 by default.
 	int64 etcdSnapCount = 11;
 
+	// EtcdQuotaSizeBytes is the backend size limit in bytes.
+	// 0 defaults to low space quota (2 GB).
+	int64 etcdQuotaSizeBytes = 12;
+
 	// ZookeeperSnapCount is 100,000 by default.
-	int64 zookeeperSnapCount = 12;
+	int64 zookeeperSnapCount = 13;
 
 	// ZookeeperMaxClientCnxns limits the number of concurrent connections
 	// (at the socket level) that a single client, identified by IP address.
-	int64 zookeeperMaxClientCnxns = 13;
+	int64 zookeeperMaxClientCnxns = 14;
 
 	// ClientNum is current number of clients.
-	int64 clientNum = 14;
+	int64 clientNum = 15;
 }
 
 message Response {
