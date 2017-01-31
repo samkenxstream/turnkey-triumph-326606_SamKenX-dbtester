@@ -21,7 +21,7 @@ import (
 	"time"
 
 	"github.com/coreos/dbtester/agent/agentpb"
-	"github.com/coreos/dbtester/remotestorage"
+	"github.com/coreos/dbtester/pkg/remotestorage"
 )
 
 // uploadLog starts cetcd. This assumes that etcd is already started.

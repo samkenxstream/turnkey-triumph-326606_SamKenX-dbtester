@@ -20,7 +20,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/coreos/dbtester/remotestorage"
+	"github.com/coreos/dbtester/pkg/remotestorage"
 )
 
 func step4UploadLogs(cfg Config) error {
