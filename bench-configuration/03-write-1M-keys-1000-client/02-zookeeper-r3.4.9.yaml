@@ -1,18 +1,18 @@
-database: consul
-test_name: consul-v0.7.2-go1.7.4
+database: zookeeper
+test_name: zookeeper-r3.4.9-java8
 
 google_cloud_project_name: etcd-development
-google_cloud_storage_key_path: /root/gcloud-key.json # need this only in 'control' side
+google_cloud_storage_key_path: /home/gyuho/gcloud-key.json # need this only in 'control' side
 google_cloud_storage_bucket_name: dbtester-results
-google_cloud_storage_sub_directory: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys
+google_cloud_storage_sub_directory: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client
 
 peer_ips:
-    - 10.99.157.149
-    - 10.99.157.141
-    - 10.99.157.145
+    - 10.240.0.25
+    - 10.240.0.27
+    - 10.240.0.28
 
 agent_port: 3500
-database_port: 8500
+database_port: 2181
 
 # these will saved where 'dbtester control' command runs
 log: control.log
@@ -25,6 +25,7 @@ data_latency_throughput_timeseries: data-latency-throughput-timeseries.csv
 step1:
     skip_start_database: false
     etcd_snap_count: 100000
+    etcd_quota_size_bytes: 8000000000
     zookeeper_snap_count: 100000
     zookeeper_max_client_connections: 5000
 

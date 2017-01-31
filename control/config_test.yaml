@@ -24,6 +24,7 @@ data_latency_throughput_timeseries: data-latency-throughput-timeseries.csv
 step1:
     skip_start_database: false
     etcd_snap_count: 100000
+    etcd_quota_size_bytes: 8000000000
     zookeeper_snap_count: 100000
     zookeeper_max_client_connections: 5000
 

@@ -44,9 +44,15 @@ func startEtcd(fs *flags, t *transporterServer) error {
 		members[i] = fmt.Sprintf("%s=%s", names[i], peerURLs[i])
 	}
 
+	qv := t.req.EtcdQuotaSizeBytes
+	if qv > 8000000000 {
+		plog.Warningf("maximum etcd quota is 8GB (got %d)... resetting to 8GB...", qv)
+		qv = 8000000000
+	}
 	flags := []string{
 		"--name", names[t.req.ServerIndex],
 		"--data-dir", fs.etcdDataDir,
+		"--quota-backend-bytes", fmt.Sprintf("%d", qv),
 
 		"--snapshot-count", fmt.Sprintf("%d", t.req.EtcdSnapCount),
 

@@ -51,6 +51,7 @@ type Config struct {
 	Step1 struct {
 		SkipStartDatabase       bool  `yaml:"skip_start_database"`
 		EtcdSnapCount           int64 `yaml:"etcd_snap_count"`
+		EtcdQuotaSizeBytes      int64 `yaml:"etcd_quota_size_bytes"`
 		ZookeeperSnapCount      int64 `yaml:"zookeeper_snap_count"`
 		ZookeeperMaxClientCnxns int64 `yaml:"zookeeper_max_client_connections"`
 	} `yaml:"step1"`
@@ -158,6 +159,7 @@ func (cfg *Config) ToRequest() agentpb.Request {
 	req.PeerIPString = cfg.PeerIPString
 
 	req.EtcdSnapCount = cfg.Step1.EtcdSnapCount
+	req.EtcdQuotaSizeBytes = cfg.Step1.EtcdQuotaSizeBytes
 	req.ZookeeperSnapCount = cfg.Step1.ZookeeperSnapCount
 	req.ZookeeperMaxClientCnxns = cfg.Step1.ZookeeperMaxClientCnxns
 
