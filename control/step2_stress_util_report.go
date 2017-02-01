@@ -330,7 +330,7 @@ func saveDataLatencyThroughputTimeseries(cfg Config, st report.Stats, tsToClient
 
 	{
 		// aggregate latency by the number of keys
-		tslice := ProcessTimeSeries(st.TimeSeries, 1000)
+		tslice := processTimeSeries(st.TimeSeries, 1000)
 		c1 := dataframe.NewColumn("KEYS")
 		c2 := dataframe.NewColumn("AVG-LATENCY-MS")
 		for i := range tslice {
@@ -373,7 +373,7 @@ func saveAllStats(cfg Config, stats report.Stats, tsToClientN map[int64]int) {
 	saveDataLatencyThroughputTimeseries(cfg, stats, tsToClientN)
 }
 
-// ProcessTimeSeries sorts all data points by its timestamp.
+// processTimeSeries sorts all data points by its timestamp.
 // And then aggregate by the cumulative throughput,
 // in order to map the number of keys to the average latency.
 //
@@ -386,7 +386,7 @@ func saveAllStats(cfg Config, stats report.Stats, tsToClientN map[int64]int) {
 // If unis is 1000 and the average throughput per second is 30,000
 // and its average latency is 10ms, it will have 30 data points with
 // latency 10ms.
-func ProcessTimeSeries(tslice report.TimeSeries, unit int64) KeyNumToAvgLatencys {
+func processTimeSeries(tslice report.TimeSeries, unit int64) KeyNumToAvgLatencys {
 	sort.Sort(tslice)
 
 	cumulKeyN := int64(0)

@@ -63,7 +63,7 @@ func do(configPath string) error {
 		if err = ad.importBenchMetrics(elem.DataBenchmarkThroughput); err != nil {
 			return err
 		}
-		if err = ad.aggregateAll(); err != nil {
+		if err = ad.aggregateAll(elem.DataBenchmarkMemoryByKey); err != nil {
 			return err
 		}
 		if err = ad.save(); err != nil {

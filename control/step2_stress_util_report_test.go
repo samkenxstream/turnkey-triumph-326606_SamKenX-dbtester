@@ -24,7 +24,7 @@ import (
 	"github.com/coreos/etcd/pkg/report"
 )
 
-func TestProcessTimeSeries(t *testing.T) {
+func Test_processTimeSeries(t *testing.T) {
 	var tslice report.TimeSeries
 	for i := int64(0); i < 10; i++ {
 		dp := report.DataPoint{
@@ -35,7 +35,7 @@ func TestProcessTimeSeries(t *testing.T) {
 		tslice = append(tslice, dp)
 	}
 
-	pss := ProcessTimeSeries(tslice, 20)
+	pss := processTimeSeries(tslice, 20)
 	expexcted := []KeyNumToAvgLatency{
 		{keyNum: 20, avgLat: 1},
 		{keyNum: 40, avgLat: 1},

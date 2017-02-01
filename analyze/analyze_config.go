@@ -30,6 +30,7 @@ type RawData struct {
 	DataBenchmarkLatencySummary    string   `yaml:"data_benchmark_latency_summary"`
 	DataBenchmarkThroughput        string   `yaml:"data_benchmark_throughput"`
 	DataBenchmarkLatencyByKey      string   `yaml:"data_benchmark_latency_by_key"`
+	DataBenchmarkMemoryByKey       string   `yaml:"data_benchmark_memory_by_key"`
 }
 
 // Config defines analyze configuration.

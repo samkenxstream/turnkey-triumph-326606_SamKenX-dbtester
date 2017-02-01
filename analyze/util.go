@@ -28,6 +28,11 @@ func maxFloat64(a, b float64) float64 {
 	return b
 }
 
+// converts unix nanoseconds to unix second.
+func convertUnixNano(ts int64) int64 {
+	return int64(ts / 1e9)
+}
+
 func openToRead(fpath string) (*os.File, error) {
 	f, err := os.OpenFile(fpath, os.O_RDONLY, 0444)
 	if err != nil {
