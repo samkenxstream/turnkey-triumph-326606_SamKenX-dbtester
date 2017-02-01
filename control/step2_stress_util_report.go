@@ -328,9 +328,26 @@ func saveDataLatencyThroughputTimeseries(cfg Config, st report.Stats, tsToClient
 		plog.Fatal(err)
 	}
 
-	// aggregate latency by the number of keys
-	tslice := ProcessTimeSeries(st.TimeSeries, 1000)
-	_ = tslice
+	{
+		// aggregate latency by the number of keys
+		tslice := ProcessTimeSeries(st.TimeSeries, 1000)
+		c1 := dataframe.NewColumn("KEYS")
+		c2 := dataframe.NewColumn("AVG-LATENCY-MS")
+		for i := range tslice {
+			c1.PushBack(dataframe.NewStringValue(tslice[i].keyNum))
+			c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(tslice[i].avgLat))))
+		}
+		fr := dataframe.New()
+		if err := fr.AddColumn(c1); err != nil {
+			plog.Fatal(err)
+		}
+		if err := fr.AddColumn(c2); err != nil {
+			plog.Fatal(err)
+		}
+		if err := fr.CSV(cfg.DataLatencyByKeyNumber); err != nil {
+			plog.Fatal(err)
+		}
+	}
 }
 
 func generateReport(cfg Config, h []ReqHandler, reqDone func(), reqGen func(chan<- request)) {
