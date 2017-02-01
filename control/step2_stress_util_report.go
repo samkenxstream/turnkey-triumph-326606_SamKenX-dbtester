@@ -328,8 +328,9 @@ func saveDataLatencyThroughputTimeseries(cfg Config, st report.Stats, tsToClient
 		plog.Fatal(err)
 	}
 
-	// TODO: aggregate latency by the number of keys
-	// processDataPoints(st)
+	// aggregate latency by the number of keys
+	tslice := ProcessTimeSeries(st.TimeSeries, 1000)
+	_ = tslice
 }
 
 func generateReport(cfg Config, h []ReqHandler, reqDone func(), reqGen func(chan<- request)) {
@@ -355,7 +356,7 @@ func saveAllStats(cfg Config, stats report.Stats, tsToClientN map[int64]int) {
 	saveDataLatencyThroughputTimeseries(cfg, stats, tsToClientN)
 }
 
-// processDataPoints sorts all data points by its timestamp.
+// ProcessTimeSeries sorts all data points by its timestamp.
 // And then aggregate by the cumulative throughput,
 // in order to map the number of keys to the average latency.
 //
@@ -368,10 +369,8 @@ func saveAllStats(cfg Config, stats report.Stats, tsToClientN map[int64]int) {
 // If unis is 1000 and the average throughput per second is 30,000
 // and its average latency is 10ms, it will have 30 data points with
 // latency 10ms.
-func processDataPoints(tslice report.TimeSeries, unit int64) keyNumToAvgLatencys {
+func ProcessTimeSeries(tslice report.TimeSeries, unit int64) KeyNumToAvgLatencys {
 	sort.Sort(tslice)
-
-	// UNIX-TS, CONTROL-CLIENT-NUM, AVG-LATENCY-MS, AVG-THROUGHPUT
 
 	cumulKeyN := int64(0)
 	maxKey := int64(0)
@@ -398,22 +397,22 @@ func processDataPoints(tslice report.TimeSeries, unit int64) keyNumToAvgLatencys
 		}
 	}
 
-	kss := []keyNumToAvgLatency{}
+	kss := []KeyNumToAvgLatency{}
 	for k, v := range rm {
-		kss = append(kss, keyNumToAvgLatency{keyNum: k, avgLat: v})
+		kss = append(kss, KeyNumToAvgLatency{keyNum: k, avgLat: v})
 	}
-	sort.Sort(keyNumToAvgLatencys(kss))
+	sort.Sort(KeyNumToAvgLatencys(kss))
 
 	return kss
 }
 
-type keyNumToAvgLatency struct {
+type KeyNumToAvgLatency struct {
 	keyNum int64
 	avgLat time.Duration
 }
 
-type keyNumToAvgLatencys []keyNumToAvgLatency
+type KeyNumToAvgLatencys []KeyNumToAvgLatency
 
-func (t keyNumToAvgLatencys) Swap(i, j int)      { t[i], t[j] = t[j], t[i] }
-func (t keyNumToAvgLatencys) Len() int           { return len(t) }
-func (t keyNumToAvgLatencys) Less(i, j int) bool { return t[i].keyNum < t[j].keyNum }
+func (t KeyNumToAvgLatencys) Swap(i, j int)      { t[i], t[j] = t[j], t[i] }
+func (t KeyNumToAvgLatencys) Len() int           { return len(t) }
+func (t KeyNumToAvgLatencys) Less(i, j int) bool { return t[i].keyNum < t[j].keyNum }

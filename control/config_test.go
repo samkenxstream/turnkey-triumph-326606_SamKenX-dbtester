@@ -70,6 +70,9 @@ func TestReadConfig(t *testing.T) {
 	if c.DataLatencyThroughputTimeseries != "data-latency-throughput-timeseries.csv" {
 		t.Fatalf("unexpected %s", c.DataLatencyThroughputTimeseries)
 	}
+	if c.DataLatencyByKeyNumber != "data-latency-by-key-number.csv" {
+		t.Fatalf("unexpected %s", c.DataLatencyByKeyNumber)
+	}
 
 	if c.Step1.SkipStartDatabase {
 		t.Fatalf("unexpected %v", c.Step1.SkipStartDatabase)
