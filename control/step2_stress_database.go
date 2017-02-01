@@ -343,10 +343,7 @@ func generateReport(cfg Config, h []ReqHandler, reqDone func(), reqGen func(chan
 	saveAllStats(cfg, b.stats, nil)
 }
 
-func saveAllStats(cfg Config, stats report.Stats, idxToDataSize map[int]agentpb.Response, tsToClientN map[int64]int) {
-	// cfg.DataSizeSummary
-	saveDataSizeSummary(cfg, idxToDataSize)
-
+func saveAllStats(cfg Config, stats report.Stats, tsToClientN map[int64]int) {
 	// cfg.DataLatencyDistributionSummary
 	saveDataLatencyDistributionSummary(cfg, stats)
 

@@ -27,7 +27,7 @@ func step4UploadLogs(cfg Config) error {
 	if err := uploadToGoogle(cfg.Log, cfg); err != nil {
 		return err
 	}
-	if err := uploadToGoogle(cfg.DataSizeSummary, cfg); err != nil {
+	if err := uploadToGoogle(cfg.DatasizeSummary, cfg); err != nil {
 		return err
 	}
 	if err := uploadToGoogle(cfg.DataLatencyDistributionSummary, cfg); err != nil {

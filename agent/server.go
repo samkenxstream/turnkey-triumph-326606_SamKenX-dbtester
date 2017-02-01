@@ -128,7 +128,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 		t.req.ClientNum = r.ClientNum
 	}
 
-	var totalDatabasSize int64
+	var totalDatasize int64
 	switch r.Operation {
 	case agentpb.Request_Start:
 		switch t.req.Database {
@@ -249,7 +249,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 			plog.Warningf("measureDatabasSize error %v", err)
 			return nil, err
 		}
-		totalDatabasSize = dbs
+		totalDatasize = dbs
 
 	case agentpb.Request_Heartbeat:
 		plog.Infof("overwriting clients num %d to %q", t.req.ClientNum, t.clientNumPath)
@@ -262,7 +262,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 	}
 
 	plog.Info("Transfer success!")
-	return &agentpb.Response{Success: true, DataSize: totalDatabasSize}, nil
+	return &agentpb.Response{Success: true, Datasize: totalDatasize}, nil
 }
 
 func measureDatabasSize(flg flags, rdb agentpb.Request_Database) (int64, error) {
