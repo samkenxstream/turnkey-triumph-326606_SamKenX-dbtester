@@ -121,13 +121,19 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
+var DataSummaryColumns = []string{
+	"INDEX",
+	"DATABASE-ENDPOINT",
+	"TOTAL-DATA-SIZE-BYTES-NUM",
+}
+
 func saveDatasizeSummary(cfg Config, idxToResponse map[int]agentpb.Response) {
-	c1 := dataframe.NewColumn("INDEX")
-	c2 := dataframe.NewColumn("ENDPOINT")
-	c3 := dataframe.NewColumn("DATASIZE")
-	for i := range cfg.AgentEndpoints {
+	c1 := dataframe.NewColumn(DataSummaryColumns[0])
+	c2 := dataframe.NewColumn(DataSummaryColumns[1])
+	c3 := dataframe.NewColumn(DataSummaryColumns[2])
+	for i := range cfg.DatabaseEndpoints {
 		c1.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", i)))
-		c2.PushBack(dataframe.NewStringValue(cfg.AgentEndpoints[i]))
+		c2.PushBack(dataframe.NewStringValue(cfg.DatabaseEndpoints[i]))
 		c3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", idxToResponse[i].Datasize)))
 	}
 	fr := dataframe.New()
