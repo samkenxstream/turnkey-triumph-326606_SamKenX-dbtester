@@ -9,6 +9,7 @@ raw_data:
   - 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/etcd-v3.1-go1.7.4-1-system-metrics.csv
   - 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/etcd-v3.1-go1.7.4-2-system-metrics.csv
   - 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/etcd-v3.1-go1.7.4-3-system-metrics.csv
+  data_size_summary: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/etcd-v3.1-go1.7.4-data-size-summary.csv
   data_benchmark_latency_percentile: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/etcd-v3.1-go1.7.4-data-latency-distribution-percentile.csv
   data_benchmark_latency_summary: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/etcd-v3.1-go1.7.4-data-latency-distribution-summary.csv
   data_benchmark_throughput: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/etcd-v3.1-go1.7.4-data-latency-throughput-timeseries.csv
@@ -19,6 +20,7 @@ raw_data:
   - 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/zookeeper-r3.4.9-java8-1-system-metrics.csv
   - 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/zookeeper-r3.4.9-java8-2-system-metrics.csv
   - 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/zookeeper-r3.4.9-java8-3-system-metrics.csv
+  data_size_summary: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/zookeeper-r3.4.9-java8-data-size-summary.csv
   data_benchmark_latency_percentile: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/zookeeper-r3.4.9-java8-data-latency-distribution-percentile.csv
   data_benchmark_latency_summary: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/zookeeper-r3.4.9-java8-data-latency-distribution-summary.csv
   data_benchmark_throughput: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/zookeeper-r3.4.9-java8-data-latency-throughput-timeseries.csv
@@ -29,6 +31,7 @@ raw_data:
   - 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/consul-v0.7.3-go1.7.4-1-system-metrics.csv
   - 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/consul-v0.7.3-go1.7.4-2-system-metrics.csv
   - 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/consul-v0.7.3-go1.7.4-3-system-metrics.csv
+  data_size_summary: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/consul-v0.7.3-go1.7.4-data-size-summary.csv
   data_benchmark_latency_percentile: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/consul-v0.7.3-go1.7.4-data-latency-distribution-percentile.csv
   data_benchmark_latency_summary: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/consul-v0.7.3-go1.7.4-data-latency-distribution-summary.csv
   data_benchmark_throughput: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/consul-v0.7.3-go1.7.4-data-latency-throughput-timeseries.csv

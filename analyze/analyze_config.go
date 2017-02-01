@@ -25,6 +25,7 @@ type RawData struct {
 	Legend                         string   `yaml:"legend"`
 	OutputPath                     string   `yaml:"output_path"`
 	DataSystemMetricsPaths         []string `yaml:"data_system_metrics_paths"`
+	DatasizeSummary                string   `yaml:"data_size_summary"`
 	DataBenchmarkLatencyPercentile string   `yaml:"data_benchmark_latency_percentile"`
 	DataBenchmarkLatencySummary    string   `yaml:"data_benchmark_latency_summary"`
 	DataBenchmarkThroughput        string   `yaml:"data_benchmark_throughput"`

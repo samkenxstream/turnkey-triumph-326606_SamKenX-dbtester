@@ -23,6 +23,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/coreos/dbtester/control"
 	humanize "github.com/dustin/go-humanize"
 	"github.com/gyuho/dataframe"
 	"github.com/olekukonko/tablewriter"
@@ -96,10 +97,10 @@ func do(configPath string) error {
 	row02SectorsReadDeltaSum := []string{"SECTORS-READS-DELTA-SUM"}
 	row03WritesCompletedDeltaSum := []string{"WRITES-COMPLETED-DELTA-SUM"}
 	row04SectorsWrittenDeltaSum := []string{"SECTORS-WRITTEN-DELTA-SUM"}
-	row05ReceiveBytesSum := []string{"RECEIVE-BYTES-SUM"}
-	row06TransmitBytesSum := []string{"TRANSMIT-BYTES-SUM"}
-	row07MaxCPUUsage := []string{"MAX-CPU-USAGE"}
-	row08MaxMemoryUsage := []string{"MAX-MEMORY-USAGE"}
+	row06ReceiveBytesSum := []string{"RECEIVE-BYTES-SUM"}
+	row07TransmitBytesSum := []string{"TRANSMIT-BYTES-SUM"}
+	row08MaxCPUUsage := []string{"MAX-CPU-USAGE"}
+	row09MaxMemoryUsage := []string{"MAX-MEMORY-USAGE"}
 
 	// iterate each database's all data
 	for _, ad := range all.data {
@@ -204,28 +205,29 @@ func do(configPath string) error {
 		row02SectorsReadDeltaSum = append(row02SectorsReadDeltaSum, fmt.Sprintf("%d", uint64(sectorsReadDeltaSum)))
 		row03WritesCompletedDeltaSum = append(row03WritesCompletedDeltaSum, fmt.Sprintf("%d", uint64(writesCompletedDeltaSum)))
 		row04SectorsWrittenDeltaSum = append(row04SectorsWrittenDeltaSum, fmt.Sprintf("%d", uint64(sectorsWrittenDeltaSum)))
-		row05ReceiveBytesSum = append(row05ReceiveBytesSum, humanize.Bytes(uint64(receiveBytesNumDeltaSum)))
-		row06TransmitBytesSum = append(row06TransmitBytesSum, humanize.Bytes(uint64(transmitBytesNumDeltaSum)))
-		row07MaxCPUUsage = append(row07MaxCPUUsage, fmt.Sprintf("%.2f %%", maxAvgCPU))
+		row06ReceiveBytesSum = append(row06ReceiveBytesSum, humanize.Bytes(uint64(receiveBytesNumDeltaSum)))
+		row07TransmitBytesSum = append(row07TransmitBytesSum, humanize.Bytes(uint64(transmitBytesNumDeltaSum)))
+		row08MaxCPUUsage = append(row08MaxCPUUsage, fmt.Sprintf("%.2f %%", maxAvgCPU))
 
 		// TODO: linux sometimes returns overflowed value...
 		sort.Float64s(maxAvgVMRSSMBs)
-		row08MaxMemoryUsage = append(row08MaxMemoryUsage, fmt.Sprintf("%.2f MB", maxAvgVMRSSMBs[len(maxAvgVMRSSMBs)-2]))
+		row09MaxMemoryUsage = append(row09MaxMemoryUsage, fmt.Sprintf("%.2f MB", maxAvgVMRSSMBs[len(maxAvgVMRSSMBs)-2]))
 	}
 
-	row09TotalSeconds := []string{"TOTAL-SECONDS"}       // TOTAL-SECONDS
-	row10AverageThroughput := []string{"AVG-THROUGHPUT"} // REQUESTS-PER-SECOND
-	row11SlowestLatency := []string{"SLOWEST-LATENCY"}   // SLOWEST-LATENCY-MS
-	row12FastestLatency := []string{"FASTEST-LATENCY"}   // FASTEST-LATENCY-MS
-	row13AverageLatency := []string{"AVG-LATENCY"}       // AVERAGE-LATENCY-MS
-	row14p10 := []string{"Latency p10"}                  // p10
-	row15p25 := []string{"Latency p25"}                  // p25
-	row16p50 := []string{"Latency p50"}                  // p50
-	row17p75 := []string{"Latency p75"}                  // p75
-	row18p90 := []string{"Latency p90"}                  // p90
-	row19p95 := []string{"Latency p95"}                  // p95
-	row20p99 := []string{"Latency p99"}                  // p99
-	row21p999 := []string{"Latency p99.9"}               // p99.9
+	row05AverageDatasize := []string{"AVG-DATA-SIZE"}    // TOTAL-DATA-SIZE
+	row10TotalSeconds := []string{"TOTAL-SECONDS"}       // TOTAL-SECONDS
+	row11AverageThroughput := []string{"AVG-THROUGHPUT"} // REQUESTS-PER-SECOND
+	row12SlowestLatency := []string{"SLOWEST-LATENCY"}   // SLOWEST-LATENCY-MS
+	row13FastestLatency := []string{"FASTEST-LATENCY"}   // FASTEST-LATENCY-MS
+	row14AverageLatency := []string{"AVG-LATENCY"}       // AVERAGE-LATENCY-MS
+	row15p10 := []string{"Latency p10"}                  // p10
+	row16p25 := []string{"Latency p25"}                  // p25
+	row17p50 := []string{"Latency p50"}                  // p50
+	row18p75 := []string{"Latency p75"}                  // p75
+	row19p90 := []string{"Latency p90"}                  // p90
+	row20p95 := []string{"Latency p95"}                  // p95
+	row21p99 := []string{"Latency p99"}                  // p99
+	row22p999 := []string{"Latency p99.9"}               // p99.9
 
 	for i, rcfg := range cfg.RawData {
 		tag := makeTag(rcfg.Legend)
@@ -234,7 +236,7 @@ func do(configPath string) error {
 		}
 
 		{
-			f, err := openToRead(rcfg.DataBenchmarkLatencySummary)
+			f, err := openToRead(rcfg.DatasizeSummary)
 			if err != nil {
 				return err
 			}
@@ -258,17 +260,39 @@ func do(configPath string) error {
 			for _, row := range rows {
 				switch row[0] {
 				case "TOTAL-SECONDS":
-					row09TotalSeconds = append(row09TotalSeconds, fmt.Sprintf("%s sec", row[1]))
+					row10TotalSeconds = append(row10TotalSeconds, fmt.Sprintf("%s sec", row[1]))
 				case "REQUESTS-PER-SECOND":
-					row10AverageThroughput = append(row10AverageThroughput, fmt.Sprintf("%s req/sec", row[1]))
+					row11AverageThroughput = append(row11AverageThroughput, fmt.Sprintf("%s req/sec", row[1]))
 				case "SLOWEST-LATENCY-MS":
-					row11SlowestLatency = append(row11SlowestLatency, fmt.Sprintf("%s ms", row[1]))
+					row12SlowestLatency = append(row12SlowestLatency, fmt.Sprintf("%s ms", row[1]))
 				case "FASTEST-LATENCY-MS":
-					row12FastestLatency = append(row12FastestLatency, fmt.Sprintf("%s ms", row[1]))
+					row13FastestLatency = append(row13FastestLatency, fmt.Sprintf("%s ms", row[1]))
 				case "AVERAGE-LATENCY-MS":
-					row13AverageLatency = append(row13AverageLatency, fmt.Sprintf("%s ms", row[1]))
+					row14AverageLatency = append(row14AverageLatency, fmt.Sprintf("%s ms", row[1]))
 				}
 			}
+		}
+
+		{
+			fr, err := dataframe.NewFromCSV(control.DataSummaryColumns, rcfg.DataBenchmarkLatencySummary)
+			if err != nil {
+				return err
+			}
+			col, err := fr.Column(control.DataSummaryColumns[2]) // datasize in bytes
+			if err != nil {
+				return err
+			}
+			var sum float64
+			for i := 0; i < col.Count(); i++ {
+				val, err := col.Value(i)
+				if err != nil {
+					return err
+				}
+				fv, _ := val.Float64()
+				sum += fv
+			}
+			avg := uint64(sum / float64(col.Count()))
+			row05AverageDatasize = append(row05AverageDatasize, humanize.Bytes(avg))
 		}
 
 		{
@@ -299,21 +323,21 @@ func do(configPath string) error {
 				}
 				switch row[0] {
 				case "p10":
-					row14p10 = append(row14p10, fmt.Sprintf("%s ms", row[1]))
+					row15p10 = append(row15p10, fmt.Sprintf("%s ms", row[1]))
 				case "p25":
-					row15p25 = append(row15p25, fmt.Sprintf("%s ms", row[1]))
+					row16p25 = append(row16p25, fmt.Sprintf("%s ms", row[1]))
 				case "p50":
-					row16p50 = append(row16p50, fmt.Sprintf("%s ms", row[1]))
+					row17p50 = append(row17p50, fmt.Sprintf("%s ms", row[1]))
 				case "p75":
-					row17p75 = append(row17p75, fmt.Sprintf("%s ms", row[1]))
+					row18p75 = append(row18p75, fmt.Sprintf("%s ms", row[1]))
 				case "p90":
-					row18p90 = append(row18p90, fmt.Sprintf("%s ms", row[1]))
+					row19p90 = append(row19p90, fmt.Sprintf("%s ms", row[1]))
 				case "p95":
-					row19p95 = append(row19p95, fmt.Sprintf("%s ms", row[1]))
+					row20p95 = append(row20p95, fmt.Sprintf("%s ms", row[1]))
 				case "p99":
-					row20p99 = append(row20p99, fmt.Sprintf("%s ms", row[1]))
+					row21p99 = append(row21p99, fmt.Sprintf("%s ms", row[1]))
 				case "p99.9":
-					row21p999 = append(row21p999, fmt.Sprintf("%s ms", row[1]))
+					row22p999 = append(row22p999, fmt.Sprintf("%s ms", row[1]))
 				}
 			}
 		}
@@ -325,23 +349,24 @@ func do(configPath string) error {
 		row02SectorsReadDeltaSum,
 		row03WritesCompletedDeltaSum,
 		row04SectorsWrittenDeltaSum,
-		row05ReceiveBytesSum,
-		row06TransmitBytesSum,
-		row07MaxCPUUsage,
-		row08MaxMemoryUsage,
-		row09TotalSeconds,
-		row10AverageThroughput,
-		row11SlowestLatency,
-		row12FastestLatency,
-		row13AverageLatency,
-		row14p10,
-		row15p25,
-		row16p50,
-		row17p75,
-		row18p90,
-		row19p95,
-		row20p99,
-		row21p999,
+		row05AverageDatasize,
+		row06ReceiveBytesSum,
+		row07TransmitBytesSum,
+		row08MaxCPUUsage,
+		row09MaxMemoryUsage,
+		row10TotalSeconds,
+		row11AverageThroughput,
+		row12SlowestLatency,
+		row13FastestLatency,
+		row14AverageLatency,
+		row15p10,
+		row16p25,
+		row17p50,
+		row18p75,
+		row19p90,
+		row20p95,
+		row21p99,
+		row22p999,
 	}
 	plog.Printf("saving data to %q", cfg.AllAggregatedPath)
 	file, err := openToOverwrite(cfg.AllAggregatedPath)
