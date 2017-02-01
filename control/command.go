@@ -20,6 +20,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/coreos/dbtester/agent/agentpb"
+	"github.com/gyuho/dataframe"
 	"github.com/spf13/cobra"
 )
 
@@ -98,9 +100,16 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 
 	println()
 	time.Sleep(5 * time.Second)
-	if err := step3StopDatabase(cfg); err != nil {
+	idxToResponse, err := step3StopDatabase(cfg)
+	if err != nil {
 		plog.Warning(err)
 	}
+	for idx := range cfg.AgentEndpoints {
+		plog.Infof("stop response: %+v", idxToResponse[idx])
+	}
+
+	// cfg.DatasizeSummary
+	saveDatasizeSummary(cfg, idxToResponse)
 
 	println()
 	time.Sleep(3 * time.Second)
@@ -110,4 +119,28 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 
 	plog.Info("all done!")
 	return nil
+}
+
+func saveDatasizeSummary(cfg Config, idxToResponse map[int]agentpb.Response) {
+	c1 := dataframe.NewColumn("INDEX")
+	c2 := dataframe.NewColumn("ENDPOINT")
+	c3 := dataframe.NewColumn("DATASIZE")
+	for i := range cfg.AgentEndpoints {
+		c1.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", i)))
+		c2.PushBack(dataframe.NewStringValue(cfg.AgentEndpoints[i]))
+		c3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", idxToResponse[i].Datasize)))
+	}
+	fr := dataframe.New()
+	if err := fr.AddColumn(c1); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr.AddColumn(c2); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr.AddColumn(c3); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr.CSV(cfg.DatasizeSummary); err != nil {
+		plog.Fatal(err)
+	}
 }

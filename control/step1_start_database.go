@@ -22,38 +22,45 @@ import (
 	"google.golang.org/grpc"
 )
 
-func bcastReq(cfg Config, op agentpb.Request_Operation) error {
+func bcastReq(cfg Config, op agentpb.Request_Operation) (map[int]agentpb.Response, error) {
 	req := cfg.ToRequest()
 	req.Operation = op
 
-	donec, errc := make(chan struct{}), make(chan error)
+	type result struct {
+		idx int
+		r   agentpb.Response
+	}
+	donec, errc := make(chan result), make(chan error)
 	for i := range cfg.PeerIPs {
 		go func(i int) {
-			if err := sendReq(cfg.AgentEndpoints[i], req, i); err != nil {
+			if resp, err := sendReq(cfg.AgentEndpoints[i], req, i); err != nil {
 				errc <- err
 			} else {
-				donec <- struct{}{}
+				donec <- result{idx: i, r: *resp}
 			}
 		}(i)
 		time.Sleep(time.Second)
 	}
 
+	im := make(map[int]agentpb.Response)
+
 	var errs []error
 	for cnt := 0; cnt != len(cfg.PeerIPs); cnt++ {
 		select {
-		case <-donec:
+		case rs := <-donec:
+			im[rs.idx] = rs.r
 		case err := <-errc:
 			errs = append(errs, err)
 		}
 	}
 	if len(errs) > 0 {
-		return errs[0]
+		return nil, errs[0]
 	}
 
-	return nil
+	return im, nil
 }
 
-func sendReq(ep string, req agentpb.Request, i int) error {
+func sendReq(ep string, req agentpb.Request, i int) (*agentpb.Response, error) {
 	req.ServerIndex = uint32(i)
 	req.ZookeeperMyID = uint32(i + 1)
 
@@ -62,7 +69,7 @@ func sendReq(ep string, req agentpb.Request, i int) error {
 	conn, err := grpc.Dial(ep, grpc.WithInsecure())
 	if err != nil {
 		plog.Errorf("grpc.Dial connecting error (%v) [index: %d | endpoint: %q]", err, i, ep)
-		return err
+		return nil, err
 	}
 
 	defer conn.Close()
@@ -73,13 +80,14 @@ func sendReq(ep string, req agentpb.Request, i int) error {
 	cancel()
 	if err != nil {
 		plog.Errorf("cli.Transfer error (%v) [index: %d | endpoint: %q]", err, i, ep)
-		return err
+		return nil, err
 	}
 
 	plog.Infof("got response [index: %d | endpoint: %q | response: %+v]", i, ep, resp)
-	return nil
+	return resp, nil
 }
 
 func step1StartDatabase(cfg Config) error {
-	return bcastReq(cfg, agentpb.Request_Start)
+	_, err := bcastReq(cfg, agentpb.Request_Start)
+	return err
 }

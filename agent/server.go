@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/coreos/dbtester/agent/agentpb"
+	"github.com/coreos/dbtester/pkg/fileinspect"
 	"github.com/gyuho/psn"
 	"golang.org/x/net/context"
 )
@@ -127,6 +128,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 		t.req.ClientNum = r.ClientNum
 	}
 
+	var totalDatasize int64
 	switch r.Operation {
 	case agentpb.Request_Start:
 		switch t.req.Database {
@@ -242,6 +244,13 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 			return nil, err
 		}
 
+		dbs, err := measureDatabasSize(globalFlags, r.Database)
+		if err != nil {
+			plog.Warningf("measureDatabasSize error %v", err)
+			return nil, err
+		}
+		totalDatasize = dbs
+
 	case agentpb.Request_Heartbeat:
 		plog.Infof("overwriting clients num %d to %q", t.req.ClientNum, t.clientNumPath)
 		if err := toFile(fmt.Sprintf("%d", t.req.ClientNum), t.clientNumPath); err != nil {
@@ -253,5 +262,24 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 	}
 
 	plog.Info("Transfer success!")
-	return &agentpb.Response{Success: true}, nil
+	return &agentpb.Response{Success: true, Datasize: totalDatasize}, nil
+}
+
+func measureDatabasSize(flg flags, rdb agentpb.Request_Database) (int64, error) {
+	switch rdb {
+	case agentpb.Request_etcdv2:
+		return fileinspect.Size(flg.etcdDataDir)
+	case agentpb.Request_etcdv3:
+		return fileinspect.Size(flg.etcdDataDir)
+	case agentpb.Request_ZooKeeper:
+		return fileinspect.Size(flg.zkDataDir)
+	case agentpb.Request_Consul:
+		return fileinspect.Size(flg.consulDataDir)
+	case agentpb.Request_cetcd:
+		return fileinspect.Size(flg.etcdDataDir)
+	case agentpb.Request_zetcd:
+		return fileinspect.Size(flg.etcdDataDir)
+	default:
+		return 0, fmt.Errorf("uknown %q", rdb)
+	}
 }

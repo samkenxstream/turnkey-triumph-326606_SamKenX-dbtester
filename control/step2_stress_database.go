@@ -389,7 +389,7 @@ func step2StressDatabase(cfg Config) error {
 
 				go func() {
 					plog.Infof("signaling agent with client number %d", copied.Step2.Clients)
-					if err := bcastReq(copied, agentpb.Request_Heartbeat); err != nil {
+					if _, err := bcastReq(copied, agentpb.Request_Heartbeat); err != nil {
 						plog.Panic(err)
 					}
 				}()
