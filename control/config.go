@@ -47,6 +47,7 @@ type Config struct {
 	DataLatencyDistributionPercentile string `yaml:"data_latency_distribution_percentile"`
 	DataLatencyDistributionAll        string `yaml:"data_latency_distribution_all"`
 	DataLatencyThroughputTimeseries   string `yaml:"data_latency_throughput_timeseries"`
+	DataLatencyByKeyNumber            string `yaml:"data_latency_by_key_number"`
 
 	// https://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html
 	Step1 struct {

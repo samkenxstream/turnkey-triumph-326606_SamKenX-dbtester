@@ -14,6 +14,19 @@
 
 package control
 
+import "time"
+
+func toMillisecond(d time.Duration) float64 {
+	return d.Seconds() * 1000
+}
+
+func max(n1, n2 int64) int64 {
+	if n1 > n2 {
+		return n1
+	}
+	return n2
+}
+
 func assignRequest(ranges []int, total int) (rs []int) {
 	reqEach := int(float64(total) / float64(len(ranges)))
 	// truncate 10000th digits

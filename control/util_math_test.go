@@ -20,10 +20,10 @@ import (
 )
 
 func Test_assignRequest(t *testing.T) {
-	ranges := []int{1, 3, 5, 10, 50, 100, 500, 700, 1000}
+	ranges := []int{1, 10, 50, 100, 300, 500, 700, 1000}
 	total := 1000000
 	rs := assignRequest(ranges, total)
-	expected := []int{110000, 110000, 110000, 110000, 110000, 110000, 110000, 110000, 120000}
+	expected := []int{120000, 120000, 120000, 120000, 120000, 120000, 120000, 160000}
 	if !reflect.DeepEqual(rs, expected) {
 		t.Fatalf("expected %+v, got %+v", expected, rs)
 	}

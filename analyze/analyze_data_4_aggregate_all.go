@@ -358,6 +358,9 @@ func (data *analyzeData) aggregateAll() error {
 	return nil
 }
 
+// TODO: aggregate memory usage by number of keys
+// just like latency by the number of keys in 'control'
+
 func (data *analyzeData) save() error {
 	return data.aggregated.CSV(data.csvOutputpath)
 }
