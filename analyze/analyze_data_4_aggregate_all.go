@@ -176,6 +176,7 @@ func (data *analyzeData) aggregateAll() error {
 			switch {
 			// cumulative values
 			case hd == "AVG-THROUGHPUT":
+				requestSum += int(vv)
 				cumulativeThroughputCol.PushBack(dataframe.NewStringValue(requestSum))
 
 			// average values (need sume first!)
