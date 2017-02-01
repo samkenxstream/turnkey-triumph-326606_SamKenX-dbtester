@@ -21,22 +21,23 @@ import (
 	"github.com/coreos/dbtester/agent/agentpb"
 )
 
-func step3StopDatabase(cfg Config) error {
+func step3StopDatabase(cfg Config) (map[int]agentpb.Response, error) {
 	switch cfg.Step3.Action {
 	case "stop":
 		plog.Info("step 3: stopping databases...")
+		var rm map[int]agentpb.Response
 		var err error
 		for i := 0; i < 5; i++ {
-			if err = bcastReq(cfg, agentpb.Request_Stop); err != nil {
+			if rm, err = bcastReq(cfg, agentpb.Request_Stop); err != nil {
 				plog.Warningf("STOP failed at %s", cfg.PeerIPs[i])
 				time.Sleep(300 * time.Millisecond)
 				continue
 			}
 			break
 		}
-		return err
+		return rm, err
 
 	default:
-		return fmt.Errorf("unknown %q", cfg.Step3.Action)
+		return nil, fmt.Errorf("unknown %q", cfg.Step3.Action)
 	}
 }

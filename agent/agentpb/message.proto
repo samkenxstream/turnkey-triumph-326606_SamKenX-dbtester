@@ -75,4 +75,8 @@ message Request {
 
 message Response {
 	bool success  = 1;
+	
+	// DataSize is the data size of the database on disk.
+	// It measures after database is requested to stop.
+	int64 dataSize = 2;
 }

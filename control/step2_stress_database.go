@@ -343,7 +343,10 @@ func generateReport(cfg Config, h []ReqHandler, reqDone func(), reqGen func(chan
 	saveAllStats(cfg, b.stats, nil)
 }
 
-func saveAllStats(cfg Config, stats report.Stats, tsToClientN map[int64]int) {
+func saveAllStats(cfg Config, stats report.Stats, idxToDataSize map[int]agentpb.Response, tsToClientN map[int64]int) {
+	// cfg.DataSizeSummary
+	saveDataSizeSummary(cfg, idxToDataSize)
+
 	// cfg.DataLatencyDistributionSummary
 	saveDataLatencyDistributionSummary(cfg, stats)
 
@@ -389,7 +392,7 @@ func step2StressDatabase(cfg Config) error {
 
 				go func() {
 					plog.Infof("signaling agent with client number %d", copied.Step2.Clients)
-					if err := bcastReq(copied, agentpb.Request_Heartbeat); err != nil {
+					if _, err := bcastReq(copied, agentpb.Request_Heartbeat); err != nil {
 						plog.Panic(err)
 					}
 				}()
