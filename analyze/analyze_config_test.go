@@ -55,6 +55,9 @@ func Test_readConfig(t *testing.T) {
 	if c.RawData[0].DataBenchmarkThroughput != "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/etcd-v3.1-go1.7.4-data-latency-throughput-timeseries.csv" {
 		t.Fatalf("unexpected c.RawData[0].DataBenchmarkThroughput %q", c.RawData[0].DataBenchmarkThroughput)
 	}
+	if c.RawData[0].DataBenchmarkLatencyByKey != "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/etcd-v3.1-go1.7.4-data-latency-by-key-number.csv" {
+		t.Fatalf("unexpected c.RawData[0].DataBenchmarkLatencyByKey %q", c.RawData[0].DataBenchmarkLatencyByKey)
+	}
 
 	if c.READMEConfig.OutputPath != "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/README.md" {
 		t.Fatalf("unexpected %s", c.READMEConfig.OutputPath)
