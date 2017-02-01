@@ -383,6 +383,12 @@ func do(configPath string) error {
 		return err
 	}
 
+	// TODO
+	plog.Printf("combining data to %q", cfg.AllLatencyByKey)
+
+	// TODO
+	plog.Printf("combining data to %q", cfg.AllMemoryByKey)
+
 	plog.Println("combining data for plotting")
 	for _, plotConfig := range cfg.PlotList {
 		plog.Printf("plotting %q", plotConfig.Column)

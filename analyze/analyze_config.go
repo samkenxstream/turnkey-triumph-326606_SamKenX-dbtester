@@ -35,12 +35,16 @@ type RawData struct {
 
 // Config defines analyze configuration.
 type Config struct {
-	Title             string       `yaml:"title"`
-	WorkDir           string       `yaml:"work_dir"`
-	AllAggregatedPath string       `yaml:"all_aggregated_path"`
-	RawData           []RawData    `yaml:"raw_data"`
-	PlotList          []PlotConfig `yaml:"plot_list"`
-	READMEConfig      READMEConfig `yaml:"readme"`
+	Title                     string       `yaml:"title"`
+	WorkDir                   string       `yaml:"work_dir"`
+	AllAggregatedPath         string       `yaml:"all_aggregated_path"`
+	AllLatencyByKey           string       `yaml:"all_latency_by_key"`
+	AllMemoryByKey            string       `yaml:"all_memory_by_key"`
+	DataBenchmarkLatencyByKey string       `yaml:"data_benchmark_latency_by_key"`
+	DataBenchmarkMemoryByKey  string       `yaml:"data_benchmark_memory_by_key"`
+	RawData                   []RawData    `yaml:"raw_data"`
+	PlotList                  []PlotConfig `yaml:"plot_list"`
+	READMEConfig              READMEConfig `yaml:"readme"`
 }
 
 // readConfig reads analyze configuration.

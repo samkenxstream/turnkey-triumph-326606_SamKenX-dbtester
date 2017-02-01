@@ -121,7 +121,7 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string) error {
 
 	var (
 		requestSum              int
-		cumulativeThroughputCol = dataframe.NewColumn("CUMULATIVE-THROUGHPUT")
+		cumulativeThroughputCol = dataframe.NewColumn("CUMULATIVE-THROUGHPUT") // from AVG-THROUGHPUT
 
 		sampleSize = float64(len(data.sys))
 
@@ -366,7 +366,11 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string) error {
 		col.UpdateHeader(makeHeader(col.Header(), data.databaseTag))
 	}
 
-	// aggregate by number of keys for each database
+	// aggregate memory usage by number of keys
+	colSecond, err := data.aggregated.Column("SECOND")
+	if err != nil {
+		return err
+	}
 	colMemoryMB, err := data.aggregated.Column(makeHeader("AVG-VMRSS-MB", data.databaseTag))
 	if err != nil {
 		return err
@@ -375,9 +379,18 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string) error {
 	if err != nil {
 		return err
 	}
+	if colSecond.Count() != colMemoryMB.Count() {
+		return fmt.Errorf("SECOND column count %d, AVG-VMRSS-MB column count %d", colSecond.Count(), colMemoryMB.Count())
+	}
+	if colAvgThroughput.Count() != colMemoryMB.Count() {
+		return fmt.Errorf("AVG-THROUGHPUT column count %d, AVG-VMRSS-MB column count %d", colAvgThroughput.Count(), colMemoryMB.Count())
+	}
+	if colSecond.Count() != colAvgThroughput.Count() {
+		return fmt.Errorf("SECOND column count %d, AVG-THROUGHPUT column count %d", colSecond.Count(), colAvgThroughput.Count())
+	}
 
 	var tslice []keyNumAndMemory
-	for i := 0; i < secondCol.Count(); i++ {
+	for i := 0; i < colSecond.Count(); i++ {
 		vv1, err := colMemoryMB.Value(i)
 		if err != nil {
 			return err

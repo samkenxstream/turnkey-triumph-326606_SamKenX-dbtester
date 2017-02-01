@@ -1,6 +1,8 @@
 title: Write 1M keys, 256-byte key, 1KB value, 1,000 client
 work_dir: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client
 all_aggregated_path: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/aggregated.csv
+all_latency_by_key: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/aggregated-data-latency-by-key-number.csv
+all_memory_by_key: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/aggregated-data-memory-by-key-number.csv
 
 raw_data:
 - legend: etcd v3.1 (Go 1.7.4)

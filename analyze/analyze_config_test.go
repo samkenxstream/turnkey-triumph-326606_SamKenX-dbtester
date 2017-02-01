@@ -30,6 +30,12 @@ func Test_readConfig(t *testing.T) {
 	if c.AllAggregatedPath != "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/aggregated.csv" {
 		t.Fatalf("unexpected AllAggregatedPath %q", c.AllAggregatedPath)
 	}
+	if c.AllLatencyByKey != "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/aggregated-data-latency-by-key-number.csv" {
+		t.Fatalf("unexpected AllLatencyByKey %q", c.AllLatencyByKey)
+	}
+	if c.AllMemoryByKey != "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/aggregated-data-memory-by-key-number.csv" {
+		t.Fatalf("unexpected AllMemoryByKey %q", c.AllMemoryByKey)
+	}
 
 	if c.RawData[0].Legend != "etcd v3.1 (Go 1.7.4)" {
 		t.Fatalf("unexpected c.RawData[0].Legend %q", c.RawData[0].Legend)
