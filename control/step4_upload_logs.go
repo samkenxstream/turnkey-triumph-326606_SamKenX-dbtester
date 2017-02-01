@@ -42,6 +42,9 @@ func step4UploadLogs(cfg Config) error {
 	if err := uploadToGoogle(cfg.DataLatencyThroughputTimeseries, cfg); err != nil {
 		return err
 	}
+	if err := uploadToGoogle(cfg.DataLatencyByKeyNumber, cfg); err != nil {
+		return err
+	}
 	return nil
 }
 
