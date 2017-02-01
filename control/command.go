@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/coreos/dbtester/agent/agentpb"
+	"github.com/coreos/dbtester/pkg/ntp"
 	"github.com/gyuho/dataframe"
 	"github.com/spf13/cobra"
 )
@@ -83,6 +84,10 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 
 	println()
 	if !cfg.Step1.SkipStartDatabase {
+		no, nerr := ntp.DefaultSync()
+		plog.Infof("npt update output: %q", no)
+		plog.Infof("npt update error: %v", nerr)
+
 		plog.Info("step 1: starting databases...")
 		if err = step1StartDatabase(cfg); err != nil {
 			return err
