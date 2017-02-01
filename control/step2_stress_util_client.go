@@ -16,24 +16,16 @@ package control
 
 import (
 	"bufio"
-	"crypto/rand"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
-	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
 
-	mrand "math/rand"
-
 	clientv2 "github.com/coreos/etcd/client"
 	"github.com/coreos/etcd/clientv3"
-	"github.com/dustin/go-humanize"
 	consulapi "github.com/hashicorp/consul/api"
 	"github.com/samuel/go-zookeeper/zk"
 )
@@ -170,17 +162,6 @@ func mustCreateConnsConsul(endpoints []string, total int) []*consulapi.KV {
 	}
 	return css
 }
-
-func mustRandBytes(n int) []byte {
-	rb := make([]byte, n)
-	_, err := rand.Read(rb)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to generate value: %v\n", err)
-		os.Exit(1)
-	}
-	return rb
-}
-
 func getTotalKeysEtcdv2(endpoints []string) map[string]int64 {
 	rs := make(map[string]int64)
 	for _, ep := range endpoints {
@@ -250,173 +231,4 @@ func getTotalKeysConsul(endpoints []string) map[string]int64 {
 		rs[ep] = 0 // not supported in consul
 	}
 	return rs
-}
-
-func max(n1, n2 int64) int64 {
-	if n1 > n2 {
-		return n1
-	}
-	return n2
-}
-
-func randBytes(bytesN int) []byte {
-	const (
-		letterBytes   = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-		letterIdxBits = 6                    // 6 bits to represent a letter index
-		letterIdxMask = 1<<letterIdxBits - 1 // All 1-bits, as many as letterIdxBits
-		letterIdxMax  = 63 / letterIdxBits   // # of letter indices fitting in 63 bits
-	)
-	src := mrand.NewSource(time.Now().UnixNano())
-	b := make([]byte, bytesN)
-	for i, cache, remain := bytesN-1, src.Int63(), letterIdxMax; i >= 0; {
-		if remain == 0 {
-			cache, remain = src.Int63(), letterIdxMax
-		}
-		if idx := int(cache & letterIdxMask); idx < len(letterBytes) {
-			b[i] = letterBytes[idx]
-			i--
-		}
-		cache >>= letterIdxBits
-		remain--
-	}
-	return b
-}
-
-func multiRandStrings(keyN, sliceN int) []string {
-	m := make(map[string]struct{})
-	for len(m) != sliceN {
-		m[string(randBytes(keyN))] = struct{}{}
-	}
-	rs := make([]string, sliceN)
-	idx := 0
-	for k := range m {
-		rs[idx] = k
-		idx++
-	}
-	return rs
-}
-
-func toFile(txt, fpath string) error {
-	f, err := os.OpenFile(fpath, os.O_RDWR|os.O_TRUNC, 0777)
-	if err != nil {
-		f, err = os.Create(fpath)
-		if err != nil {
-			return err
-		}
-	}
-	defer f.Close()
-
-	_, err = f.WriteString(txt)
-	return err
-}
-
-func toMillisecond(d time.Duration) float64 {
-	return d.Seconds() * 1000
-}
-
-// gracefulClose drains http.Response.Body until it hits EOF
-// and closes it. This prevents TCP/TLS connections from closing,
-// therefore available for reuse.
-func gracefulClose(resp *http.Response) {
-	io.Copy(ioutil.Discard, resp.Body)
-	resp.Body.Close()
-}
-
-// sequentialKey returns '00012' when size is 5 and num is 12.
-func sequentialKey(size, num int) string {
-	txt := fmt.Sprintf("%d", num)
-	if len(txt) > size {
-		return txt
-	}
-	delta := size - len(txt)
-	return strings.Repeat("0", delta) + txt
-}
-
-func sameKey(size int) string {
-	return strings.Repeat("a", size)
-}
-
-func walk(targetDir string) (map[string]os.FileInfo, error) {
-	rm := make(map[string]os.FileInfo)
-	visit := func(path string, f os.FileInfo, err error) error {
-		if f != nil {
-			if !f.IsDir() {
-				if !filepath.HasPrefix(path, ".") && !strings.Contains(path, "/.") {
-					wd, err := os.Getwd()
-					if err != nil {
-						return err
-					}
-					rm[filepath.Join(wd, strings.Replace(path, wd, "", -1))] = f
-				}
-			}
-		}
-		return nil
-	}
-	err := filepath.Walk(targetDir, visit)
-	if err != nil {
-		return nil, err
-	}
-	return rm, nil
-}
-
-type filepathSize struct {
-	path    string
-	size    uint64
-	sizeTxt string
-}
-
-func filterByKbs(fs []filepathSize, kbLimit int) []filepathSize {
-	var ns []filepathSize
-	for _, v := range fs {
-		if v.size > uint64(kbLimit*1024) {
-			continue
-		}
-		ns = append(ns, v)
-	}
-	return ns
-}
-
-type filepathSizeSlice []filepathSize
-
-func (f filepathSizeSlice) Len() int           { return len(f) }
-func (f filepathSizeSlice) Swap(i, j int)      { f[i], f[j] = f[j], f[i] }
-func (f filepathSizeSlice) Less(i, j int) bool { return f[i].size < f[j].size }
-
-func walkDir(targetDir string) ([]filepathSize, error) {
-	rm, err := walk(targetDir)
-	if err != nil {
-		return nil, err
-	}
-
-	var fs []filepathSize
-	for k, v := range rm {
-		fv := filepathSize{
-			path:    k,
-			size:    uint64(v.Size()),
-			sizeTxt: humanize.Bytes(uint64(v.Size())),
-		}
-		fs = append(fs, fv)
-	}
-	sort.Sort(filepathSizeSlice(fs))
-
-	return fs, nil
-}
-
-// exist returns true if the file or directory exists.
-func exist(fpath string) bool {
-	st, err := os.Stat(fpath)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
-	}
-	if st.IsDir() {
-		return true
-	}
-	if _, err := os.Stat(fpath); err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
-	}
-	return true
 }
