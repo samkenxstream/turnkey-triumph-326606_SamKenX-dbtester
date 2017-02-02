@@ -23,7 +23,7 @@ import (
 )
 
 // aggregateAll aggregates all system metrics from 3+ nodes.
-func (data *analyzeData) aggregateAll(memoryByKeyPath string) error {
+func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int) error {
 	// TODO: UNIX-TS from pkg/report data is time.Time.Unix
 	// UNIX-TS from psn.CSV data is time.Time.UnixNano
 	// we need some kind of way to combine those with matching timestamps
@@ -411,30 +411,29 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string) error {
 	}
 	sort.Sort(keyNumAndMemorys(tslice))
 
-	{
-		sorted := processTimeSeries(tslice, 1000)
-		c1 := dataframe.NewColumn("KEYS")
-		c2 := dataframe.NewColumn("AVG-VMRSS-MB")
-		for i := range sorted {
-			c1.PushBack(dataframe.NewStringValue(sorted[i].keyNum))
-			c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", sorted[i].memoryMB)))
-		}
-		fr := dataframe.New()
-		if err := fr.AddColumn(c1); err != nil {
-			plog.Fatal(err)
-		}
-		if err := fr.AddColumn(c2); err != nil {
-			plog.Fatal(err)
-		}
-		if err := fr.CSV(memoryByKeyPath); err != nil {
-			plog.Fatal(err)
-		}
+	// aggregate memory by number of keys
+	knms := processTimeSeries(tslice, 1000, totalRequests)
+	ckk1 := dataframe.NewColumn("KEYS")
+	ckk2 := dataframe.NewColumn("AVG-VMRSS-MB")
+	for i := range knms {
+		ckk1.PushBack(dataframe.NewStringValue(knms[i].keyNum))
+		ckk2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", knms[i].memoryMB)))
+	}
+	fr := dataframe.New()
+	if err := fr.AddColumn(ckk1); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr.AddColumn(ckk2); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr.CSV(memoryByKeyPath); err != nil {
+		plog.Fatal(err)
 	}
 
 	return nil
 }
 
-func processTimeSeries(tslice []keyNumAndMemory, unit int64) []keyNumAndMemory {
+func processTimeSeries(tslice []keyNumAndMemory, unit int64, totalRequests int) []keyNumAndMemory {
 	sort.Sort(keyNumAndMemorys(tslice))
 
 	cumulKeyN := int64(0)
@@ -460,6 +459,16 @@ func processTimeSeries(tslice []keyNumAndMemory, unit int64) []keyNumAndMemory {
 			maxKey += unit
 			rm[maxKey] = mem
 		}
+	}
+
+	// fill-in empty rows
+	for i := maxKey; i < int64(totalRequests); i += unit {
+		if _, ok := rm[i]; !ok {
+			rm[i] = 0.0
+		}
+	}
+	if _, ok := rm[int64(totalRequests)]; !ok {
+		rm[int64(totalRequests)] = 0.0
 	}
 
 	kss := []keyNumAndMemory{}

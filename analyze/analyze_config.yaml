@@ -3,6 +3,7 @@ work_dir: 2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys
 all_aggregated_path: 2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/aggregated.csv
 all_latency_by_key: 2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/aggregated-data-latency-by-key-number.csv
 all_memory_by_key: 2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/aggregated-data-memory-by-key-number.csv
+total_requests: 100000
 
 raw_data:
 - legend: etcd v3.1 (Go 1.7.4)
