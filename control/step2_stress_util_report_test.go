@@ -15,11 +15,9 @@
 package control
 
 import (
-	"testing"
-
-	"time"
-
 	"reflect"
+	"testing"
+	"time"
 
 	"github.com/coreos/etcd/pkg/report"
 )
@@ -35,8 +33,8 @@ func Test_processTimeSeries(t *testing.T) {
 		tslice = append(tslice, dp)
 	}
 
-	pss := processTimeSeries(tslice, 20)
-	expexcted := []KeyNumToAvgLatency{
+	pss := processTimeSeries(tslice, 20, 555)
+	expexcted := []keyNumToAvgLatency{
 		{keyNum: 20, avgLat: 1},
 		{keyNum: 40, avgLat: 1},
 		{keyNum: 60, avgLat: 1},
@@ -62,6 +60,12 @@ func Test_processTimeSeries(t *testing.T) {
 		{keyNum: 460, avgLat: 9},
 		{keyNum: 480, avgLat: 10},
 		{keyNum: 500, avgLat: 10},
+		{keyNum: 520, avgLat: 0},
+		{keyNum: 540, avgLat: 0},
+		{keyNum: 555, avgLat: 0},
+	}
+	if len(pss) != len(expexcted) {
+		t.Fatalf("expected %+v, got %+v", expexcted, pss)
 	}
 	for i, elem := range pss {
 		if !reflect.DeepEqual(elem, expexcted[i]) {
