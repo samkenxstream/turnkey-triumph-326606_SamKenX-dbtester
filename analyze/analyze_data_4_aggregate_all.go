@@ -23,7 +23,7 @@ import (
 )
 
 // aggregateAll aggregates all system metrics from 3+ nodes.
-func (data *analyzeData) aggregateAll(memoryByKeyPath string) error {
+func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int) error {
 	// TODO: UNIX-TS from pkg/report data is time.Time.Unix
 	// UNIX-TS from psn.CSV data is time.Time.UnixNano
 	// we need some kind of way to combine those with matching timestamps
@@ -411,90 +411,28 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string) error {
 	}
 	sort.Sort(keyNumAndMemorys(tslice))
 
-	{
-		sorted := processTimeSeries(tslice, 1000)
-		c1 := dataframe.NewColumn("KEYS")
-		c2 := dataframe.NewColumn("AVG-VMRSS-MB")
-		for i := range sorted {
-			c1.PushBack(dataframe.NewStringValue(sorted[i].keyNum))
-			c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", sorted[i].memoryMB)))
-		}
-		fr := dataframe.New()
-		if err := fr.AddColumn(c1); err != nil {
-			plog.Fatal(err)
-		}
-		if err := fr.AddColumn(c2); err != nil {
-			plog.Fatal(err)
-		}
-		if err := fr.CSV(memoryByKeyPath); err != nil {
-			plog.Fatal(err)
-		}
+	// aggregate memory by number of keys
+	knms := processTimeSeries(tslice, 1000, totalRequests)
+	ckk1 := dataframe.NewColumn("KEYS")
+	ckk2 := dataframe.NewColumn("AVG-VMRSS-MB")
+	for i := range knms {
+		ckk1.PushBack(dataframe.NewStringValue(knms[i].keyNum))
+		ckk2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", knms[i].memoryMB)))
+	}
+	fr := dataframe.New()
+	if err := fr.AddColumn(ckk1); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr.AddColumn(ckk2); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr.CSV(memoryByKeyPath); err != nil {
+		plog.Fatal(err)
 	}
 
 	return nil
 }
 
-func processTimeSeries(tslice []keyNumAndMemory, unit int64) []keyNumAndMemory {
-	sort.Sort(keyNumAndMemorys(tslice))
-
-	cumulKeyN := int64(0)
-	maxKey := int64(0)
-
-	rm := make(map[int64]float64)
-
-	// this data is aggregated by second
-	// and we want to map number of keys to latency
-	// so the range is the key
-	// and the value is the cumulative throughput
-	for _, ts := range tslice {
-		cumulKeyN += ts.keyNum
-		if cumulKeyN < unit {
-			// not enough data points yet
-			continue
-		}
-
-		mem := ts.memoryMB
-
-		// cumulKeyN >= unit
-		for cumulKeyN > maxKey {
-			maxKey += unit
-			rm[maxKey] = mem
-		}
-	}
-
-	kss := []keyNumAndMemory{}
-	for k, v := range rm {
-		kss = append(kss, keyNumAndMemory{keyNum: k, memoryMB: v})
-	}
-	sort.Sort(keyNumAndMemorys(kss))
-
-	return kss
-}
-
-type keyNumAndMemory struct {
-	keyNum   int64
-	memoryMB float64
-}
-
-type keyNumAndMemorys []keyNumAndMemory
-
-func (t keyNumAndMemorys) Swap(i, j int)      { t[i], t[j] = t[j], t[i] }
-func (t keyNumAndMemorys) Len() int           { return len(t) }
-func (t keyNumAndMemorys) Less(i, j int) bool { return t[i].keyNum < t[j].keyNum }
-
 func (data *analyzeData) save() error {
 	return data.aggregated.CSV(data.csvOutputpath)
-}
-
-func makeHeader(column string, tag string) string {
-	return fmt.Sprintf("%s-%s", column, tag)
-}
-
-func makeTag(legend string) string {
-	legend = strings.ToLower(legend)
-	legend = strings.Replace(legend, "go ", "go", -1)
-	legend = strings.Replace(legend, "java ", "java", -1)
-	legend = strings.Replace(legend, "(", "", -1)
-	legend = strings.Replace(legend, ")", "", -1)
-	return strings.Replace(legend, " ", "-", -1)
 }
