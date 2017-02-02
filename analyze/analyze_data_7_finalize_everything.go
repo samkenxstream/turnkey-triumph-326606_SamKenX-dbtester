@@ -63,7 +63,7 @@ func do(configPath string) error {
 		if err = ad.importBenchMetrics(elem.DataBenchmarkThroughput); err != nil {
 			return err
 		}
-		if err = ad.aggregateAll(); err != nil {
+		if err = ad.aggregateAll(elem.DataBenchmarkMemoryByKey); err != nil {
 			return err
 		}
 		if err = ad.save(); err != nil {
@@ -383,6 +383,147 @@ func do(configPath string) error {
 		return err
 	}
 
+	var legends []string
+	for _, elem := range cfg.RawData {
+		legends = append(legends, elem.Legend)
+	}
+
+	// KEYS, AVG-LATENCY-MS
+	plog.Printf("combining data to %q", cfg.AllLatencyByKey)
+	allToLatency := make(map[int64]map[string]float64)
+	for _, elem := range cfg.RawData {
+		fr, err := dataframe.NewFromCSV([]string{"KEYS", "AVG-LATENCY-MS"}, elem.DataBenchmarkLatencyByKey)
+		if err != nil {
+			return err
+		}
+		colKeys, err := fr.Column("KEYS")
+		if err != nil {
+			return err
+		}
+		colLatency, err := fr.Column("AVG-LATENCY-MS")
+		if err != nil {
+			return err
+		}
+		for i := 0; i < colKeys.Count(); i++ {
+			vv1, err := colKeys.Value(i)
+			if err != nil {
+				return err
+			}
+			kn, _ := vv1.Int64()
+
+			vv2, err := colLatency.Value(i)
+			if err != nil {
+				return err
+			}
+			va, _ := vv2.Float64()
+
+			if _, ok := allToLatency[kn]; !ok {
+				allToLatency[kn] = make(map[string]float64)
+			}
+			allToLatency[kn][elem.Legend] = va
+		}
+	}
+	allLatencyKeys := make([]int64, 0, len(allToLatency))
+	for k := range allToLatency {
+		allLatencyKeys = append(allLatencyKeys, k)
+	}
+	sort.Sort(int64Slice(allLatencyKeys))
+	cl1 := dataframe.NewColumn("KEYS")
+	clCols := make([]dataframe.Column, len(legends))
+	for i, legend := range legends {
+		clCols[i] = dataframe.NewColumn(makeHeader("AVG-LATENCY-MS", legend))
+	}
+	for _, keyNum := range allLatencyKeys {
+		cl1.PushBack(dataframe.NewStringValue(keyNum))
+		for i, legend := range legends {
+			var latV float64
+			if v, ok := allToLatency[keyNum][legend]; ok {
+				latV = v
+			}
+			clCols[i].PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", latV)))
+		}
+	}
+	allLatencyFrame := dataframe.New()
+	if err := allLatencyFrame.AddColumn(cl1); err != nil {
+		return err
+	}
+	for _, col := range clCols {
+		if err := allLatencyFrame.AddColumn(col); err != nil {
+			return err
+		}
+	}
+	if err := allLatencyFrame.CSV(cfg.AllLatencyByKey); err != nil {
+		return err
+	}
+
+	// KEYS, AVG-VMRSS-MB
+	plog.Printf("combining data to %q", cfg.AllMemoryByKey)
+	allToMemory := make(map[int64]map[string]float64)
+	for _, elem := range cfg.RawData {
+		fr, err := dataframe.NewFromCSV([]string{"KEYS", "AVG-VMRSS-MB"}, elem.DataBenchmarkMemoryByKey)
+		if err != nil {
+			return err
+		}
+		colKeys, err := fr.Column("KEYS")
+		if err != nil {
+			return err
+		}
+		colMem, err := fr.Column("AVG-VMRSS-MB")
+		if err != nil {
+			return err
+		}
+		for i := 0; i < colKeys.Count(); i++ {
+			vv1, err := colKeys.Value(i)
+			if err != nil {
+				return err
+			}
+			kn, _ := vv1.Int64()
+
+			vv2, err := colMem.Value(i)
+			if err != nil {
+				return err
+			}
+			va, _ := vv2.Float64()
+
+			if _, ok := allToMemory[kn]; !ok {
+				allToMemory[kn] = make(map[string]float64)
+			}
+			allToMemory[kn][elem.Legend] = va
+		}
+	}
+	allMemoryKeys := make([]int64, 0, len(allToMemory))
+	for k := range allToMemory {
+		allMemoryKeys = append(allMemoryKeys, k)
+	}
+	sort.Sort(int64Slice(allMemoryKeys))
+	cm1 := dataframe.NewColumn("KEYS")
+	cmCols := make([]dataframe.Column, len(legends))
+	for i, legend := range legends {
+		cmCols[i] = dataframe.NewColumn(makeHeader("AVG-VMRSS-MB", legend))
+	}
+	for _, keyNum := range allMemoryKeys {
+		cm1.PushBack(dataframe.NewStringValue(keyNum))
+		for i, legend := range legends {
+			var memoryV float64
+			if v, ok := allToMemory[keyNum][legend]; ok {
+				memoryV = v
+			}
+			cmCols[i].PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", memoryV)))
+		}
+	}
+	allMemoryFrame := dataframe.New()
+	if err := allMemoryFrame.AddColumn(cm1); err != nil {
+		return err
+	}
+	for _, col := range cmCols {
+		if err := allMemoryFrame.AddColumn(col); err != nil {
+			return err
+		}
+	}
+	if err := allMemoryFrame.CSV(cfg.AllMemoryByKey); err != nil {
+		return err
+	}
+
 	plog.Println("combining data for plotting")
 	for _, plotConfig := range cfg.PlotList {
 		plog.Printf("plotting %q", plotConfig.Column)
@@ -520,3 +661,9 @@ func changeExtToTxt(fpath string) string {
 	ext := filepath.Ext(fpath)
 	return strings.Replace(fpath, ext, ".txt", -1)
 }
+
+type int64Slice []int64
+
+func (a int64Slice) Len() int           { return len(a) }
+func (a int64Slice) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a int64Slice) Less(i, j int) bool { return a[i] < a[j] }

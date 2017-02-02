@@ -30,6 +30,12 @@ func Test_readConfig(t *testing.T) {
 	if c.AllAggregatedPath != "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/aggregated.csv" {
 		t.Fatalf("unexpected AllAggregatedPath %q", c.AllAggregatedPath)
 	}
+	if c.AllLatencyByKey != "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/aggregated-data-latency-by-key-number.csv" {
+		t.Fatalf("unexpected AllLatencyByKey %q", c.AllLatencyByKey)
+	}
+	if c.AllMemoryByKey != "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/aggregated-data-memory-by-key-number.csv" {
+		t.Fatalf("unexpected AllMemoryByKey %q", c.AllMemoryByKey)
+	}
 
 	if c.RawData[0].Legend != "etcd v3.1 (Go 1.7.4)" {
 		t.Fatalf("unexpected c.RawData[0].Legend %q", c.RawData[0].Legend)
@@ -54,6 +60,12 @@ func Test_readConfig(t *testing.T) {
 	}
 	if c.RawData[0].DataBenchmarkThroughput != "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/etcd-v3.1-go1.7.4-data-latency-throughput-timeseries.csv" {
 		t.Fatalf("unexpected c.RawData[0].DataBenchmarkThroughput %q", c.RawData[0].DataBenchmarkThroughput)
+	}
+	if c.RawData[0].DataBenchmarkLatencyByKey != "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/etcd-v3.1-go1.7.4-data-latency-by-key-number.csv" {
+		t.Fatalf("unexpected c.RawData[0].DataBenchmarkLatencyByKey %q", c.RawData[0].DataBenchmarkLatencyByKey)
+	}
+	if c.RawData[0].DataBenchmarkMemoryByKey != "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/etcd-v3.1-go1.7.4-data-memory-by-key-number.csv" {
+		t.Fatalf("unexpected c.RawData[0].DataBenchmarkMemoryByKey %q", c.RawData[0].DataBenchmarkMemoryByKey)
 	}
 
 	if c.READMEConfig.OutputPath != "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/README.md" {

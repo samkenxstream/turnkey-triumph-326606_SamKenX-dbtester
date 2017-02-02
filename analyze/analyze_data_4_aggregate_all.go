@@ -16,13 +16,14 @@ package analyze
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/gyuho/dataframe"
 )
 
 // aggregateAll aggregates all system metrics from 3+ nodes.
-func (data *analyzeData) aggregateAll() error {
+func (data *analyzeData) aggregateAll(memoryByKeyPath string) error {
 	// TODO: UNIX-TS from pkg/report data is time.Time.Unix
 	// UNIX-TS from psn.CSV data is time.Time.UnixNano
 	// we need some kind of way to combine those with matching timestamps
@@ -120,7 +121,7 @@ func (data *analyzeData) aggregateAll() error {
 
 	var (
 		requestSum              int
-		cumulativeThroughputCol = dataframe.NewColumn("CUMULATIVE-THROUGHPUT")
+		cumulativeThroughputCol = dataframe.NewColumn("CUMULATIVE-THROUGHPUT") // from AVG-THROUGHPUT
 
 		sampleSize = float64(len(data.sys))
 
@@ -128,6 +129,7 @@ func (data *analyzeData) aggregateAll() error {
 		avgVolCtxSwitchCol          = dataframe.NewColumn("AVG-VOLUNTARY-CTXT-SWITCHES")     // from VOLUNTARY-CTXT-SWITCHES
 		avgNonVolCtxSwitchCol       = dataframe.NewColumn("AVG-NON-VOLUNTARY-CTXT-SWITCHES") // from NON-VOLUNTARY-CTXT-SWITCHES
 		avgCPUCol                   = dataframe.NewColumn("AVG-CPU")                         // from CPU-NUM
+		avgSystemLoadCol            = dataframe.NewColumn("AVG-SYSTEM-LOAD-1-MIN")           // from LOAD-AVERAGE-1-MINUTE
 		avgVMRSSMBCol               = dataframe.NewColumn("AVG-VMRSS-MB")                    // from VMRSS-NUM
 		avgReadsCompletedCol        = dataframe.NewColumn("AVG-READS-COMPLETED")             // from READS-COMPLETED
 		avgReadsCompletedDeltaCol   = dataframe.NewColumn("AVG-READS-COMPLETED-DELTA")       // from READS-COMPLETED-DELTA
@@ -151,6 +153,7 @@ func (data *analyzeData) aggregateAll() error {
 			volCtxSwitchSum          float64
 			nonVolCtxSwitchSum       float64
 			cpuSum                   float64
+			loadAvgSum               float64
 			vmrssMBSum               float64
 			readsCompletedSum        float64
 			readsCompletedDeltaSum   float64
@@ -188,6 +191,8 @@ func (data *analyzeData) aggregateAll() error {
 				nonVolCtxSwitchSum += vv
 			case strings.HasPrefix(hd, "CPU-"): // CPU-NUM was converted to CPU-1, CPU-2, CPU-3
 				cpuSum += vv
+			case strings.HasPrefix(hd, "LOAD-AVERAGE-1-"): // LOAD-AVERAGE-1-MINUTE
+				loadAvgSum += vv
 			case strings.HasPrefix(hd, "VMRSS-MB-"): // VMRSS-NUM-NUM was converted to VMRSS-MB-1, VMRSS-MB-2, VMRSS-MB-3
 				vmrssMBSum += vv
 			case strings.HasPrefix(hd, "READS-COMPLETED-DELTA-"): // match this first!
@@ -221,6 +226,7 @@ func (data *analyzeData) aggregateAll() error {
 		avgVolCtxSwitchCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", volCtxSwitchSum/sampleSize)))
 		avgNonVolCtxSwitchCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", nonVolCtxSwitchSum/sampleSize)))
 		avgCPUCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", cpuSum/sampleSize)))
+		avgSystemLoadCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", loadAvgSum/sampleSize)))
 		avgVMRSSMBCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", vmrssMBSum/sampleSize)))
 		avgReadsCompletedCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", readsCompletedSum/sampleSize)))
 		avgReadsCompletedDeltaCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", readsCompletedDeltaSum/sampleSize)))
@@ -250,6 +256,9 @@ func (data *analyzeData) aggregateAll() error {
 		return err
 	}
 	if err = data.aggregated.AddColumn(avgCPUCol); err != nil {
+		return err
+	}
+	if err = data.aggregated.AddColumn(avgSystemLoadCol); err != nil {
 		return err
 	}
 	if err = data.aggregated.AddColumn(avgVMRSSMBCol); err != nil {
@@ -330,6 +339,7 @@ func (data *analyzeData) aggregateAll() error {
 		"AVG-VOLUNTARY-CTXT-SWITCHES",
 		"AVG-NON-VOLUNTARY-CTXT-SWITCHES",
 		"AVG-CPU",
+		"AVG-SYSTEM-LOAD-1-MIN",
 		"AVG-VMRSS-MB",
 		"AVG-READS-COMPLETED-DELTA",
 		"AVG-SECTORS-READ-DELTA",
@@ -355,11 +365,122 @@ func (data *analyzeData) aggregateAll() error {
 		// since we will have same headers from different databases
 		col.UpdateHeader(makeHeader(col.Header(), data.databaseTag))
 	}
+
+	// aggregate memory usage by number of keys
+	colSecond, err := data.aggregated.Column("SECOND")
+	if err != nil {
+		return err
+	}
+	colMemoryMB, err := data.aggregated.Column(makeHeader("AVG-VMRSS-MB", data.databaseTag))
+	if err != nil {
+		return err
+	}
+	colAvgThroughput, err := data.aggregated.Column(makeHeader("AVG-THROUGHPUT", data.databaseTag))
+	if err != nil {
+		return err
+	}
+	if colSecond.Count() != colMemoryMB.Count() {
+		return fmt.Errorf("SECOND column count %d, AVG-VMRSS-MB column count %d", colSecond.Count(), colMemoryMB.Count())
+	}
+	if colAvgThroughput.Count() != colMemoryMB.Count() {
+		return fmt.Errorf("AVG-THROUGHPUT column count %d, AVG-VMRSS-MB column count %d", colAvgThroughput.Count(), colMemoryMB.Count())
+	}
+	if colSecond.Count() != colAvgThroughput.Count() {
+		return fmt.Errorf("SECOND column count %d, AVG-THROUGHPUT column count %d", colSecond.Count(), colAvgThroughput.Count())
+	}
+
+	var tslice []keyNumAndMemory
+	for i := 0; i < colSecond.Count(); i++ {
+		vv1, err := colMemoryMB.Value(i)
+		if err != nil {
+			return err
+		}
+		vf1, _ := vv1.Float64()
+
+		vv2, err := colAvgThroughput.Value(i)
+		if err != nil {
+			return err
+		}
+		vf2, _ := vv2.Float64()
+
+		point := keyNumAndMemory{
+			keyNum:   int64(vf2),
+			memoryMB: vf1,
+		}
+		tslice = append(tslice, point)
+	}
+	sort.Sort(keyNumAndMemorys(tslice))
+
+	{
+		sorted := processTimeSeries(tslice, 1000)
+		c1 := dataframe.NewColumn("KEYS")
+		c2 := dataframe.NewColumn("AVG-VMRSS-MB")
+		for i := range sorted {
+			c1.PushBack(dataframe.NewStringValue(sorted[i].keyNum))
+			c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", sorted[i].memoryMB)))
+		}
+		fr := dataframe.New()
+		if err := fr.AddColumn(c1); err != nil {
+			plog.Fatal(err)
+		}
+		if err := fr.AddColumn(c2); err != nil {
+			plog.Fatal(err)
+		}
+		if err := fr.CSV(memoryByKeyPath); err != nil {
+			plog.Fatal(err)
+		}
+	}
+
 	return nil
 }
 
-// TODO: aggregate memory usage by number of keys
-// just like latency by the number of keys in 'control'
+func processTimeSeries(tslice []keyNumAndMemory, unit int64) []keyNumAndMemory {
+	sort.Sort(keyNumAndMemorys(tslice))
+
+	cumulKeyN := int64(0)
+	maxKey := int64(0)
+
+	rm := make(map[int64]float64)
+
+	// this data is aggregated by second
+	// and we want to map number of keys to latency
+	// so the range is the key
+	// and the value is the cumulative throughput
+	for _, ts := range tslice {
+		cumulKeyN += ts.keyNum
+		if cumulKeyN < unit {
+			// not enough data points yet
+			continue
+		}
+
+		mem := ts.memoryMB
+
+		// cumulKeyN >= unit
+		for cumulKeyN > maxKey {
+			maxKey += unit
+			rm[maxKey] = mem
+		}
+	}
+
+	kss := []keyNumAndMemory{}
+	for k, v := range rm {
+		kss = append(kss, keyNumAndMemory{keyNum: k, memoryMB: v})
+	}
+	sort.Sort(keyNumAndMemorys(kss))
+
+	return kss
+}
+
+type keyNumAndMemory struct {
+	keyNum   int64
+	memoryMB float64
+}
+
+type keyNumAndMemorys []keyNumAndMemory
+
+func (t keyNumAndMemorys) Swap(i, j int)      { t[i], t[j] = t[j], t[i] }
+func (t keyNumAndMemorys) Len() int           { return len(t) }
+func (t keyNumAndMemorys) Less(i, j int) bool { return t[i].keyNum < t[j].keyNum }
 
 func (data *analyzeData) save() error {
 	return data.aggregated.CSV(data.csvOutputpath)
