@@ -414,7 +414,7 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string) error {
 	{
 		sorted := processTimeSeries(tslice, 1000)
 		c1 := dataframe.NewColumn("KEYS")
-		c2 := dataframe.NewColumn("AVG-MEMORY-MB")
+		c2 := dataframe.NewColumn("AVG-VMRSS-MB")
 		for i := range sorted {
 			c1.PushBack(dataframe.NewStringValue(sorted[i].keyNum))
 			c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", sorted[i].memoryMB)))
