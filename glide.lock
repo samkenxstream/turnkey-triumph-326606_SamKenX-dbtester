@@ -1,5 +1,5 @@
-hash: a742783c5966644247e12ddcda9629965818fdd68e659a0866f279a88d49290f
-updated: 2017-01-27T15:23:50.941693612-08:00
+hash: c9f541eb51fff541f3c789e790bc21c14a8af0d90b9e019d87664acef2424d80
+updated: 2017-02-02T09:54:31.002917679-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -97,7 +97,7 @@ imports:
 - name: github.com/gyuho/dataframe
   version: e715fd4225590f6558961c316924e56a8a2647b0
 - name: github.com/gyuho/psn
-  version: 5a0ffadd2ecaca939e373bf01aa45ac66c8fa2c0
+  version: 2c7fdc8639b23472a462bdc3001cadfa586c1b39
   subpackages:
   - schema
 - name: github.com/hashicorp/consul
@@ -107,7 +107,7 @@ imports:
 - name: github.com/hashicorp/go-cleanhttp
   version: ad28ea4487f05916463e2423a55166280e8254b5
 - name: github.com/hashicorp/serf
-  version: 44157f9dfdbcf6d9e20fcfd52cfee348dbc467ee
+  version: 34e94dbd8faa991710b442c22ad6ad37c8b44c3b
   subpackages:
   - coordinate
 - name: github.com/inconshreveable/mousetrap
@@ -118,7 +118,7 @@ imports:
   - draw2dbase
   - draw2dimg
 - name: github.com/mattn/go-runewidth
-  version: 737072b4e32b7a5018b4a7125da8d12de90e8045
+  version: 14207d285c6c197daabb5c9793d63e7af9ab2d50
 - name: github.com/matttproud/golang_protobuf_extensions
   version: c12348ce28de40eed0136aa2b644d0ee0650e56c
   subpackages:
@@ -140,7 +140,7 @@ imports:
   - internal/bitbucket.org/ww/goautoneg
   - model
 - name: github.com/prometheus/procfs
-  version: fcdb11ccb4389efb1b210b7ffb623ab71c5fdd60
+  version: 1878d9fbb537119d24b21ca07effd591627cd160
 - name: github.com/samuel/go-zookeeper
   version: 1d7be4effb13d2d908342d349d71a284a7542693
   subpackages:
@@ -154,7 +154,7 @@ imports:
   subpackages:
   - codec
 - name: golang.org/x/image
-  version: 83686c547965220f8b5d75e83ddc67d73420a89f
+  version: 69afd001f792d732a78bd7225793315a8deb09ea
   subpackages:
   - draw
   - font
