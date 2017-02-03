@@ -24,25 +24,15 @@ import (
 
 // aggregateAll aggregates all system metrics from 3+ nodes.
 func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int) error {
-	// TODO: UNIX-TS from pkg/report data is time.Time.Unix
-	// UNIX-TS from psn.CSV data is time.Time.UnixNano
-	// we need some kind of way to combine those with matching timestamps
-	//
-	// this is unix "nano-seconds"
-	colSys, err := data.sysAgg.Column("UNIX-TS")
+	colSys, err := data.sysAgg.Column("UNIX-SECOND")
+	if err != nil {
+		return err
+	}
+	colBench, err := data.benchMetrics.frame.Column("UNIX-SECOND")
 	if err != nil {
 		return err
 	}
 
-	// TODO: UNIX-TS from pkg/report data is time.Time.Unix
-	// UNIX-TS from psn.CSV data is time.Time.UnixNano
-	// we need some kind of way to combine those with matching timestamps
-	//
-	// this is unix "seconds"
-	colBench, err := data.benchMetrics.frame.Column("UNIX-TS")
-	if err != nil {
-		return err
-	}
 	fv, ok := colBench.FrontNonNil()
 	if !ok {
 		return fmt.Errorf("FrontNonNil %s has empty Unix time %v", data.benchMetrics.filePath, fv)
@@ -51,6 +41,7 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 	if !ok {
 		return fmt.Errorf("%v is not found in system metrics results", fv)
 	}
+
 	bv, ok := colBench.BackNonNil()
 	if !ok {
 		return fmt.Errorf("BackNonNil %s has empty Unix time %v", data.benchMetrics.filePath, fv)
@@ -59,7 +50,8 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 	if !ok {
 		return fmt.Errorf("%v is not found in system metrics results", fv)
 	}
-	sysRowN := sysEndIdx - sysStartIdx + 1
+
+	expectedSysRowN := sysEndIdx - sysStartIdx + 1
 
 	var minBenchEndIdx int
 	for _, col := range data.benchMetrics.frame.Columns() {
@@ -73,22 +65,24 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 	// this is index, so decrement by 1 to make it as valid index
 	minBenchEndIdx--
 
-	// sysStartIdx 3, sysEndIdx 9, sysRowN 7, minBenchEndIdx 5 (5+1 < 7)
+	// sysStartIdx 3, sysEndIdx 9, expectedSysRowN 7, minBenchEndIdx 5 (5+1 < 7)
 	// so benchmark has 6 rows, but system metrics has 7 rows; benchmark is short of rows
 	// so we should keep system metrics [3, 9)
 	// THEN sysEndIdx = 3 + 5 = 8 (keep [3, 8+1))
 	//
-	// sysStartIdx 3, sysEndIdx 7, sysRowN 5, minBenchEndIdx 5 (5+1 > 5)
+	// sysStartIdx 3, sysEndIdx 7, expectedSysRowN 5, minBenchEndIdx 5 (5+1 > 5)
 	// so benchmark has 6 rows, but system metrics has 5 rows; system metrics is short of rows
 	// so we should keep benchmark [0, 5)
 	// THEN minBenchEndIdx = 7 - 3 = 4 (keep [0, 4+1))
-	if minBenchEndIdx+1 < sysRowN {
+	if minBenchEndIdx+1 < expectedSysRowN {
 		// benchmark is short of rows
-		// adjust system-metrics rows to benchmark-metrics
+		// adjust system metrics rows to benchmark-metrics
+		// will truncate front of system metrics rows
 		sysEndIdx = sysStartIdx + minBenchEndIdx
 	} else {
-		// system-metrics is short of rows
-		// adjust benchmark-metrics to system-metrics
+		// system metrics is short of rows
+		// adjust benchmark metrics to system-metrics
+		// will truncate front of benchmark metrics rows
 		minBenchEndIdx = sysEndIdx - sysStartIdx
 	}
 
@@ -96,7 +90,7 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 	data.aggregated = dataframe.New()
 
 	// first, add bench metrics data
-	// UNIX-TS, AVG-LATENCY-MS, AVG-THROUGHPUT
+	// UNIX-SECOND, AVG-LATENCY-MS, AVG-THROUGHPUT
 	for _, col := range data.benchMetrics.frame.Columns() {
 		// ALWAYS KEEP FROM FIRST ROW OF BENCHMARKS
 		// keeps from [a, b)
@@ -108,7 +102,7 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 		}
 	}
 	for _, col := range data.sysAgg.Columns() {
-		if col.Header() == "UNIX-TS" {
+		if col.Header() == "UNIX-SECOND" {
 			continue
 		}
 		if err = col.Keep(sysStartIdx, sysEndIdx+1); err != nil {
@@ -302,7 +296,7 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 	}
 
 	// add SECOND column
-	uc, err := data.aggregated.Column("UNIX-TS")
+	uc, err := data.aggregated.Column("UNIX-SECOND")
 	if err != nil {
 		return err
 	}
@@ -331,7 +325,7 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 	}
 
 	// currently first columns are ordered as:
-	// UNIX-TS, SECOND, AVG-CLIENT-NUM, AVG-LATENCY-MS, AVG-THROUGHPUT
+	// UNIX-SECOND, SECOND, AVG-CLIENT-NUM, AVG-LATENCY-MS, AVG-THROUGHPUT
 	//
 	// re-order columns in the following order, to make it more readable
 	reorder := []string{

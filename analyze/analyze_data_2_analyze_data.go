@@ -24,11 +24,11 @@ type analyzeData struct {
 	databaseTag string
 	legend      string
 
-	minUnixTS int64
-	maxUnixTS int64
-	sys       []testData
+	minUnixSecond int64
+	maxUnixSecond int64
+	sys           []testData
 
-	// aggregated frame within [min,maxUnixTS] from sys
+	// aggregated frame within [min,maxUnixSecond] from sys
 	sysAgg               dataframe.Frame
 	benchMetricsFilePath string
 	benchMetrics         testData
@@ -50,14 +50,14 @@ func readSystemMetricsAll(fpaths ...string) (data *analyzeData, err error) {
 			return nil, err
 		}
 		if i == 0 {
-			data.minUnixTS = sm.frontUnixTS
-			data.maxUnixTS = sm.lastUnixTS
+			data.minUnixSecond = sm.frontUnixSecond
+			data.maxUnixSecond = sm.lastUnixSecond
 		}
-		if data.minUnixTS < sm.frontUnixTS {
-			data.minUnixTS = sm.frontUnixTS
+		if data.minUnixSecond < sm.frontUnixSecond {
+			data.minUnixSecond = sm.frontUnixSecond
 		}
-		if data.maxUnixTS > sm.lastUnixTS {
-			data.maxUnixTS = sm.lastUnixTS
+		if data.maxUnixSecond > sm.lastUnixSecond {
+			data.maxUnixSecond = sm.lastUnixSecond
 		}
 		data.sys = append(data.sys, sm)
 	}
@@ -67,17 +67,12 @@ func readSystemMetricsAll(fpaths ...string) (data *analyzeData, err error) {
 // aggSystemMetrics aggregates all system metrics from 3+ nodes.
 func (data *analyzeData) aggSystemMetrics() error {
 	// monitor CSVs from multiple servers, and want them to have equal number of rows
-	// Truncate all rows before data.minUnixTS and after data.maxUnixTS
-	minTS := fmt.Sprintf("%d", data.minUnixTS)
-	maxTS := fmt.Sprintf("%d", data.maxUnixTS)
+	// Truncate all rows before data.minUnixSecond and after data.maxUnixSecond
+	minTS := fmt.Sprintf("%d", data.minUnixSecond)
+	maxTS := fmt.Sprintf("%d", data.maxUnixSecond)
 	data.sysAgg = dataframe.New()
 	for i := range data.sys {
-		// TODO: UNIX-TS from pkg/report data is time.Time.Unix
-		// UNIX-TS from psn.CSV data is time.Time.UnixNano
-		// we need some kind of way to combine those with matching timestamps
-		//
-		// this is unix nanoseconds
-		uc, err := data.sys[i].frame.Column("UNIX-TS")
+		uc, err := data.sys[i].frame.Column("UNIX-SECOND")
 		if err != nil {
 			return err
 		}
@@ -91,8 +86,8 @@ func (data *analyzeData) aggSystemMetrics() error {
 		}
 
 		for _, header := range data.sys[i].frame.Headers() {
-			if i > 0 && header == "UNIX-TS" {
-				// skip for other databases; we want to keep just one UNIX-TS column
+			if i > 0 && header == "UNIX-SECOND" {
+				// skip for other databases; we want to keep just one UNIX-SECOND column
 				continue
 			}
 
@@ -101,12 +96,12 @@ func (data *analyzeData) aggSystemMetrics() error {
 			if err != nil {
 				return err
 			}
-			// just keep rows from [min,maxUnixTS]
+			// just keep rows from [min,maxUnixSecond]
 			if err = col.Keep(minTSIdx, maxTSIdx+1); err != nil {
 				return err
 			}
 
-			if header == "UNIX-TS" {
+			if header == "UNIX-SECOND" {
 				if err = data.sysAgg.AddColumn(col); err != nil {
 					return err
 				}

@@ -291,11 +291,7 @@ func saveDataLatencyDistributionAll(cfg Config, st report.Stats) {
 }
 
 func saveDataLatencyThroughputTimeseries(cfg Config, st report.Stats, tsToClientN map[int64]int) {
-	// UNIX-TS from pkg/report data is time.Time.Unix
-	// UNIX-TS from psn.CSV data is time.Time.UnixNano
-	// we need some kind of way to combine those with matching timestamps
-	// SO keep UNIX-TS as time.Time.Unix, and convert psn.CSV data to time.Time.Unix
-	c1 := dataframe.NewColumn("UNIX-TS")
+	c1 := dataframe.NewColumn("UNIX-SECOND")
 	c2 := dataframe.NewColumn("CONTROL-CLIENT-NUM")
 	c3 := dataframe.NewColumn("AVG-LATENCY-MS")
 	c4 := dataframe.NewColumn("AVG-THROUGHPUT")

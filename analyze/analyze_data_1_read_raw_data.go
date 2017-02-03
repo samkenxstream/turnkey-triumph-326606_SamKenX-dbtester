@@ -21,8 +21,10 @@ import (
 	"github.com/gyuho/dataframe"
 )
 
+// sysMetricsColumnsToRead is already aggregated
+// and interpolated by unix second.
 var sysMetricsColumnsToRead = []string{
-	"UNIX-TS",
+	"UNIX-SECOND",
 	"VOLUNTARY-CTXT-SWITCHES",
 	"NON-VOLUNTARY-CTXT-SWITCHES",
 	"CPU-NUM",
@@ -44,10 +46,10 @@ var sysMetricsColumnsToRead = []string{
 }
 
 type testData struct {
-	filePath    string
-	frontUnixTS int64
-	lastUnixTS  int64
-	frame       dataframe.Frame
+	filePath        string
+	frontUnixSecond int64
+	lastUnixSecond  int64
+	frame           dataframe.Frame
 }
 
 // readSystemMetrics extracts only the columns that we need for analyze.
@@ -59,7 +61,7 @@ func readSystemMetrics(fpath string) (data testData, err error) {
 
 	data.filePath = fpath
 	data.frame = dataframe.New()
-	var unixTSColumn dataframe.Column
+	var unixSecondCol dataframe.Column
 	for _, name := range sysMetricsColumnsToRead {
 		var column dataframe.Column
 		column, err = originalFrame.Column(name)
@@ -69,18 +71,13 @@ func readSystemMetrics(fpath string) (data testData, err error) {
 		if err = data.frame.AddColumn(column); err != nil {
 			return testData{}, err
 		}
-		if name == "UNIX-TS" {
-			// TODO: UNIX-TS from pkg/report data is time.Time.Unix
-			// UNIX-TS from psn.CSV data is time.Time.UnixNano
-			// we need some kind of way to combine those with matching timestamps
-			//
-			// this unixTSColumn is unix nanoseconds
-			unixTSColumn = column
+		if name == "UNIX-SECOND" {
+			unixSecondCol = column
 		}
 	}
 
 	// get first(minimum) unix second
-	fv, ok := unixTSColumn.FrontNonNil()
+	fv, ok := unixSecondCol.FrontNonNil()
 	if !ok {
 		return testData{}, fmt.Errorf("FrontNonNil %s has empty Unix time %v", fpath, fv)
 	}
@@ -88,13 +85,13 @@ func readSystemMetrics(fpath string) (data testData, err error) {
 	if !ok {
 		return testData{}, fmt.Errorf("cannot String %v", fv)
 	}
-	data.frontUnixTS, err = strconv.ParseInt(fs, 10, 64)
+	data.frontUnixSecond, err = strconv.ParseInt(fs, 10, 64)
 	if err != nil {
 		return testData{}, err
 	}
 
 	// get last(maximum) unix second
-	bv, ok := unixTSColumn.BackNonNil()
+	bv, ok := unixSecondCol.BackNonNil()
 	if !ok {
 		return testData{}, fmt.Errorf("BackNonNil %s has empty Unix time %v", fpath, fv)
 	}
@@ -102,7 +99,7 @@ func readSystemMetrics(fpath string) (data testData, err error) {
 	if !ok {
 		return testData{}, fmt.Errorf("cannot String %v", bv)
 	}
-	data.lastUnixTS, err = strconv.ParseInt(bs, 10, 64)
+	data.lastUnixSecond, err = strconv.ParseInt(bs, 10, 64)
 	if err != nil {
 		return testData{}, err
 	}

@@ -32,7 +32,7 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 	}
 
 	var oldTSCol dataframe.Column
-	oldTSCol, err = tdf.Column("UNIX-TS")
+	oldTSCol, err = tdf.Column("UNIX-SECOND")
 	if err != nil {
 		return err
 	}
@@ -46,7 +46,7 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 	if !ok {
 		return fmt.Errorf("cannot Int64 %v", fv1)
 	}
-	data.benchMetrics.frontUnixTS = int64(ivv1)
+	data.benchMetrics.frontUnixSecond = int64(ivv1)
 
 	// get last(maximum) unix second
 	fv2, ok := oldTSCol.BackNonNil()
@@ -57,9 +57,9 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 	if !ok {
 		return fmt.Errorf("cannot Int64 %v", fv2)
 	}
-	data.benchMetrics.lastUnixTS = int64(ivv2)
+	data.benchMetrics.lastUnixSecond = int64(ivv2)
 
-	// UNIX-TS, CONTROL-CLIENT-NUM, AVG-LATENCY-MS, AVG-THROUGHPUT
+	// UNIX-SECOND, CONTROL-CLIENT-NUM, AVG-LATENCY-MS, AVG-THROUGHPUT
 	var oldControlClientNumCol dataframe.Column
 	oldControlClientNumCol, err = tdf.Column("CONTROL-CLIENT-NUM")
 	if err != nil {
@@ -81,7 +81,7 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 		latency    float64
 		throughput float64
 	}
-	tsToData := make(map[int64]rowData)
+	sec2Data := make(map[int64]rowData)
 	for i := 0; i < oldTSCol.Count(); i++ {
 		tv, err := oldTSCol.Value(i)
 		if err != nil {
@@ -120,54 +120,54 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 			return fmt.Errorf("cannot Float64 %v", hv)
 		}
 
-		if v, ok := tsToData[ts]; !ok {
-			tsToData[ts] = rowData{clientN: cn, latency: dataLat, throughput: dataThr}
+		if v, ok := sec2Data[ts]; !ok {
+			sec2Data[ts] = rowData{clientN: cn, latency: dataLat, throughput: dataThr}
 		} else {
 			oldCn := v.clientN
 			if oldCn != cn {
 				return fmt.Errorf("different client number with same timestamps! %d != %d", oldCn, cn)
 			}
-			tsToData[ts] = rowData{clientN: cn, latency: (v.latency + dataLat) / 2.0, throughput: (v.throughput + dataThr) / 2.0}
+			sec2Data[ts] = rowData{clientN: cn, latency: (v.latency + dataLat) / 2.0, throughput: (v.throughput + dataThr) / 2.0}
 		}
 	}
 
-	// UNIX-TS, CONTROL-CLIENT-NUM, AVG-LATENCY-MS, AVG-THROUGHPUT
+	// UNIX-SECOND, CONTROL-CLIENT-NUM, AVG-LATENCY-MS, AVG-THROUGHPUT
 	// aggregate duplicate benchmark timestamps with average values
 	// OR fill in missing timestamps with zero values
 	//
 	// expected row number
-	rowN := data.benchMetrics.lastUnixTS - data.benchMetrics.frontUnixTS + 1
-	newTSCol := dataframe.NewColumn("UNIX-TS")
+	expectedRowN := data.benchMetrics.lastUnixSecond - data.benchMetrics.frontUnixSecond + 1
+	newSecondCol := dataframe.NewColumn("UNIX-SECOND")
 	newControlClientNumCol := dataframe.NewColumn("CONTROL-CLIENT-NUM")
 	newAvgLatencyCol := dataframe.NewColumn("AVG-LATENCY-MS")
 	newAvgThroughputCol := dataframe.NewColumn("AVG-THROUGHPUT")
-	for i := int64(0); i < rowN; i++ {
-		ts := data.benchMetrics.frontUnixTS + i
-		newTSCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", ts)))
+	for i := int64(0); i < expectedRowN; i++ {
+		second := data.benchMetrics.frontUnixSecond + i
+		newSecondCol.PushBack(dataframe.NewStringValue(second))
 
-		v, ok := tsToData[ts]
+		v, ok := sec2Data[second]
 		if !ok {
-			prev, pok := tsToData[ts-1]
+			prev, pok := sec2Data[second-1]
 			if !pok {
-				prev, pok = tsToData[ts+1]
+				prev, pok = sec2Data[second+1]
 				if !pok {
-					return fmt.Errorf("benchmark missing a lot of rows around %d", ts)
+					return fmt.Errorf("benchmark missing a lot of rows around %d", second)
 				}
 			}
-			newControlClientNumCol.PushBack(dataframe.NewStringValue(prev.clientN))
 
-			// just add empty values
-			newAvgLatencyCol.PushBack(dataframe.NewStringValue("0.0"))
+			newControlClientNumCol.PushBack(dataframe.NewStringValue(prev.clientN))
+			newAvgLatencyCol.PushBack(dataframe.NewStringValue(0.0))
 			newAvgThroughputCol.PushBack(dataframe.NewStringValue(0))
-		} else {
-			newControlClientNumCol.PushBack(dataframe.NewStringValue(v.clientN))
-			newAvgLatencyCol.PushBack(dataframe.NewStringValue(v.latency))
-			newAvgThroughputCol.PushBack(dataframe.NewStringValue(v.throughput))
+			continue
 		}
+
+		newControlClientNumCol.PushBack(dataframe.NewStringValue(v.clientN))
+		newAvgLatencyCol.PushBack(dataframe.NewStringValue(v.latency))
+		newAvgThroughputCol.PushBack(dataframe.NewStringValue(v.throughput))
 	}
 
 	df := dataframe.New()
-	if err = df.AddColumn(newTSCol); err != nil {
+	if err = df.AddColumn(newSecondCol); err != nil {
 		return err
 	}
 	if err = df.AddColumn(newControlClientNumCol); err != nil {
