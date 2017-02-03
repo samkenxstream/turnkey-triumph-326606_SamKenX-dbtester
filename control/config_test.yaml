@@ -1,11 +1,6 @@
 database: etcdv3
 test_name: 01-etcdv3
 
-google_cloud_project_name: etcd-development
-google_cloud_storage_key_path: $HOME/gcloud-key.json
-google_cloud_storage_bucket_name: dbtester-results
-google_cloud_storage_sub_directory: 2016041501 
-
 peer_ips:
     - 10.240.0.13
     - 10.240.0.14
@@ -47,3 +42,11 @@ step2:
 # after benchmark
 step3:
     action: stop
+
+# upload logs
+step4:
+    upload_logs: true
+    google_cloud_project_name: etcd-development
+    google_cloud_storage_key_path: $HOME/gcloud-key.json
+    google_cloud_storage_bucket_name: dbtester-results
+    google_cloud_storage_sub_directory: 2016041501

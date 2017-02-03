@@ -39,18 +39,6 @@ func TestReadConfig(t *testing.T) {
 	if c.DatabasePort != 2379 {
 		t.Fatalf("unexpected %d", c.DatabasePort)
 	}
-	if c.GoogleCloudProjectName != "etcd-development" {
-		t.Fatalf("unexpected %s", c.GoogleCloudProjectName)
-	}
-	if c.GoogleCloudStorageKeyPath != "$HOME/gcloud-key.json" {
-		t.Fatalf("unexpected %s", c.GoogleCloudStorageKeyPath)
-	}
-	if c.GoogleCloudStorageBucketName != "dbtester-results" {
-		t.Fatalf("unexpected %s", c.GoogleCloudStorageBucketName)
-	}
-	if c.GoogleCloudStorageSubDirectory != "2016041501" {
-		t.Fatalf("unexpected %s", c.GoogleCloudStorageSubDirectory)
-	}
 
 	if c.Log != "control.log" {
 		t.Fatalf("unexpected %v", c.Log)
@@ -123,7 +111,24 @@ func TestReadConfig(t *testing.T) {
 	if c.Step2.RequestsPerSecond != 100 {
 		t.Fatalf("unexpected %d", c.Step2.RequestsPerSecond)
 	}
+
 	if c.Step3.Action != "stop" {
 		t.Fatalf("unexpected %v", c.Step3.Action)
+	}
+
+	if !c.Step4.UploadLogs {
+		t.Fatalf("unexpected %v", c.Step4.UploadLogs)
+	}
+	if c.Step4.GoogleCloudProjectName != "etcd-development" {
+		t.Fatalf("unexpected %s", c.Step4.GoogleCloudProjectName)
+	}
+	if c.Step4.GoogleCloudStorageKeyPath != "$HOME/gcloud-key.json" {
+		t.Fatalf("unexpected %s", c.Step4.GoogleCloudStorageKeyPath)
+	}
+	if c.Step4.GoogleCloudStorageBucketName != "dbtester-results" {
+		t.Fatalf("unexpected %s", c.Step4.GoogleCloudStorageBucketName)
+	}
+	if c.Step4.GoogleCloudStorageSubDirectory != "2016041501" {
+		t.Fatalf("unexpected %s", c.Step4.GoogleCloudStorageSubDirectory)
 	}
 }

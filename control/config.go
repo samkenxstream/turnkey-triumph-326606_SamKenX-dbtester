@@ -25,13 +25,8 @@ import (
 
 // Config configures dbtester control clients.
 type Config struct {
-	Database                       string `yaml:"database"`
-	TestName                       string `yaml:"test_name"`
-	GoogleCloudProjectName         string `yaml:"google_cloud_project_name"`
-	GoogleCloudStorageKey          string
-	GoogleCloudStorageKeyPath      string `yaml:"google_cloud_storage_key_path"`
-	GoogleCloudStorageBucketName   string `yaml:"google_cloud_storage_bucket_name"`
-	GoogleCloudStorageSubDirectory string `yaml:"google_cloud_storage_sub_directory"`
+	Database string `yaml:"database"`
+	TestName string `yaml:"test_name"`
 
 	PeerIPs      []string `yaml:"peer_ips"`
 	PeerIPString string
@@ -74,7 +69,16 @@ type Config struct {
 
 	Step3 struct {
 		Action string `yaml:"action"`
-	}
+	} `yaml:"step3"`
+
+	Step4 struct {
+		UploadLogs                     bool   `yaml:"upload_logs"`
+		GoogleCloudProjectName         string `yaml:"google_cloud_project_name"`
+		GoogleCloudStorageKey          string
+		GoogleCloudStorageKeyPath      string `yaml:"google_cloud_storage_key_path"`
+		GoogleCloudStorageBucketName   string `yaml:"google_cloud_storage_bucket_name"`
+		GoogleCloudStorageSubDirectory string `yaml:"google_cloud_storage_sub_directory"`
+	} `yaml:"step4"`
 }
 
 var (
@@ -133,10 +137,6 @@ func (cfg *Config) ToRequest() agentpb.Request {
 	req := agentpb.Request{}
 
 	req.TestName = cfg.TestName
-	req.GoogleCloudProjectName = cfg.GoogleCloudProjectName
-	req.GoogleCloudStorageKey = cfg.GoogleCloudStorageKey
-	req.GoogleCloudStorageBucketName = cfg.GoogleCloudStorageBucketName
-	req.GoogleCloudStorageSubDirectory = cfg.GoogleCloudStorageSubDirectory
 
 	switch cfg.Database {
 	case "etcdv2":
@@ -166,6 +166,12 @@ func (cfg *Config) ToRequest() agentpb.Request {
 	req.ZookeeperMaxClientCnxns = cfg.Step1.ZookeeperMaxClientCnxns
 
 	req.ClientNum = int64(cfg.Step2.Clients)
+
+	req.UploadLogs = cfg.Step4.UploadLogs
+	req.GoogleCloudProjectName = cfg.Step4.GoogleCloudProjectName
+	req.GoogleCloudStorageKey = cfg.Step4.GoogleCloudStorageKey
+	req.GoogleCloudStorageBucketName = cfg.Step4.GoogleCloudStorageBucketName
+	req.GoogleCloudStorageSubDirectory = cfg.Step4.GoogleCloudStorageSubDirectory
 
 	return req
 }
