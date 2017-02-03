@@ -20,6 +20,7 @@ import (
 	"path/filepath"
 
 	"github.com/coreos/dbtester/agent/agentpb"
+	"github.com/coreos/dbtester/pkg/netutil"
 	"github.com/coreos/dbtester/pkg/ntp"
 	"github.com/coreos/pkg/capnslog"
 	"github.com/gyuho/psn"
@@ -28,9 +29,10 @@ import (
 )
 
 type flags struct {
-	agentLog         string
-	databaseLog      string
-	systemMetricsCSV string
+	agentLog                     string
+	databaseLog                  string
+	systemMetricsCSV             string
+	systemMetricsCSVInterpolated string
 
 	javaExec   string
 	etcdExec   string
@@ -57,9 +59,14 @@ func init() {
 	if err != nil {
 		plog.Warningf("cannot get disk device mounted at '/' (%v)", err)
 	}
-	nt, err := psn.GetDefaultInterface()
+	nm, err := netutil.GetDefaultInterfaces()
 	if err != nil {
 		plog.Warningf("cannot detect default network interface (%v)", err)
+	}
+	var nt string
+	for k := range nm {
+		nt = k
+		break
 	}
 
 	Command.PersistentFlags().StringVar(&globalFlags.agentLog, "agent-log", filepath.Join(homeDir(), "agent.log"), "agent log path.")
