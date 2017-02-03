@@ -23,7 +23,7 @@ import (
 	"net"
 	"syscall"
 
-	"github.com/coreos/etcd/pkg/cpuutil"
+	"github.com/coreos/dbtester/pkg/cpuutil"
 )
 
 var errNoDefaultRoute = fmt.Errorf("could not find default route")

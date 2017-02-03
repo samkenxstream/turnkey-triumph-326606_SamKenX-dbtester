@@ -1,5 +1,5 @@
-hash: 37c2e1c77ebff89ce9c3c18607c70a384f09e122d335d345a8794a6c4eb1243d
-updated: 2017-02-03T00:30:14.444883937-08:00
+hash: 546a1ddd9d3befd7561d1cecac1ac9ef1d83d23b560f76ab8ccccc8791720dc5
+updated: 2017-02-03T02:23:00.543523672-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -97,7 +97,7 @@ imports:
 - name: github.com/gyuho/dataframe
   version: f9fe6fd9537b000e95362aefbcc0250679e1549b
 - name: github.com/gyuho/psn
-  version: ab7b49dddbe2aa6039443168555ef205c5de7145
+  version: da252a82a09e32d16d00aa53e3d05dacc79c0dd3
   subpackages:
   - schema
 - name: github.com/hashicorp/consul
