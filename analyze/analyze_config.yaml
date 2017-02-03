@@ -50,8 +50,8 @@ plot_list:
   x_axis: Second
   y_axis: Latency(millisecond)
   output_path_list:
-    - 2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-LATENCY-MS.svg
-    - 2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-LATENCY-MS.png
+  - 2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-LATENCY-MS.svg
+  - 2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-LATENCY-MS.png
 
 - column: AVG-THROUGHPUT
   x_axis: Second
@@ -92,8 +92,8 @@ plot_list:
   x_axis: Second
   y_axis: Disk Reads
   output_path_list:
-    - 2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-READS-COMPLETED-DELTA.svg
-    - 2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-READS-COMPLETED-DELTA.png
+  - 2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-READS-COMPLETED-DELTA.svg
+  - 2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-READS-COMPLETED-DELTA.png
 
 - column: AVG-SECTORS-READ-DELTA
   x_axis: Second
@@ -120,8 +120,8 @@ plot_list:
   x_axis: Second
   y_axis: Network Receive(bytes)
   output_path_list:
-    - 2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-RECEIVE-BYTES-NUM-DELTA.svg
-    - 2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-RECEIVE-BYTES-NUM-DELTA.png
+  - 2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-RECEIVE-BYTES-NUM-DELTA.svg
+  - 2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/AVG-RECEIVE-BYTES-NUM-DELTA.png
 
 - column: AVG-TRANSMIT-BYTES-NUM-DELTA
   x_axis: Second

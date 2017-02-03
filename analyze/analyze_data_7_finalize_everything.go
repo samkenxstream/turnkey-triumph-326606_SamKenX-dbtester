@@ -104,7 +104,7 @@ func do(configPath string) error {
 
 	// iterate each database's all data
 	for _, ad := range all.data {
-		// ad.benchMetrics.frame.Co
+		// per database
 		var (
 			readsCompletedDeltaSum   float64
 			sectorsReadDeltaSum      float64
@@ -412,6 +412,17 @@ func do(configPath string) error {
 	if err := allLatencyFrame.CSV(cfg.AllLatencyByKey); err != nil {
 		return err
 	}
+	allLatencyFrameCfg := PlotConfig{
+		Column:         "AVG-LATENCY-MS",
+		XAxis:          "Keys",
+		YAxis:          "Latency(millisecond)",
+		OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
+	}
+	allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.svg")
+	allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.png")
+	if err = all.draw(allLatencyFrameCfg, allLatencyFrame.Columns()...); err != nil {
+		return err
+	}
 
 	// KEYS, AVG-VMRSS-MB
 	plog.Printf("combining data to %q", cfg.AllMemoryByKey)
@@ -440,6 +451,17 @@ func do(configPath string) error {
 		}
 	}
 	if err := allMemoryFrame.CSV(cfg.AllMemoryByKey); err != nil {
+		return err
+	}
+	allMemoryFrameCfg := PlotConfig{
+		Column:         "AVG-VMRSS-MB",
+		XAxis:          "Keys",
+		YAxis:          "Memory(MB)",
+		OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
+	}
+	allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.svg")
+	allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.png")
+	if err = all.draw(allMemoryFrameCfg, allMemoryFrame.Columns()...); err != nil {
 		return err
 	}
 
