@@ -239,9 +239,11 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 		t.uploadSig <- struct{}{}
 		<-t.csvReady
 
-		if err := uploadLog(&globalFlags, t); err != nil {
-			plog.Warningf("uploadLog error %v", err)
-			return nil, err
+		if t.req.UploadLogs {
+			if err := uploadLog(&globalFlags, t); err != nil {
+				plog.Warningf("uploadLog error %v", err)
+				return nil, err
+			}
 		}
 
 		dbs, err := measureDatabasSize(globalFlags, r.Database)

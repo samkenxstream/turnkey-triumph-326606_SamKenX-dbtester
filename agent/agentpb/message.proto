@@ -38,43 +38,47 @@ message Request {
 	// TestName prefixes all logs to be generated in agent.
 	string testName = 5;
 
-	// GoogleCloudProjectName is the project name to use
-	// to upload logs.
-	string googleCloudProjectName = 6;
-
-	// GoogleCloudStorageKey is the key to be used to upload
-	// data and logs to Google Cloud Storage and others.
-	string googleCloudStorageKey = 7;
-
-	// GoogleCloudStorageBucketName is the bucket name to store all data and logs.
-	string googleCloudStorageBucketName = 8;
-
-	// GoogleCloudStorageSubDirectory is the sub-directory name to store data.
-	string googleCloudStorageSubDirectory = 9;
-
 	// ZookeeperMyID is myid that needs to be stored as a file in the remote machine.
-	uint32 zookeeperMyID   = 10;
+	uint32 zookeeperMyID = 6;
 
 	// EtcdSnapCount is 100,000 by default.
-	int64 etcdSnapCount = 11;
+	int64 etcdSnapCount = 7;
 
 	// EtcdQuotaSizeBytes is the backend size limit in bytes.
 	// 0 defaults to low space quota (2 GB).
-	int64 etcdQuotaSizeBytes = 12;
+	int64 etcdQuotaSizeBytes = 8;
 
 	// ZookeeperSnapCount is 100,000 by default.
-	int64 zookeeperSnapCount = 13;
+	int64 zookeeperSnapCount = 9;
 
 	// ZookeeperMaxClientCnxns limits the number of concurrent connections
 	// (at the socket level) that a single client, identified by IP address.
-	int64 zookeeperMaxClientCnxns = 14;
+	int64 zookeeperMaxClientCnxns = 10;
 
 	// ClientNum is current number of clients.
-	int64 clientNum = 15;
+	int64 clientNum = 11;
+
+	// UploadLogs is true if automatic log-uploading is needed.
+	// Currently only support Google Cloud Storage.
+	bool uploadLogs = 100;
+
+	// GoogleCloudProjectName is the project name to use
+	// to upload logs.
+	string googleCloudProjectName = 101;
+
+	// GoogleCloudStorageKey is the key to be used to upload
+	// data and logs to Google Cloud Storage and others.
+	string googleCloudStorageKey = 102;
+
+	// GoogleCloudStorageBucketName is the bucket name to store all data and logs.
+	string googleCloudStorageBucketName = 103;
+
+	// GoogleCloudStorageSubDirectory is the sub-directory name to store data.
+	string googleCloudStorageSubDirectory = 104;
 }
 
 message Response {
-	bool success  = 1;
+	bool success = 1;
 	
 	// Datasize is the data size of the database on disk.
 	// It measures after database is requested to stop.
