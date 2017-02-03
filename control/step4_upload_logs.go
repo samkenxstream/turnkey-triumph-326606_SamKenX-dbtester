@@ -52,7 +52,7 @@ func uploadToGoogle(path string, cfg Config) error {
 	if !exist(path) {
 		return fmt.Errorf("%q does not exist", path)
 	}
-	u, err := remotestorage.NewGoogleCloudStorage([]byte(cfg.GoogleCloudStorageKey), cfg.GoogleCloudProjectName)
+	u, err := remotestorage.NewGoogleCloudStorage([]byte(cfg.Step4.GoogleCloudStorageKey), cfg.Step4.GoogleCloudProjectName)
 	if err != nil {
 		return err
 	}
@@ -62,11 +62,11 @@ func uploadToGoogle(path string, cfg Config) error {
 	if !strings.HasPrefix(dstPath, cfg.TestName) {
 		dstPath = fmt.Sprintf("%s-%s", cfg.TestName, dstPath)
 	}
-	dstPath = filepath.Join(cfg.GoogleCloudStorageSubDirectory, dstPath)
+	dstPath = filepath.Join(cfg.Step4.GoogleCloudStorageSubDirectory, dstPath)
 
 	var uerr error
 	for k := 0; k < 30; k++ {
-		if uerr = u.UploadFile(cfg.GoogleCloudStorageBucketName, srcPath, dstPath); uerr != nil {
+		if uerr = u.UploadFile(cfg.Step4.GoogleCloudStorageBucketName, srcPath, dstPath); uerr != nil {
 			plog.Printf("#%d: error %v while uploading %q", k, uerr, path)
 			time.Sleep(2 * time.Second)
 			continue

@@ -20,9 +20,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/coreos/dbtester/agent/agentpb"
 	"github.com/coreos/dbtester/pkg/ntp"
-	"github.com/gyuho/dataframe"
 	"github.com/spf13/cobra"
 )
 
@@ -64,11 +62,13 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	bts, err := ioutil.ReadFile(cfg.GoogleCloudStorageKeyPath)
-	if err != nil {
-		return err
+	if cfg.Step4.UploadLogs {
+		bts, err := ioutil.ReadFile(cfg.Step4.GoogleCloudStorageKeyPath)
+		if err != nil {
+			return err
+		}
+		cfg.Step4.GoogleCloudStorageKey = string(bts)
 	}
-	cfg.GoogleCloudStorageKey = string(bts)
 
 	// protoc sorts the 'repeated' type data
 	// encode in string to enforce ordering of IPs
@@ -113,45 +113,18 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 		plog.Infof("stop response: %+v", idxToResponse[idx])
 	}
 
-	// cfg.DatasizeSummary
+	println()
+	time.Sleep(time.Second)
 	saveDatasizeSummary(cfg, idxToResponse)
 
-	println()
-	time.Sleep(3 * time.Second)
-	if err := step4UploadLogs(cfg); err != nil {
-		return err
+	if cfg.Step4.UploadLogs {
+		println()
+		time.Sleep(3 * time.Second)
+		if err := step4UploadLogs(cfg); err != nil {
+			return err
+		}
 	}
 
 	plog.Info("all done!")
 	return nil
-}
-
-var DataSummaryColumns = []string{
-	"INDEX",
-	"DATABASE-ENDPOINT",
-	"TOTAL-DATA-SIZE-BYTES-NUM",
-}
-
-func saveDatasizeSummary(cfg Config, idxToResponse map[int]agentpb.Response) {
-	c1 := dataframe.NewColumn(DataSummaryColumns[0])
-	c2 := dataframe.NewColumn(DataSummaryColumns[1])
-	c3 := dataframe.NewColumn(DataSummaryColumns[2])
-	for i := range cfg.DatabaseEndpoints {
-		c1.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", i)))
-		c2.PushBack(dataframe.NewStringValue(cfg.DatabaseEndpoints[i]))
-		c3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", idxToResponse[i].Datasize)))
-	}
-	fr := dataframe.New()
-	if err := fr.AddColumn(c1); err != nil {
-		plog.Fatal(err)
-	}
-	if err := fr.AddColumn(c2); err != nil {
-		plog.Fatal(err)
-	}
-	if err := fr.AddColumn(c3); err != nil {
-		plog.Fatal(err)
-	}
-	if err := fr.CSV(cfg.DatasizeSummary); err != nil {
-		plog.Fatal(err)
-	}
 }
