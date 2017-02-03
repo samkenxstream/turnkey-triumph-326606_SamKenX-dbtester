@@ -71,7 +71,8 @@ func init() {
 
 	Command.PersistentFlags().StringVar(&globalFlags.agentLog, "agent-log", filepath.Join(homeDir(), "agent.log"), "agent log path.")
 	Command.PersistentFlags().StringVar(&globalFlags.databaseLog, "database-log", filepath.Join(homeDir(), "database.log"), "Database log path.")
-	Command.PersistentFlags().StringVar(&globalFlags.systemMetricsCSV, "system-metrics-csv", filepath.Join(homeDir(), "system-metrics.csv"), "System metrics log path.")
+	Command.PersistentFlags().StringVar(&globalFlags.systemMetricsCSV, "system-metrics-csv", filepath.Join(homeDir(), "system-metrics.csv"), "Raw system metrics data path.")
+	Command.PersistentFlags().StringVar(&globalFlags.systemMetricsCSVInterpolated, "system-metrics-csv-interpolated", filepath.Join(homeDir(), "system-metrics-interpolated.csv"), "Interpolated system metrics data path.")
 
 	Command.PersistentFlags().StringVar(&globalFlags.javaExec, "java-exec", "/usr/bin/java", "Java executable binary path (needed for Zookeeper).")
 	Command.PersistentFlags().StringVar(&globalFlags.etcdExec, "etcd-exec", filepath.Join(os.Getenv("GOPATH"), "bin/etcd"), "etcd executable binary path.")

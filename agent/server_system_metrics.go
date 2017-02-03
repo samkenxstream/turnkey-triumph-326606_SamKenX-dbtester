@@ -52,11 +52,24 @@ func startMetrics(fs *flags, t *transporterServer) error {
 
 			case <-t.uploadSig:
 				plog.Infof("upload signal received; saving CSV at %q", t.metricsCSV.FilePath)
+
 				if err := t.metricsCSV.Save(); err != nil {
-					plog.Errorf("psn.CSV.Save error %v", err)
+					plog.Errorf("psn.CSV.Save(%q) error %v", t.metricsCSV.FilePath, err)
 				} else {
 					plog.Infof("CSV saved at %q", t.metricsCSV.FilePath)
 				}
+
+				interpolated, err := t.metricsCSV.Interpolate()
+				if err != nil {
+					plog.Fatalf("psn.CSV.Interpolate(%q) failed with %v", t.metricsCSV.FilePath, err)
+				}
+				interpolated.FilePath = fs.systemMetricsCSVInterpolated
+				if err := interpolated.Save(); err != nil {
+					plog.Errorf("psn.CSV.Save(%q) error %v", interpolated.FilePath, err)
+				} else {
+					plog.Infof("CSV saved at %q", interpolated.FilePath)
+				}
+
 				close(t.csvReady)
 				return
 
