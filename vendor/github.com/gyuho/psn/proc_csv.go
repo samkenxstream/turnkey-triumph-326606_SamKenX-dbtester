@@ -1,429 +1,261 @@
 package psn
 
 import (
-	"encoding/csv"
 	"fmt"
-	"strconv"
-
-	humanize "github.com/dustin/go-humanize"
+	"io/ioutil"
+	"time"
 )
 
-// CSV represents CSV data (header, rows, etc.).
-type CSV struct {
-	FilePath         string
-	PID              int64
-	DiskDevice       string
-	NetworkInterface string
+// Proc represents an entry of various system statistics.
+type Proc struct {
+	// UnixNanosecond is unix nano second when this Proc row gets created.
+	UnixNanosecond int64
 
-	Header      []string
-	HeaderIndex map[string]int
+	// UnixSecond is the converted Unix seconds from UnixNano.
+	UnixSecond int64
 
-	MinUnixTS int64
-	MaxUnixTS int64
+	PSEntry PSEntry
 
-	// ExtraPath contains extra information.
-	ExtraPath string
+	LoadAvg LoadAvg
 
-	// Rows are sorted by unix seconds.
-	Rows []Proc
+	DSEntry              DSEntry
+	ReadsCompletedDelta  uint64
+	SectorsReadDelta     uint64
+	WritesCompletedDelta uint64
+	SectorsWrittenDelta  uint64
+
+	NSEntry               NSEntry
+	ReceiveBytesDelta     string
+	ReceivePacketsDelta   uint64
+	TransmitBytesDelta    string
+	TransmitPacketsDelta  uint64
+	ReceiveBytesNumDelta  uint64
+	TransmitBytesNumDelta uint64
+
+	// Extra exists to support customized data query.
+	Extra []byte
 }
 
-// NewCSV returns a new CSV.
-func NewCSV(fpath string, pid int64, diskDevice string, networkInterface string, extraPath string) *CSV {
-	return &CSV{
-		FilePath:         fpath,
-		PID:              pid,
-		DiskDevice:       diskDevice,
-		NetworkInterface: networkInterface,
+type ProcSlice []Proc
 
-		Header:      ProcHeader,
-		HeaderIndex: ProcHeaderIndex,
-
-		MinUnixTS: 0,
-		MaxUnixTS: 0,
-
-		ExtraPath: extraPath,
-		Rows:      []Proc{},
+func (p ProcSlice) Len() int      { return len(p) }
+func (p ProcSlice) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
+func (p ProcSlice) Less(i, j int) bool {
+	if p[i].UnixNanosecond != p[j].UnixNanosecond {
+		return p[i].UnixNanosecond < p[j].UnixNanosecond
 	}
+	return p[i].UnixSecond < p[j].UnixSecond
 }
 
-// Add is to be called periodically to add a row to CSV.
-// It only appends to CSV. And it estimates empty rows by unix seconds.
-func (c *CSV) Add() error {
-	cur, err := GetProc(
-		WithPID(c.PID),
-		WithDiskDevice(c.DiskDevice),
-		WithNetworkInterface(c.NetworkInterface),
-		WithExtraPath(c.ExtraPath),
+// GetProc returns current 'Proc' data.
+// PID is required.
+// Disk device, network interface, extra path are optional.
+func GetProc(opts ...FilterFunc) (Proc, error) {
+	ft := &EntryFilter{}
+	ft.applyOpts(opts)
+
+	if ft.PID == 0 {
+		return Proc{}, fmt.Errorf("unknown PID %d", ft.PID)
+	}
+	ts := time.Now().UnixNano()
+	proc := Proc{UnixNanosecond: ts, UnixSecond: ConvertUnixNano(ts)}
+
+	errc := make(chan error)
+	go func() {
+		// get process stats
+		ets, err := GetPS(WithPID(ft.PID))
+		if err != nil {
+			errc <- err
+			return
+		}
+		if len(ets) != 1 {
+			errc <- fmt.Errorf("len(PID=%d entries) != 1 (got %d)", ft.PID, len(ets))
+			return
+		}
+		proc.PSEntry = ets[0]
+		errc <- nil
+	}()
+
+	go func() {
+		lvg, err := GetProcLoadAvg()
+		if err != nil {
+			errc <- err
+			return
+		}
+		proc.LoadAvg = lvg
+		errc <- nil
+	}()
+
+	if ft.DiskDevice != "" {
+		go func() {
+			// get diskstats
+			ds, err := GetDS()
+			if err != nil {
+				errc <- err
+				return
+			}
+			for _, elem := range ds {
+				if elem.Device == ft.DiskDevice {
+					proc.DSEntry = elem
+					break
+				}
+			}
+			errc <- nil
+		}()
+	}
+
+	if ft.NetworkInterface != "" {
+		go func() {
+			// get network I/O stats
+			ns, err := GetNS()
+			if err != nil {
+				errc <- err
+				return
+			}
+			for _, elem := range ns {
+				if elem.Interface == ft.NetworkInterface {
+					proc.NSEntry = elem
+					break
+				}
+			}
+			errc <- nil
+		}()
+	}
+
+	if ft.ExtraPath != "" {
+		go func() {
+			f, err := openToRead(ft.ExtraPath)
+			if err != nil {
+				errc <- err
+				return
+			}
+			b, err := ioutil.ReadAll(f)
+			if err != nil {
+				errc <- err
+				return
+			}
+			proc.Extra = b
+			errc <- nil
+		}()
+	}
+
+	cnt := 0
+	for cnt != len(opts)+1 { // include load avg query
+		err := <-errc
+		if err != nil {
+			return Proc{}, err
+		}
+		cnt++
+	}
+
+	if ft.DiskDevice != "" {
+		if proc.DSEntry.Device == "" {
+			return Proc{}, fmt.Errorf("disk device %q was not found", ft.DiskDevice)
+		}
+	}
+	if ft.NetworkInterface != "" {
+		if proc.NSEntry.Interface == "" {
+			return Proc{}, fmt.Errorf("network interface %q was not found", ft.NetworkInterface)
+		}
+	}
+	return proc, nil
+}
+
+var (
+	// ProcHeader lists all Proc CSV columns.
+	ProcHeader = append([]string{"UNIX-NANOSECOND", "UNIX-SECOND"}, columnsPSEntry...)
+
+	// ProcHeaderIndex maps each Proc column name to its index in row.
+	ProcHeaderIndex = make(map[string]int)
+)
+
+func init() {
+	// more columns to 'ProcHeader'
+	ProcHeader = append(ProcHeader,
+		"LOAD-AVERAGE-1-MINUTE",
+		"LOAD-AVERAGE-5-MINUTE",
+		"LOAD-AVERAGE-15-MINUTE",
 	)
-	if err != nil {
-		return err
+	ProcHeader = append(ProcHeader, columnsDSEntry...)
+	ProcHeader = append(ProcHeader, columnsNSEntry...)
+	ProcHeader = append(ProcHeader,
+		"READS-COMPLETED-DELTA",
+		"SECTORS-READ-DELTA",
+		"WRITES-COMPLETED-DELTA",
+		"SECTORS-WRITTEN-DELTA",
+
+		"RECEIVE-BYTES-DELTA",
+		"RECEIVE-PACKETS-DELTA",
+		"TRANSMIT-BYTES-DELTA",
+		"TRANSMIT-PACKETS-DELTA",
+		"RECEIVE-BYTES-NUM-DELTA",
+		"TRANSMIT-BYTES-NUM-DELTA",
+
+		"EXTRA",
+	)
+
+	for i, v := range ProcHeader {
+		ProcHeaderIndex[v] = i
 	}
-
-	// first call; just append and return
-	if len(c.Rows) == 0 {
-		c.MinUnixTS = cur.UnixTS
-		c.MaxUnixTS = cur.UnixTS
-		c.Rows = []Proc{cur}
-		return nil
-	}
-
-	// compare with previous row before append
-	prev := c.Rows[len(c.Rows)-1]
-	if prev.UnixTS >= cur.UnixTS {
-		// ignore data with wrong seconds
-		return nil
-	}
-
-	// 'Add' only appends, so later unix should be max
-	c.MaxUnixTS = cur.UnixTS
-
-	if cur.UnixTS-prev.UnixTS == 1 {
-		cur.ReadsCompletedDelta = cur.DSEntry.ReadsCompleted - prev.DSEntry.ReadsCompleted
-		cur.SectorsReadDelta = cur.DSEntry.SectorsRead - prev.DSEntry.SectorsRead
-		cur.WritesCompletedDelta = cur.DSEntry.WritesCompleted - prev.DSEntry.WritesCompleted
-		cur.SectorsWrittenDelta = cur.DSEntry.SectorsWritten - prev.DSEntry.SectorsWritten
-
-		cur.ReceiveBytesNumDelta = cur.NSEntry.ReceiveBytesNum - prev.NSEntry.ReceiveBytesNum
-		cur.TransmitBytesNumDelta = cur.NSEntry.TransmitBytesNum - prev.NSEntry.TransmitBytesNum
-		cur.ReceivePacketsDelta = cur.NSEntry.ReceivePackets - prev.NSEntry.ReceivePackets
-		cur.TransmitPacketsDelta = cur.NSEntry.TransmitPackets - prev.NSEntry.TransmitPackets
-
-		cur.ReceiveBytesDelta = humanize.Bytes(cur.ReceiveBytesNumDelta)
-		cur.TransmitBytesDelta = humanize.Bytes(cur.TransmitBytesNumDelta)
-
-		c.Rows = append(c.Rows, cur)
-		return nil
-	}
-
-	// there are empty rows between; estimate and fill-in
-	tsDelta := cur.UnixTS - prev.UnixTS
-	nexts := make([]Proc, 0, tsDelta+1)
-
-	// estimate the previous ones based on 'prev' and 'cur'
-	mid := prev
-
-	// Extra; just use the previous value
-	mid.Extra = prev.Extra
-
-	// PSEntry; just use average since some metrisc might decrease
-	mid.PSEntry.FD = prev.PSEntry.FD + (cur.PSEntry.FD-prev.PSEntry.FD)/2
-	mid.PSEntry.Threads = prev.PSEntry.Threads + (cur.PSEntry.Threads-prev.PSEntry.Threads)/2
-	mid.PSEntry.CPUNum = prev.PSEntry.CPUNum + (cur.PSEntry.CPUNum-prev.PSEntry.CPUNum)/2
-	mid.PSEntry.VMRSSNum = prev.PSEntry.VMRSSNum + (cur.PSEntry.VMRSSNum-prev.PSEntry.VMRSSNum)/2
-	mid.PSEntry.VMSizeNum = prev.PSEntry.VMSizeNum + (cur.PSEntry.VMSizeNum-prev.PSEntry.VMSizeNum)/2
-	mid.PSEntry.CPU = fmt.Sprintf("%3.2f %%", mid.PSEntry.CPUNum)
-	mid.PSEntry.VMRSS = humanize.Bytes(mid.PSEntry.VMRSSNum)
-	mid.PSEntry.VMSize = humanize.Bytes(mid.PSEntry.VMSizeNum)
-
-	// DSEntry; calculate delta assuming that metrics are cumulative
-	mid.ReadsCompletedDelta = (cur.DSEntry.ReadsCompleted - prev.DSEntry.ReadsCompleted) / uint64(tsDelta)
-	mid.SectorsReadDelta = (cur.DSEntry.SectorsRead - prev.DSEntry.SectorsRead) / uint64(tsDelta)
-	mid.WritesCompletedDelta = (cur.DSEntry.WritesCompleted - prev.DSEntry.WritesCompleted) / uint64(tsDelta)
-	mid.SectorsWrittenDelta = (cur.DSEntry.SectorsWritten - prev.DSEntry.SectorsWritten) / uint64(tsDelta)
-	timeSpentOnReadingMsDelta := (cur.DSEntry.TimeSpentOnReadingMs - prev.DSEntry.TimeSpentOnReadingMs) / uint64(tsDelta)
-	timeSpentOnWritingMsDelta := (cur.DSEntry.TimeSpentOnWritingMs - prev.DSEntry.TimeSpentOnWritingMs) / uint64(tsDelta)
-
-	// NSEntry; calculate delta assuming that metrics are cumulative
-	mid.ReceiveBytesNumDelta = (cur.NSEntry.ReceiveBytesNum - prev.NSEntry.ReceiveBytesNum) / uint64(tsDelta)
-	mid.ReceiveBytesDelta = humanize.Bytes(mid.ReceiveBytesNumDelta)
-	mid.ReceivePacketsDelta = (cur.NSEntry.ReceivePackets - prev.NSEntry.ReceivePackets) / uint64(tsDelta)
-	mid.TransmitBytesNumDelta = (cur.NSEntry.TransmitBytesNum - prev.NSEntry.TransmitBytesNum) / uint64(tsDelta)
-	mid.TransmitBytesDelta = humanize.Bytes(mid.TransmitBytesNumDelta)
-	mid.TransmitPacketsDelta = (cur.NSEntry.TransmitPackets - prev.NSEntry.TransmitPackets) / uint64(tsDelta)
-
-	for i := int64(1); i < tsDelta; i++ {
-		ev := mid
-		ev.UnixTS = prev.UnixTS + i
-
-		ev.DSEntry.ReadsCompleted += mid.ReadsCompletedDelta * uint64(i)
-		ev.DSEntry.SectorsRead += mid.SectorsReadDelta * uint64(i)
-		ev.DSEntry.WritesCompleted += mid.WritesCompletedDelta * uint64(i)
-		ev.DSEntry.SectorsWritten += mid.SectorsWrittenDelta * uint64(i)
-		ev.DSEntry.TimeSpentOnReadingMs += timeSpentOnReadingMsDelta * uint64(i)
-		ev.DSEntry.TimeSpentOnWritingMs += timeSpentOnWritingMsDelta * uint64(i)
-		ev.DSEntry.TimeSpentOnReading = humanizeDurationMs(ev.DSEntry.TimeSpentOnReadingMs)
-		ev.DSEntry.TimeSpentOnWriting = humanizeDurationMs(ev.DSEntry.TimeSpentOnWritingMs)
-
-		ev.NSEntry.ReceiveBytesNum += mid.ReceiveBytesNumDelta * uint64(i)
-		ev.NSEntry.ReceiveBytes = humanize.Bytes(ev.NSEntry.ReceiveBytesNum)
-		ev.NSEntry.ReceivePackets += mid.ReceivePacketsDelta * uint64(i)
-		ev.NSEntry.TransmitBytesNum += mid.TransmitBytesNumDelta * uint64(i)
-		ev.NSEntry.TransmitBytes = humanize.Bytes(ev.NSEntry.TransmitBytesNum)
-		ev.NSEntry.TransmitPackets += mid.TransmitPacketsDelta * uint64(i)
-
-		nexts = append(nexts, ev)
-	}
-
-	// now previous entry is estimated; update 'cur' Delta metrics
-	realPrev := nexts[len(nexts)-1]
-
-	cur.ReadsCompletedDelta = cur.DSEntry.ReadsCompleted - realPrev.DSEntry.ReadsCompleted
-	cur.SectorsReadDelta = cur.DSEntry.SectorsRead - realPrev.DSEntry.SectorsRead
-	cur.WritesCompletedDelta = cur.DSEntry.WritesCompleted - realPrev.DSEntry.WritesCompleted
-	cur.SectorsWrittenDelta = cur.DSEntry.SectorsWritten - realPrev.DSEntry.SectorsWritten
-
-	cur.ReceiveBytesNumDelta = cur.NSEntry.ReceiveBytesNum - realPrev.NSEntry.ReceiveBytesNum
-	cur.TransmitBytesNumDelta = cur.NSEntry.TransmitBytesNum - realPrev.NSEntry.TransmitBytesNum
-	cur.ReceivePacketsDelta = cur.NSEntry.ReceivePackets - realPrev.NSEntry.ReceivePackets
-	cur.TransmitPacketsDelta = cur.NSEntry.TransmitPackets - realPrev.NSEntry.TransmitPackets
-
-	cur.ReceiveBytesDelta = humanize.Bytes(cur.ReceiveBytesNumDelta)
-	cur.TransmitBytesDelta = humanize.Bytes(cur.TransmitBytesNumDelta)
-
-	c.Rows = append(c.Rows, append(nexts, cur)...)
-	return nil
 }
 
-// Save saves CSV to disk.
-func (c *CSV) Save() error {
-	f, err := openToAppend(c.FilePath)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
+// ToRow converts 'Proc' to string slice.
+// Make sure to change this whenever 'Proc' fields are updated.
+func (p *Proc) ToRow() (row []string) {
+	row = make([]string, len(ProcHeader))
+	row[0] = fmt.Sprintf("%d", p.UnixNanosecond) // UNIX-NANOSECOND
+	row[1] = fmt.Sprintf("%d", p.UnixSecond)     // UNIX-SECOND
 
-	wr := csv.NewWriter(f)
-	if err := wr.Write(c.Header); err != nil {
-		return err
-	}
+	row[2] = p.PSEntry.Program                       // PROGRAM
+	row[3] = p.PSEntry.State                         // STATE
+	row[4] = fmt.Sprintf("%d", p.PSEntry.PID)        // PID
+	row[5] = fmt.Sprintf("%d", p.PSEntry.PPID)       // PPID
+	row[6] = p.PSEntry.CPU                           // CPU
+	row[7] = p.PSEntry.VMRSS                         // VMRSS
+	row[8] = p.PSEntry.VMSize                        // VMSIZE
+	row[9] = fmt.Sprintf("%d", p.PSEntry.FD)         // FD
+	row[10] = fmt.Sprintf("%d", p.PSEntry.Threads)   // THREADS
+	row[11] = fmt.Sprintf("%d", p.PSEntry.Threads)   // VOLUNTARY-CTXT-SWITCHES
+	row[12] = fmt.Sprintf("%d", p.PSEntry.Threads)   // NON-VOLUNTARY-CTXT-SWITCHES
+	row[13] = fmt.Sprintf("%3.2f", p.PSEntry.CPUNum) // CPU-NUM
+	row[14] = fmt.Sprintf("%d", p.PSEntry.VMRSSNum)  // VMRSS-NUM
+	row[15] = fmt.Sprintf("%d", p.PSEntry.VMSizeNum) // VMSIZE-NUM
 
-	rows := make([][]string, len(c.Rows))
-	for i, row := range c.Rows {
-		rows[i] = row.ToRow()
-	}
-	if err := wr.WriteAll(rows); err != nil {
-		return err
-	}
+	row[16] = fmt.Sprintf("%3.2f", p.LoadAvg.LoadAvg1Minute)  // LOAD-AVERAGE-1-MINUTE
+	row[17] = fmt.Sprintf("%3.2f", p.LoadAvg.LoadAvg5Minute)  // LOAD-AVERAGE-5-MINUTE
+	row[18] = fmt.Sprintf("%3.2f", p.LoadAvg.LoadAvg15Minute) // LOAD-AVERAGE-15-MINUTE
 
-	wr.Flush()
-	return wr.Error()
-}
+	row[19] = p.DSEntry.Device                                  // DEVICE
+	row[20] = fmt.Sprintf("%d", p.DSEntry.ReadsCompleted)       // READS-COMPLETED
+	row[21] = fmt.Sprintf("%d", p.DSEntry.SectorsRead)          // SECTORS-READ
+	row[22] = p.DSEntry.TimeSpentOnReading                      // TIME(READS)
+	row[23] = fmt.Sprintf("%d", p.DSEntry.WritesCompleted)      // WRITES-COMPLETED
+	row[24] = fmt.Sprintf("%d", p.DSEntry.SectorsWritten)       // SECTORS-WRITTEN
+	row[25] = p.DSEntry.TimeSpentOnWriting                      // TIME(WRITES)
+	row[26] = fmt.Sprintf("%d", p.DSEntry.TimeSpentOnReadingMs) // MILLISECONDS(READS)
+	row[27] = fmt.Sprintf("%d", p.DSEntry.TimeSpentOnWritingMs) // MILLISECONDS(WRITES)
 
-// ReadCSV reads a CSV file and convert to 'CSV'.
-func ReadCSV(fpath string) (*CSV, error) {
-	f, err := openToRead(fpath)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
+	row[28] = p.NSEntry.Interface                           // INTERFACE
+	row[29] = p.NSEntry.ReceiveBytes                        // RECEIVE-BYTES
+	row[30] = fmt.Sprintf("%d", p.NSEntry.ReceivePackets)   // RECEIVE-PACKETS
+	row[31] = p.NSEntry.TransmitBytes                       // TRANSMIT-BYTES
+	row[32] = fmt.Sprintf("%d", p.NSEntry.TransmitPackets)  // TRANSMIT-PACKETS
+	row[33] = fmt.Sprintf("%d", p.NSEntry.ReceiveBytesNum)  // RECEIVE-BYTES-NUM
+	row[34] = fmt.Sprintf("%d", p.NSEntry.TransmitBytesNum) // TRANSMIT-BYTES-NUM
 
-	rd := csv.NewReader(f)
+	row[35] = fmt.Sprintf("%d", p.ReadsCompletedDelta)  // READS-COMPLETED-DELTA
+	row[36] = fmt.Sprintf("%d", p.SectorsReadDelta)     // SECTORS-READ-DELTA
+	row[37] = fmt.Sprintf("%d", p.WritesCompletedDelta) // WRITES-COMPLETED-DELTA
+	row[38] = fmt.Sprintf("%d", p.SectorsWrittenDelta)  // SECTORS-WRITTEN-DELTA
 
-	// in case that rows have Deltaerent number of fields
-	rd.FieldsPerRecord = -1
+	row[39] = p.ReceiveBytesDelta                        // RECEIVE-BYTES-DELTA
+	row[40] = fmt.Sprintf("%d", p.ReceivePacketsDelta)   // RECEIVE-PACKETS-DELTA
+	row[41] = p.TransmitBytesDelta                       // TRANSMIT-BYTES-DELTA
+	row[42] = fmt.Sprintf("%d", p.TransmitPacketsDelta)  // TRANSMIT-PACKETS-DELTA
+	row[43] = fmt.Sprintf("%d", p.ReceiveBytesNumDelta)  // RECEIVE-BYTES-NUM-DELTA
+	row[44] = fmt.Sprintf("%d", p.TransmitBytesNumDelta) // TRANSMIT-BYTES-NUM-DELTA
 
-	rows, err := rd.ReadAll()
-	if err != nil {
-		return nil, err
-	}
-	if len(rows) <= 1 {
-		return nil, fmt.Errorf("expected len(rows)>1, got %d", len(rows))
-	}
-	if rows[0][0] != "UNIX-TS" {
-		return nil, fmt.Errorf("expected header at top, got %+v", rows[0])
-	}
+	row[45] = string(p.Extra) // EXTRA
 
-	// remove header
-	rows = rows[1:len(rows):len(rows)]
-	min, err := strconv.ParseInt(rows[0][0], 10, 64)
-	if err != nil {
-		return nil, err
-	}
-	max, err := strconv.ParseInt(rows[len(rows)-1][0], 10, 64)
-	if err != nil {
-		return nil, err
-	}
-	c := &CSV{
-		FilePath:         fpath,
-		PID:              0,
-		DiskDevice:       "",
-		NetworkInterface: "",
-
-		Header:      ProcHeader,
-		HeaderIndex: ProcHeaderIndex,
-		MinUnixTS:   min,
-		MaxUnixTS:   max,
-
-		Rows: make([]Proc, 0, len(rows)),
-	}
-	for _, row := range rows {
-		ts, err := strconv.ParseInt(row[ProcHeaderIndex["UNIX-TS"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		pid, err := strconv.ParseInt(row[ProcHeaderIndex["PID"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		ppid, err := strconv.ParseInt(row[ProcHeaderIndex["PPID"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		fd, err := strconv.ParseUint(row[ProcHeaderIndex["FD"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		threads, err := strconv.ParseUint(row[ProcHeaderIndex["THREADS"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		volCtxNum, err := strconv.ParseUint(row[ProcHeaderIndex["VOLUNTARY-CTXT-SWITCHES"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		nonVolCtxNum, err := strconv.ParseUint(row[ProcHeaderIndex["NON-VOLUNTARY-CTXT-SWITCHES"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		cpuNum, err := strconv.ParseFloat(row[ProcHeaderIndex["CPU-NUM"]], 64)
-		if err != nil {
-			return nil, err
-		}
-		vmRssNum, err := strconv.ParseUint(row[ProcHeaderIndex["VMRSS-NUM"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		vmSizeNum, err := strconv.ParseUint(row[ProcHeaderIndex["VMSIZE-NUM"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-
-		readsCompleted, err := strconv.ParseUint(row[ProcHeaderIndex["READS-COMPLETED"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		sectorsRead, err := strconv.ParseUint(row[ProcHeaderIndex["SECTORS-READ"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		writesCompleted, err := strconv.ParseUint(row[ProcHeaderIndex["WRITES-COMPLETED"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		sectorsWritten, err := strconv.ParseUint(row[ProcHeaderIndex["SECTORS-WRITTEN"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		timeSpentOnReadingMs, err := strconv.ParseUint(row[ProcHeaderIndex["MILLISECONDS(READS)"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		timeSpentOnWritingMs, err := strconv.ParseUint(row[ProcHeaderIndex["MILLISECONDS(WRITES)"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-
-		readsCompletedDelta, err := strconv.ParseUint(row[ProcHeaderIndex["READS-COMPLETED-DELTA"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		sectorsReadDelta, err := strconv.ParseUint(row[ProcHeaderIndex["SECTORS-READ-DELTA"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		writesCompletedDelta, err := strconv.ParseUint(row[ProcHeaderIndex["WRITES-COMPLETED-DELTA"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		sectorsWrittenDelta, err := strconv.ParseUint(row[ProcHeaderIndex["SECTORS-WRITTEN-DELTA"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-
-		receivePackets, err := strconv.ParseUint(row[ProcHeaderIndex["RECEIVE-PACKETS"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		transmitPackets, err := strconv.ParseUint(row[ProcHeaderIndex["TRANSMIT-PACKETS"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		receiveBytesNum, err := strconv.ParseUint(row[ProcHeaderIndex["RECEIVE-BYTES-NUM"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		transmitBytesNum, err := strconv.ParseUint(row[ProcHeaderIndex["TRANSMIT-BYTES-NUM"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-
-		receivePacketsDelta, err := strconv.ParseUint(row[ProcHeaderIndex["RECEIVE-PACKETS-DELTA"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		transmitPacketsDelta, err := strconv.ParseUint(row[ProcHeaderIndex["TRANSMIT-PACKETS-DELTA"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		receiveBytesNumDelta, err := strconv.ParseUint(row[ProcHeaderIndex["RECEIVE-BYTES-NUM-DELTA"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		transmitBytesNumDelta, err := strconv.ParseUint(row[ProcHeaderIndex["TRANSMIT-BYTES-NUM-DELTA"]], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-
-		proc := Proc{
-			UnixTS: ts,
-			PSEntry: PSEntry{
-				Program:                  row[ProcHeaderIndex["PROGRAM"]],
-				State:                    row[ProcHeaderIndex["STATE"]],
-				PID:                      pid,
-				PPID:                     ppid,
-				CPU:                      row[ProcHeaderIndex["CPU"]],
-				VMRSS:                    row[ProcHeaderIndex["VMRSS"]],
-				VMSize:                   row[ProcHeaderIndex["VMSIZE"]],
-				FD:                       fd,
-				Threads:                  threads,
-				VoluntaryCtxtSwitches:    volCtxNum,
-				NonvoluntaryCtxtSwitches: nonVolCtxNum,
-				CPUNum:    cpuNum,
-				VMRSSNum:  vmRssNum,
-				VMSizeNum: vmSizeNum,
-			},
-
-			DSEntry: DSEntry{
-				Device:               row[ProcHeaderIndex["DEVICE"]],
-				ReadsCompleted:       readsCompleted,
-				SectorsRead:          sectorsRead,
-				TimeSpentOnReading:   row[ProcHeaderIndex["TIME(READS)"]],
-				WritesCompleted:      writesCompleted,
-				SectorsWritten:       sectorsWritten,
-				TimeSpentOnWriting:   row[ProcHeaderIndex["TIME(WRITES)"]],
-				TimeSpentOnReadingMs: timeSpentOnReadingMs,
-				TimeSpentOnWritingMs: timeSpentOnWritingMs,
-			},
-			ReadsCompletedDelta:  readsCompletedDelta,
-			SectorsReadDelta:     sectorsReadDelta,
-			WritesCompletedDelta: writesCompletedDelta,
-			SectorsWrittenDelta:  sectorsWrittenDelta,
-
-			NSEntry: NSEntry{
-				Interface:        row[ProcHeaderIndex["INTERFACE"]],
-				ReceiveBytes:     row[ProcHeaderIndex["RECEIVE-BYTES"]],
-				ReceivePackets:   receivePackets,
-				TransmitBytes:    row[ProcHeaderIndex["TRANSMIT-BYTES"]],
-				TransmitPackets:  transmitPackets,
-				ReceiveBytesNum:  receiveBytesNum,
-				TransmitBytesNum: transmitBytesNum,
-			},
-			ReceiveBytesDelta:     row[ProcHeaderIndex["RECEIVE-BYTES-DELTA"]],
-			ReceivePacketsDelta:   receivePacketsDelta,
-			TransmitBytesDelta:    row[ProcHeaderIndex["TRANSMIT-BYTES-DELTA"]],
-			TransmitPacketsDelta:  transmitPacketsDelta,
-			ReceiveBytesNumDelta:  receiveBytesNumDelta,
-			TransmitBytesNumDelta: transmitBytesNumDelta,
-
-			Extra: []byte(row[ProcHeaderIndex["EXTRA"]]),
-		}
-		c.PID = proc.PSEntry.PID
-		c.DiskDevice = proc.DSEntry.Device
-		c.NetworkInterface = proc.NSEntry.Interface
-
-		c.Rows = append(c.Rows, proc)
-	}
-
-	return c, nil
+	return
 }

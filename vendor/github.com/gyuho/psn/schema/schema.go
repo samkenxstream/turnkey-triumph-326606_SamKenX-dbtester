@@ -8,6 +8,8 @@ type RawDataType int
 
 const (
 	TypeBytes RawDataType = iota
+	TypeInt64
+	TypeFloat64
 	TypeTimeMicroseconds
 	TypeTimeSeconds
 	TypeIPAddress
@@ -85,6 +87,47 @@ var NetTCP = RawData{
 		"rem_address":   TypeIPAddress,
 		"st":            TypeStatus,
 	},
+}
+
+// TopCommandRow represents a row in 'top' command output.
+// (See http://man7.org/linux/man-pages/man1/top.1.html).
+var TopCommandRow = RawData{
+	IsYAML: false,
+	Columns: []Column{
+		{"PID", "pid of the process", reflect.Int64},
+		{"USER", "user name", reflect.String},
+		{"PR", "priority", reflect.String},
+		{"NI", "nice value of the task", reflect.String},
+		{"VIRT", "total amount  of virtual memory used by the task (in KiB)", reflect.String},
+		{"RES", "non-swapped physical memory a task is using (in KiB)", reflect.String},
+		{"SHR", "amount of shared memory available to a task, not all of which is typically resident (in KiB)", reflect.String},
+		{"S", "process status", reflect.String},
+		{"CPUPercent", "%CPU", reflect.Float64},
+		{"MEMPercent", "%MEM", reflect.Float64},
+		{"TIME", "CPU time (TIME+)", reflect.String},
+		{"COMMAND", "command", reflect.String},
+	},
+	ColumnsToParse: map[string]RawDataType{
+		"S":    TypeStatus,
+		"VIRT": TypeBytes,
+		"RES":  TypeBytes,
+		"SHR":  TypeBytes,
+	},
+}
+
+// LoadAvg represents '/proc/loadavg'
+// (See http://man7.org/linux/man-pages/man5/proc.5.html).
+var LoadAvg = RawData{
+	IsYAML: false,
+	Columns: []Column{
+		{"load-avg-1-minute", "total uptime in seconds", reflect.Float64},
+		{"load-avg-5-minute", "total uptime in seconds", reflect.Float64},
+		{"load-avg-15-minute", "total uptime in seconds", reflect.Float64},
+		{"runnable-kernel-scheduling-entities", "number of currently runnable kernel scheduling entities (processes, threads)", reflect.Int64},
+		{"current-kernel-scheduling-entities", "number of kernel scheduling entities that currently exist on the system", reflect.Int64},
+		{"pid", "PID of the process that was most recently created on the system", reflect.Int64},
+	},
+	ColumnsToParse: map[string]RawDataType{},
 }
 
 // Uptime represents '/proc/uptime'
