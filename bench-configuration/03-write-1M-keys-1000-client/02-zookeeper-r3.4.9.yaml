@@ -1,11 +1,6 @@
 database: zookeeper
 test_name: zookeeper-r3.4.9-java8
 
-google_cloud_project_name: etcd-development
-google_cloud_storage_key_path: /home/gyuho/gcloud-key.json # need this only in 'control' side
-google_cloud_storage_bucket_name: dbtester-results
-google_cloud_storage_sub_directory: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client
-
 peer_ips:
     - 10.240.0.25
     - 10.240.0.27
@@ -48,3 +43,11 @@ step2:
 # after benchmark
 step3:
     action: stop
+
+# upload logs
+step4:
+    upload_logs: true
+    google_cloud_project_name: etcd-development
+    google_cloud_storage_key_path: /home/gyuho/gcloud-key.json # need this only in 'control' side
+    google_cloud_storage_bucket_name: dbtester-results
+    google_cloud_storage_sub_directory: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client
