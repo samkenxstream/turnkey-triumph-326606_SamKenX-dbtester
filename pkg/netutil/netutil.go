@@ -24,7 +24,7 @@ import (
 
 	"golang.org/x/net/context"
 
-	"github.com/coreos/etcd/pkg/types"
+	"github.com/coreos/dbtester/pkg/types"
 	"github.com/coreos/pkg/capnslog"
 )
 
