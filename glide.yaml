@@ -52,11 +52,11 @@ import:
   - vg/vgpdf
   - vg/vgsvg
 - package: github.com/gyuho/dataframe
-  version: e715fd4225590f6558961c316924e56a8a2647b0
+  version: f9fe6fd9537b000e95362aefbcc0250679e1549b
 - package: github.com/gyuho/psn
-  version: 2c7fdc8639b23472a462bdc3001cadfa586c1b39
+  version: ab7b49dddbe2aa6039443168555ef205c5de7145
 - package: github.com/hashicorp/consul
-  version: 8d57727ff0d113a97c89a992e4681680f95cbf03
+  version: 3da73be55c82a7f88f1dfd3ec16d267970ac8ff0
   subpackages:
   - api
 - package: github.com/samuel/go-zookeeper

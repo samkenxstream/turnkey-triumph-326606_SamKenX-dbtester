@@ -1,5 +1,5 @@
-hash: c9f541eb51fff541f3c789e790bc21c14a8af0d90b9e019d87664acef2424d80
-updated: 2017-02-02T09:54:31.002917679-08:00
+hash: 37c2e1c77ebff89ce9c3c18607c70a384f09e122d335d345a8794a6c4eb1243d
+updated: 2017-02-03T00:30:14.444883937-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -95,13 +95,13 @@ imports:
   - runtime/internal
   - utilities
 - name: github.com/gyuho/dataframe
-  version: e715fd4225590f6558961c316924e56a8a2647b0
+  version: f9fe6fd9537b000e95362aefbcc0250679e1549b
 - name: github.com/gyuho/psn
-  version: 2c7fdc8639b23472a462bdc3001cadfa586c1b39
+  version: ab7b49dddbe2aa6039443168555ef205c5de7145
   subpackages:
   - schema
 - name: github.com/hashicorp/consul
-  version: 8d57727ff0d113a97c89a992e4681680f95cbf03
+  version: 3da73be55c82a7f88f1dfd3ec16d267970ac8ff0
   subpackages:
   - api
 - name: github.com/hashicorp/go-cleanhttp
@@ -154,7 +154,7 @@ imports:
   subpackages:
   - codec
 - name: golang.org/x/image
-  version: 69afd001f792d732a78bd7225793315a8deb09ea
+  version: 55ae12acc992ce6034ae993e4212fd6f8057b1c6
   subpackages:
   - draw
   - font
