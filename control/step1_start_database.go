@@ -75,7 +75,10 @@ func sendReq(ep string, req agentpb.Request, i int) (*agentpb.Response, error) {
 	defer conn.Close()
 
 	cli := agentpb.NewTransporterClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second) // Consul takes longer
+
+	// give enough timeout
+	// e.g. uploading logs takes longer
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	resp, err := cli.Transfer(ctx, &req)
 	cancel()
 	if err != nil {

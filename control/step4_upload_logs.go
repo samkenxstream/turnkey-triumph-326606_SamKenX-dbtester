@@ -24,6 +24,8 @@ import (
 )
 
 func step4UploadLogs(cfg Config) error {
+	plog.Info("step 4: uploading logs...")
+
 	if err := uploadToGoogle(cfg.Log, cfg); err != nil {
 		return err
 	}
