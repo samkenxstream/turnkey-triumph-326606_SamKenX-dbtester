@@ -46,8 +46,8 @@ func Test_readConfig(t *testing.T) {
 	if c.RawData[0].OutputPath != "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/etcd-v3.1-go1.7.4-aggregated.csv" {
 		t.Fatalf("unexpected c.RawData[0].OutputPath %q", c.RawData[0].OutputPath)
 	}
-	if c.RawData[0].DataSystemMetricsPaths[0] != "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/etcd-v3.1-go1.7.4-1-system-metrics-interpolated.csv" {
-		t.Fatalf("unexpected c.RawData[0].DataSystemMetricsPaths[0] %q", c.RawData[0].DataSystemMetricsPaths[0])
+	if c.RawData[0].DataInterpolatedSystemMetricsPaths[0] != "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/etcd-v3.1-go1.7.4-1-system-metrics-interpolated.csv" {
+		t.Fatalf("unexpected c.RawData[0].DataInterpolatedSystemMetricsPaths[0] %q", c.RawData[0].DataInterpolatedSystemMetricsPaths[0])
 	}
 	if c.RawData[0].DatasizeSummary != "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys/etcd-v3.1-go1.7.4-data-size-summary.csv" {
 		t.Fatalf("unexpected c.RawData[0].DatasizeSummary %q", c.RawData[0].DatasizeSummary)

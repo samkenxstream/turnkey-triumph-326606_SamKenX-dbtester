@@ -49,7 +49,7 @@ func do(configPath string) error {
 	}
 	for _, elem := range cfg.RawData {
 		plog.Printf("reading system metrics data for %s (%q)", makeTag(elem.Legend), elem.Legend)
-		ad, err := readSystemMetricsAll(elem.DataSystemMetricsPaths...)
+		ad, err := readSystemMetricsAll(elem.DataInterpolatedSystemMetricsPaths...)
 		if err != nil {
 			return err
 		}

@@ -22,16 +22,16 @@ import (
 
 // RawData defines how to aggregate data from each machine.
 type RawData struct {
-	Legend                         string   `yaml:"legend"`
-	OutputPath                     string   `yaml:"output_path"`
-	DataSystemMetricsPaths         []string `yaml:"data_system_metrics_paths"`
-	DatasizeSummary                string   `yaml:"data_size_summary"`
-	DataBenchmarkLatencyPercentile string   `yaml:"data_benchmark_latency_percentile"`
-	DataBenchmarkLatencySummary    string   `yaml:"data_benchmark_latency_summary"`
-	DataBenchmarkThroughput        string   `yaml:"data_benchmark_throughput"`
-	DataBenchmarkLatencyByKey      string   `yaml:"data_benchmark_latency_by_key"`
-	DataBenchmarkMemoryByKey       string   `yaml:"data_benchmark_memory_by_key"`
-	TotalRequests                  int      `yaml:"total_requests"`
+	Legend                             string   `yaml:"legend"`
+	OutputPath                         string   `yaml:"output_path"`
+	DataInterpolatedSystemMetricsPaths []string `yaml:"data_interpolated_system_metrics_paths"`
+	DatasizeSummary                    string   `yaml:"data_size_summary"`
+	DataBenchmarkLatencyPercentile     string   `yaml:"data_benchmark_latency_percentile"`
+	DataBenchmarkLatencySummary        string   `yaml:"data_benchmark_latency_summary"`
+	DataBenchmarkThroughput            string   `yaml:"data_benchmark_throughput"`
+	DataBenchmarkLatencyByKey          string   `yaml:"data_benchmark_latency_by_key"`
+	DataBenchmarkMemoryByKey           string   `yaml:"data_benchmark_memory_by_key"`
+	TotalRequests                      int      `yaml:"total_requests"`
 }
 
 // Config defines analyze configuration.
