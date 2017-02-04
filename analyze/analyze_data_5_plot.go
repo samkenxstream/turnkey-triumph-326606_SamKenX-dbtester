@@ -45,6 +45,163 @@ type PlotConfig struct {
 	OutputPathList []string `yaml:"output_path_list"`
 }
 
+type pair struct {
+	x dataframe.Column
+	y dataframe.Column
+}
+
+type triplet struct {
+	x      dataframe.Column
+	minCol dataframe.Column
+	avgCol dataframe.Column
+	maxCol dataframe.Column
+}
+
+func (all *allAggregatedData) draw(cfg PlotConfig, pairs ...pair) error {
+	// frame now contains
+	// AVG-LATENCY-MS-etcd-v3.1-go1.7.4, AVG-LATENCY-MS-zookeeper-r3.4.9-java8, AVG-LATENCY-MS-consul-v0.7.2-go1.7.4
+	plt, err := plot.New()
+	if err != nil {
+		return err
+	}
+	plt.Title.Text = fmt.Sprintf("%s, %s", all.title, cfg.YAxis)
+	plt.X.Label.Text = cfg.XAxis
+	plt.Y.Label.Text = cfg.YAxis
+	plt.Legend.Top = true
+
+	var ps []plot.Plotter
+	for i, p := range pairs {
+		pt, err := points(p.y)
+		if err != nil {
+			return err
+		}
+
+		l, err := plotter.NewLine(pt)
+		if err != nil {
+			return err
+		}
+		l.Color = getRGB(all.headerToLegend[p.y.Header()], i)
+		l.Dashes = plotutil.Dashes(i)
+		ps = append(ps, l)
+
+		plt.Legend.Add(all.headerToLegend[p.y.Header()], l)
+	}
+	plt.Add(ps...)
+
+	for _, outputPath := range cfg.OutputPathList {
+		if err = plt.Save(plotWidth, plotHeight, outputPath); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (all *allAggregatedData) drawXY(cfg PlotConfig, pairs ...pair) error {
+	// frame now contains
+	// KEYS-DB-TAG-X, AVG-LATENCY-MS-DB-TAG-Y, ...
+	plt, err := plot.New()
+	if err != nil {
+		return err
+	}
+	plt.Title.Text = fmt.Sprintf("%s, %s", all.title, cfg.YAxis)
+	plt.X.Label.Text = cfg.XAxis
+	plt.Y.Label.Text = cfg.YAxis
+	plt.Legend.Top = true
+
+	var ps []plot.Plotter
+	for i, p := range pairs {
+		pt, err := pointsXY(p.x, p.y)
+		if err != nil {
+			return err
+		}
+
+		l, err := plotter.NewLine(pt)
+		if err != nil {
+			return err
+		}
+		l.Color = getRGB(all.headerToLegend[p.y.Header()], i)
+		l.Dashes = plotutil.Dashes(i)
+		ps = append(ps, l)
+
+		plt.Legend.Add(all.headerToLegend[p.y.Header()], l)
+	}
+	plt.Add(ps...)
+
+	for _, outputPath := range cfg.OutputPathList {
+		if err = plt.Save(plotWidth, plotHeight, outputPath); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (all *allAggregatedData) drawXYWithErrorPoints(cfg PlotConfig, triplets ...triplet) error {
+	// frame now contains
+	// KEYS-DB-TAG-X, MIN-LATENCY-MS-DB-TAG-Y, AVG-LATENCY-MS-DB-TAG-Y, MAX-LATENCY-MS-DB-TAG-Y, ...
+	plt, err := plot.New()
+	if err != nil {
+		return err
+	}
+	plt.Title.Text = fmt.Sprintf("%s, %s", all.title, cfg.YAxis)
+	plt.X.Label.Text = cfg.XAxis
+	plt.Y.Label.Text = cfg.YAxis
+	plt.Legend.Top = true
+
+	var ps []plot.Plotter
+	for i, triplet := range triplets {
+		{
+			pt, err := pointsXY(triplet.x, triplet.minCol)
+			if err != nil {
+				return err
+			}
+			l, err := plotter.NewLine(pt)
+			if err != nil {
+				return err
+			}
+			l.Color = getRGBII(all.headerToLegend[triplet.avgCol.Header()], i)
+			l.Dashes = plotutil.Dashes(i)
+			ps = append(ps, l)
+			plt.Legend.Add(all.headerToLegend[triplet.avgCol.Header()]+" MIN", l)
+		}
+		{
+			pt, err := pointsXY(triplet.x, triplet.avgCol)
+			if err != nil {
+				return err
+			}
+			l, err := plotter.NewLine(pt)
+			if err != nil {
+				return err
+			}
+			l.Color = getRGB(all.headerToLegend[triplet.avgCol.Header()], i)
+			l.Dashes = plotutil.Dashes(i)
+			ps = append(ps, l)
+			plt.Legend.Add(all.headerToLegend[triplet.avgCol.Header()], l)
+		}
+		{
+			pt, err := pointsXY(triplet.x, triplet.maxCol)
+			if err != nil {
+				return err
+			}
+			l, err := plotter.NewLine(pt)
+			if err != nil {
+				return err
+			}
+			l.Color = getRGBIII(all.headerToLegend[triplet.avgCol.Header()], i)
+			l.Dashes = plotutil.Dashes(i)
+			ps = append(ps, l)
+			plt.Legend.Add(all.headerToLegend[triplet.avgCol.Header()]+" MAX", l)
+		}
+	}
+	plt.Add(ps...)
+
+	for _, outputPath := range cfg.OutputPathList {
+		if err = plt.Save(plotWidth, plotHeight, outputPath); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func points(col dataframe.Column) (plotter.XYs, error) {
 	bv, ok := col.BackNonNil()
 	if !ok {
@@ -65,48 +222,6 @@ func points(col dataframe.Column) (plotter.XYs, error) {
 		pts[i].Y = n
 	}
 	return pts, nil
-}
-
-func (all *allAggregatedData) draw(
-	cfg PlotConfig,
-	cols ...dataframe.Column,
-) error {
-	// frame now contains
-	// AVG-LATENCY-MS-etcd-v3.1-go1.7.4, AVG-LATENCY-MS-zookeeper-r3.4.9-java8, AVG-LATENCY-MS-consul-v0.7.2-go1.7.4
-	pl, err := plot.New()
-	if err != nil {
-		return err
-	}
-	pl.Title.Text = fmt.Sprintf("%s, %s", all.title, cfg.YAxis)
-	pl.X.Label.Text = cfg.XAxis
-	pl.Y.Label.Text = cfg.YAxis
-	pl.Legend.Top = true
-
-	var ps []plot.Plotter
-	for i, col := range cols {
-		pt, err := points(col)
-		if err != nil {
-			return err
-		}
-
-		l, err := plotter.NewLine(pt)
-		if err != nil {
-			return err
-		}
-		l.Color = getRGB(all.headerToLegend[col.Header()], i)
-		l.Dashes = plotutil.Dashes(i)
-		ps = append(ps, l)
-
-		pl.Legend.Add(all.headerToLegend[col.Header()], l)
-	}
-	pl.Add(ps...)
-
-	for _, outputPath := range cfg.OutputPathList {
-		if err = pl.Save(plotWidth, plotHeight, outputPath); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 func pointsXY(colX, colY dataframe.Column) (plotter.XYs, error) {
@@ -138,106 +253,6 @@ func pointsXY(colX, colY dataframe.Column) (plotter.XYs, error) {
 	return pts, nil
 }
 
-func (all *allAggregatedData) drawXY(
-	cfg PlotConfig,
-	cols ...dataframe.Column,
-) error {
-	if len(cols)%2 != 0 {
-		return fmt.Errorf("expected even number of columns (got %d columns)", len(cols))
-	}
-
-	// frame now contains
-	// KEYS-DB-TAG-X, AVG-LATENCY-MS-DB-TAG-Y, ...
-	pl, err := plot.New()
-	if err != nil {
-		return err
-	}
-	pl.Title.Text = fmt.Sprintf("%s, %s", all.title, cfg.YAxis)
-	pl.X.Label.Text = cfg.XAxis
-	pl.Y.Label.Text = cfg.YAxis
-	pl.Legend.Top = true
-
-	var ps []plot.Plotter
-
-	for i := 0; i < len(cols)-1; i += 2 {
-		colX := cols[i]
-		colY := cols[i+1]
-
-		pt, err := pointsXY(colX, colY)
-		if err != nil {
-			return err
-		}
-
-		l, err := plotter.NewLine(pt)
-		if err != nil {
-			return err
-		}
-		l.Color = getRGB(all.headerToLegend[colY.Header()], i)
-		l.Dashes = plotutil.Dashes(i)
-		ps = append(ps, l)
-
-		pl.Legend.Add(all.headerToLegend[colY.Header()], l)
-	}
-	pl.Add(ps...)
-
-	for _, outputPath := range cfg.OutputPathList {
-		if err = pl.Save(plotWidth, plotHeight, outputPath); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (all *allAggregatedData) drawXYWithErrorBars(
-	cfg PlotConfig,
-	cols ...dataframe.Column,
-) error {
-	if len(cols)%2 != 0 {
-		return fmt.Errorf("expected even number of columns (got %d columns)", len(cols))
-	}
-
-	// frame now contains
-	// KEYS-DB-TAG-X, MIN-LATENCY-MS-DB-TAG-Y, AVG-LATENCY-MS-DB-TAG-Y, MAX-LATENCY-MS-DB-TAG-Y, ...
-	pl, err := plot.New()
-	if err != nil {
-		return err
-	}
-	pl.Title.Text = fmt.Sprintf("%s, %s", all.title, cfg.YAxis)
-	pl.X.Label.Text = cfg.XAxis
-	pl.Y.Label.Text = cfg.YAxis
-	pl.Legend.Top = true
-
-	var ps []plot.Plotter
-
-	for i := 0; i < len(cols)-1; i += 2 {
-		colX := cols[i]
-		colY := cols[i+1]
-
-		pt, err := pointsXY(colX, colY)
-		if err != nil {
-			return err
-		}
-
-		l, err := plotter.NewLine(pt)
-		if err != nil {
-			return err
-		}
-		l.Color = getRGB(all.headerToLegend[colY.Header()], i)
-		l.Dashes = plotutil.Dashes(i)
-		ps = append(ps, l)
-
-		pl.Legend.Add(all.headerToLegend[colY.Header()], l)
-	}
-	pl.Add(ps...)
-
-	for _, outputPath := range cfg.OutputPathList {
-		if err = pl.Save(plotWidth, plotHeight, outputPath); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func getRGB(legend string, i int) color.Color {
 	tag := makeTag(legend)
 	if strings.HasPrefix(tag, "etcd") {
@@ -254,6 +269,46 @@ func getRGB(legend string, i int) color.Color {
 	}
 	if strings.HasPrefix(tag, "cetcd") {
 		return color.RGBA{116, 24, 169, 255} // purple
+	}
+	return plotutil.Color(i)
+}
+
+func getRGBII(legend string, i int) color.Color {
+	tag := makeTag(legend)
+	if strings.HasPrefix(tag, "etcd") {
+		return color.RGBA{37, 29, 191, 255} // deep-blue
+	}
+	if strings.HasPrefix(tag, "zookeeper") {
+		return color.RGBA{7, 64, 35, 255} // deep-green
+	}
+	if strings.HasPrefix(tag, "consul") {
+		return color.RGBA{212, 8, 46, 255} // deep-red
+	}
+	if strings.HasPrefix(tag, "zetcd") {
+		return color.RGBA{229, 255, 0, 255} // deep-yellow
+	}
+	if strings.HasPrefix(tag, "cetcd") {
+		return color.RGBA{255, 0, 251, 255} // deep-purple
+	}
+	return plotutil.Color(i)
+}
+
+func getRGBIII(legend string, i int) color.Color {
+	tag := makeTag(legend)
+	if strings.HasPrefix(tag, "etcd") {
+		return color.RGBA{129, 212, 247, 255} // light-blue
+	}
+	if strings.HasPrefix(tag, "zookeeper") {
+		return color.RGBA{129, 247, 152, 255} // light-green
+	}
+	if strings.HasPrefix(tag, "consul") {
+		return color.RGBA{247, 156, 156, 255} // light-red
+	}
+	if strings.HasPrefix(tag, "zetcd") {
+		return color.RGBA{245, 247, 166, 255} // light-yellow
+	}
+	if strings.HasPrefix(tag, "cetcd") {
+		return color.RGBA{247, 166, 238, 255} // light-purple
 	}
 	return plotutil.Color(i)
 }
