@@ -152,6 +152,10 @@ readme:
       image_path: https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-LATENCY-MS.svg
       image_type: remote
 
+    - image_title: 2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-LATENCY-MS-BY-KEY
+      image_path: https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-LATENCY-MS-BY-KEY.svg
+      image_type: remote
+
     - image_title: 2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-THROUGHPUT
       image_path: https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-THROUGHPUT.svg
       image_type: remote
@@ -170,6 +174,10 @@ readme:
 
     - image_title: 2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-VMRSS-MB
       image_path: https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-VMRSS-MB.svg
+      image_type: remote
+
+    - image_title: 2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-VMRSS-MB-BY-KEY
+      image_path: https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-VMRSS-MB-BY-KEY.svg
       image_type: remote
 
     - image_title: 2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-READS-COMPLETED-DELTA

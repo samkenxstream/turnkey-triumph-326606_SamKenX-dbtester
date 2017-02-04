@@ -45,7 +45,32 @@ type PlotConfig struct {
 	OutputPathList []string `yaml:"output_path_list"`
 }
 
-func (all *allAggregatedData) draw(cfg PlotConfig, cols ...dataframe.Column) error {
+func points(col dataframe.Column) (plotter.XYs, error) {
+	bv, ok := col.BackNonNil()
+	if !ok {
+		return nil, fmt.Errorf("BackNonNil not found")
+	}
+	rowN, ok := col.FindLast(bv)
+	if !ok {
+		return nil, fmt.Errorf("not found %v", bv)
+	}
+	pts := make(plotter.XYs, rowN)
+	for i := range pts {
+		v, err := col.Value(i)
+		if err != nil {
+			return nil, err
+		}
+		n, _ := v.Float64()
+		pts[i].X = float64(i)
+		pts[i].Y = n
+	}
+	return pts, nil
+}
+
+func (all *allAggregatedData) draw(
+	cfg PlotConfig,
+	cols ...dataframe.Column,
+) error {
 	// frame now contains
 	// AVG-LATENCY-MS-etcd-v3.1-go1.7.4, AVG-LATENCY-MS-zookeeper-r3.4.9-java8, AVG-LATENCY-MS-consul-v0.7.2-go1.7.4
 	pl, err := plot.New()
@@ -84,26 +109,83 @@ func (all *allAggregatedData) draw(cfg PlotConfig, cols ...dataframe.Column) err
 	return nil
 }
 
-func points(col dataframe.Column) (plotter.XYs, error) {
-	bv, ok := col.BackNonNil()
+func pointsXY(colX, colY dataframe.Column) (plotter.XYs, error) {
+	bv, ok := colX.BackNonNil()
 	if !ok {
 		return nil, fmt.Errorf("BackNonNil not found")
 	}
-	rowN, ok := col.FindLast(bv)
+	rowN, ok := colX.FindLast(bv)
 	if !ok {
 		return nil, fmt.Errorf("not found %v", bv)
 	}
 	pts := make(plotter.XYs, rowN)
 	for i := range pts {
-		v, err := col.Value(i)
+		vx, err := colX.Value(i)
 		if err != nil {
 			return nil, err
 		}
-		n, _ := v.Float64()
-		pts[i].X = float64(i)
-		pts[i].Y = n
+		x, _ := vx.Float64()
+
+		vy, err := colY.Value(i)
+		if err != nil {
+			return nil, err
+		}
+		y, _ := vy.Float64()
+
+		pts[i].X = x
+		pts[i].Y = y
 	}
 	return pts, nil
+}
+
+func (all *allAggregatedData) drawXY(
+	cfg PlotConfig,
+	cols ...dataframe.Column,
+) error {
+	if len(cols)%2 != 0 {
+		return fmt.Errorf("expected even number of columns (got %d columns)", len(cols))
+	}
+
+	// frame now contains
+	// AVG-LATENCY-MS-etcd-v3.1-go1.7.4, AVG-LATENCY-MS-zookeeper-r3.4.9-java8, AVG-LATENCY-MS-consul-v0.7.2-go1.7.4
+	pl, err := plot.New()
+	if err != nil {
+		return err
+	}
+	pl.Title.Text = fmt.Sprintf("%s, %s", all.title, cfg.YAxis)
+	pl.X.Label.Text = cfg.XAxis
+	pl.Y.Label.Text = cfg.YAxis
+	pl.Legend.Top = true
+
+	var ps []plot.Plotter
+
+	for i := 0; i < len(cols)-1; i += 2 {
+		colX := cols[i]
+		colY := cols[i+1]
+
+		pt, err := pointsXY(colX, colY)
+		if err != nil {
+			return err
+		}
+
+		l, err := plotter.NewLine(pt)
+		if err != nil {
+			return err
+		}
+		l.Color = getRGB(all.headerToLegend[colY.Header()], i)
+		l.Dashes = plotutil.Dashes(i)
+		ps = append(ps, l)
+
+		pl.Legend.Add(all.headerToLegend[colY.Header()], l)
+	}
+	pl.Add(ps...)
+
+	for _, outputPath := range cfg.OutputPathList {
+		if err = pl.Save(plotWidth, plotHeight, outputPath); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func getRGB(legend string, i int) color.Color {

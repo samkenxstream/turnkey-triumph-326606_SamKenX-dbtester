@@ -386,7 +386,7 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 	}
 
 	// aggregate memory usage by number of keys
-	colSecond, err := data.aggregated.Column("SECOND")
+	colUnixSecond, err := data.aggregated.Column("UNIX-SECOND")
 	if err != nil {
 		return err
 	}
@@ -398,18 +398,24 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 	if err != nil {
 		return err
 	}
-	if colSecond.Count() != colMemoryMB.Count() {
-		return fmt.Errorf("SECOND column count %d, AVG-VMRSS-MB column count %d", colSecond.Count(), colMemoryMB.Count())
+	if colUnixSecond.Count() != colMemoryMB.Count() {
+		return fmt.Errorf("SECOND column count %d, AVG-VMRSS-MB column count %d", colUnixSecond.Count(), colMemoryMB.Count())
 	}
 	if colAvgThroughput.Count() != colMemoryMB.Count() {
 		return fmt.Errorf("AVG-THROUGHPUT column count %d, AVG-VMRSS-MB column count %d", colAvgThroughput.Count(), colMemoryMB.Count())
 	}
-	if colSecond.Count() != colAvgThroughput.Count() {
-		return fmt.Errorf("SECOND column count %d, AVG-THROUGHPUT column count %d", colSecond.Count(), colAvgThroughput.Count())
+	if colUnixSecond.Count() != colAvgThroughput.Count() {
+		return fmt.Errorf("SECOND column count %d, AVG-THROUGHPUT column count %d", colUnixSecond.Count(), colAvgThroughput.Count())
 	}
 
 	var tslice []keyNumAndMemory
-	for i := 0; i < colSecond.Count(); i++ {
+	for i := 0; i < colUnixSecond.Count(); i++ {
+		vv0, err := colUnixSecond.Value(i)
+		if err != nil {
+			return err
+		}
+		v0, _ := vv0.Int64()
+
 		vv1, err := colMemoryMB.Value(i)
 		if err != nil {
 			return err
@@ -424,9 +430,9 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 
 		point := keyNumAndMemory{
 			keyNum:      int64(vf2),
-			maxMemoryMB: sec2maxVMRSSMB[int64(vf2)],
+			maxMemoryMB: sec2maxVMRSSMB[v0],
 			avgMemoryMB: vf1,
-			minMemoryMB: sec2minVMRSSMB[int64(vf2)],
+			minMemoryMB: sec2minVMRSSMB[v0],
 		}
 		tslice = append(tslice, point)
 	}

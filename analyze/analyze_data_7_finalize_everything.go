@@ -465,7 +465,7 @@ func do(configPath string) error {
 	allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.svg")
 	allLatencyFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.png")
 	plog.Printf("plotting %v", allLatencyFrameCfg.OutputPathList)
-	if err = all.draw(allLatencyFrameCfg, allLatencyFrame.Columns()...); err != nil {
+	if err = all.drawXY(allLatencyFrameCfg, allLatencyFrame.Columns()...); err != nil {
 		return err
 	}
 
@@ -486,12 +486,30 @@ func do(configPath string) error {
 			return err
 		}
 
+		colMemMax, err := fr.Column("MAX-VMRSS-MB")
+		if err != nil {
+			return err
+		}
+		colMemMax.UpdateHeader(makeHeader("MAX-VMRSS-MB", makeTag(elem.Legend)))
+		if err = allMemoryFrame.AddColumn(colMemMax); err != nil {
+			return err
+		}
+
 		colMem, err := fr.Column("AVG-VMRSS-MB")
 		if err != nil {
 			return err
 		}
-		colMem.UpdateHeader(makeHeader("AVG-LATENCY-MS", makeTag(elem.Legend)))
+		colMem.UpdateHeader(makeHeader("AVG-VMRSS-MB", makeTag(elem.Legend)))
 		if err = allMemoryFrame.AddColumn(colMem); err != nil {
+			return err
+		}
+
+		colMemMin, err := fr.Column("MIN-VMRSS-MB")
+		if err != nil {
+			return err
+		}
+		colMemMin.UpdateHeader(makeHeader("MIN-VMRSS-MB", makeTag(elem.Legend)))
+		if err = allMemoryFrame.AddColumn(colMemMin); err != nil {
 			return err
 		}
 	}
@@ -508,7 +526,18 @@ func do(configPath string) error {
 	allMemoryFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.svg")
 	allMemoryFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.png")
 	plog.Printf("plotting %v", allMemoryFrameCfg.OutputPathList)
-	if err = all.draw(allMemoryFrameCfg, allMemoryFrame.Columns()...); err != nil {
+
+	// TODO: draw with error bar
+	var cols []dataframe.Column
+	for _, col := range allMemoryFrame.Columns() {
+		switch {
+		case strings.HasPrefix(col.Header(), "KEYS-"):
+			cols = append(cols, col) // x-axis
+		case strings.HasPrefix(col.Header(), "AVG-VMRSS-MB-"):
+			cols = append(cols, col) // y-axis
+		}
+	}
+	if err = all.drawXY(allMemoryFrameCfg, cols...); err != nil {
 		return err
 	}
 
