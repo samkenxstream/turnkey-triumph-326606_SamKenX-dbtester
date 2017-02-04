@@ -1,5 +1,5 @@
-hash: c797bd97833f9be353d5e260d436bde1f3efb51600ae4273dea8cafdeec671a4
-updated: 2017-02-03T15:41:14.170606219-08:00
+hash: e5584a63b49ea1a52af370feb9966f196cf9e0fd99c4a331cc88212f75bc02c5
+updated: 2017-02-04T02:29:21.292664157-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -97,7 +97,7 @@ imports:
 - name: github.com/gyuho/dataframe
   version: f9fe6fd9537b000e95362aefbcc0250679e1549b
 - name: github.com/gyuho/psn
-  version: 74effdf016d1dca4b6cc92072b0992ec28d153ff
+  version: 762aaef9e486e8dfd7ff6097681e654f8b392861
   subpackages:
   - schema
 - name: github.com/hashicorp/consul
@@ -112,6 +112,8 @@ imports:
   - coordinate
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/kr/pty
+  version: f7ee69f31298ecbe5d2b349c711e2547a617d398
 - name: github.com/llgcode/draw2d
   version: 1286d3b2030ac9952e59c5ef29ef3cc24a8e83d5
   subpackages:
@@ -154,7 +156,7 @@ imports:
   subpackages:
   - codec
 - name: golang.org/x/image
-  version: 55ae12acc992ce6034ae993e4212fd6f8057b1c6
+  version: 28d9a8b4a37fa0e5fe8b0cabf09c8b9a0e6ec6f1
   subpackages:
   - draw
   - font
