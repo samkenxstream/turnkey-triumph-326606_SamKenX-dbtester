@@ -27,7 +27,9 @@ import (
 //
 //	type DataPoint struct {
 //		Timestamp  int64
+//		MinLatency time.Duration
 //		AvgLatency time.Duration
+//		MaxLatency time.Duration
 //		ThroughPut int64
 //	}
 //
