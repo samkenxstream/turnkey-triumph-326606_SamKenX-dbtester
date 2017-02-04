@@ -1,20 +1,3 @@
-# dbtester
-
-[![Build Status](https://img.shields.io/travis/coreos/dbtester.svg?style=flat-square)](https://travis-ci.org/coreos/dbtester) [![Godoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](https://godoc.org/github.com/coreos/dbtester)
-
-Distributed database benchmark tester: etcd, Zookeeper, Consul
-
-- Database agent and runner are implemented at https://github.com/coreos/dbtester/tree/master/agent
-- Client is implemented at https://github.com/coreos/dbtester/tree/master/control
-- System metrics are collected via https://github.com/gyuho/psn
-- Data analysis is done via https://github.com/coreos/dbtester/tree/master/analyze
-  - https://github.com/gyuho/dataframe
-  - https://github.com/gonum/plot
-
-For etcd, we also recommend [etcd benchmark tool](https://github.com/coreos/etcd/tree/master/tools/benchmark).
-
-All logs and results can be found at https://console.cloud.google.com/storage/browser/dbtester-results
-
 
 
 <br><br><hr>
@@ -91,3 +74,6 @@ All logs and results can be found at https://console.cloud.google.com/storage/br
 <img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-RECEIVE-BYTES-NUM-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-RECEIVE-BYTES-NUM-DELTA">
 
 <img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-TRANSMIT-BYTES-NUM-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-TRANSMIT-BYTES-NUM-DELTA">
+
+
+
