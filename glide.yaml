@@ -7,7 +7,7 @@ import:
   - internal
   - storage
 - package: github.com/cheggaaa/pb
-  version: 6e9d17711bb763b26b68b3931d47f24c1323abab
+  version: d7e6ca3010b6f084d8056847f55d7f572f180678
 - package: github.com/coreos/etcd
   version: bad2f03cd027c8cee60df2f55713946b86a36659
   subpackages:
@@ -108,4 +108,4 @@ import:
   subpackages:
   - rate
 - package: github.com/olekukonko/tablewriter
-  version: a0225b3f23b5ce0cbec6d7a66a968f8a59eca9c4
+  version: febf2d34b54a69ce7530036c7503b1c9fbfdf0bb

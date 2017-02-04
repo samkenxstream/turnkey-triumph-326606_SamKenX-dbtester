@@ -1,5 +1,5 @@
-hash: 43f424fe4c43c83acc5d95f3feb0364ecad9baffbe2e659fa134633c954443ad
-updated: 2017-02-04T03:46:43.459571687-08:00
+hash: 8ac3c6083047f0e4c28edc49aa0af344f05d607ebfd77731c90a9fcc41d8660e
+updated: 2017-02-04T13:20:25.110990522-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -23,7 +23,7 @@ imports:
   subpackages:
   - bezier
 - name: github.com/cheggaaa/pb
-  version: 6e9d17711bb763b26b68b3931d47f24c1323abab
+  version: d7e6ca3010b6f084d8056847f55d7f572f180678
 - name: github.com/coreos/etcd
   version: bad2f03cd027c8cee60df2f55713946b86a36659
   subpackages:
@@ -127,7 +127,7 @@ imports:
   subpackages:
   - pbutil
 - name: github.com/olekukonko/tablewriter
-  version: a0225b3f23b5ce0cbec6d7a66a968f8a59eca9c4
+  version: febf2d34b54a69ce7530036c7503b1c9fbfdf0bb
 - name: github.com/prometheus/client_golang
   version: c5b7fccd204277076155f10851dad72b76a49317
   subpackages:
