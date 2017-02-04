@@ -23,20 +23,33 @@ import (
 )
 
 // startMetrics starts collecting metrics.
-func startMetrics(fs *flags, t *transporterServer) error {
+func startMetrics(fs *flags, t *transporterServer) (err error) {
 	if fs == nil || t == nil || t.cmd == nil {
 		return fmt.Errorf("cannot find process to track (%+v, %+v)", fs, t)
 	}
 	plog.Infof("starting collecting metrics [database %q | PID: %d | disk device: %q | network interface: %q]",
 		t.req.Database, t.pid, fs.diskDevice, fs.networkInterface)
 
-	if err := os.RemoveAll(fs.systemMetricsCSV); err != nil {
+	if err = os.RemoveAll(fs.systemMetricsCSV); err != nil {
 		return err
 	}
-	if err := toFile(fmt.Sprintf("%d", t.req.ClientNum), t.clientNumPath); err != nil {
+	if err = toFile(fmt.Sprintf("%d", t.req.ClientNum), t.clientNumPath); err != nil {
 		return err
 	}
-	t.metricsCSV = psn.NewCSV(fs.systemMetricsCSV, t.pid, fs.diskDevice, fs.networkInterface, t.clientNumPath)
+
+	tcfg := &psn.TopConfig{
+		Exec:           psn.DefaultTopPath,
+		IntervalSecond: 1,
+		PID:            t.pid,
+	}
+	t.metricsCSV, err = psn.NewCSV(
+		fs.systemMetricsCSV,
+		t.pid,
+		fs.diskDevice,
+		fs.networkInterface,
+		t.clientNumPath,
+		tcfg,
+	)
 	if err := t.metricsCSV.Add(); err != nil {
 		return err
 	}
