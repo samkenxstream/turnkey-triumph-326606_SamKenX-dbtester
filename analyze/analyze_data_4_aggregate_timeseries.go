@@ -57,8 +57,8 @@ func processTimeSeries(tslice []keyNumAndMemory, unit int64, totalRequests int) 
 	kss := []keyNumAndMemory{}
 	delete(rm, 0)
 	for k, v := range rm {
-		kn := keyNumAndMemory{keyNum: k, maxMemoryMB: v.maxMemoryMB, avgMemoryMB: v.avgMemoryMB, minMemoryMB: v.minMemoryMB}
-		kss = append(kss, kn)
+		// make sure to use 'k' as keyNum
+		kss = append(kss, keyNumAndMemory{keyNum: k, maxMemoryMB: v.maxMemoryMB, avgMemoryMB: v.avgMemoryMB, minMemoryMB: v.minMemoryMB})
 	}
 	sort.Sort(keyNumAndMemorys(kss))
 
