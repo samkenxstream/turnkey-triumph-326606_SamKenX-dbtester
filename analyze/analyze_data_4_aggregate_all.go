@@ -90,7 +90,7 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 	data.aggregated = dataframe.New()
 
 	// first, add bench metrics data
-	// UNIX-SECOND, AVG-LATENCY-MS, AVG-THROUGHPUT
+	// UNIX-SECOND, MIN-LATENCY-MS, AVG-LATENCY-MS, MAX-LATENCY-MS, AVG-THROUGHPUT
 	for _, col := range data.benchMetrics.frame.Columns() {
 		// ALWAYS KEEP FROM FIRST ROW OF BENCHMARKS
 		// keeps from [a, b)
@@ -350,32 +350,32 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 	}
 
 	// currently first columns are ordered as:
-	// UNIX-SECOND, SECOND, AVG-CLIENT-NUM, AVG-LATENCY-MS, AVG-THROUGHPUT
+	// UNIX-SECOND, SECOND, AVG-CLIENT-NUM, MIN-LATENCY-MS, AVG-LATENCY-MS, MAX-LATENCY-MS, AVG-THROUGHPUT
 	//
 	// re-order columns in the following order, to make it more readable
 	reorder := []string{
 		"CUMULATIVE-THROUGHPUT",
-		"AVG-VOLUNTARY-CTXT-SWITCHES",
-		"AVG-NON-VOLUNTARY-CTXT-SWITCHES",
 		"AVG-CPU",
 		"AVG-SYSTEM-LOAD-1-MIN",
 		"AVG-VMRSS-MB",
-		"AVG-READS-COMPLETED-DELTA",
-		"AVG-SECTORS-READ-DELTA",
-		"AVG-WRITES-COMPLETED-DELTA",
-		"AVG-SECTORS-WRITTEN-DELTA",
-		"AVG-RECEIVE-BYTES-NUM-DELTA",
-		"AVG-TRANSMIT-BYTES-NUM-DELTA",
-		"AVG-READS-COMPLETED",
-		"AVG-SECTORS-READ",
 		"AVG-WRITES-COMPLETED",
+		"AVG-WRITES-COMPLETED-DELTA",
 		"AVG-SECTORS-WRITTEN",
+		"AVG-SECTORS-WRITTEN-DELTA",
+		"AVG-READS-COMPLETED",
+		"AVG-READS-COMPLETED-DELTA",
+		"AVG-SECTORS-READ",
+		"AVG-SECTORS-READ-DELTA",
 		"AVG-RECEIVE-BYTES-NUM",
+		"AVG-RECEIVE-BYTES-NUM-DELTA",
 		"AVG-TRANSMIT-BYTES-NUM",
+		"AVG-TRANSMIT-BYTES-NUM-DELTA",
+		"AVG-VOLUNTARY-CTXT-SWITCHES",
+		"AVG-NON-VOLUNTARY-CTXT-SWITCHES",
 	}
-	// move to 7th
+	// move to 9th
 	for i := len(reorder) - 1; i >= 0; i-- {
-		if err = data.aggregated.MoveColumn(reorder[i], 6); err != nil {
+		if err = data.aggregated.MoveColumn(reorder[i], 8); err != nil {
 			return err
 		}
 	}
