@@ -276,26 +276,6 @@ func getRGB(legend string, i int) color.Color {
 func getRGBII(legend string, i int) color.Color {
 	tag := makeTag(legend)
 	if strings.HasPrefix(tag, "etcd") {
-		return color.RGBA{37, 29, 191, 255} // deep-blue
-	}
-	if strings.HasPrefix(tag, "zookeeper") {
-		return color.RGBA{7, 64, 35, 255} // deep-green
-	}
-	if strings.HasPrefix(tag, "consul") {
-		return color.RGBA{212, 8, 46, 255} // deep-red
-	}
-	if strings.HasPrefix(tag, "zetcd") {
-		return color.RGBA{229, 255, 0, 255} // deep-yellow
-	}
-	if strings.HasPrefix(tag, "cetcd") {
-		return color.RGBA{255, 0, 251, 255} // deep-purple
-	}
-	return plotutil.Color(i)
-}
-
-func getRGBIII(legend string, i int) color.Color {
-	tag := makeTag(legend)
-	if strings.HasPrefix(tag, "etcd") {
 		return color.RGBA{129, 212, 247, 255} // light-blue
 	}
 	if strings.HasPrefix(tag, "zookeeper") {
@@ -309,6 +289,26 @@ func getRGBIII(legend string, i int) color.Color {
 	}
 	if strings.HasPrefix(tag, "cetcd") {
 		return color.RGBA{247, 166, 238, 255} // light-purple
+	}
+	return plotutil.Color(i)
+}
+
+func getRGBIII(legend string, i int) color.Color {
+	tag := makeTag(legend)
+	if strings.HasPrefix(tag, "etcd") {
+		return color.RGBA{37, 29, 191, 255} // deep-blue
+	}
+	if strings.HasPrefix(tag, "zookeeper") {
+		return color.RGBA{7, 64, 35, 255} // deep-green
+	}
+	if strings.HasPrefix(tag, "consul") {
+		return color.RGBA{212, 8, 46, 255} // deep-red
+	}
+	if strings.HasPrefix(tag, "zetcd") {
+		return color.RGBA{229, 255, 0, 255} // deep-yellow
+	}
+	if strings.HasPrefix(tag, "cetcd") {
+		return color.RGBA{255, 0, 251, 255} // deep-purple
 	}
 	return plotutil.Color(i)
 }
