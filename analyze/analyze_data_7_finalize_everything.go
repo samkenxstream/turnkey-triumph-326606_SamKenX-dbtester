@@ -203,10 +203,10 @@ func do(configPath string) error {
 			}
 		}
 
-		row01ReadsCompletedDeltaSum = append(row01ReadsCompletedDeltaSum, fmt.Sprintf("%d", uint64(readsCompletedDeltaSum)))
-		row02SectorsReadDeltaSum = append(row02SectorsReadDeltaSum, fmt.Sprintf("%d", uint64(sectorsReadDeltaSum)))
-		row03WritesCompletedDeltaSum = append(row03WritesCompletedDeltaSum, fmt.Sprintf("%d", uint64(writesCompletedDeltaSum)))
-		row04SectorsWrittenDeltaSum = append(row04SectorsWrittenDeltaSum, fmt.Sprintf("%d", uint64(sectorsWrittenDeltaSum)))
+		row01ReadsCompletedDeltaSum = append(row01ReadsCompletedDeltaSum, humanize.Comma(int64(readsCompletedDeltaSum)))
+		row02SectorsReadDeltaSum = append(row02SectorsReadDeltaSum, humanize.Comma(int64(sectorsReadDeltaSum)))
+		row03WritesCompletedDeltaSum = append(row03WritesCompletedDeltaSum, humanize.Comma(int64(writesCompletedDeltaSum)))
+		row04SectorsWrittenDeltaSum = append(row04SectorsWrittenDeltaSum, humanize.Comma(int64(sectorsWrittenDeltaSum)))
 		row06ReceiveBytesSum = append(row06ReceiveBytesSum, humanize.Bytes(uint64(receiveBytesNumDeltaSum)))
 		row07TransmitBytesSum = append(row07TransmitBytesSum, humanize.Bytes(uint64(transmitBytesNumDeltaSum)))
 		row08MaxCPUUsage = append(row08MaxCPUUsage, fmt.Sprintf("%.2f %%", maxAvgCPU))
@@ -473,27 +473,84 @@ func do(configPath string) error {
 	if err := allLatencyFrame.CSV(cfg.AllLatencyByKey); err != nil {
 		return err
 	}
-	allLatencyFrameCfg := PlotConfig{
-		Column:         "AVG-LATENCY-MS",
-		XAxis:          "Keys",
-		YAxis:          "Latency(millisecond)",
-		OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
-	}
-	allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.svg")
-	allLatencyFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.png")
-	plog.Printf("plotting %v", allLatencyFrameCfg.OutputPathList)
-	// TODO: draw with error bar
-	var allLatencyFrameCols []dataframe.Column
-	for _, col := range allLatencyFrame.Columns() {
-		switch {
-		case strings.HasPrefix(col.Header(), "KEYS-"):
-			allLatencyFrameCols = append(allLatencyFrameCols, col) // x-axis
-		case strings.HasPrefix(col.Header(), "AVG-LATENCY-MS-"):
-			allLatencyFrameCols = append(allLatencyFrameCols, col) // y-axis
+	{
+		allLatencyFrameCfg := PlotConfig{
+			Column:         "AVG-LATENCY-MS",
+			XAxis:          "Cumulative Number of Keys",
+			YAxis:          "Latency(millisecond) by Keys",
+			OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
+		}
+		allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.svg")
+		allLatencyFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.png")
+		plog.Printf("plotting %v", allLatencyFrameCfg.OutputPathList)
+		var pairs []pair
+		allCols := allLatencyFrame.Columns()
+		for i := 0; i < len(allCols)-3; i += 4 {
+			pairs = append(pairs, pair{
+				x: allCols[i],   // x
+				y: allCols[i+2], // avg
+			})
+		}
+		if err = all.drawXY(allLatencyFrameCfg, pairs...); err != nil {
+			return err
+		}
+		newCSV := dataframe.New()
+		for _, p := range pairs {
+			if err = newCSV.AddColumn(p.x); err != nil {
+				return err
+			}
+			if err = newCSV.AddColumn(p.y); err != nil {
+				return err
+			}
+		}
+		csvPath := filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.csv")
+		if err := newCSV.CSV(csvPath); err != nil {
+			return err
 		}
 	}
-	if err = all.drawXY(allLatencyFrameCfg, allLatencyFrameCols...); err != nil {
-		return err
+	{
+		// with error points
+		allLatencyFrameCfg := PlotConfig{
+			Column:         "AVG-LATENCY-MS",
+			XAxis:          "Cumulative Number of Keys",
+			YAxis:          "Latency(millisecond) by Keys",
+			OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
+		}
+		allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.svg")
+		allLatencyFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.png")
+		plog.Printf("plotting %v", allLatencyFrameCfg.OutputPathList)
+		var triplets []triplet
+		allCols := allLatencyFrame.Columns()
+		for i := 0; i < len(allCols)-3; i += 4 {
+			triplets = append(triplets, triplet{
+				x:      allCols[i],
+				minCol: allCols[i+1],
+				avgCol: allCols[i+2],
+				maxCol: allCols[i+3],
+			})
+		}
+		if err = all.drawXYWithErrorPoints(allLatencyFrameCfg, triplets...); err != nil {
+			return err
+		}
+		newCSV := dataframe.New()
+		for _, tri := range triplets {
+			if err = newCSV.AddColumn(tri.x); err != nil {
+				return err
+			}
+			if err = newCSV.AddColumn(tri.minCol); err != nil {
+				return err
+			}
+			if err = newCSV.AddColumn(tri.avgCol); err != nil {
+				return err
+			}
+			if err = newCSV.AddColumn(tri.maxCol); err != nil {
+				return err
+			}
+		}
+		csvPath := filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.csv")
+		if err := newCSV.CSV(csvPath); err != nil {
+			return err
+		}
 	}
 
 	// KEYS, MIN-VMRSS-MB, AVG-VMRSS-MB, MAX-VMRSS-MB
@@ -543,34 +600,91 @@ func do(configPath string) error {
 	if err := allMemoryFrame.CSV(cfg.AllMemoryByKey); err != nil {
 		return err
 	}
-
-	allMemoryFrameCfg := PlotConfig{
-		Column:         "AVG-VMRSS-MB",
-		XAxis:          "Keys",
-		YAxis:          "Memory(MB)",
-		OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
-	}
-	allMemoryFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.svg")
-	allMemoryFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.png")
-	plog.Printf("plotting %v", allMemoryFrameCfg.OutputPathList)
-	// TODO: draw with error bar
-	var allMemoryFrameCols []dataframe.Column
-	for _, col := range allMemoryFrame.Columns() {
-		switch {
-		case strings.HasPrefix(col.Header(), "KEYS-"):
-			allMemoryFrameCols = append(allMemoryFrameCols, col) // x-axis
-		case strings.HasPrefix(col.Header(), "AVG-VMRSS-MB-"):
-			allMemoryFrameCols = append(allMemoryFrameCols, col) // y-axis
+	{
+		allMemoryFrameCfg := PlotConfig{
+			Column:         "AVG-VMRSS-MB",
+			XAxis:          "Cumulative Number of Keys",
+			YAxis:          "Memory(MB) by Keys",
+			OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
+		}
+		allMemoryFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.svg")
+		allMemoryFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.png")
+		plog.Printf("plotting %v", allMemoryFrameCfg.OutputPathList)
+		var pairs []pair
+		allCols := allMemoryFrame.Columns()
+		for i := 0; i < len(allCols)-3; i += 4 {
+			pairs = append(pairs, pair{
+				x: allCols[i],   // x
+				y: allCols[i+2], // avg
+			})
+		}
+		if err = all.drawXY(allMemoryFrameCfg, pairs...); err != nil {
+			return err
+		}
+		newCSV := dataframe.New()
+		for _, p := range pairs {
+			if err = newCSV.AddColumn(p.x); err != nil {
+				return err
+			}
+			if err = newCSV.AddColumn(p.y); err != nil {
+				return err
+			}
+		}
+		csvPath := filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.csv")
+		if err := newCSV.CSV(csvPath); err != nil {
+			return err
 		}
 	}
-	if err = all.drawXY(allMemoryFrameCfg, allMemoryFrameCols...); err != nil {
-		return err
+	{
+		// with error points
+		allMemoryFrameCfg := PlotConfig{
+			Column:         "AVG-VMRSS-MB",
+			XAxis:          "Cumulative Number of Keys",
+			YAxis:          "Memory(MB) by Keys",
+			OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
+		}
+		allMemoryFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.svg")
+		allMemoryFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.png")
+		plog.Printf("plotting %v", allMemoryFrameCfg.OutputPathList)
+		var triplets []triplet
+		allCols := allMemoryFrame.Columns()
+		for i := 0; i < len(allCols)-3; i += 4 {
+			triplets = append(triplets, triplet{
+				x:      allCols[i],
+				minCol: allCols[i+1],
+				avgCol: allCols[i+2],
+				maxCol: allCols[i+3],
+			})
+		}
+		if err = all.drawXYWithErrorPoints(allMemoryFrameCfg, triplets...); err != nil {
+			return err
+		}
+		newCSV := dataframe.New()
+		for _, tri := range triplets {
+			if err = newCSV.AddColumn(tri.x); err != nil {
+				return err
+			}
+			if err = newCSV.AddColumn(tri.minCol); err != nil {
+				return err
+			}
+			if err = newCSV.AddColumn(tri.avgCol); err != nil {
+				return err
+			}
+			if err = newCSV.AddColumn(tri.maxCol); err != nil {
+				return err
+			}
+		}
+		csvPath := filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.csv")
+		if err := newCSV.CSV(csvPath); err != nil {
+			return err
+		}
 	}
 
 	plog.Println("combining data for plotting")
 	for _, plotConfig := range cfg.PlotList {
 		plog.Printf("plotting %q", plotConfig.Column)
 		var clientNumColumns []dataframe.Column
+		var pairs []pair
 		var dataColumns []dataframe.Column
 		for i, ad := range all.data {
 			tag := all.databaseTags[i]
@@ -587,9 +701,10 @@ func do(configPath string) error {
 				return err
 			}
 			col.UpdateHeader(makeHeader(plotConfig.Column, tag))
+			pairs = append(pairs, pair{y: col})
 			dataColumns = append(dataColumns, col)
 		}
-		if err = all.draw(plotConfig, dataColumns...); err != nil {
+		if err = all.draw(plotConfig, pairs...); err != nil {
 			return err
 		}
 

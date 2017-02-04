@@ -16,7 +16,6 @@ For etcd, we also recommend [etcd benchmark tool](https://github.com/coreos/etcd
 All logs and results can be found at https://console.cloud.google.com/storage/browser/dbtester-results
 
 
-
 <br><br><hr>
 ##### Write 1M keys, 256-byte key, 1KB value value, clients 1 to 1,000
 
@@ -36,30 +35,30 @@ All logs and results can be found at https://console.cloud.google.com/storage/br
 +----------------------------+-------------------+------------------------+-----------------------+
 |                            | etcd-v3.1-go1.7.4 | zookeeper-r3.4.9-java8 | consul-v0.7.3-go1.7.4 |
 +----------------------------+-------------------+------------------------+-----------------------+
-|      READS-COMPLETED-DELTA |                 3 |                    214 |                    67 |
+|      READS-COMPLETED-DELTA |               335 |                    217 |                   257 |
 |    SECTORS-READS-DELTA-SUM |                 0 |                      0 |                     0 |
-| WRITES-COMPLETED-DELTA-SUM |           1224742 |                 957554 |               2253556 |
-|  SECTORS-WRITTEN-DELTA-SUM |            730236 |               11224704 |              21641916 |
-|              AVG-DATA-SIZE |            2.4 GB |                 7.4 GB |                3.1 GB |
-|          RECEIVE-BYTES-SUM |            5.1 GB |                 6.5 GB |                9.5 GB |
-|         TRANSMIT-BYTES-SUM |            3.9 GB |                 5.5 GB |                8.2 GB |
-|              MAX-CPU-USAGE |          440.43 % |               567.33 % |              505.67 % |
-|           MAX-MEMORY-USAGE |        1314.30 MB |             4165.09 MB |            6207.47 MB |
-|              TOTAL-SECONDS |      344.1735 sec |           319.8246 sec |          719.7771 sec |
-|             MIN-THROUGHPUT |       192 req/sec |              0 req/sec |             0 req/sec |
-|             AVG-THROUGHPUT |     2,905 req/sec |          3,108 req/sec |         1,389 req/sec |
-|             MAX-THROUGHPUT |    35,777 req/sec |         41,982 req/sec |        16,543 req/sec |
-|            SLOWEST-LATENCY |       109.1354 ms |           3802.0451 ms |         24873.9576 ms |
-|                AVG-LATENCY |        13.8141 ms |             26.6582 ms |           108.3479 ms |
-|            FASTEST-LATENCY |         1.1083 ms |              1.0881 ms |             2.9683 ms |
-|                Latency p10 |       2.312361 ms |            2.398301 ms |           3.915505 ms |
-|                Latency p25 |       5.875704 ms |            3.627383 ms |           7.812279 ms |
-|                Latency p50 |       9.941706 ms |            6.432763 ms |          18.977204 ms |
-|                Latency p75 |      16.972703 ms |           11.814841 ms |          52.003318 ms |
-|                Latency p90 |      28.773894 ms |           16.627078 ms |          84.974572 ms |
-|                Latency p95 |      44.682598 ms |           21.045116 ms |         183.677871 ms |
-|                Latency p99 |      58.665081 ms |          572.640038 ms |        1190.464210 ms |
-|              Latency p99.9 |      90.857600 ms |         2619.729132 ms |       16556.840511 ms |
+| WRITES-COMPLETED-DELTA-SUM |         1,231,556 |                955,211 |             2,516,639 |
+|  SECTORS-WRITTEN-DELTA-SUM |           729,836 |             10,554,668 |            44,590,452 |
+|              AVG-DATA-SIZE |            2.4 GB |                 7.7 GB |                3.0 GB |
+|          RECEIVE-BYTES-SUM |            5.1 GB |                 5.4 GB |                7.9 GB |
+|         TRANSMIT-BYTES-SUM |            3.9 GB |                 4.4 GB |                6.7 GB |
+|              MAX-CPU-USAGE |          445.33 % |               547.73 % |              411.23 % |
+|           MAX-MEMORY-USAGE |        1348.55 MB |             3886.00 MB |            6300.68 MB |
+|              TOTAL-SECONDS |      348.6809 sec |           325.9369 sec |          833.0403 sec |
+|             MAX-THROUGHPUT |    35,607 req/sec |         36,742 req/sec |        14,389 req/sec |
+|             AVG-THROUGHPUT |     2,867 req/sec |          3,060 req/sec |         1,200 req/sec |
+|             MIN-THROUGHPUT |       154 req/sec |              0 req/sec |             0 req/sec |
+|            FASTEST-LATENCY |         1.1331 ms |              1.1178 ms |             3.0202 ms |
+|                AVG-LATENCY |        13.9505 ms |             30.7027 ms |           199.2154 ms |
+|            SLOWEST-LATENCY |       268.1365 ms |           4791.4295 ms |         22578.4875 ms |
+|                Latency p10 |       2.329807 ms |            2.425453 ms |           3.935582 ms |
+|                Latency p25 |       5.932790 ms |            3.847339 ms |           7.653584 ms |
+|                Latency p50 |      10.211023 ms |            6.907074 ms |          21.364391 ms |
+|                Latency p75 |      17.023281 ms |           13.768245 ms |          59.155494 ms |
+|                Latency p90 |      28.458718 ms |           23.767844 ms |         161.821492 ms |
+|                Latency p95 |      43.808491 ms |           29.821734 ms |         317.361200 ms |
+|                Latency p99 |      62.109107 ms |          699.922794 ms |        4416.572182 ms |
+|              Latency p99.9 |      92.473754 ms |         2228.556340 ms |       20750.406953 ms |
 +----------------------------+-------------------+------------------------+-----------------------+
 ```
 
@@ -67,6 +66,8 @@ All logs and results can be found at https://console.cloud.google.com/storage/br
 <img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-LATENCY-MS.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-LATENCY-MS">
 
 <img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-LATENCY-MS-BY-KEY.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-LATENCY-MS-BY-KEY">
+
+<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS">
 
 <img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-THROUGHPUT.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-THROUGHPUT">
 
@@ -79,6 +80,8 @@ All logs and results can be found at https://console.cloud.google.com/storage/br
 <img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-VMRSS-MB.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-VMRSS-MB">
 
 <img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-VMRSS-MB-BY-KEY.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-VMRSS-MB-BY-KEY">
+
+<img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS">
 
 <img src="https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-READS-COMPLETED-DELTA.svg" alt="2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-READS-COMPLETED-DELTA">
 
