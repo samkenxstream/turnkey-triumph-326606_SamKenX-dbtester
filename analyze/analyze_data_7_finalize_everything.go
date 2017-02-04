@@ -218,12 +218,12 @@ func do(configPath string) error {
 
 	row05AverageDatasize := []string{"AVG-DATA-SIZE"}    // TOTAL-DATA-SIZE
 	row10TotalSeconds := []string{"TOTAL-SECONDS"}       // TOTAL-SECONDS
-	row11MinThroughput := []string{"MIN-THROUGHPUT"}     // MIN AVG-THROUGHPUT
+	row11MaxThroughput := []string{"MAX-THROUGHPUT"}     // MAX AVG-THROUGHPUT
 	row12AverageThroughput := []string{"AVG-THROUGHPUT"} // REQUESTS-PER-SECOND
-	row13MaxThroughput := []string{"MAX-THROUGHPUT"}     // MAX AVG-THROUGHPUT
-	row14SlowestLatency := []string{"SLOWEST-LATENCY"}   // SLOWEST-LATENCY-MS
+	row13MinThroughput := []string{"MIN-THROUGHPUT"}     // MIN AVG-THROUGHPUT
+	row14FastestLatency := []string{"FASTEST-LATENCY"}   // FASTEST-LATENCY-MS
 	row15AverageLatency := []string{"AVG-LATENCY"}       // AVERAGE-LATENCY-MS
-	row16FastestLatency := []string{"FASTEST-LATENCY"}   // FASTEST-LATENCY-MS
+	row16SlowestLatency := []string{"SLOWEST-LATENCY"}   // SLOWEST-LATENCY-MS
 	row17p10 := []string{"Latency p10"}                  // p10
 	row18p25 := []string{"Latency p25"}                  // p25
 	row19p50 := []string{"Latency p50"}                  // p50
@@ -273,9 +273,9 @@ func do(configPath string) error {
 					avg := int64(fv)
 					row12AverageThroughput = append(row12AverageThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(avg)))
 				case "SLOWEST-LATENCY-MS":
-					row14SlowestLatency = append(row14SlowestLatency, fmt.Sprintf("%s ms", row[1]))
+					row16SlowestLatency = append(row16SlowestLatency, fmt.Sprintf("%s ms", row[1]))
 				case "FASTEST-LATENCY-MS":
-					row16FastestLatency = append(row16FastestLatency, fmt.Sprintf("%s ms", row[1]))
+					row14FastestLatency = append(row14FastestLatency, fmt.Sprintf("%s ms", row[1]))
 				case "AVERAGE-LATENCY-MS":
 					row15AverageLatency = append(row15AverageLatency, fmt.Sprintf("%s ms", row[1]))
 				}
@@ -310,8 +310,8 @@ func do(configPath string) error {
 					min = int64(fv)
 				}
 			}
-			row11MinThroughput = append(row11MinThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(min)))
-			row13MaxThroughput = append(row13MaxThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(max)))
+			row11MaxThroughput = append(row11MaxThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(max)))
+			row13MinThroughput = append(row13MinThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(min)))
 		}
 
 		{
@@ -396,12 +396,12 @@ func do(configPath string) error {
 		row08MaxCPUUsage,
 		row09MaxMemoryUsage,
 		row10TotalSeconds,
-		row11MinThroughput,
+		row11MaxThroughput,
 		row12AverageThroughput,
-		row13MaxThroughput,
-		row14SlowestLatency,
+		row13MinThroughput,
+		row14FastestLatency,
 		row15AverageLatency,
-		row16FastestLatency,
+		row16SlowestLatency,
 		row17p10,
 		row18p25,
 		row19p50,

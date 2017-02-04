@@ -430,9 +430,9 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 
 		point := keyNumAndMemory{
 			keyNum:      int64(vf2),
-			maxMemoryMB: sec2maxVMRSSMB[v0],
-			avgMemoryMB: vf1,
 			minMemoryMB: sec2minVMRSSMB[v0],
+			avgMemoryMB: vf1,
+			maxMemoryMB: sec2maxVMRSSMB[v0],
 		}
 		tslice = append(tslice, point)
 	}
@@ -441,14 +441,14 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 	// aggregate memory by number of keys
 	knms := processTimeSeries(tslice, 1000, totalRequests)
 	ckk1 := dataframe.NewColumn("KEYS")
-	ckk2 := dataframe.NewColumn("MAX-VMRSS-MB")
+	ckk2 := dataframe.NewColumn("MIN-VMRSS-MB")
 	ckk3 := dataframe.NewColumn("AVG-VMRSS-MB")
-	ckk4 := dataframe.NewColumn("MIN-VMRSS-MB")
+	ckk4 := dataframe.NewColumn("MAX-VMRSS-MB")
 	for i := range knms {
 		ckk1.PushBack(dataframe.NewStringValue(knms[i].keyNum))
-		ckk2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", knms[i].maxMemoryMB)))
+		ckk2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", knms[i].minMemoryMB)))
 		ckk3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", knms[i].avgMemoryMB)))
-		ckk4.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", knms[i].minMemoryMB)))
+		ckk4.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", knms[i].maxMemoryMB)))
 	}
 	fr := dataframe.New()
 	if err := fr.AddColumn(ckk1); err != nil {
