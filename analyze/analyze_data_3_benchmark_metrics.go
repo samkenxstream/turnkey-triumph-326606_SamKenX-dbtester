@@ -59,14 +59,24 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 	}
 	data.benchMetrics.lastUnixSecond = int64(ivv2)
 
-	// UNIX-SECOND, CONTROL-CLIENT-NUM, AVG-LATENCY-MS, AVG-THROUGHPUT
+	// UNIX-SECOND, CONTROL-CLIENT-NUM, MIN-LATENCY-MS, AVG-LATENCY-MS, MAX-LATENCY-MS, AVG-THROUGHPUT
 	var oldControlClientNumCol dataframe.Column
 	oldControlClientNumCol, err = tdf.Column("CONTROL-CLIENT-NUM")
 	if err != nil {
 		return err
 	}
+	var oldMinLatencyMSCol dataframe.Column
+	oldMinLatencyMSCol, err = tdf.Column("MIN-LATENCY-MS")
+	if err != nil {
+		return err
+	}
 	var oldAvgLatencyMSCol dataframe.Column
 	oldAvgLatencyMSCol, err = tdf.Column("AVG-LATENCY-MS")
+	if err != nil {
+		return err
+	}
+	var oldMaxLatencyMSCol dataframe.Column
+	oldMaxLatencyMSCol, err = tdf.Column("MAX-LATENCY-MS")
 	if err != nil {
 		return err
 	}
@@ -78,7 +88,9 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 
 	type rowData struct {
 		clientN    int64
-		latency    float64
+		minLat     float64
+		avgLat     float64
+		maxLat     float64
 		throughput float64
 	}
 	sec2Data := make(map[int64]rowData)
@@ -102,13 +114,31 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 		}
 		cn := int64(clientN)
 
-		lv, err := oldAvgLatencyMSCol.Value(i)
-		if err != nil {
-			return err
+		lv1, err1 := oldMinLatencyMSCol.Value(i)
+		if err1 != nil {
+			return err1
 		}
-		dataLat, ok := lv.Float64()
-		if !ok {
-			return fmt.Errorf("cannot Float64 %v", lv)
+		minLat, ok1 := lv1.Float64()
+		if !ok1 {
+			return fmt.Errorf("cannot Float64 %v", lv1)
+		}
+
+		lv2, err2 := oldAvgLatencyMSCol.Value(i)
+		if err2 != nil {
+			return err2
+		}
+		avgLat, ok2 := lv2.Float64()
+		if !ok2 {
+			return fmt.Errorf("cannot Float64 %v", lv2)
+		}
+
+		lv3, err3 := oldMaxLatencyMSCol.Value(i)
+		if err3 != nil {
+			return err3
+		}
+		maxLat, ok3 := lv3.Float64()
+		if !ok3 {
+			return fmt.Errorf("cannot Float64 %v", lv3)
 		}
 
 		hv, err := oldAvgThroughputCol.Value(i)
@@ -121,17 +151,23 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 		}
 
 		if v, ok := sec2Data[ts]; !ok {
-			sec2Data[ts] = rowData{clientN: cn, latency: dataLat, throughput: dataThr}
+			sec2Data[ts] = rowData{clientN: cn, minLat: minLat, avgLat: avgLat, maxLat: maxLat, throughput: dataThr}
 		} else {
 			oldCn := v.clientN
 			if oldCn != cn {
 				return fmt.Errorf("different client number with same timestamps! %d != %d", oldCn, cn)
 			}
-			sec2Data[ts] = rowData{clientN: cn, latency: (v.latency + dataLat) / 2.0, throughput: (v.throughput + dataThr) / 2.0}
+			sec2Data[ts] = rowData{
+				clientN:    cn,
+				minLat:     minFloat64(v.minLat, minLat),
+				avgLat:     (v.avgLat + avgLat) / 2.0,
+				maxLat:     maxFloat64(v.maxLat, maxLat),
+				throughput: (v.throughput + dataThr) / 2.0,
+			}
 		}
 	}
 
-	// UNIX-SECOND, CONTROL-CLIENT-NUM, AVG-LATENCY-MS, AVG-THROUGHPUT
+	// UNIX-SECOND, CONTROL-CLIENT-NUM, MIN-LATENCY-MS, AVG-LATENCY-MS, MAX-LATENCY-MS, AVG-THROUGHPUT
 	// aggregate duplicate benchmark timestamps with average values
 	// OR fill in missing timestamps with zero values
 	//
@@ -139,7 +175,9 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 	expectedRowN := data.benchMetrics.lastUnixSecond - data.benchMetrics.frontUnixSecond + 1
 	newSecondCol := dataframe.NewColumn("UNIX-SECOND")
 	newControlClientNumCol := dataframe.NewColumn("CONTROL-CLIENT-NUM")
+	newMinLatencyCol := dataframe.NewColumn("MIN-LATENCY-MS")
 	newAvgLatencyCol := dataframe.NewColumn("AVG-LATENCY-MS")
+	newMaxLatencyCol := dataframe.NewColumn("MAX-LATENCY-MS")
 	newAvgThroughputCol := dataframe.NewColumn("AVG-THROUGHPUT")
 	for i := int64(0); i < expectedRowN; i++ {
 		second := data.benchMetrics.frontUnixSecond + i
@@ -156,13 +194,17 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 			}
 
 			newControlClientNumCol.PushBack(dataframe.NewStringValue(prev.clientN))
+			newMinLatencyCol.PushBack(dataframe.NewStringValue(0.0))
 			newAvgLatencyCol.PushBack(dataframe.NewStringValue(0.0))
+			newMaxLatencyCol.PushBack(dataframe.NewStringValue(0.0))
 			newAvgThroughputCol.PushBack(dataframe.NewStringValue(0))
 			continue
 		}
 
 		newControlClientNumCol.PushBack(dataframe.NewStringValue(v.clientN))
-		newAvgLatencyCol.PushBack(dataframe.NewStringValue(v.latency))
+		newMinLatencyCol.PushBack(dataframe.NewStringValue(v.minLat))
+		newAvgLatencyCol.PushBack(dataframe.NewStringValue(v.avgLat))
+		newMaxLatencyCol.PushBack(dataframe.NewStringValue(v.maxLat))
 		newAvgThroughputCol.PushBack(dataframe.NewStringValue(v.throughput))
 	}
 
@@ -173,7 +215,13 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 	if err = df.AddColumn(newControlClientNumCol); err != nil {
 		return err
 	}
+	if err = df.AddColumn(newMinLatencyCol); err != nil {
+		return err
+	}
 	if err = df.AddColumn(newAvgLatencyCol); err != nil {
+		return err
+	}
+	if err = df.AddColumn(newMaxLatencyCol); err != nil {
 		return err
 	}
 	if err = df.AddColumn(newAvgThroughputCol); err != nil {

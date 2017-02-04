@@ -218,12 +218,12 @@ func do(configPath string) error {
 
 	row05AverageDatasize := []string{"AVG-DATA-SIZE"}    // TOTAL-DATA-SIZE
 	row10TotalSeconds := []string{"TOTAL-SECONDS"}       // TOTAL-SECONDS
-	row11MinThroughput := []string{"MIN-THROUGHPUT"}     // MIN AVG-THROUGHPUT
+	row11MaxThroughput := []string{"MAX-THROUGHPUT"}     // MAX AVG-THROUGHPUT
 	row12AverageThroughput := []string{"AVG-THROUGHPUT"} // REQUESTS-PER-SECOND
-	row13MaxThroughput := []string{"MAX-THROUGHPUT"}     // MAX AVG-THROUGHPUT
-	row14SlowestLatency := []string{"SLOWEST-LATENCY"}   // SLOWEST-LATENCY-MS
+	row13MinThroughput := []string{"MIN-THROUGHPUT"}     // MIN AVG-THROUGHPUT
+	row14FastestLatency := []string{"FASTEST-LATENCY"}   // FASTEST-LATENCY-MS
 	row15AverageLatency := []string{"AVG-LATENCY"}       // AVERAGE-LATENCY-MS
-	row16FastestLatency := []string{"FASTEST-LATENCY"}   // FASTEST-LATENCY-MS
+	row16SlowestLatency := []string{"SLOWEST-LATENCY"}   // SLOWEST-LATENCY-MS
 	row17p10 := []string{"Latency p10"}                  // p10
 	row18p25 := []string{"Latency p25"}                  // p25
 	row19p50 := []string{"Latency p50"}                  // p50
@@ -273,9 +273,9 @@ func do(configPath string) error {
 					avg := int64(fv)
 					row12AverageThroughput = append(row12AverageThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(avg)))
 				case "SLOWEST-LATENCY-MS":
-					row14SlowestLatency = append(row14SlowestLatency, fmt.Sprintf("%s ms", row[1]))
+					row16SlowestLatency = append(row16SlowestLatency, fmt.Sprintf("%s ms", row[1]))
 				case "FASTEST-LATENCY-MS":
-					row16FastestLatency = append(row16FastestLatency, fmt.Sprintf("%s ms", row[1]))
+					row14FastestLatency = append(row14FastestLatency, fmt.Sprintf("%s ms", row[1]))
 				case "AVERAGE-LATENCY-MS":
 					row15AverageLatency = append(row15AverageLatency, fmt.Sprintf("%s ms", row[1]))
 				}
@@ -310,8 +310,8 @@ func do(configPath string) error {
 					min = int64(fv)
 				}
 			}
-			row11MinThroughput = append(row11MinThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(min)))
-			row13MaxThroughput = append(row13MaxThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(max)))
+			row11MaxThroughput = append(row11MaxThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(max)))
+			row13MinThroughput = append(row13MinThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(min)))
 		}
 
 		{
@@ -396,12 +396,12 @@ func do(configPath string) error {
 		row08MaxCPUUsage,
 		row09MaxMemoryUsage,
 		row10TotalSeconds,
-		row11MinThroughput,
+		row11MaxThroughput,
 		row12AverageThroughput,
-		row13MaxThroughput,
-		row14SlowestLatency,
+		row13MinThroughput,
+		row14FastestLatency,
 		row15AverageLatency,
-		row16FastestLatency,
+		row16SlowestLatency,
 		row17p10,
 		row18p25,
 		row19p50,
@@ -426,7 +426,7 @@ func do(configPath string) error {
 		return err
 	}
 
-	// KEYS, AVG-LATENCY-MS
+	// KEYS, MIN-LATENCY-MS, AVG-LATENCY-MS, MAX-LATENCY-MS
 	plog.Printf("combining data to %q", cfg.AllLatencyByKey)
 	allLatencyFrame := dataframe.New()
 	for _, elem := range cfg.RawData {
@@ -443,19 +443,36 @@ func do(configPath string) error {
 			return err
 		}
 
-		colLatency, err := fr.Column("AVG-LATENCY-MS")
+		colMinLatency, err := fr.Column("MIN-LATENCY-MS")
 		if err != nil {
 			return err
 		}
-		colLatency.UpdateHeader(makeHeader("AVG-LATENCY-MS", makeTag(elem.Legend)))
-		if err = allLatencyFrame.AddColumn(colLatency); err != nil {
+		colMinLatency.UpdateHeader(makeHeader("MIN-LATENCY-MS", makeTag(elem.Legend)))
+		if err = allLatencyFrame.AddColumn(colMinLatency); err != nil {
+			return err
+		}
+
+		colAvgLatency, err := fr.Column("AVG-LATENCY-MS")
+		if err != nil {
+			return err
+		}
+		colAvgLatency.UpdateHeader(makeHeader("AVG-LATENCY-MS", makeTag(elem.Legend)))
+		if err = allLatencyFrame.AddColumn(colAvgLatency); err != nil {
+			return err
+		}
+
+		colMaxLatency, err := fr.Column("MAX-LATENCY-MS")
+		if err != nil {
+			return err
+		}
+		colMaxLatency.UpdateHeader(makeHeader("MAX-LATENCY-MS", makeTag(elem.Legend)))
+		if err = allLatencyFrame.AddColumn(colMaxLatency); err != nil {
 			return err
 		}
 	}
 	if err := allLatencyFrame.CSV(cfg.AllLatencyByKey); err != nil {
 		return err
 	}
-
 	allLatencyFrameCfg := PlotConfig{
 		Column:         "AVG-LATENCY-MS",
 		XAxis:          "Keys",
@@ -465,11 +482,21 @@ func do(configPath string) error {
 	allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.svg")
 	allLatencyFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.png")
 	plog.Printf("plotting %v", allLatencyFrameCfg.OutputPathList)
-	if err = all.drawXY(allLatencyFrameCfg, allLatencyFrame.Columns()...); err != nil {
+	// TODO: draw with error bar
+	var allLatencyFrameCols []dataframe.Column
+	for _, col := range allLatencyFrame.Columns() {
+		switch {
+		case strings.HasPrefix(col.Header(), "KEYS-"):
+			allLatencyFrameCols = append(allLatencyFrameCols, col) // x-axis
+		case strings.HasPrefix(col.Header(), "AVG-LATENCY-MS-"):
+			allLatencyFrameCols = append(allLatencyFrameCols, col) // y-axis
+		}
+	}
+	if err = all.drawXY(allLatencyFrameCfg, allLatencyFrameCols...); err != nil {
 		return err
 	}
 
-	// KEYS, AVG-VMRSS-MB
+	// KEYS, MIN-VMRSS-MB, AVG-VMRSS-MB, MAX-VMRSS-MB
 	plog.Printf("combining data to %q", cfg.AllMemoryByKey)
 	allMemoryFrame := dataframe.New()
 	for _, elem := range cfg.RawData {
@@ -526,18 +553,17 @@ func do(configPath string) error {
 	allMemoryFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.svg")
 	allMemoryFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.png")
 	plog.Printf("plotting %v", allMemoryFrameCfg.OutputPathList)
-
 	// TODO: draw with error bar
-	var cols []dataframe.Column
+	var allMemoryFrameCols []dataframe.Column
 	for _, col := range allMemoryFrame.Columns() {
 		switch {
 		case strings.HasPrefix(col.Header(), "KEYS-"):
-			cols = append(cols, col) // x-axis
+			allMemoryFrameCols = append(allMemoryFrameCols, col) // x-axis
 		case strings.HasPrefix(col.Header(), "AVG-VMRSS-MB-"):
-			cols = append(cols, col) // y-axis
+			allMemoryFrameCols = append(allMemoryFrameCols, col) // y-axis
 		}
 	}
-	if err = all.drawXY(allMemoryFrameCfg, cols...); err != nil {
+	if err = all.drawXY(allMemoryFrameCfg, allMemoryFrameCols...); err != nil {
 		return err
 	}
 

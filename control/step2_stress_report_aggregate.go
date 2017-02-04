@@ -18,7 +18,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/coreos/etcd/pkg/report"
+	"github.com/coreos/dbtester/pkg/report"
 )
 
 // processTimeSeries sorts all data points by its timestamp.
@@ -27,7 +27,9 @@ import (
 //
 //	type DataPoint struct {
 //		Timestamp  int64
+//		MinLatency time.Duration
 //		AvgLatency time.Duration
+//		MaxLatency time.Duration
 //		ThroughPut int64
 //	}
 //
@@ -40,8 +42,7 @@ func processTimeSeries(tss report.TimeSeries, unit int64, totalRequests int) key
 	cumulKeyN := int64(0)
 	maxKey := int64(0)
 
-	// TODO: support min,max latencies
-	rm := make(map[int64]time.Duration)
+	rm := make(map[int64]keyNumToAvgLatency)
 
 	// this data is aggregated by second
 	// and we want to map number of keys to latency
@@ -54,29 +55,28 @@ func processTimeSeries(tss report.TimeSeries, unit int64, totalRequests int) key
 			continue
 		}
 
-		lat := ts.AvgLatency
-
 		// cumulKeyN >= unit
 		for cumulKeyN > maxKey {
 			maxKey += unit
-			rm[maxKey] = lat
+			rm[maxKey] = keyNumToAvgLatency{minLat: ts.MinLatency, avgLat: ts.AvgLatency, maxLat: ts.MaxLatency}
 		}
 	}
 
 	// fill-in empty rows
 	for i := maxKey; i < int64(totalRequests); i += unit {
 		if _, ok := rm[i]; !ok {
-			rm[i] = time.Duration(0)
+			rm[i] = keyNumToAvgLatency{}
 		}
 	}
 	if _, ok := rm[int64(totalRequests)]; !ok {
-		rm[int64(totalRequests)] = time.Duration(0)
+		rm[int64(totalRequests)] = keyNumToAvgLatency{}
 	}
 
 	kss := []keyNumToAvgLatency{}
 	delete(rm, 0)
 	for k, v := range rm {
-		kss = append(kss, keyNumToAvgLatency{keyNum: k, avgLat: v})
+		// make sure to use 'k' as keyNum
+		kss = append(kss, keyNumToAvgLatency{keyNum: k, minLat: v.minLat, avgLat: v.avgLat, maxLat: v.maxLat})
 	}
 	sort.Sort(keyNumToAvgLatencys(kss))
 
@@ -85,7 +85,9 @@ func processTimeSeries(tss report.TimeSeries, unit int64, totalRequests int) key
 
 type keyNumToAvgLatency struct {
 	keyNum int64
+	minLat time.Duration
 	avgLat time.Duration
+	maxLat time.Duration
 }
 
 type keyNumToAvgLatencys []keyNumToAvgLatency

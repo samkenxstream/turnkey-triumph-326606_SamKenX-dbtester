@@ -22,7 +22,7 @@ import (
 	"time"
 
 	"github.com/cheggaaa/pb"
-	"github.com/coreos/etcd/pkg/report"
+	"github.com/coreos/dbtester/pkg/report"
 	"github.com/gyuho/dataframe"
 	"golang.org/x/net/context"
 )
@@ -293,18 +293,25 @@ func saveDataLatencyDistributionAll(cfg Config, st report.Stats) {
 func saveDataLatencyThroughputTimeseries(cfg Config, st report.Stats, tsToClientN map[int64]int) {
 	c1 := dataframe.NewColumn("UNIX-SECOND")
 	c2 := dataframe.NewColumn("CONTROL-CLIENT-NUM")
-	c3 := dataframe.NewColumn("AVG-LATENCY-MS")
-	c4 := dataframe.NewColumn("AVG-THROUGHPUT")
+	c3 := dataframe.NewColumn("MIN-LATENCY-MS")
+	c4 := dataframe.NewColumn("AVG-LATENCY-MS")
+	c5 := dataframe.NewColumn("MAX-LATENCY-MS")
+	c6 := dataframe.NewColumn("AVG-THROUGHPUT")
 	for i := range st.TimeSeries {
 		// this Timestamp is unix seconds
 		c1.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", st.TimeSeries[i].Timestamp)))
+
 		if len(tsToClientN) == 0 {
 			c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", cfg.Step2.Clients)))
 		} else {
 			c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", tsToClientN[st.TimeSeries[i].Timestamp])))
 		}
-		c3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(st.TimeSeries[i].AvgLatency))))
-		c4.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", st.TimeSeries[i].ThroughPut)))
+
+		c3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(st.TimeSeries[i].MinLatency))))
+		c4.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(st.TimeSeries[i].AvgLatency))))
+		c5.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(st.TimeSeries[i].MaxLatency))))
+
+		c6.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", st.TimeSeries[i].ThroughPut)))
 	}
 
 	fr := dataframe.New()
@@ -320,6 +327,13 @@ func saveDataLatencyThroughputTimeseries(cfg Config, st report.Stats, tsToClient
 	if err := fr.AddColumn(c4); err != nil {
 		plog.Fatal(err)
 	}
+	if err := fr.AddColumn(c5); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr.AddColumn(c6); err != nil {
+		plog.Fatal(err)
+	}
+
 	if err := fr.CSV(cfg.DataLatencyThroughputTimeseries); err != nil {
 		plog.Fatal(err)
 	}
@@ -327,13 +341,16 @@ func saveDataLatencyThroughputTimeseries(cfg Config, st report.Stats, tsToClient
 	// aggregate latency by the number of keys
 	tss := processTimeSeries(st.TimeSeries, 1000, cfg.Step2.TotalRequests)
 	ctt1 := dataframe.NewColumn("KEYS")
-	// dataframe.NewColumn("MIN-LATENCY-MS")
-	ctt2 := dataframe.NewColumn("AVG-LATENCY-MS")
-	// dataframe.NewColumn("MAX-LATENCY-MS")
+	ctt2 := dataframe.NewColumn("MIN-LATENCY-MS")
+	ctt3 := dataframe.NewColumn("AVG-LATENCY-MS")
+	ctt4 := dataframe.NewColumn("MAX-LATENCY-MS")
 	for i := range tss {
 		ctt1.PushBack(dataframe.NewStringValue(tss[i].keyNum))
-		ctt2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(tss[i].avgLat))))
+		ctt2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(tss[i].minLat))))
+		ctt3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(tss[i].avgLat))))
+		ctt4.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(tss[i].maxLat))))
 	}
+
 	frr := dataframe.New()
 	if err := frr.AddColumn(ctt1); err != nil {
 		plog.Fatal(err)
@@ -341,12 +358,13 @@ func saveDataLatencyThroughputTimeseries(cfg Config, st report.Stats, tsToClient
 	if err := frr.AddColumn(ctt2); err != nil {
 		plog.Fatal(err)
 	}
-	// if err := frr.AddColumn(ctt3); err != nil {
-	// 	plog.Fatal(err)
-	// }
-	// if err := frr.AddColumn(ctt4); err != nil {
-	// 	plog.Fatal(err)
-	// }
+	if err := frr.AddColumn(ctt3); err != nil {
+		plog.Fatal(err)
+	}
+	if err := frr.AddColumn(ctt4); err != nil {
+		plog.Fatal(err)
+	}
+
 	if err := frr.CSV(cfg.DataLatencyByKeyNumber); err != nil {
 		plog.Fatal(err)
 	}
