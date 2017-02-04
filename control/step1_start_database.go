@@ -78,7 +78,7 @@ func sendReq(ep string, req agentpb.Request, i int) (*agentpb.Response, error) {
 
 	// give enough timeout
 	// e.g. uploading logs takes longer
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	resp, err := cli.Transfer(ctx, &req)
 	cancel()
 	if err != nil {
