@@ -495,6 +495,16 @@ func do(configPath string) error {
 		if err = all.drawXY(allLatencyFrameCfg, allLatencyFrameCols...); err != nil {
 			return err
 		}
+		newCSV := dataframe.New()
+		for _, col := range allLatencyFrameCols {
+			if err = newCSV.AddColumn(col); err != nil {
+				return err
+			}
+		}
+		csvPath := filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.csv")
+		if err := newCSV.CSV(csvPath); err != nil {
+			return err
+		}
 	}
 	{
 		// TODO: draw with error bar
@@ -518,6 +528,16 @@ func do(configPath string) error {
 			}
 		}
 		if err = all.drawXY(allLatencyFrameCfg, allLatencyFrameCols...); err != nil {
+			return err
+		}
+		newCSV := dataframe.New()
+		for _, col := range allLatencyFrameCols {
+			if err = newCSV.AddColumn(col); err != nil {
+				return err
+			}
+		}
+		csvPath := filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.csv")
+		if err := newCSV.CSV(csvPath); err != nil {
 			return err
 		}
 	}
@@ -591,6 +611,16 @@ func do(configPath string) error {
 		if err = all.drawXY(allMemoryFrameCfg, allMemoryFrameCols...); err != nil {
 			return err
 		}
+		newCSV := dataframe.New()
+		for _, col := range allMemoryFrameCols {
+			if err = newCSV.AddColumn(col); err != nil {
+				return err
+			}
+		}
+		csvPath := filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.csv")
+		if err := newCSV.CSV(csvPath); err != nil {
+			return err
+		}
 	}
 	{
 		// TODO: draw with error bar
@@ -614,6 +644,16 @@ func do(configPath string) error {
 			}
 		}
 		if err = all.drawXY(allMemoryFrameCfg, allMemoryFrameCols...); err != nil {
+			return err
+		}
+		newCSV := dataframe.New()
+		for _, col := range allMemoryFrameCols {
+			if err = newCSV.AddColumn(col); err != nil {
+				return err
+			}
+		}
+		csvPath := filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.csv")
+		if err := newCSV.CSV(csvPath); err != nil {
 			return err
 		}
 	}
