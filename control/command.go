@@ -17,6 +17,7 @@ package control
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
 	"time"
 
@@ -71,6 +72,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 	default:
 		return fmt.Errorf("%q is not supported", cfg.Database)
 	}
+
 	if !cfg.Step2.SkipStressDatabase {
 		switch cfg.Step2.BenchType {
 		case "write":
@@ -89,6 +91,66 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 		cfg.Step4.GoogleCloudStorageKey = string(bts)
 	}
 
+	pid := int64(os.Getpid())
+	plog.Infof("starting collecting system metrics at %q [disk device: %q | network interface: %q | PID: %d]", cfg.ClientSystemMetrics, diskDevice, networkInterface, pid)
+	if err = os.RemoveAll(cfg.ClientSystemMetrics); err != nil {
+		return err
+	}
+	tcfg := &psn.TopConfig{
+		Exec:           psn.DefaultTopPath,
+		IntervalSecond: 1,
+		PID:            pid,
+	}
+	var metricsCSV *psn.CSV
+	metricsCSV, err = psn.NewCSV(
+		cfg.ClientSystemMetrics,
+		pid,
+		diskDevice,
+		networkInterface,
+		"",
+		tcfg,
+	)
+	if err = metricsCSV.Add(); err != nil {
+		return err
+	}
+
+	donec, sysdonec := make(chan struct{}), make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <-time.After(time.Second):
+				if err := metricsCSV.Add(); err != nil {
+					plog.Errorf("psn.CSV.Add error (%v)", err)
+					continue
+				}
+
+			case <-donec:
+				plog.Infof("finishing collecting system metrics; saving CSV at %q", cfg.ClientSystemMetrics)
+
+				if err := metricsCSV.Save(); err != nil {
+					plog.Errorf("psn.CSV.Save(%q) error %v", metricsCSV.FilePath, err)
+				} else {
+					plog.Infof("CSV saved at %q", metricsCSV.FilePath)
+				}
+
+				interpolated, err := metricsCSV.Interpolate()
+				if err != nil {
+					plog.Fatalf("psn.CSV.Interpolate(%q) failed with %v", metricsCSV.FilePath, err)
+				}
+				interpolated.FilePath = cfg.ClientSystemMetricsInterpolated
+				if err := interpolated.Save(); err != nil {
+					plog.Errorf("psn.CSV.Save(%q) error %v", interpolated.FilePath, err)
+				} else {
+					plog.Infof("CSV saved at %q", interpolated.FilePath)
+				}
+
+				close(sysdonec)
+				plog.Infof("finished collecting system metrics")
+				return
+			}
+		}
+	}()
+
 	// protoc sorts the 'repeated' type data
 	// encode in string to enforce ordering of IPs
 	cfg.PeerIPString = strings.Join(cfg.PeerIPs, "___")
@@ -101,12 +163,12 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 		cfg.DatabaseEndpoints[i] = fmt.Sprintf("%s:%d", cfg.PeerIPs[i], cfg.DatabasePort)
 	}
 
+	no, nerr := ntp.DefaultSync()
+	plog.Infof("npt update output: %q", no)
+	plog.Infof("npt update error: %v", nerr)
+
 	println()
 	if !cfg.Step1.SkipStartDatabase {
-		no, nerr := ntp.DefaultSync()
-		plog.Infof("npt update output: %q", no)
-		plog.Infof("npt update error: %v", nerr)
-
 		plog.Info("step 1: starting databases...")
 		if err = step1StartDatabase(cfg); err != nil {
 			return err
@@ -135,6 +197,9 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 	println()
 	time.Sleep(time.Second)
 	saveDatasizeSummary(cfg, idxToResponse)
+
+	close(donec)
+	<-sysdonec
 
 	if cfg.Step4.UploadLogs {
 		println()
