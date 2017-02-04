@@ -476,8 +476,8 @@ func do(configPath string) error {
 	{
 		allLatencyFrameCfg := PlotConfig{
 			Column:         "AVG-LATENCY-MS",
-			XAxis:          "Keys",
-			YAxis:          "Latency(millisecond)",
+			XAxis:          "Cumulative Number of Keys",
+			YAxis:          "Latency(millisecond) by Keys",
 			OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
 		}
 		allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.svg")
@@ -498,6 +498,28 @@ func do(configPath string) error {
 	}
 	{
 		// TODO: draw with error bar
+
+		allLatencyFrameCfg := PlotConfig{
+			Column:         "AVG-LATENCY-MS",
+			XAxis:          "Cumulative Number of Keys",
+			YAxis:          "Latency(millisecond) by Keys",
+			OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
+		}
+		allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.svg")
+		allLatencyFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.png")
+		plog.Printf("plotting %v", allLatencyFrameCfg.OutputPathList)
+		var allLatencyFrameCols []dataframe.Column
+		for _, col := range allLatencyFrame.Columns() {
+			switch {
+			case strings.HasPrefix(col.Header(), "KEYS-"):
+				allLatencyFrameCols = append(allLatencyFrameCols, col) // x-axis
+			case strings.HasPrefix(col.Header(), "AVG-LATENCY-MS-"):
+				allLatencyFrameCols = append(allLatencyFrameCols, col) // y-axis
+			}
+		}
+		if err = all.drawXY(allLatencyFrameCfg, allLatencyFrameCols...); err != nil {
+			return err
+		}
 	}
 
 	// KEYS, MIN-VMRSS-MB, AVG-VMRSS-MB, MAX-VMRSS-MB
@@ -550,14 +572,13 @@ func do(configPath string) error {
 	{
 		allMemoryFrameCfg := PlotConfig{
 			Column:         "AVG-VMRSS-MB",
-			XAxis:          "Keys",
-			YAxis:          "Memory(MB)",
+			XAxis:          "Cumulative Number of Keys",
+			YAxis:          "Memory(MB) by Keys",
 			OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
 		}
 		allMemoryFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.svg")
 		allMemoryFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.png")
 		plog.Printf("plotting %v", allMemoryFrameCfg.OutputPathList)
-		// TODO: draw with error bar
 		var allMemoryFrameCols []dataframe.Column
 		for _, col := range allMemoryFrame.Columns() {
 			switch {
@@ -573,6 +594,28 @@ func do(configPath string) error {
 	}
 	{
 		// TODO: draw with error bar
+
+		allMemoryFrameCfg := PlotConfig{
+			Column:         "AVG-VMRSS-MB",
+			XAxis:          "Cumulative Number of Keys",
+			YAxis:          "Memory(MB) by Keys",
+			OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
+		}
+		allMemoryFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.svg")
+		allMemoryFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.png")
+		plog.Printf("plotting %v", allMemoryFrameCfg.OutputPathList)
+		var allMemoryFrameCols []dataframe.Column
+		for _, col := range allMemoryFrame.Columns() {
+			switch {
+			case strings.HasPrefix(col.Header(), "KEYS-"):
+				allMemoryFrameCols = append(allMemoryFrameCols, col) // x-axis
+			case strings.HasPrefix(col.Header(), "AVG-VMRSS-MB-"):
+				allMemoryFrameCols = append(allMemoryFrameCols, col) // y-axis
+			}
+		}
+		if err = all.drawXY(allMemoryFrameCfg, allMemoryFrameCols...); err != nil {
+			return err
+		}
 	}
 
 	plog.Println("combining data for plotting")
