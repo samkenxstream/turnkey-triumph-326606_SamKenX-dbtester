@@ -23,6 +23,8 @@ import (
 	"sort"
 	"strings"
 
+	"strconv"
+
 	"github.com/coreos/dbtester/control"
 	humanize "github.com/dustin/go-humanize"
 	"github.com/gyuho/dataframe"
@@ -216,19 +218,20 @@ func do(configPath string) error {
 
 	row05AverageDatasize := []string{"AVG-DATA-SIZE"}    // TOTAL-DATA-SIZE
 	row10TotalSeconds := []string{"TOTAL-SECONDS"}       // TOTAL-SECONDS
-	row11AverageThroughput := []string{"AVG-THROUGHPUT"} // REQUESTS-PER-SECOND
-	row12MaxThroughput := []string{"MAX-THROUGHPUT"}     // MAX AVG-THROUGHPUT
-	row13SlowestLatency := []string{"SLOWEST-LATENCY"}   // SLOWEST-LATENCY-MS
-	row14FastestLatency := []string{"FASTEST-LATENCY"}   // FASTEST-LATENCY-MS
+	row11MinThroughput := []string{"MIN-THROUGHPUT"}     // MIN AVG-THROUGHPUT
+	row12AverageThroughput := []string{"AVG-THROUGHPUT"} // REQUESTS-PER-SECOND
+	row13MaxThroughput := []string{"MAX-THROUGHPUT"}     // MAX AVG-THROUGHPUT
+	row14SlowestLatency := []string{"SLOWEST-LATENCY"}   // SLOWEST-LATENCY-MS
 	row15AverageLatency := []string{"AVG-LATENCY"}       // AVERAGE-LATENCY-MS
-	row16p10 := []string{"Latency p10"}                  // p10
-	row17p25 := []string{"Latency p25"}                  // p25
-	row18p50 := []string{"Latency p50"}                  // p50
-	row19p75 := []string{"Latency p75"}                  // p75
-	row20p90 := []string{"Latency p90"}                  // p90
-	row21p95 := []string{"Latency p95"}                  // p95
-	row22p99 := []string{"Latency p99"}                  // p99
-	row23p999 := []string{"Latency p99.9"}               // p99.9
+	row16FastestLatency := []string{"FASTEST-LATENCY"}   // FASTEST-LATENCY-MS
+	row17p10 := []string{"Latency p10"}                  // p10
+	row18p25 := []string{"Latency p25"}                  // p25
+	row19p50 := []string{"Latency p50"}                  // p50
+	row20p75 := []string{"Latency p75"}                  // p75
+	row21p90 := []string{"Latency p90"}                  // p90
+	row22p95 := []string{"Latency p95"}                  // p95
+	row23p99 := []string{"Latency p99"}                  // p99
+	row24p999 := []string{"Latency p99.9"}               // p99.9
 
 	for i, rcfg := range cfg.RawData {
 		tag := makeTag(rcfg.Legend)
@@ -263,11 +266,16 @@ func do(configPath string) error {
 				case "TOTAL-SECONDS":
 					row10TotalSeconds = append(row10TotalSeconds, fmt.Sprintf("%s sec", row[1]))
 				case "REQUESTS-PER-SECOND":
-					row11AverageThroughput = append(row11AverageThroughput, fmt.Sprintf("%s req/sec", row[1]))
+					fv, err := strconv.ParseFloat(row[1], 64)
+					if err != nil {
+						return err
+					}
+					avg := int64(fv)
+					row12AverageThroughput = append(row12AverageThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(avg)))
 				case "SLOWEST-LATENCY-MS":
-					row13SlowestLatency = append(row13SlowestLatency, fmt.Sprintf("%s ms", row[1]))
+					row14SlowestLatency = append(row14SlowestLatency, fmt.Sprintf("%s ms", row[1]))
 				case "FASTEST-LATENCY-MS":
-					row14FastestLatency = append(row14FastestLatency, fmt.Sprintf("%s ms", row[1]))
+					row16FastestLatency = append(row16FastestLatency, fmt.Sprintf("%s ms", row[1]))
 				case "AVERAGE-LATENCY-MS":
 					row15AverageLatency = append(row15AverageLatency, fmt.Sprintf("%s ms", row[1]))
 				}
@@ -283,18 +291,27 @@ func do(configPath string) error {
 			if err != nil {
 				return err
 			}
-			var max uint64
+			var min int64
+			var max int64
 			for i := 0; i < col.Count(); i++ {
 				val, err := col.Value(i)
 				if err != nil {
 					return err
 				}
 				fv, _ := val.Float64()
-				if max < uint64(fv) {
-					max = uint64(fv)
+
+				if i == 0 {
+					min = int64(fv)
+				}
+				if max < int64(fv) {
+					max = int64(fv)
+				}
+				if min > int64(fv) {
+					min = int64(fv)
 				}
 			}
-			row12MaxThroughput = append(row12MaxThroughput, fmt.Sprint(max))
+			row11MinThroughput = append(row11MinThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(min)))
+			row13MaxThroughput = append(row13MaxThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(max)))
 		}
 
 		{
@@ -347,21 +364,21 @@ func do(configPath string) error {
 				}
 				switch row[0] {
 				case "p10":
-					row16p10 = append(row16p10, fmt.Sprintf("%s ms", row[1]))
+					row17p10 = append(row17p10, fmt.Sprintf("%s ms", row[1]))
 				case "p25":
-					row17p25 = append(row17p25, fmt.Sprintf("%s ms", row[1]))
+					row18p25 = append(row18p25, fmt.Sprintf("%s ms", row[1]))
 				case "p50":
-					row18p50 = append(row18p50, fmt.Sprintf("%s ms", row[1]))
+					row19p50 = append(row19p50, fmt.Sprintf("%s ms", row[1]))
 				case "p75":
-					row19p75 = append(row19p75, fmt.Sprintf("%s ms", row[1]))
+					row20p75 = append(row20p75, fmt.Sprintf("%s ms", row[1]))
 				case "p90":
-					row20p90 = append(row20p90, fmt.Sprintf("%s ms", row[1]))
+					row21p90 = append(row21p90, fmt.Sprintf("%s ms", row[1]))
 				case "p95":
-					row21p95 = append(row21p95, fmt.Sprintf("%s ms", row[1]))
+					row22p95 = append(row22p95, fmt.Sprintf("%s ms", row[1]))
 				case "p99":
-					row22p99 = append(row22p99, fmt.Sprintf("%s ms", row[1]))
+					row23p99 = append(row23p99, fmt.Sprintf("%s ms", row[1]))
 				case "p99.9":
-					row23p999 = append(row23p999, fmt.Sprintf("%s ms", row[1]))
+					row24p999 = append(row24p999, fmt.Sprintf("%s ms", row[1]))
 				}
 			}
 		}
@@ -379,19 +396,20 @@ func do(configPath string) error {
 		row08MaxCPUUsage,
 		row09MaxMemoryUsage,
 		row10TotalSeconds,
-		row11AverageThroughput,
-		row12MaxThroughput,
-		row13SlowestLatency,
-		row14FastestLatency,
+		row11MinThroughput,
+		row12AverageThroughput,
+		row13MaxThroughput,
+		row14SlowestLatency,
 		row15AverageLatency,
-		row16p10,
-		row17p25,
-		row18p50,
-		row19p75,
-		row20p90,
-		row21p95,
-		row22p99,
-		row23p999,
+		row16FastestLatency,
+		row17p10,
+		row18p25,
+		row19p50,
+		row20p75,
+		row21p90,
+		row22p95,
+		row23p99,
+		row24p999,
 	}
 	plog.Printf("saving data to %q", cfg.AllAggregatedPath)
 	file, err := openToOverwrite(cfg.AllAggregatedPath)
