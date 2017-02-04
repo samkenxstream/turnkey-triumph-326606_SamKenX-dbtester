@@ -61,6 +61,12 @@ func TestReadConfig(t *testing.T) {
 	if c.DataLatencyByKeyNumber != "data-latency-by-key-number.csv" {
 		t.Fatalf("unexpected %s", c.DataLatencyByKeyNumber)
 	}
+	if c.ClientSystemMetrics != "client-system-metrics.csv" {
+		t.Fatalf("unexpected %s", c.ClientSystemMetrics)
+	}
+	if c.ClientSystemMetricsInterpolated != "client-system-metrics-interpolated.csv" {
+		t.Fatalf("unexpected %s", c.ClientSystemMetricsInterpolated)
+	}
 
 	if c.Step1.SkipStartDatabase {
 		t.Fatalf("unexpected %v", c.Step1.SkipStartDatabase)
@@ -128,7 +134,7 @@ func TestReadConfig(t *testing.T) {
 	if c.Step4.GoogleCloudStorageBucketName != "dbtester-results" {
 		t.Fatalf("unexpected %s", c.Step4.GoogleCloudStorageBucketName)
 	}
-	if c.Step4.GoogleCloudStorageSubDirectory != "2016041501" {
+	if c.Step4.GoogleCloudStorageSubDirectory != "2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable" {
 		t.Fatalf("unexpected %s", c.Step4.GoogleCloudStorageSubDirectory)
 	}
 }

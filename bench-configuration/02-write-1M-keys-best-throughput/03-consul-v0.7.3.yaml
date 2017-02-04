@@ -18,6 +18,10 @@ data_latency_distribution_all: data-latency-distribution-all.csv
 data_latency_throughput_timeseries: data-latency-throughput-timeseries.csv
 data_latency_by_key_number: data-latency-by-key-number.csv
 
+# client machine's system metrics
+client_system_metrics: client-system-metrics.csv
+client_system_metrics_interpolated: client-system-metrics-interpolated.csv
+
 # start database by sending RPC calls to agents
 step1:
     skip_start_database: false
