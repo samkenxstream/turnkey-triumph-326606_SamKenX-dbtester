@@ -21,6 +21,8 @@ import (
 	"time"
 
 	"github.com/coreos/dbtester/pkg/ntp"
+	"github.com/coreos/etcd/pkg/netutil"
+	"github.com/gyuho/psn"
 	"github.com/spf13/cobra"
 )
 
@@ -32,9 +34,26 @@ var Command = &cobra.Command{
 }
 
 var configPath string
+var diskDevice string
+var networkInterface string
 
 func init() {
+	dn, err := psn.GetDevice("/")
+	if err != nil {
+		plog.Warningf("cannot get disk device mounted at '/' (%v)", err)
+	}
+	nm, err := netutil.GetDefaultInterfaces()
+	if err != nil {
+		plog.Warningf("cannot detect default network interface (%v)", err)
+	}
+	var nt string
+	for k := range nm {
+		nt = k
+		break
+	}
 	Command.PersistentFlags().StringVarP(&configPath, "config", "c", "", "YAML configuration file path.")
+	Command.PersistentFlags().StringVar(&diskDevice, "disk-device", dn, "Disk device to collect disk statistics metrics from.")
+	Command.PersistentFlags().StringVar(&networkInterface, "network-interface", nt, "Network interface to record in/outgoing packets.")
 }
 
 func commandFunc(cmd *cobra.Command, args []string) error {
