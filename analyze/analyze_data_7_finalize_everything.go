@@ -483,16 +483,16 @@ func do(configPath string) error {
 	allLatencyFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.png")
 	plog.Printf("plotting %v", allLatencyFrameCfg.OutputPathList)
 	// TODO: draw with error bar
-	var cols []dataframe.Column
+	var allLatencyFrameCols []dataframe.Column
 	for _, col := range allLatencyFrame.Columns() {
 		switch {
 		case strings.HasPrefix(col.Header(), "KEYS-"):
-			cols = append(cols, col) // x-axis
+			allLatencyFrameCols = append(allLatencyFrameCols, col) // x-axis
 		case strings.HasPrefix(col.Header(), "AVG-LATENCY-MS-"):
-			cols = append(cols, col) // y-axis
+			allLatencyFrameCols = append(allLatencyFrameCols, col) // y-axis
 		}
 	}
-	if err = all.drawXY(allLatencyFrameCfg, cols...); err != nil {
+	if err = all.drawXY(allLatencyFrameCfg, allLatencyFrameCols...); err != nil {
 		return err
 	}
 
@@ -554,16 +554,16 @@ func do(configPath string) error {
 	allMemoryFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.png")
 	plog.Printf("plotting %v", allMemoryFrameCfg.OutputPathList)
 	// TODO: draw with error bar
-	var cols []dataframe.Column
+	var allMemoryFrameCols []dataframe.Column
 	for _, col := range allMemoryFrame.Columns() {
 		switch {
 		case strings.HasPrefix(col.Header(), "KEYS-"):
-			cols = append(cols, col) // x-axis
+			allMemoryFrameCols = append(allMemoryFrameCols, col) // x-axis
 		case strings.HasPrefix(col.Header(), "AVG-VMRSS-MB-"):
-			cols = append(cols, col) // y-axis
+			allMemoryFrameCols = append(allMemoryFrameCols, col) // y-axis
 		}
 	}
-	if err = all.drawXY(allMemoryFrameCfg, cols...); err != nil {
+	if err = all.drawXY(allMemoryFrameCfg, allMemoryFrameCols...); err != nil {
 		return err
 	}
 
