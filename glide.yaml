@@ -20,6 +20,7 @@ import:
   - pkg/pathutil
   - pkg/report
   - pkg/tlsutil
+  - pkg/netutil
   - pkg/types
 - package: github.com/coreos/pkg
   version: fa29b1d70f0beaddd4c7021607cc3c3be8ce94b8

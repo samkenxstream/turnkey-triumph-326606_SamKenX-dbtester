@@ -1,5 +1,5 @@
-hash: e5584a63b49ea1a52af370feb9966f196cf9e0fd99c4a331cc88212f75bc02c5
-updated: 2017-02-04T02:29:21.292664157-08:00
+hash: 2d75e283730727258be1036655ec7ba84552ff3e2c62370dabb11ef1ee48d36a
+updated: 2017-02-04T03:24:46.484108887-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -33,6 +33,7 @@ imports:
   - etcdserver/api/v3rpc/rpctypes
   - etcdserver/etcdserverpb
   - mvcc/mvccpb
+  - pkg/netutil
   - pkg/pathutil
   - pkg/report
   - pkg/tlsutil
