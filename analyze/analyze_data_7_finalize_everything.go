@@ -570,12 +570,12 @@ func do(configPath string) error {
 			return err
 		}
 
-		colMemMax, err := fr.Column("MAX-VMRSS-MB")
+		colMemMin, err := fr.Column("MIN-VMRSS-MB")
 		if err != nil {
 			return err
 		}
-		colMemMax.UpdateHeader(makeHeader("MAX-VMRSS-MB", makeTag(elem.Legend)))
-		if err = allMemoryFrame.AddColumn(colMemMax); err != nil {
+		colMemMin.UpdateHeader(makeHeader("MIN-VMRSS-MB", makeTag(elem.Legend)))
+		if err = allMemoryFrame.AddColumn(colMemMin); err != nil {
 			return err
 		}
 
@@ -588,12 +588,12 @@ func do(configPath string) error {
 			return err
 		}
 
-		colMemMin, err := fr.Column("MIN-VMRSS-MB")
+		colMemMax, err := fr.Column("MAX-VMRSS-MB")
 		if err != nil {
 			return err
 		}
-		colMemMin.UpdateHeader(makeHeader("MIN-VMRSS-MB", makeTag(elem.Legend)))
-		if err = allMemoryFrame.AddColumn(colMemMin); err != nil {
+		colMemMax.UpdateHeader(makeHeader("MAX-VMRSS-MB", makeTag(elem.Legend)))
+		if err = allMemoryFrame.AddColumn(colMemMax); err != nil {
 			return err
 		}
 	}
