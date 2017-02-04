@@ -18,7 +18,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/coreos/etcd/pkg/report"
+	"github.com/coreos/dbtester/pkg/report"
 )
 
 // processTimeSeries sorts all data points by its timestamp.

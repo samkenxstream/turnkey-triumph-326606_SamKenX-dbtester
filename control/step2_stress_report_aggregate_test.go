@@ -19,7 +19,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/coreos/etcd/pkg/report"
+	"github.com/coreos/dbtester/pkg/report"
 )
 
 func Test_processTimeSeries(t *testing.T) {
