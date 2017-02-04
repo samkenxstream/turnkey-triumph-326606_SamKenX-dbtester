@@ -365,11 +365,11 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 	if err != nil {
 		return err
 	}
-	colMemoryMB, err := data.aggregated.Column(makeHeader("AVG-VMRSS-MB", data.databaseTag))
+	colMemoryMB, err := data.aggregated.Column("AVG-VMRSS-MB")
 	if err != nil {
 		return err
 	}
-	colAvgThroughput, err := data.aggregated.Column(makeHeader("AVG-THROUGHPUT", data.databaseTag))
+	colAvgThroughput, err := data.aggregated.Column("AVG-THROUGHPUT")
 	if err != nil {
 		return err
 	}

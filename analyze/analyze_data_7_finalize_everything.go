@@ -217,17 +217,18 @@ func do(configPath string) error {
 	row05AverageDatasize := []string{"AVG-DATA-SIZE"}    // TOTAL-DATA-SIZE
 	row10TotalSeconds := []string{"TOTAL-SECONDS"}       // TOTAL-SECONDS
 	row11AverageThroughput := []string{"AVG-THROUGHPUT"} // REQUESTS-PER-SECOND
-	row12SlowestLatency := []string{"SLOWEST-LATENCY"}   // SLOWEST-LATENCY-MS
-	row13FastestLatency := []string{"FASTEST-LATENCY"}   // FASTEST-LATENCY-MS
-	row14AverageLatency := []string{"AVG-LATENCY"}       // AVERAGE-LATENCY-MS
-	row15p10 := []string{"Latency p10"}                  // p10
-	row16p25 := []string{"Latency p25"}                  // p25
-	row17p50 := []string{"Latency p50"}                  // p50
-	row18p75 := []string{"Latency p75"}                  // p75
-	row19p90 := []string{"Latency p90"}                  // p90
-	row20p95 := []string{"Latency p95"}                  // p95
-	row21p99 := []string{"Latency p99"}                  // p99
-	row22p999 := []string{"Latency p99.9"}               // p99.9
+	row12MaxThroughput := []string{"MAX-THROUGHPUT"}     // MAX AVG-THROUGHPUT
+	row13SlowestLatency := []string{"SLOWEST-LATENCY"}   // SLOWEST-LATENCY-MS
+	row14FastestLatency := []string{"FASTEST-LATENCY"}   // FASTEST-LATENCY-MS
+	row15AverageLatency := []string{"AVG-LATENCY"}       // AVERAGE-LATENCY-MS
+	row16p10 := []string{"Latency p10"}                  // p10
+	row17p25 := []string{"Latency p25"}                  // p25
+	row18p50 := []string{"Latency p50"}                  // p50
+	row19p75 := []string{"Latency p75"}                  // p75
+	row20p90 := []string{"Latency p90"}                  // p90
+	row21p95 := []string{"Latency p95"}                  // p95
+	row22p99 := []string{"Latency p99"}                  // p99
+	row23p999 := []string{"Latency p99.9"}               // p99.9
 
 	for i, rcfg := range cfg.RawData {
 		tag := makeTag(rcfg.Legend)
@@ -236,7 +237,7 @@ func do(configPath string) error {
 		}
 
 		{
-			f, err := openToRead(rcfg.DatasizeSummary)
+			f, err := openToRead(rcfg.DataBenchmarkLatencySummary)
 			if err != nil {
 				return err
 			}
@@ -264,21 +265,44 @@ func do(configPath string) error {
 				case "REQUESTS-PER-SECOND":
 					row11AverageThroughput = append(row11AverageThroughput, fmt.Sprintf("%s req/sec", row[1]))
 				case "SLOWEST-LATENCY-MS":
-					row12SlowestLatency = append(row12SlowestLatency, fmt.Sprintf("%s ms", row[1]))
+					row13SlowestLatency = append(row13SlowestLatency, fmt.Sprintf("%s ms", row[1]))
 				case "FASTEST-LATENCY-MS":
-					row13FastestLatency = append(row13FastestLatency, fmt.Sprintf("%s ms", row[1]))
+					row14FastestLatency = append(row14FastestLatency, fmt.Sprintf("%s ms", row[1]))
 				case "AVERAGE-LATENCY-MS":
-					row14AverageLatency = append(row14AverageLatency, fmt.Sprintf("%s ms", row[1]))
+					row15AverageLatency = append(row15AverageLatency, fmt.Sprintf("%s ms", row[1]))
 				}
 			}
 		}
 
 		{
-			fr, err := dataframe.NewFromCSV(control.DataSummaryColumns, rcfg.DataBenchmarkLatencySummary)
+			fr, err := dataframe.NewFromCSV(nil, rcfg.DataBenchmarkThroughput)
 			if err != nil {
 				return err
 			}
-			col, err := fr.Column(control.DataSummaryColumns[2]) // datasize in bytes
+			col, err := fr.Column("AVG-THROUGHPUT")
+			if err != nil {
+				return err
+			}
+			var max uint64
+			for i := 0; i < col.Count(); i++ {
+				val, err := col.Value(i)
+				if err != nil {
+					return err
+				}
+				fv, _ := val.Float64()
+				if max < uint64(fv) {
+					max = uint64(fv)
+				}
+			}
+			row12MaxThroughput = append(row12MaxThroughput, fmt.Sprint(max))
+		}
+
+		{
+			fr, err := dataframe.NewFromCSV(nil, rcfg.DatasizeSummary)
+			if err != nil {
+				return err
+			}
+			col, err := fr.Column(control.DataSummaryColumns[3]) // datasize in bytes
 			if err != nil {
 				return err
 			}
@@ -323,21 +347,21 @@ func do(configPath string) error {
 				}
 				switch row[0] {
 				case "p10":
-					row15p10 = append(row15p10, fmt.Sprintf("%s ms", row[1]))
+					row16p10 = append(row16p10, fmt.Sprintf("%s ms", row[1]))
 				case "p25":
-					row16p25 = append(row16p25, fmt.Sprintf("%s ms", row[1]))
+					row17p25 = append(row17p25, fmt.Sprintf("%s ms", row[1]))
 				case "p50":
-					row17p50 = append(row17p50, fmt.Sprintf("%s ms", row[1]))
+					row18p50 = append(row18p50, fmt.Sprintf("%s ms", row[1]))
 				case "p75":
-					row18p75 = append(row18p75, fmt.Sprintf("%s ms", row[1]))
+					row19p75 = append(row19p75, fmt.Sprintf("%s ms", row[1]))
 				case "p90":
-					row19p90 = append(row19p90, fmt.Sprintf("%s ms", row[1]))
+					row20p90 = append(row20p90, fmt.Sprintf("%s ms", row[1]))
 				case "p95":
-					row20p95 = append(row20p95, fmt.Sprintf("%s ms", row[1]))
+					row21p95 = append(row21p95, fmt.Sprintf("%s ms", row[1]))
 				case "p99":
-					row21p99 = append(row21p99, fmt.Sprintf("%s ms", row[1]))
+					row22p99 = append(row22p99, fmt.Sprintf("%s ms", row[1]))
 				case "p99.9":
-					row22p999 = append(row22p999, fmt.Sprintf("%s ms", row[1]))
+					row23p999 = append(row23p999, fmt.Sprintf("%s ms", row[1]))
 				}
 			}
 		}
@@ -356,17 +380,18 @@ func do(configPath string) error {
 		row09MaxMemoryUsage,
 		row10TotalSeconds,
 		row11AverageThroughput,
-		row12SlowestLatency,
-		row13FastestLatency,
-		row14AverageLatency,
-		row15p10,
-		row16p25,
-		row17p50,
-		row18p75,
-		row19p90,
-		row20p95,
-		row21p99,
-		row22p999,
+		row12MaxThroughput,
+		row13SlowestLatency,
+		row14FastestLatency,
+		row15AverageLatency,
+		row16p10,
+		row17p25,
+		row18p50,
+		row19p75,
+		row20p90,
+		row21p95,
+		row22p99,
+		row23p999,
 	}
 	plog.Printf("saving data to %q", cfg.AllAggregatedPath)
 	file, err := openToOverwrite(cfg.AllAggregatedPath)
@@ -387,7 +412,7 @@ func do(configPath string) error {
 	plog.Printf("combining data to %q", cfg.AllLatencyByKey)
 	allLatencyFrame := dataframe.New()
 	for _, elem := range cfg.RawData {
-		fr, err := dataframe.NewFromCSV([]string{"KEYS", "AVG-LATENCY-MS"}, elem.DataBenchmarkLatencyByKey)
+		fr, err := dataframe.NewFromCSV(nil, elem.DataBenchmarkLatencyByKey)
 		if err != nil {
 			return err
 		}
@@ -412,6 +437,7 @@ func do(configPath string) error {
 	if err := allLatencyFrame.CSV(cfg.AllLatencyByKey); err != nil {
 		return err
 	}
+
 	allLatencyFrameCfg := PlotConfig{
 		Column:         "AVG-LATENCY-MS",
 		XAxis:          "Keys",
@@ -419,7 +445,8 @@ func do(configPath string) error {
 		OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
 	}
 	allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.svg")
-	allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.png")
+	allLatencyFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.png")
+	plog.Printf("plotting %v", allLatencyFrameCfg.OutputPathList)
 	if err = all.draw(allLatencyFrameCfg, allLatencyFrame.Columns()...); err != nil {
 		return err
 	}
@@ -428,7 +455,7 @@ func do(configPath string) error {
 	plog.Printf("combining data to %q", cfg.AllMemoryByKey)
 	allMemoryFrame := dataframe.New()
 	for _, elem := range cfg.RawData {
-		fr, err := dataframe.NewFromCSV([]string{"KEYS", "AVG-VMRSS-MB"}, elem.DataBenchmarkMemoryByKey)
+		fr, err := dataframe.NewFromCSV(nil, elem.DataBenchmarkMemoryByKey)
 		if err != nil {
 			return err
 		}
@@ -453,14 +480,16 @@ func do(configPath string) error {
 	if err := allMemoryFrame.CSV(cfg.AllMemoryByKey); err != nil {
 		return err
 	}
+
 	allMemoryFrameCfg := PlotConfig{
 		Column:         "AVG-VMRSS-MB",
 		XAxis:          "Keys",
 		YAxis:          "Memory(MB)",
 		OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
 	}
-	allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.svg")
-	allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.png")
+	allMemoryFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.svg")
+	allMemoryFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.png")
+	plog.Printf("plotting %v", allMemoryFrameCfg.OutputPathList)
 	if err = all.draw(allMemoryFrameCfg, allMemoryFrame.Columns()...); err != nil {
 		return err
 	}
