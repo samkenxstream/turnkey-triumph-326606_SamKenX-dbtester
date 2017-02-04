@@ -203,10 +203,10 @@ func do(configPath string) error {
 			}
 		}
 
-		row01ReadsCompletedDeltaSum = append(row01ReadsCompletedDeltaSum, fmt.Sprintf("%d", uint64(readsCompletedDeltaSum)))
-		row02SectorsReadDeltaSum = append(row02SectorsReadDeltaSum, fmt.Sprintf("%d", uint64(sectorsReadDeltaSum)))
-		row03WritesCompletedDeltaSum = append(row03WritesCompletedDeltaSum, fmt.Sprintf("%d", uint64(writesCompletedDeltaSum)))
-		row04SectorsWrittenDeltaSum = append(row04SectorsWrittenDeltaSum, fmt.Sprintf("%d", uint64(sectorsWrittenDeltaSum)))
+		row01ReadsCompletedDeltaSum = append(row01ReadsCompletedDeltaSum, humanize.Comma(int64(readsCompletedDeltaSum)))
+		row02SectorsReadDeltaSum = append(row02SectorsReadDeltaSum, humanize.Comma(int64(sectorsReadDeltaSum)))
+		row03WritesCompletedDeltaSum = append(row03WritesCompletedDeltaSum, humanize.Comma(int64(writesCompletedDeltaSum)))
+		row04SectorsWrittenDeltaSum = append(row04SectorsWrittenDeltaSum, humanize.Comma(int64(sectorsWrittenDeltaSum)))
 		row06ReceiveBytesSum = append(row06ReceiveBytesSum, humanize.Bytes(uint64(receiveBytesNumDeltaSum)))
 		row07TransmitBytesSum = append(row07TransmitBytesSum, humanize.Bytes(uint64(transmitBytesNumDeltaSum)))
 		row08MaxCPUUsage = append(row08MaxCPUUsage, fmt.Sprintf("%.2f %%", maxAvgCPU))
@@ -473,27 +473,31 @@ func do(configPath string) error {
 	if err := allLatencyFrame.CSV(cfg.AllLatencyByKey); err != nil {
 		return err
 	}
-	allLatencyFrameCfg := PlotConfig{
-		Column:         "AVG-LATENCY-MS",
-		XAxis:          "Keys",
-		YAxis:          "Latency(millisecond)",
-		OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
-	}
-	allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.svg")
-	allLatencyFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.png")
-	plog.Printf("plotting %v", allLatencyFrameCfg.OutputPathList)
-	// TODO: draw with error bar
-	var allLatencyFrameCols []dataframe.Column
-	for _, col := range allLatencyFrame.Columns() {
-		switch {
-		case strings.HasPrefix(col.Header(), "KEYS-"):
-			allLatencyFrameCols = append(allLatencyFrameCols, col) // x-axis
-		case strings.HasPrefix(col.Header(), "AVG-LATENCY-MS-"):
-			allLatencyFrameCols = append(allLatencyFrameCols, col) // y-axis
+	{
+		allLatencyFrameCfg := PlotConfig{
+			Column:         "AVG-LATENCY-MS",
+			XAxis:          "Keys",
+			YAxis:          "Latency(millisecond)",
+			OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
+		}
+		allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.svg")
+		allLatencyFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.png")
+		plog.Printf("plotting %v", allLatencyFrameCfg.OutputPathList)
+		var allLatencyFrameCols []dataframe.Column
+		for _, col := range allLatencyFrame.Columns() {
+			switch {
+			case strings.HasPrefix(col.Header(), "KEYS-"):
+				allLatencyFrameCols = append(allLatencyFrameCols, col) // x-axis
+			case strings.HasPrefix(col.Header(), "AVG-LATENCY-MS-"):
+				allLatencyFrameCols = append(allLatencyFrameCols, col) // y-axis
+			}
+		}
+		if err = all.drawXY(allLatencyFrameCfg, allLatencyFrameCols...); err != nil {
+			return err
 		}
 	}
-	if err = all.drawXY(allLatencyFrameCfg, allLatencyFrameCols...); err != nil {
-		return err
+	{
+		// TODO: draw with error bar
 	}
 
 	// KEYS, MIN-VMRSS-MB, AVG-VMRSS-MB, MAX-VMRSS-MB
@@ -543,28 +547,32 @@ func do(configPath string) error {
 	if err := allMemoryFrame.CSV(cfg.AllMemoryByKey); err != nil {
 		return err
 	}
-
-	allMemoryFrameCfg := PlotConfig{
-		Column:         "AVG-VMRSS-MB",
-		XAxis:          "Keys",
-		YAxis:          "Memory(MB)",
-		OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
-	}
-	allMemoryFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.svg")
-	allMemoryFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.png")
-	plog.Printf("plotting %v", allMemoryFrameCfg.OutputPathList)
-	// TODO: draw with error bar
-	var allMemoryFrameCols []dataframe.Column
-	for _, col := range allMemoryFrame.Columns() {
-		switch {
-		case strings.HasPrefix(col.Header(), "KEYS-"):
-			allMemoryFrameCols = append(allMemoryFrameCols, col) // x-axis
-		case strings.HasPrefix(col.Header(), "AVG-VMRSS-MB-"):
-			allMemoryFrameCols = append(allMemoryFrameCols, col) // y-axis
+	{
+		allMemoryFrameCfg := PlotConfig{
+			Column:         "AVG-VMRSS-MB",
+			XAxis:          "Keys",
+			YAxis:          "Memory(MB)",
+			OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
+		}
+		allMemoryFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.svg")
+		allMemoryFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.png")
+		plog.Printf("plotting %v", allMemoryFrameCfg.OutputPathList)
+		// TODO: draw with error bar
+		var allMemoryFrameCols []dataframe.Column
+		for _, col := range allMemoryFrame.Columns() {
+			switch {
+			case strings.HasPrefix(col.Header(), "KEYS-"):
+				allMemoryFrameCols = append(allMemoryFrameCols, col) // x-axis
+			case strings.HasPrefix(col.Header(), "AVG-VMRSS-MB-"):
+				allMemoryFrameCols = append(allMemoryFrameCols, col) // y-axis
+			}
+		}
+		if err = all.drawXY(allMemoryFrameCfg, allMemoryFrameCols...); err != nil {
+			return err
 		}
 	}
-	if err = all.drawXY(allMemoryFrameCfg, allMemoryFrameCols...); err != nil {
-		return err
+	{
+		// TODO: draw with error bar
 	}
 
 	plog.Println("combining data for plotting")
