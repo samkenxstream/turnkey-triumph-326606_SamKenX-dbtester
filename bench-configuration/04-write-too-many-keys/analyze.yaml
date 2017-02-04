@@ -155,6 +155,10 @@ readme:
       image_path: https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/04-write-too-many-keys/AVG-LATENCY-MS-BY-KEY.svg
       image_type: remote
 
+    - image_title: 2017Q1-02-etcd-zookeeper-consul/04-write-too-many-keys/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS
+      image_path: https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/04-write-too-many-keys/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.svg
+      image_type: remote
+
     - image_title: 2017Q1-02-etcd-zookeeper-consul/04-write-too-many-keys/AVG-THROUGHPUT
       image_path: https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/04-write-too-many-keys/AVG-THROUGHPUT.svg
       image_type: remote
@@ -177,6 +181,10 @@ readme:
 
     - image_title: 2017Q1-02-etcd-zookeeper-consul/04-write-too-many-keys/AVG-VMRSS-MB-BY-KEY
       image_path: https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/04-write-too-many-keys/AVG-VMRSS-MB-BY-KEY.svg
+      image_type: remote
+
+    - image_title: 2017Q1-02-etcd-zookeeper-consul/04-write-too-many-keys/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS
+      image_path: https://storage.googleapis.com/dbtester-results/2017Q1-02-etcd-zookeeper-consul/04-write-too-many-keys/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.svg
       image_type: remote
 
     - image_title: 2017Q1-02-etcd-zookeeper-consul/04-write-too-many-keys/AVG-READS-COMPLETED-DELTA
