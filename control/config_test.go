@@ -64,6 +64,9 @@ func TestReadConfig(t *testing.T) {
 	if c.ClientSystemMetrics != "client-system-metrics.csv" {
 		t.Fatalf("unexpected %s", c.ClientSystemMetrics)
 	}
+	if c.ClientSystemMetricsInterpolated != "client-system-metrics-interpolated.csv" {
+		t.Fatalf("unexpected %s", c.ClientSystemMetricsInterpolated)
+	}
 
 	if c.Step1.SkipStartDatabase {
 		t.Fatalf("unexpected %v", c.Step1.SkipStartDatabase)
