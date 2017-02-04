@@ -40,6 +40,7 @@ func processTimeSeries(tss report.TimeSeries, unit int64, totalRequests int) key
 	cumulKeyN := int64(0)
 	maxKey := int64(0)
 
+	// TODO: support min,max latencies
 	rm := make(map[int64]time.Duration)
 
 	// this data is aggregated by second
@@ -73,6 +74,7 @@ func processTimeSeries(tss report.TimeSeries, unit int64, totalRequests int) key
 	}
 
 	kss := []keyNumToAvgLatency{}
+	delete(rm, 0)
 	for k, v := range rm {
 		kss = append(kss, keyNumToAvgLatency{keyNum: k, avgLat: v})
 	}

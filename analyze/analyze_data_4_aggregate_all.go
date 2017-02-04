@@ -139,6 +139,9 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 		avgTransmitBytesNumDeltaCol = dataframe.NewColumn("AVG-TRANSMIT-BYTES-NUM-DELTA")    // from TRANSMIT-BYTES-NUM-DELTA
 	)
 
+	sec2minVMRSSMB := make(map[int64]float64)
+	sec2maxVMRSSMB := make(map[int64]float64)
+
 	// compute average value of 3+ nodes
 	// by iterating each row (horizontally) for all the columns
 	for rowIdx := 0; rowIdx < minBenchEndIdx+1; rowIdx++ {
@@ -162,6 +165,10 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 			transmitBytesNumSum      float64
 			transmitBytesNumDeltaSum float64
 		)
+		sc, err := data.aggregated.Column("UNIX-SECOND")
+		if err != nil {
+			return err
+		}
 		for _, col := range data.aggregated.Columns() {
 			rv, err := col.Value(rowIdx)
 			if err != nil {
@@ -189,6 +196,24 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 				loadAvgSum += vv
 			case strings.HasPrefix(hd, "VMRSS-MB-"): // VMRSS-NUM-NUM was converted to VMRSS-MB-1, VMRSS-MB-2, VMRSS-MB-3
 				vmrssMBSum += vv
+
+				svv, err := sc.Value(rowIdx)
+				if err != nil {
+					return err
+				}
+				ts, _ := svv.Int64()
+
+				if v, ok := sec2minVMRSSMB[ts]; !ok {
+					sec2minVMRSSMB[ts] = vv
+				} else if v > vv {
+					sec2minVMRSSMB[ts] = vv
+				}
+				if v, ok := sec2maxVMRSSMB[ts]; !ok {
+					sec2maxVMRSSMB[ts] = vv
+				} else if v < vv {
+					sec2maxVMRSSMB[ts] = vv
+				}
+
 			case strings.HasPrefix(hd, "READS-COMPLETED-DELTA-"): // match this first!
 				readsCompletedDeltaSum += vv
 			case strings.HasPrefix(hd, "READS-COMPLETED-"):
@@ -361,30 +386,36 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 	}
 
 	// aggregate memory usage by number of keys
-	colSecond, err := data.aggregated.Column("SECOND")
+	colUnixSecond, err := data.aggregated.Column("UNIX-SECOND")
 	if err != nil {
 		return err
 	}
-	colMemoryMB, err := data.aggregated.Column(makeHeader("AVG-VMRSS-MB", data.databaseTag))
+	colMemoryMB, err := data.aggregated.Column("AVG-VMRSS-MB")
 	if err != nil {
 		return err
 	}
-	colAvgThroughput, err := data.aggregated.Column(makeHeader("AVG-THROUGHPUT", data.databaseTag))
+	colAvgThroughput, err := data.aggregated.Column("AVG-THROUGHPUT")
 	if err != nil {
 		return err
 	}
-	if colSecond.Count() != colMemoryMB.Count() {
-		return fmt.Errorf("SECOND column count %d, AVG-VMRSS-MB column count %d", colSecond.Count(), colMemoryMB.Count())
+	if colUnixSecond.Count() != colMemoryMB.Count() {
+		return fmt.Errorf("SECOND column count %d, AVG-VMRSS-MB column count %d", colUnixSecond.Count(), colMemoryMB.Count())
 	}
 	if colAvgThroughput.Count() != colMemoryMB.Count() {
 		return fmt.Errorf("AVG-THROUGHPUT column count %d, AVG-VMRSS-MB column count %d", colAvgThroughput.Count(), colMemoryMB.Count())
 	}
-	if colSecond.Count() != colAvgThroughput.Count() {
-		return fmt.Errorf("SECOND column count %d, AVG-THROUGHPUT column count %d", colSecond.Count(), colAvgThroughput.Count())
+	if colUnixSecond.Count() != colAvgThroughput.Count() {
+		return fmt.Errorf("SECOND column count %d, AVG-THROUGHPUT column count %d", colUnixSecond.Count(), colAvgThroughput.Count())
 	}
 
 	var tslice []keyNumAndMemory
-	for i := 0; i < colSecond.Count(); i++ {
+	for i := 0; i < colUnixSecond.Count(); i++ {
+		vv0, err := colUnixSecond.Value(i)
+		if err != nil {
+			return err
+		}
+		v0, _ := vv0.Int64()
+
 		vv1, err := colMemoryMB.Value(i)
 		if err != nil {
 			return err
@@ -398,8 +429,10 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 		vf2, _ := vv2.Float64()
 
 		point := keyNumAndMemory{
-			keyNum:   int64(vf2),
-			memoryMB: vf1,
+			keyNum:      int64(vf2),
+			maxMemoryMB: sec2maxVMRSSMB[v0],
+			avgMemoryMB: vf1,
+			minMemoryMB: sec2minVMRSSMB[v0],
 		}
 		tslice = append(tslice, point)
 	}
@@ -408,16 +441,26 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 	// aggregate memory by number of keys
 	knms := processTimeSeries(tslice, 1000, totalRequests)
 	ckk1 := dataframe.NewColumn("KEYS")
-	ckk2 := dataframe.NewColumn("AVG-VMRSS-MB")
+	ckk2 := dataframe.NewColumn("MAX-VMRSS-MB")
+	ckk3 := dataframe.NewColumn("AVG-VMRSS-MB")
+	ckk4 := dataframe.NewColumn("MIN-VMRSS-MB")
 	for i := range knms {
 		ckk1.PushBack(dataframe.NewStringValue(knms[i].keyNum))
-		ckk2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", knms[i].memoryMB)))
+		ckk2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", knms[i].maxMemoryMB)))
+		ckk3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", knms[i].avgMemoryMB)))
+		ckk4.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", knms[i].minMemoryMB)))
 	}
 	fr := dataframe.New()
 	if err := fr.AddColumn(ckk1); err != nil {
 		plog.Fatal(err)
 	}
 	if err := fr.AddColumn(ckk2); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr.AddColumn(ckk3); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr.AddColumn(ckk4); err != nil {
 		plog.Fatal(err)
 	}
 	if err := fr.CSV(memoryByKeyPath); err != nil {
