@@ -426,7 +426,7 @@ func do(configPath string) error {
 		return err
 	}
 
-	// KEYS, AVG-LATENCY-MS
+	// KEYS, MIN-LATENCY-MS, AVG-LATENCY-MS, MAX-LATENCY-MS
 	plog.Printf("combining data to %q", cfg.AllLatencyByKey)
 	allLatencyFrame := dataframe.New()
 	for _, elem := range cfg.RawData {
@@ -443,19 +443,36 @@ func do(configPath string) error {
 			return err
 		}
 
-		colLatency, err := fr.Column("AVG-LATENCY-MS")
+		colMinLatency, err := fr.Column("MIN-LATENCY-MS")
 		if err != nil {
 			return err
 		}
-		colLatency.UpdateHeader(makeHeader("AVG-LATENCY-MS", makeTag(elem.Legend)))
-		if err = allLatencyFrame.AddColumn(colLatency); err != nil {
+		colMinLatency.UpdateHeader(makeHeader("MIN-LATENCY-MS", makeTag(elem.Legend)))
+		if err = allLatencyFrame.AddColumn(colMinLatency); err != nil {
+			return err
+		}
+
+		colAvgLatency, err := fr.Column("AVG-LATENCY-MS")
+		if err != nil {
+			return err
+		}
+		colAvgLatency.UpdateHeader(makeHeader("AVG-LATENCY-MS", makeTag(elem.Legend)))
+		if err = allLatencyFrame.AddColumn(colAvgLatency); err != nil {
+			return err
+		}
+
+		colMaxLatency, err := fr.Column("MAX-LATENCY-MS")
+		if err != nil {
+			return err
+		}
+		colMaxLatency.UpdateHeader(makeHeader("MAX-LATENCY-MS", makeTag(elem.Legend)))
+		if err = allLatencyFrame.AddColumn(colMaxLatency); err != nil {
 			return err
 		}
 	}
 	if err := allLatencyFrame.CSV(cfg.AllLatencyByKey); err != nil {
 		return err
 	}
-
 	allLatencyFrameCfg := PlotConfig{
 		Column:         "AVG-LATENCY-MS",
 		XAxis:          "Keys",
@@ -465,11 +482,21 @@ func do(configPath string) error {
 	allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.svg")
 	allLatencyFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.png")
 	plog.Printf("plotting %v", allLatencyFrameCfg.OutputPathList)
-	if err = all.drawXY(allLatencyFrameCfg, allLatencyFrame.Columns()...); err != nil {
+	// TODO: draw with error bar
+	var cols []dataframe.Column
+	for _, col := range allLatencyFrame.Columns() {
+		switch {
+		case strings.HasPrefix(col.Header(), "KEYS-"):
+			cols = append(cols, col) // x-axis
+		case strings.HasPrefix(col.Header(), "AVG-LATENCY-MS-"):
+			cols = append(cols, col) // y-axis
+		}
+	}
+	if err = all.drawXY(allLatencyFrameCfg, cols...); err != nil {
 		return err
 	}
 
-	// KEYS, AVG-VMRSS-MB
+	// KEYS, MIN-VMRSS-MB, AVG-VMRSS-MB, MAX-VMRSS-MB
 	plog.Printf("combining data to %q", cfg.AllMemoryByKey)
 	allMemoryFrame := dataframe.New()
 	for _, elem := range cfg.RawData {
@@ -526,7 +553,6 @@ func do(configPath string) error {
 	allMemoryFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.svg")
 	allMemoryFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.png")
 	plog.Printf("plotting %v", allMemoryFrameCfg.OutputPathList)
-
 	// TODO: draw with error bar
 	var cols []dataframe.Column
 	for _, col := range allMemoryFrame.Columns() {
