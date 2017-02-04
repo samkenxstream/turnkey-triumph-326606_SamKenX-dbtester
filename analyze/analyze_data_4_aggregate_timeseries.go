@@ -22,7 +22,7 @@ func processTimeSeries(tslice []keyNumAndMemory, unit int64, totalRequests int) 
 	cumulKeyN := int64(0)
 	maxKey := int64(0)
 
-	rm := make(map[int64]float64)
+	rm := make(map[int64]keyNumAndMemory)
 
 	// this data is aggregated by second
 	// and we want to map number of keys to latency
@@ -35,7 +35,7 @@ func processTimeSeries(tslice []keyNumAndMemory, unit int64, totalRequests int) 
 			continue
 		}
 
-		mem := ts.memoryMB
+		mem := ts
 
 		// cumulKeyN >= unit
 		for cumulKeyN > maxKey {
@@ -47,16 +47,16 @@ func processTimeSeries(tslice []keyNumAndMemory, unit int64, totalRequests int) 
 	// fill-in empty rows
 	for i := maxKey; i < int64(totalRequests); i += unit {
 		if _, ok := rm[i]; !ok {
-			rm[i] = 0.0
+			rm[i] = keyNumAndMemory{}
 		}
 	}
 	if _, ok := rm[int64(totalRequests)]; !ok {
-		rm[int64(totalRequests)] = 0.0
+		rm[int64(totalRequests)] = keyNumAndMemory{}
 	}
 
 	kss := []keyNumAndMemory{}
-	for k, v := range rm {
-		kss = append(kss, keyNumAndMemory{keyNum: k, memoryMB: v})
+	for _, v := range rm {
+		kss = append(kss, v)
 	}
 	sort.Sort(keyNumAndMemorys(kss))
 
@@ -64,8 +64,11 @@ func processTimeSeries(tslice []keyNumAndMemory, unit int64, totalRequests int) 
 }
 
 type keyNumAndMemory struct {
-	keyNum   int64
-	memoryMB float64
+	keyNum int64
+
+	maxMemoryMB float64
+	avgMemoryMB float64
+	minMemoryMB float64
 }
 
 type keyNumAndMemorys []keyNumAndMemory
