@@ -93,14 +93,14 @@ plot_list:
 
 - column: AVG-READS-COMPLETED-DELTA
   x_axis: Second
-  y_axis: Disk Reads
+  y_axis: Disk Reads (Delta per Second)
   output_path_list:
     - 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/AVG-READS-COMPLETED-DELTA.svg
     - 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/AVG-READS-COMPLETED-DELTA.png
 
 - column: AVG-SECTORS-READ-DELTA
   x_axis: Second
-  y_axis: Sectors Read
+  y_axis: Sectors Read (Delta per Second)
   output_path_list:
   - 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/AVG-SECTORS-READ-DELTA.svg
   - 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/AVG-SECTORS-READ-DELTA.png
@@ -114,21 +114,21 @@ plot_list:
 
 - column: AVG-SECTORS-WRITTEN-DELTA
   x_axis: Second
-  y_axis: Sectors Written
+  y_axis: Sectors Written (Delta per Second)
   output_path_list:
   - 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/AVG-SECTORS-WRITTEN-DELTA.svg
   - 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/AVG-SECTORS-WRITTEN-DELTA.png
 
 - column: AVG-RECEIVE-BYTES-NUM-DELTA
   x_axis: Second
-  y_axis: Network Receive(bytes)
+  y_axis: Network Receive(bytes) (Delta per Second)
   output_path_list:
     - 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/AVG-RECEIVE-BYTES-NUM-DELTA.svg
     - 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/AVG-RECEIVE-BYTES-NUM-DELTA.png
 
 - column: AVG-TRANSMIT-BYTES-NUM-DELTA
   x_axis: Second
-  y_axis: Network Transmit(bytes)
+  y_axis: Network Transmit(bytes) (Delta per Second)
   output_path_list:
   - 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/AVG-TRANSMIT-BYTES-NUM-DELTA.svg
   - 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/AVG-TRANSMIT-BYTES-NUM-DELTA.png

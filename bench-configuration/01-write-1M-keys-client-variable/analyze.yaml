@@ -93,42 +93,42 @@ plot_list:
 
 - column: AVG-READS-COMPLETED-DELTA
   x_axis: Second
-  y_axis: Disk Reads
+  y_axis: Disk Reads (Delta per Second)
   output_path_list:
     - 2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-READS-COMPLETED-DELTA.svg
     - 2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-READS-COMPLETED-DELTA.png
 
 - column: AVG-SECTORS-READ-DELTA
   x_axis: Second
-  y_axis: Sectors Read
+  y_axis: Sectors Read (Delta per Second)
   output_path_list:
   - 2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-SECTORS-READ-DELTA.svg
   - 2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-SECTORS-READ-DELTA.png
 
 - column: AVG-WRITES-COMPLETED-DELTA
   x_axis: Second
-  y_axis: Disk Writes
+  y_axis: Disk Writes (Delta per Second)
   output_path_list:
   - 2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-WRITES-COMPLETED-DELTA.svg
   - 2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-WRITES-COMPLETED-DELTA.png
 
 - column: AVG-SECTORS-WRITTEN-DELTA
   x_axis: Second
-  y_axis: Sectors Written
+  y_axis: Sectors Written (Delta per Second)
   output_path_list:
   - 2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-SECTORS-WRITTEN-DELTA.svg
   - 2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-SECTORS-WRITTEN-DELTA.png
 
 - column: AVG-RECEIVE-BYTES-NUM-DELTA
   x_axis: Second
-  y_axis: Network Receive(bytes)
+  y_axis: Network Receive(bytes) (Delta per Second)
   output_path_list:
     - 2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-RECEIVE-BYTES-NUM-DELTA.svg
     - 2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-RECEIVE-BYTES-NUM-DELTA.png
 
 - column: AVG-TRANSMIT-BYTES-NUM-DELTA
   x_axis: Second
-  y_axis: Network Transmit(bytes)
+  y_axis: Network Transmit(bytes) (Delta per Second)
   output_path_list:
   - 2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-TRANSMIT-BYTES-NUM-DELTA.svg
   - 2017Q1-02-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-TRANSMIT-BYTES-NUM-DELTA.png
