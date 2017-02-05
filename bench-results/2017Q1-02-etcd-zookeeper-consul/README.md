@@ -16,34 +16,39 @@
 
 
 ```
-+----------------------------+-------------------+------------------------+-----------------------+
-|                            | etcd-v3.1-go1.7.4 | zookeeper-r3.4.9-java8 | consul-v0.7.3-go1.7.4 |
-+----------------------------+-------------------+------------------------+-----------------------+
-|      READS-COMPLETED-DELTA |               335 |                    217 |                   257 |
-|    SECTORS-READS-DELTA-SUM |                 0 |                      0 |                     0 |
-| WRITES-COMPLETED-DELTA-SUM |         1,231,556 |                955,211 |             2,516,639 |
-|  SECTORS-WRITTEN-DELTA-SUM |           729,836 |             10,554,668 |            44,590,452 |
-|              AVG-DATA-SIZE |            2.4 GB |                 7.7 GB |                3.0 GB |
-|          RECEIVE-BYTES-SUM |            5.1 GB |                 5.4 GB |                7.9 GB |
-|         TRANSMIT-BYTES-SUM |            3.9 GB |                 4.4 GB |                6.7 GB |
-|              MAX-CPU-USAGE |          445.33 % |               547.73 % |              411.23 % |
-|           MAX-MEMORY-USAGE |        1348.55 MB |             3886.00 MB |            6300.68 MB |
-|              TOTAL-SECONDS |      348.6809 sec |           325.9369 sec |          833.0403 sec |
-|             MAX-THROUGHPUT |    35,607 req/sec |         36,742 req/sec |        14,389 req/sec |
-|             AVG-THROUGHPUT |     2,867 req/sec |          3,060 req/sec |         1,200 req/sec |
-|             MIN-THROUGHPUT |       154 req/sec |              0 req/sec |             0 req/sec |
-|            FASTEST-LATENCY |         1.1331 ms |              1.1178 ms |             3.0202 ms |
-|                AVG-LATENCY |        13.9505 ms |             30.7027 ms |           199.2154 ms |
-|            SLOWEST-LATENCY |       268.1365 ms |           4791.4295 ms |         22578.4875 ms |
-|                Latency p10 |       2.329807 ms |            2.425453 ms |           3.935582 ms |
-|                Latency p25 |       5.932790 ms |            3.847339 ms |           7.653584 ms |
-|                Latency p50 |      10.211023 ms |            6.907074 ms |          21.364391 ms |
-|                Latency p75 |      17.023281 ms |           13.768245 ms |          59.155494 ms |
-|                Latency p90 |      28.458718 ms |           23.767844 ms |         161.821492 ms |
-|                Latency p95 |      43.808491 ms |           29.821734 ms |         317.361200 ms |
-|                Latency p99 |      62.109107 ms |          699.922794 ms |        4416.572182 ms |
-|              Latency p99.9 |      92.473754 ms |         2228.556340 ms |       20750.406953 ms |
-+----------------------------+-------------------+------------------------+-----------------------+
++-----------------------------+-------------------+------------------------+-----------------------+
+|                             | etcd-v3.1-go1.7.4 | zookeeper-r3.4.9-java8 | consul-v0.7.3-go1.7.4 |
++-----------------------------+-------------------+------------------------+-----------------------+
+|   READS-COMPLETED-DELTA-SUM |                 2 |                    218 |                   126 |
+|     SECTORS-READS-DELTA-SUM |                 0 |                      0 |                     0 |
+|  WRITES-COMPLETED-DELTA-SUM |         1,217,752 |                955,419 |             2,183,202 |
+|   SECTORS-WRITTEN-DELTA-SUM |           702,780 |             11,846,404 |             3,991,232 |
+|       AVG-DATA-SIZE-ON-DISK |            2.5 GB |                 7.4 GB |                3.1 GB |
+|    NETWORK-RECEIVE-DATA-SUM |            5.1 GB |                 5.0 GB |                5.5 GB |
+|   NETWORK-TRANSMIT-DATA-SUM |            3.9 GB |                 4.0 GB |                4.2 GB |
+|               MAX-CPU-USAGE |          451.00 % |               800.00 % |              409.33 % |
+|            MAX-MEMORY-USAGE |        1316.36 MB |             3596.23 MB |            4691.18 MB |
+|               TOTAL-SECONDS |      324.5626 sec |           335.0999 sec |          667.9389 sec |
+|              MAX-THROUGHPUT |    36,479 req/sec |         41,799 req/sec |        15,969 req/sec |
+|              AVG-THROUGHPUT |     3,081 req/sec |          2,961 req/sec |         1,497 req/sec |
+|              MIN-THROUGHPUT |        79 req/sec |              0 req/sec |            49 req/sec |
+|             FASTEST-LATENCY |         1.0313 ms |              1.1256 ms |             2.9151 ms |
+|                 AVG-LATENCY |        13.4807 ms |             25.5780 ms |            47.0926 ms |
+|             SLOWEST-LATENCY |       261.8235 ms |           4260.5699 ms |         22260.1112 ms |
+|                 Latency p10 |       2.201212 ms |            2.528874 ms |           3.926152 ms |
+|                 Latency p25 |       5.636563 ms |            3.821957 ms |           7.640734 ms |
+|                 Latency p50 |       9.696159 ms |            6.656013 ms |          19.126381 ms |
+|                 Latency p75 |      16.202583 ms |           11.576279 ms |          54.750630 ms |
+|                 Latency p90 |      28.434395 ms |           14.472618 ms |          77.993718 ms |
+|                 Latency p95 |      44.336815 ms |           16.786180 ms |          91.026490 ms |
+|                 Latency p99 |      60.008762 ms |          479.797108 ms |         201.844359 ms |
+|               Latency p99.9 |      84.831886 ms |         2725.947720 ms |        1502.535463 ms |
+|  CLIENT-NETWORK-RECEIVE-SUM |            270 MB |                 353 MB |                200 MB |
+| CLIENT-NETWORK-TRANSMIT-SUM |            1.5 GB |                 1.4 GB |                1.5 GB |
+|        CLIENT-MAX-CPU-USAGE |          577.00 % |               496.00 % |              210.00 % |
+|     CLIENT-MAX-MEMORY-USAGE |            355 MB |                 3.3 GB |                227 MB |
+|          CLIENT-ERROR-COUNT |                 0 |                  7,495 |                     0 |
++-----------------------------+-------------------+------------------------+-----------------------+
 ```
 
 

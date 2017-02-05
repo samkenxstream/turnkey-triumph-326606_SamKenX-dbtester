@@ -86,13 +86,6 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 		return err
 	}
 
-	type rowData struct {
-		clientN    int64
-		minLat     float64
-		avgLat     float64
-		maxLat     float64
-		throughput float64
-	}
 	sec2Data := make(map[int64]rowData)
 	for i := 0; i < oldTSCol.Count(); i++ {
 		tv, err := oldTSCol.Value(i)
@@ -185,14 +178,7 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 
 		v, ok := sec2Data[second]
 		if !ok {
-			prev, pok := sec2Data[second-1]
-			if !pok {
-				prev, pok = sec2Data[second+1]
-				if !pok {
-					return fmt.Errorf("benchmark missing a lot of rows around %d", second)
-				}
-			}
-
+			prev := findClosest(second, sec2Data)
 			newControlClientNumCol.PushBack(dataframe.NewStringValue(prev.clientN))
 			newMinLatencyCol.PushBack(dataframe.NewStringValue(0.0))
 			newAvgLatencyCol.PushBack(dataframe.NewStringValue(0.0))
@@ -230,4 +216,60 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 
 	data.benchMetrics.frame = df
 	return
+}
+
+type rowData struct {
+	clientN    int64
+	minLat     float64
+	avgLat     float64
+	maxLat     float64
+	throughput float64
+}
+
+func findClosest(second int64, sec2Data map[int64]rowData) rowData {
+	v, ok := sec2Data[second]
+	if ok {
+		return v
+	}
+	var min int64
+	var max int64
+	for k := range sec2Data {
+		if min == 0 || min > k {
+			min = k
+		}
+		if max == 0 || max < k {
+			max = k
+		}
+	}
+	r, ok := _findClosestLower(second, sec2Data, min, max)
+	if ok {
+		return r
+	}
+	r, ok = _findClosestUpper(second, sec2Data, min, max)
+	if !ok {
+		panic(fmt.Errorf("something wrong with benchmark data... too many data points are missing"))
+	}
+	return r
+}
+
+func _findClosestUpper(second int64, sec2Data map[int64]rowData, min, max int64) (rowData, bool) {
+	if second < min || second > max {
+		return rowData{}, false
+	}
+	v, ok := sec2Data[second]
+	if ok {
+		return v, true
+	}
+	return _findClosestUpper(second+1, sec2Data, min, max)
+}
+
+func _findClosestLower(second int64, sec2Data map[int64]rowData, min, max int64) (rowData, bool) {
+	if second < min || second > max {
+		return rowData{}, false
+	}
+	v, ok := sec2Data[second]
+	if ok {
+		return v, true
+	}
+	return _findClosestLower(second-1, sec2Data, min, max)
 }
