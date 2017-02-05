@@ -211,9 +211,11 @@ func do(configPath string) error {
 		row07TransmitBytesSum = append(row07TransmitBytesSum, humanize.Bytes(uint64(transmitBytesNumDeltaSum)))
 		row08MaxCPUUsage = append(row08MaxCPUUsage, fmt.Sprintf("%.2f %%", maxAvgCPU))
 
-		// TODO: linux sometimes returns overflowed value...
+		// TODO: handle overflowed memory value?
 		sort.Float64s(maxAvgVMRSSMBs)
-		row09MaxMemoryUsage = append(row09MaxMemoryUsage, fmt.Sprintf("%.2f MB", maxAvgVMRSSMBs[len(maxAvgVMRSSMBs)-2]))
+		mv := maxAvgVMRSSMBs[len(maxAvgVMRSSMBs)-1]
+		mb := uint64(mv * 1000000)
+		row09MaxMemoryUsage = append(row09MaxMemoryUsage, humanize.Bytes(mb))
 	}
 
 	row05AverageDatasize := []string{"AVG-DATA-SIZE-ON-DISK"}              // TOTAL-DATA-SIZE

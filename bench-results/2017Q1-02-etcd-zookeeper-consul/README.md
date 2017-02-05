@@ -27,7 +27,7 @@
 |    NETWORK-RECEIVE-DATA-SUM |            5.1 GB |                 5.0 GB |                5.5 GB |
 |   NETWORK-TRANSMIT-DATA-SUM |            3.9 GB |                 4.0 GB |                4.2 GB |
 |               MAX-CPU-USAGE |          451.00 % |               800.00 % |              409.33 % |
-|            MAX-MEMORY-USAGE |        1316.36 MB |             3596.23 MB |            4691.18 MB |
+|            MAX-MEMORY-USAGE |            1.3 GB |                 3.7 GB |                4.7 GB |
 |               TOTAL-SECONDS |      324.5626 sec |           335.0999 sec |          667.9389 sec |
 |              MAX-THROUGHPUT |    36,479 req/sec |         41,799 req/sec |        15,969 req/sec |
 |              AVG-THROUGHPUT |     3,081 req/sec |          2,961 req/sec |         1,497 req/sec |
