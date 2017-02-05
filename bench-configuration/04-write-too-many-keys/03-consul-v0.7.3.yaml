@@ -34,8 +34,8 @@ step2:
     skip_stress_database: false
     bench_type: write
     stale_read: true
-    connections: 1000
-    clients: 1000
+    connections: 500 # for best throughput
+    clients: 500 # for best throughput
     connections_clients: []
     key_size: 256
     value_size: 1024
