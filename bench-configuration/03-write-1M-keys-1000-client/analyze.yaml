@@ -18,6 +18,7 @@ raw_data:
   data_benchmark_throughput: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/etcd-v3.1-go1.7.4-data-latency-throughput-timeseries.csv
   data_benchmark_latency_by_key: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/etcd-v3.1-go1.7.4-data-latency-by-key-number.csv
   data_benchmark_memory_by_key: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/etcd-v3.1-go1.7.4-data-memory-by-key-number.csv
+  client_system_metrics_interpolated: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/etcd-v3.1-go1.7.4-client-system-metrics-interpolated.csv
 
 - legend: Zookeeper r3.4.9 (Java 8)
   output_path: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/zookeeper-r3.4.9-java8-aggregated.csv
@@ -31,6 +32,7 @@ raw_data:
   data_benchmark_throughput: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/zookeeper-r3.4.9-java8-data-latency-throughput-timeseries.csv
   data_benchmark_latency_by_key: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/zookeeper-r3.4.9-java8-data-latency-by-key-number.csv
   data_benchmark_memory_by_key: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/zookeeper-r3.4.9-java8-data-memory-by-key-number.csv
+  client_system_metrics_interpolated: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/zookeeper-r3.4.9-java8-client-system-metrics-interpolated.csv
 
 - legend: Consul v0.7.3 (Go 1.7.4)
   output_path: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/consul-v0.7.3-go1.7.4-aggregated.csv
@@ -44,6 +46,7 @@ raw_data:
   data_benchmark_throughput: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/consul-v0.7.3-go1.7.4-data-latency-throughput-timeseries.csv
   data_benchmark_latency_by_key: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/consul-v0.7.3-go1.7.4-data-latency-by-key-number.csv
   data_benchmark_memory_by_key: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/consul-v0.7.3-go1.7.4-data-memory-by-key-number.csv
+  client_system_metrics_interpolated: 2017Q1-02-etcd-zookeeper-consul/03-write-1M-keys-1000-client/consul-v0.7.3-go1.7.4-client-system-metrics-interpolated.csv
 
 plot_list:
 - column: AVG-LATENCY-MS
