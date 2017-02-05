@@ -95,12 +95,12 @@ func do(configPath string) error {
 			break
 		}
 	}
-	row01ReadsCompletedDeltaSum := []string{"READS-COMPLETED-DELTA"}
+	row01ReadsCompletedDeltaSum := []string{"READS-COMPLETED-DELTA-SUM"}
 	row02SectorsReadDeltaSum := []string{"SECTORS-READS-DELTA-SUM"}
 	row03WritesCompletedDeltaSum := []string{"WRITES-COMPLETED-DELTA-SUM"}
 	row04SectorsWrittenDeltaSum := []string{"SECTORS-WRITTEN-DELTA-SUM"}
-	row06ReceiveBytesSum := []string{"RECEIVE-BYTES-SUM"}
-	row07TransmitBytesSum := []string{"TRANSMIT-BYTES-SUM"}
+	row06ReceiveBytesSum := []string{"NETWORK-RECEIVE-DATA-SUM"}
+	row07TransmitBytesSum := []string{"NETWORK-TRANSMIT-DATA-SUM"}
 	row08MaxCPUUsage := []string{"MAX-CPU-USAGE"}
 	row09MaxMemoryUsage := []string{"MAX-MEMORY-USAGE"}
 
@@ -216,27 +216,104 @@ func do(configPath string) error {
 		row09MaxMemoryUsage = append(row09MaxMemoryUsage, fmt.Sprintf("%.2f MB", maxAvgVMRSSMBs[len(maxAvgVMRSSMBs)-2]))
 	}
 
-	row05AverageDatasize := []string{"AVG-DATA-SIZE"}    // TOTAL-DATA-SIZE
-	row10TotalSeconds := []string{"TOTAL-SECONDS"}       // TOTAL-SECONDS
-	row11MaxThroughput := []string{"MAX-THROUGHPUT"}     // MAX AVG-THROUGHPUT
-	row12AverageThroughput := []string{"AVG-THROUGHPUT"} // REQUESTS-PER-SECOND
-	row13MinThroughput := []string{"MIN-THROUGHPUT"}     // MIN AVG-THROUGHPUT
-	row14FastestLatency := []string{"FASTEST-LATENCY"}   // FASTEST-LATENCY-MS
-	row15AverageLatency := []string{"AVG-LATENCY"}       // AVERAGE-LATENCY-MS
-	row16SlowestLatency := []string{"SLOWEST-LATENCY"}   // SLOWEST-LATENCY-MS
-	row17p10 := []string{"Latency p10"}                  // p10
-	row18p25 := []string{"Latency p25"}                  // p25
-	row19p50 := []string{"Latency p50"}                  // p50
-	row20p75 := []string{"Latency p75"}                  // p75
-	row21p90 := []string{"Latency p90"}                  // p90
-	row22p95 := []string{"Latency p95"}                  // p95
-	row23p99 := []string{"Latency p99"}                  // p99
-	row24p999 := []string{"Latency p99.9"}               // p99.9
+	row05AverageDatasize := []string{"AVG-DATA-SIZE-ON-DISK"}              // TOTAL-DATA-SIZE
+	row10TotalSeconds := []string{"TOTAL-SECONDS"}                         // TOTAL-SECONDS
+	row11MaxThroughput := []string{"MAX-THROUGHPUT"}                       // MAX AVG-THROUGHPUT
+	row12AverageThroughput := []string{"AVG-THROUGHPUT"}                   // REQUESTS-PER-SECOND
+	row13MinThroughput := []string{"MIN-THROUGHPUT"}                       // MIN AVG-THROUGHPUT
+	row14FastestLatency := []string{"FASTEST-LATENCY"}                     // FASTEST-LATENCY-MS
+	row15AverageLatency := []string{"AVG-LATENCY"}                         // AVERAGE-LATENCY-MS
+	row16SlowestLatency := []string{"SLOWEST-LATENCY"}                     // SLOWEST-LATENCY-MS
+	row17p10 := []string{"Latency p10"}                                    // p10
+	row18p25 := []string{"Latency p25"}                                    // p25
+	row19p50 := []string{"Latency p50"}                                    // p50
+	row20p75 := []string{"Latency p75"}                                    // p75
+	row21p90 := []string{"Latency p90"}                                    // p90
+	row22p95 := []string{"Latency p95"}                                    // p95
+	row23p99 := []string{"Latency p99"}                                    // p99
+	row24p999 := []string{"Latency p99.9"}                                 // p99.9
+	row25ClientReceiveBytesSum := []string{"CLIENT-NETWORK-RECEIVE-SUM"}   // RECEIVE-BYTES-NUM-DELTA
+	row26ClientTransmitBytesSum := []string{"CLIENT-NETWORK-TRANSMIT-SUM"} // TRANSMIT-BYTES-DELTA
+	row27ClientMaxCPU := []string{"CLIENT-MAX-CPU-USAGE"}                  // CPU-NUM
+	row28ClientMaxMemory := []string{"CLIENT-MAX-MEMORY-USAGE"}            // VMRSS-NUM
+	row29ErrorCount := []string{"CLIENT-ERROR-COUNT"}                      // ERROR:
 
 	for i, rcfg := range cfg.RawData {
 		tag := makeTag(rcfg.Legend)
 		if tag != row00Header[i+1] {
 			return fmt.Errorf("analyze config has different order; expected %q, got %q", row00Header[i+1], tag)
+		}
+
+		{
+			fr, err := dataframe.NewFromCSV(nil, rcfg.ClientSystemMetricsInterpolated)
+			if err != nil {
+				return err
+			}
+
+			var receiveBytesNumDeltaSum uint64
+			col, err := fr.Column("RECEIVE-BYTES-NUM-DELTA")
+			if err != nil {
+				return err
+			}
+			for i := 0; i < col.Count(); i++ {
+				v, err := col.Value(i)
+				if err != nil {
+					return err
+				}
+				iv, _ := v.Uint64()
+				receiveBytesNumDeltaSum += iv
+			}
+
+			var transmitBytesNumDeltaSum uint64
+			col, err = fr.Column("TRANSMIT-BYTES-NUM-DELTA")
+			if err != nil {
+				return err
+			}
+			for i := 0; i < col.Count(); i++ {
+				v, err := col.Value(i)
+				if err != nil {
+					return err
+				}
+				iv, _ := v.Uint64()
+				transmitBytesNumDeltaSum += iv
+			}
+
+			var maxAvgCPU float64
+			col, err = fr.Column("CPU-NUM")
+			if err != nil {
+				return err
+			}
+			for i := 0; i < col.Count(); i++ {
+				v, err := col.Value(i)
+				if err != nil {
+					return err
+				}
+				fv, _ := v.Float64()
+				if maxAvgCPU == 0 || fv > maxAvgCPU {
+					maxAvgCPU = fv
+				}
+			}
+
+			var maxVMRSSNum uint64
+			col, err = fr.Column("VMRSS-NUM")
+			if err != nil {
+				return err
+			}
+			for i := 0; i < col.Count(); i++ {
+				v, err := col.Value(i)
+				if err != nil {
+					return err
+				}
+				iv, _ := v.Uint64()
+				if maxVMRSSNum == 0 || iv > maxVMRSSNum {
+					maxVMRSSNum = iv
+				}
+			}
+
+			row25ClientReceiveBytesSum = append(row25ClientReceiveBytesSum, humanize.Bytes(receiveBytesNumDeltaSum))
+			row26ClientTransmitBytesSum = append(row26ClientTransmitBytesSum, humanize.Bytes(transmitBytesNumDeltaSum))
+			row27ClientMaxCPU = append(row27ClientMaxCPU, fmt.Sprintf("%.2f %%", maxAvgCPU))
+			row28ClientMaxMemory = append(row28ClientMaxMemory, humanize.Bytes(maxVMRSSNum))
 		}
 
 		{
@@ -261,6 +338,7 @@ func do(configPath string) error {
 				return err
 			}
 
+			var totalErrCnt int64
 			for _, row := range rows {
 				switch row[0] {
 				case "TOTAL-SECONDS":
@@ -279,7 +357,16 @@ func do(configPath string) error {
 				case "AVERAGE-LATENCY-MS":
 					row15AverageLatency = append(row15AverageLatency, fmt.Sprintf("%s ms", row[1]))
 				}
+
+				if strings.HasPrefix(row[0], "ERROR:") {
+					iv, err := strconv.ParseInt(row[1], 10, 64)
+					if err != nil {
+						return err
+					}
+					totalErrCnt += iv
+				}
 			}
+			row29ErrorCount = append(row29ErrorCount, humanize.Comma(totalErrCnt))
 		}
 
 		{
@@ -410,6 +497,11 @@ func do(configPath string) error {
 		row22p95,
 		row23p99,
 		row24p999,
+		row25ClientReceiveBytesSum,
+		row26ClientTransmitBytesSum,
+		row27ClientMaxCPU,
+		row28ClientMaxMemory,
+		row29ErrorCount,
 	}
 	plog.Printf("saving data to %q", cfg.AllAggregatedPath)
 	file, err := openToOverwrite(cfg.AllAggregatedPath)

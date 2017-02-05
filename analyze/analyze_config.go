@@ -31,6 +31,7 @@ type RawData struct {
 	DataBenchmarkThroughput            string   `yaml:"data_benchmark_throughput"`
 	DataBenchmarkLatencyByKey          string   `yaml:"data_benchmark_latency_by_key"`
 	DataBenchmarkMemoryByKey           string   `yaml:"data_benchmark_memory_by_key"`
+	ClientSystemMetricsInterpolated    string   `yaml:"client_system_metrics_interpolated"`
 	TotalRequests                      int      `yaml:"total_requests"`
 }
 
