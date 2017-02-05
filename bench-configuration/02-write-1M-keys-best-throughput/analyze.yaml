@@ -1,4 +1,4 @@
-title: Write 1M keys, 256-byte key, 1KB value, Best Throughput
+title: Write 1M keys, 256-byte key, 1KB value, Best Throughput (etcd 700, Zookeeper 300, Consul 500 clients)
 work_dir: 2017Q1-02-etcd-zookeeper-consul/02-write-1M-keys-best-throughput
 all_aggregated_path: 2017Q1-02-etcd-zookeeper-consul/02-write-1M-keys-best-throughput/aggregated.csv
 all_latency_by_key: 2017Q1-02-etcd-zookeeper-consul/02-write-1M-keys-best-throughput/aggregated-data-latency-by-key-number.csv
@@ -148,7 +148,7 @@ readme:
 
   output_path: 2017Q1-02-etcd-zookeeper-consul/02-write-1M-keys-best-throughput/README.md
   results:
-  - title: Write 1M keys, 256-byte key, 1KB value, Best Throughput
+  - title: Write 1M keys, 256-byte key, 1KB value, Best Throughput (etcd 700, Zookeeper 300, Consul 500 clients)
     images:
 
     - image_title: 2017Q1-02-etcd-zookeeper-consul/02-write-1M-keys-best-throughput/AVG-LATENCY-MS
