@@ -143,19 +143,20 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 			return fmt.Errorf("cannot Float64 %v", hv)
 		}
 
+		// handle duplicate timestamps
 		if v, ok := sec2Data[ts]; !ok {
 			sec2Data[ts] = rowData{clientN: cn, minLat: minLat, avgLat: avgLat, maxLat: maxLat, throughput: dataThr}
 		} else {
-			oldCn := v.clientN
-			if oldCn != cn {
-				return fmt.Errorf("different client number with same timestamps! %d != %d", oldCn, cn)
-			}
+			// it is possible that there are duplicate timestamps with
+			// different client numbers, when clients number bump up
+			// these requests happen within this unix second, add up the
+			// throughput, and select min,max and avg of latencies
 			sec2Data[ts] = rowData{
 				clientN:    cn,
 				minLat:     minFloat64(v.minLat, minLat),
 				avgLat:     (v.avgLat + avgLat) / 2.0,
 				maxLat:     maxFloat64(v.maxLat, maxLat),
-				throughput: (v.throughput + dataThr) / 2.0,
+				throughput: v.throughput + dataThr,
 			}
 		}
 	}
@@ -178,8 +179,9 @@ func (data *analyzeData) importBenchMetrics(fpath string) (err error) {
 
 		v, ok := sec2Data[second]
 		if !ok {
-			prev := findClosest(second, sec2Data)
-			newControlClientNumCol.PushBack(dataframe.NewStringValue(prev.clientN))
+			// fill-in missing rows with closest row
+			closest := findClosest(second, sec2Data)
+			newControlClientNumCol.PushBack(dataframe.NewStringValue(closest.clientN))
 			newMinLatencyCol.PushBack(dataframe.NewStringValue(0.0))
 			newAvgLatencyCol.PushBack(dataframe.NewStringValue(0.0))
 			newMaxLatencyCol.PushBack(dataframe.NewStringValue(0.0))
