@@ -35,6 +35,10 @@ func maxFloat64(a, b float64) float64 {
 	return b
 }
 
+func makeHeader(column string, tag string) string {
+	return fmt.Sprintf("%s-%s", column, tag)
+}
+
 // converts unix nanoseconds to unix second.
 func convertUnixNano(ts int64) int64 {
 	return int64(ts / 1e9)

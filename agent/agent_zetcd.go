@@ -26,7 +26,7 @@ func startZetcd(fs *flags, t *transporterServer) error {
 		return fmt.Errorf("zetcd binary %q does not exist", globalFlags.zetcdExec)
 	}
 
-	peerIPs := strings.Split(t.req.PeerIPString, "___")
+	peerIPs := strings.Split(t.req.PeerIPsString, "___")
 	clientURLs := make([]string, len(peerIPs))
 	for i, u := range peerIPs {
 		clientURLs[i] = fmt.Sprintf("http://%s:2379", u)
@@ -34,8 +34,8 @@ func startZetcd(fs *flags, t *transporterServer) error {
 
 	flags := []string{
 		// "-zkaddr", "0.0.0.0:2181",
-		"-zkaddr", fmt.Sprintf("%s:2181", peerIPs[t.req.ServerIndex]),
-		"-endpoint", clientURLs[t.req.ServerIndex],
+		"-zkaddr", fmt.Sprintf("%s:2181", peerIPs[t.req.IpIndex]),
+		"-endpoint", clientURLs[t.req.IpIndex],
 	}
 	flagString := strings.Join(flags, " ")
 

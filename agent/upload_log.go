@@ -20,14 +20,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/coreos/dbtester/agent/agentpb"
+	"github.com/coreos/dbtester/dbtesterpb"
 	"github.com/coreos/dbtester/pkg/remotestorage"
 )
 
 // uploadLog starts cetcd. This assumes that etcd is already started.
 func uploadLog(fs *flags, t *transporterServer) error {
-	plog.Infof("stopped collecting metrics; uploading logs to storage %q", t.req.GoogleCloudProjectName)
-	u, err := remotestorage.NewGoogleCloudStorage([]byte(t.req.GoogleCloudStorageKey), t.req.GoogleCloudProjectName)
+	plog.Infof("stopped collecting metrics; uploading logs to storage %q", t.req.Control.GoogleCloudProjectName)
+	u, err := remotestorage.NewGoogleCloudStorage([]byte(t.req.Control.GoogleCloudStorageKey), t.req.Control.GoogleCloudProjectName)
 	if err != nil {
 		return err
 	}
@@ -37,13 +37,13 @@ func uploadLog(fs *flags, t *transporterServer) error {
 	{
 		srcDatabaseLogPath := fs.databaseLog
 		dstDatabaseLogPath := filepath.Base(fs.databaseLog)
-		if !strings.HasPrefix(filepath.Base(fs.databaseLog), t.req.TestName) {
-			dstDatabaseLogPath = fmt.Sprintf("%s-%d-%s", t.req.TestName, t.req.ServerIndex+1, filepath.Base(fs.databaseLog))
+		if !strings.HasPrefix(filepath.Base(fs.databaseLog), t.req.DatabaseTag) {
+			dstDatabaseLogPath = fmt.Sprintf("%s-%d-%s", t.req.DatabaseTag, t.req.IpIndex+1, filepath.Base(fs.databaseLog))
 		}
-		dstDatabaseLogPath = filepath.Join(t.req.GoogleCloudStorageSubDirectory, dstDatabaseLogPath)
+		dstDatabaseLogPath = filepath.Join(t.req.Control.GoogleCloudStorageSubDirectory, dstDatabaseLogPath)
 		plog.Infof("uploading database log [%q -> %q]", srcDatabaseLogPath, dstDatabaseLogPath)
 		for k := 0; k < 30; k++ {
-			if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcDatabaseLogPath, dstDatabaseLogPath); uerr != nil {
+			if uerr = u.UploadFile(t.req.Control.GoogleCloudStorageBucketName, srcDatabaseLogPath, dstDatabaseLogPath); uerr != nil {
 				plog.Warningf("UploadFile error... sleep and retry... (%v)", uerr)
 				time.Sleep(2 * time.Second)
 				continue
@@ -57,17 +57,17 @@ func uploadLog(fs *flags, t *transporterServer) error {
 	}
 
 	{
-		if t.req.Database == agentpb.Request_zetcd || t.req.Database == agentpb.Request_cetcd {
-			dpath := fs.databaseLog + "-" + t.req.Database.String()
+		if t.req.DatabaseID == dbtesterpb.Request_zetcd || t.req.DatabaseID == dbtesterpb.Request_cetcd {
+			dpath := fs.databaseLog + "-" + t.req.DatabaseID.String()
 			srcDatabaseLogPath2 := dpath
 			dstDatabaseLogPath2 := filepath.Base(dpath)
-			if !strings.HasPrefix(filepath.Base(dpath), t.req.TestName) {
-				dstDatabaseLogPath2 = fmt.Sprintf("%s-%d-%s", t.req.TestName, t.req.ServerIndex+1, filepath.Base(dpath))
+			if !strings.HasPrefix(filepath.Base(dpath), t.req.DatabaseTag) {
+				dstDatabaseLogPath2 = fmt.Sprintf("%s-%d-%s", t.req.DatabaseTag, t.req.IpIndex+1, filepath.Base(dpath))
 			}
-			dstDatabaseLogPath2 = filepath.Join(t.req.GoogleCloudStorageSubDirectory, dstDatabaseLogPath2)
+			dstDatabaseLogPath2 = filepath.Join(t.req.Control.GoogleCloudStorageSubDirectory, dstDatabaseLogPath2)
 			plog.Infof("uploading proxy-database log [%q -> %q]", srcDatabaseLogPath2, dstDatabaseLogPath2)
 			for k := 0; k < 30; k++ {
-				if uerr = u.UploadFile(t.req.GoogleCloudStorageBucketName, srcDatabaseLogPath2, dstDatabaseLogPath2); uerr != nil {
+				if uerr = u.UploadFile(t.req.Control.GoogleCloudStorageBucketName, srcDatabaseLogPath2, dstDatabaseLogPath2); uerr != nil {
 					plog.Warningf("UploadFile error... sleep and retry... (%v)", uerr)
 					time.Sleep(2 * time.Second)
 					continue
@@ -84,14 +84,14 @@ func uploadLog(fs *flags, t *transporterServer) error {
 	{
 		srcSysMetricsDataPath := fs.systemMetricsCSV
 		dstSysMetricsDataPath := filepath.Base(fs.systemMetricsCSV)
-		if !strings.HasPrefix(filepath.Base(fs.systemMetricsCSV), t.req.TestName) {
-			dstSysMetricsDataPath = fmt.Sprintf("%s-%d-%s", t.req.TestName, t.req.ServerIndex+1, filepath.Base(fs.systemMetricsCSV))
+		if !strings.HasPrefix(filepath.Base(fs.systemMetricsCSV), t.req.DatabaseTag) {
+			dstSysMetricsDataPath = fmt.Sprintf("%s-%d-%s", t.req.DatabaseTag, t.req.IpIndex+1, filepath.Base(fs.systemMetricsCSV))
 		}
-		dstSysMetricsDataPath = filepath.Join(t.req.GoogleCloudStorageSubDirectory, dstSysMetricsDataPath)
+		dstSysMetricsDataPath = filepath.Join(t.req.Control.GoogleCloudStorageSubDirectory, dstSysMetricsDataPath)
 		plog.Infof("uploading system metrics data [%q -> %q]", srcSysMetricsDataPath, dstSysMetricsDataPath)
 		for k := 0; k < 30; k++ {
-			if uerr := u.UploadFile(t.req.GoogleCloudStorageBucketName, srcSysMetricsDataPath, dstSysMetricsDataPath); uerr != nil {
-				plog.Warningf("u.UploadFile error... sleep and retry... (%v)", uerr)
+			if uerr := u.UploadFile(t.req.Control.GoogleCloudStorageBucketName, srcSysMetricsDataPath, dstSysMetricsDataPath); uerr != nil {
+				plog.Warningf("upload error... sleep and retry... (%v)", uerr)
 				time.Sleep(2 * time.Second)
 				continue
 			} else {
@@ -106,14 +106,14 @@ func uploadLog(fs *flags, t *transporterServer) error {
 	{
 		srcSysMetricsInterpolatedDataPath := fs.systemMetricsCSVInterpolated
 		dstSysMetricsInterpolatedDataPath := filepath.Base(fs.systemMetricsCSVInterpolated)
-		if !strings.HasPrefix(filepath.Base(fs.systemMetricsCSVInterpolated), t.req.TestName) {
-			dstSysMetricsInterpolatedDataPath = fmt.Sprintf("%s-%d-%s", t.req.TestName, t.req.ServerIndex+1, filepath.Base(fs.systemMetricsCSVInterpolated))
+		if !strings.HasPrefix(filepath.Base(fs.systemMetricsCSVInterpolated), t.req.DatabaseTag) {
+			dstSysMetricsInterpolatedDataPath = fmt.Sprintf("%s-%d-%s", t.req.DatabaseTag, t.req.IpIndex+1, filepath.Base(fs.systemMetricsCSVInterpolated))
 		}
-		dstSysMetricsInterpolatedDataPath = filepath.Join(t.req.GoogleCloudStorageSubDirectory, dstSysMetricsInterpolatedDataPath)
+		dstSysMetricsInterpolatedDataPath = filepath.Join(t.req.Control.GoogleCloudStorageSubDirectory, dstSysMetricsInterpolatedDataPath)
 		plog.Infof("uploading system metrics interpolated data [%q -> %q]", srcSysMetricsInterpolatedDataPath, dstSysMetricsInterpolatedDataPath)
 		for k := 0; k < 30; k++ {
-			if uerr := u.UploadFile(t.req.GoogleCloudStorageBucketName, srcSysMetricsInterpolatedDataPath, dstSysMetricsInterpolatedDataPath); uerr != nil {
-				plog.Warningf("u.UploadFile error... sleep and retry... (%v)", uerr)
+			if uerr := u.UploadFile(t.req.Control.GoogleCloudStorageBucketName, srcSysMetricsInterpolatedDataPath, dstSysMetricsInterpolatedDataPath); uerr != nil {
+				plog.Warningf("upload error... sleep and retry... (%v)", uerr)
 				time.Sleep(2 * time.Second)
 				continue
 			} else {
@@ -128,13 +128,13 @@ func uploadLog(fs *flags, t *transporterServer) error {
 	{
 		srcAgentLogPath := fs.agentLog
 		dstAgentLogPath := filepath.Base(fs.agentLog)
-		if !strings.HasPrefix(filepath.Base(fs.agentLog), t.req.TestName) {
-			dstAgentLogPath = fmt.Sprintf("%s-%d-%s", t.req.TestName, t.req.ServerIndex+1, filepath.Base(fs.agentLog))
+		if !strings.HasPrefix(filepath.Base(fs.agentLog), t.req.DatabaseTag) {
+			dstAgentLogPath = fmt.Sprintf("%s-%d-%s", t.req.DatabaseTag, t.req.IpIndex+1, filepath.Base(fs.agentLog))
 		}
-		dstAgentLogPath = filepath.Join(t.req.GoogleCloudStorageSubDirectory, dstAgentLogPath)
+		dstAgentLogPath = filepath.Join(t.req.Control.GoogleCloudStorageSubDirectory, dstAgentLogPath)
 		plog.Infof("uploading agent logs [%q -> %q]", srcAgentLogPath, dstAgentLogPath)
 		for k := 0; k < 30; k++ {
-			if uerr := u.UploadFile(t.req.GoogleCloudStorageBucketName, srcAgentLogPath, dstAgentLogPath); uerr != nil {
+			if uerr := u.UploadFile(t.req.Control.GoogleCloudStorageBucketName, srcAgentLogPath, dstAgentLogPath); uerr != nil {
 				plog.Warningf("UploadFile error... sleep and retry... (%v)", uerr)
 				time.Sleep(2 * time.Second)
 				continue

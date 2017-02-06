@@ -19,7 +19,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/coreos/dbtester/agent/agentpb"
+	"github.com/coreos/dbtester/dbtesterpb"
 	"github.com/coreos/dbtester/pkg/netutil"
 	"github.com/coreos/dbtester/pkg/ntp"
 	"github.com/coreos/pkg/capnslog"
@@ -71,8 +71,8 @@ func init() {
 
 	Command.PersistentFlags().StringVar(&globalFlags.agentLog, "agent-log", filepath.Join(homeDir(), "agent.log"), "agent log path.")
 	Command.PersistentFlags().StringVar(&globalFlags.databaseLog, "database-log", filepath.Join(homeDir(), "database.log"), "Database log path.")
-	Command.PersistentFlags().StringVar(&globalFlags.systemMetricsCSV, "system-metrics-csv", filepath.Join(homeDir(), "system-metrics.csv"), "Raw system metrics data path.")
-	Command.PersistentFlags().StringVar(&globalFlags.systemMetricsCSVInterpolated, "system-metrics-csv-interpolated", filepath.Join(homeDir(), "system-metrics-interpolated.csv"), "Interpolated system metrics data path.")
+	Command.PersistentFlags().StringVar(&globalFlags.systemMetricsCSV, "system-metrics-csv", filepath.Join(homeDir(), "server-system-metrics.csv"), "Raw system metrics data path.")
+	Command.PersistentFlags().StringVar(&globalFlags.systemMetricsCSVInterpolated, "system-metrics-csv-interpolated", filepath.Join(homeDir(), "server-system-metrics-interpolated.csv"), "Interpolated system metrics data path.")
 
 	Command.PersistentFlags().StringVar(&globalFlags.javaExec, "java-exec", "/usr/bin/java", "Java executable binary path (needed for Zookeeper).")
 	Command.PersistentFlags().StringVar(&globalFlags.etcdExec, "etcd-exec", filepath.Join(os.Getenv("GOPATH"), "bin/etcd"), "etcd executable binary path.")
@@ -95,7 +95,7 @@ func init() {
 // Command implements 'agent' command.
 var Command = &cobra.Command{
 	Use:   "agent",
-	Short: "Database 'agent' in remote servers (runs database, upload logs).",
+	Short: "Database 'agent' in remote servers.",
 	RunE:  commandFunc,
 }
 
@@ -119,7 +119,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	agentpb.RegisterTransporterServer(grpcServer, sender)
+	dbtesterpb.RegisterTransporterServer(grpcServer, sender)
 
 	plog.Infof("agent started with gRPC %s (log path %q)", globalFlags.grpcPort, globalFlags.agentLog)
 	return grpcServer.Serve(ln)

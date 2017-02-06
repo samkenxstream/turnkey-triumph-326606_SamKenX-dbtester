@@ -22,15 +22,15 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/coreos/dbtester/agent/agentpb"
+	"github.com/coreos/dbtester/dbtesterpb"
 	"github.com/coreos/dbtester/pkg/fileinspect"
 	"github.com/gyuho/psn"
 	"golang.org/x/net/context"
 )
 
-// implements agentpb.TransporterServer
+// implements dbtesterpb.TransporterServer
 type transporterServer struct {
-	req agentpb.Request
+	req dbtesterpb.Request
 
 	databaseLogFile      *os.File
 	proxyDatabaseLogfile *os.File
@@ -61,7 +61,7 @@ type transporterServer struct {
 }
 
 // NewServer returns a new server that implements gRPC interface.
-func NewServer() agentpb.TransporterServer {
+func NewServer() dbtesterpb.TransporterServer {
 	notifier := make(chan os.Signal, 1)
 	signal.Notify(notifier, syscall.SIGINT, syscall.SIGTERM)
 
@@ -73,12 +73,12 @@ func NewServer() agentpb.TransporterServer {
 	}
 }
 
-func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*agentpb.Response, error) {
-	if r != nil {
-		plog.Infof("received gRPC request %q with database %q (clients: %d)", r.Operation, r.Database, r.ClientNum)
+func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Request) (*dbtesterpb.Response, error) {
+	if req != nil {
+		plog.Infof("received gRPC request %q with database %q (clients: %d)", req.Operation, req.DatabaseID, req.CurrentClientNumber)
 	}
 
-	if r.Operation == agentpb.Request_Start {
+	if req.Operation == dbtesterpb.Request_Start {
 		f, err := openToAppend(globalFlags.databaseLog)
 		if err != nil {
 			return nil, err
@@ -87,8 +87,8 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 
 		plog.Infof("agent log path: %q", globalFlags.agentLog)
 		plog.Infof("database log path: %q", globalFlags.databaseLog)
-		if r.Database == agentpb.Request_zetcd || r.Database == agentpb.Request_cetcd {
-			proxyLog := globalFlags.databaseLog + "-" + t.req.Database.String()
+		if req.DatabaseID == dbtesterpb.Request_zetcd || req.DatabaseID == dbtesterpb.Request_cetcd {
+			proxyLog := globalFlags.databaseLog + "-" + t.req.DatabaseID.String()
 			pf, err := openToAppend(proxyLog)
 			if err != nil {
 				return nil, err
@@ -98,47 +98,47 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 		}
 		plog.Infof("system metrics CSV path: %q", globalFlags.systemMetricsCSV)
 
-		switch r.Database {
-		case agentpb.Request_ZooKeeper:
+		switch req.DatabaseID {
+		case dbtesterpb.Request_zookeeper:
 			plog.Infof("Zookeeper working directory: %q", globalFlags.zkWorkDir)
 			plog.Infof("Zookeeper data directory: %q", globalFlags.zkDataDir)
 			plog.Infof("Zookeeper configuration path: %q", globalFlags.zkConfig)
 
-		case agentpb.Request_etcdv2, agentpb.Request_etcdv3:
+		case dbtesterpb.Request_etcdv2, dbtesterpb.Request_etcdv3:
 			plog.Infof("etcd executable binary path: %q", globalFlags.etcdExec)
 			plog.Infof("etcd data directory: %q", globalFlags.etcdDataDir)
 
-		case agentpb.Request_zetcd:
+		case dbtesterpb.Request_zetcd:
 			plog.Infof("zetcd executable binary path: %q", globalFlags.zetcdExec)
 			plog.Infof("zetcd data directory: %q", globalFlags.etcdDataDir)
 
-		case agentpb.Request_cetcd:
+		case dbtesterpb.Request_cetcd:
 			plog.Infof("cetcd executable binary path: %q", globalFlags.cetcdExec)
 			plog.Infof("cetcd data directory: %q", globalFlags.etcdDataDir)
 
-		case agentpb.Request_Consul:
+		case dbtesterpb.Request_consul:
 			plog.Infof("Consul executable binary path: %q", globalFlags.consulExec)
 			plog.Infof("Consul data directory: %q", globalFlags.consulDataDir)
 		}
 
 		// re-use configurations for next requests
-		t.req = *r
+		t.req = *req
 	}
-	if r.Operation == agentpb.Request_Heartbeat {
-		t.req.ClientNum = r.ClientNum
+	if req.Operation == dbtesterpb.Request_Heartbeat {
+		t.req.CurrentClientNumber = req.CurrentClientNumber
 	}
 
 	var totalDatasize int64
-	switch r.Operation {
-	case agentpb.Request_Start:
-		switch t.req.Database {
-		case agentpb.Request_etcdv2, agentpb.Request_etcdv3, agentpb.Request_zetcd, agentpb.Request_cetcd:
+	switch req.Operation {
+	case dbtesterpb.Request_Start:
+		switch t.req.DatabaseID {
+		case dbtesterpb.Request_etcdv2, dbtesterpb.Request_etcdv3, dbtesterpb.Request_zetcd, dbtesterpb.Request_cetcd:
 			if err := startEtcd(&globalFlags, t); err != nil {
 				plog.Errorf("startEtcd error %v", err)
 				return nil, err
 			}
-			switch t.req.Database {
-			case agentpb.Request_zetcd:
+			switch t.req.DatabaseID {
+			case dbtesterpb.Request_zetcd:
 				if err := startZetcd(&globalFlags, t); err != nil {
 					plog.Errorf("startZetcd error %v", err)
 					return nil, err
@@ -151,7 +151,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 					}
 					plog.Infof("exiting %q", t.proxyCmd.Path)
 				}()
-			case agentpb.Request_cetcd:
+			case dbtesterpb.Request_cetcd:
 				if err := startCetcd(&globalFlags, t); err != nil {
 					plog.Errorf("startCetcd error %v", err)
 					return nil, err
@@ -165,18 +165,18 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 					plog.Infof("exiting %q", t.proxyCmd.Path)
 				}()
 			}
-		case agentpb.Request_ZooKeeper:
+		case dbtesterpb.Request_zookeeper:
 			if err := startZookeeper(&globalFlags, t); err != nil {
 				plog.Errorf("startZookeeper error %v", err)
 				return nil, err
 			}
-		case agentpb.Request_Consul:
+		case dbtesterpb.Request_consul:
 			if err := startConsul(&globalFlags, t); err != nil {
 				plog.Errorf("startConsul error %v", err)
 				return nil, err
 			}
 		default:
-			return nil, fmt.Errorf("unknown database %q", t.req.Database)
+			return nil, fmt.Errorf("unknown database %q", t.req.DatabaseID)
 		}
 
 		go func() {
@@ -193,7 +193,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 			return nil, err
 		}
 
-	case agentpb.Request_Stop:
+	case dbtesterpb.Request_Stop:
 		if t.cmd == nil {
 			return nil, fmt.Errorf("nil command")
 		}
@@ -216,7 +216,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 			t.databaseLogFile.Sync()
 			t.databaseLogFile.Close()
 		}
-		plog.Infof("stopped binary %q [PID: %d]", t.req.Database.String(), t.pid)
+		plog.Infof("stopped binary %q [PID: %d]", t.req.DatabaseID.String(), t.pid)
 
 		if t.proxyCmd != nil {
 			plog.Infof("sending %q to %q [PID: %d]", syscall.SIGINT, t.proxyCmd.Path, t.proxyPid)
@@ -229,7 +229,7 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 				plog.Warningf("syscall.Kill failed with %v", err)
 			}
 			<-t.proxyCmdWait
-			plog.Infof("stopped binary proxy for %q [PID: %d]", t.req.Database.String(), t.pid)
+			plog.Infof("stopped binary proxy for %q [PID: %d]", t.req.DatabaseID.String(), t.pid)
 		}
 		if t.proxyDatabaseLogfile != nil {
 			t.proxyDatabaseLogfile.Sync()
@@ -239,47 +239,47 @@ func (t *transporterServer) Transfer(ctx context.Context, r *agentpb.Request) (*
 		t.uploadSig <- struct{}{}
 		<-t.csvReady
 
-		if t.req.UploadLogs {
+		if t.req.TriggerLogUpload {
 			if err := uploadLog(&globalFlags, t); err != nil {
 				plog.Warningf("uploadLog error %v", err)
 				return nil, err
 			}
 		}
 
-		dbs, err := measureDatabasSize(globalFlags, r.Database)
+		dbs, err := measureDatabasSize(globalFlags, req.DatabaseID)
 		if err != nil {
 			plog.Warningf("measureDatabasSize error %v", err)
 			return nil, err
 		}
 		totalDatasize = dbs
 
-	case agentpb.Request_Heartbeat:
-		plog.Infof("overwriting clients num %d to %q", t.req.ClientNum, t.clientNumPath)
-		if err := toFile(fmt.Sprintf("%d", t.req.ClientNum), t.clientNumPath); err != nil {
+	case dbtesterpb.Request_Heartbeat:
+		plog.Infof("overwriting clients num %d to %q", t.req.CurrentClientNumber, t.clientNumPath)
+		if err := toFile(fmt.Sprintf("%d", t.req.CurrentClientNumber), t.clientNumPath); err != nil {
 			return nil, err
 		}
 
 	default:
-		return nil, fmt.Errorf("Not implemented %v", r.Operation)
+		return nil, fmt.Errorf("Not implemented %v", req.Operation)
 	}
 
 	plog.Info("Transfer success!")
-	return &agentpb.Response{Success: true, Datasize: totalDatasize}, nil
+	return &dbtesterpb.Response{Success: true, DatasizeOnDisk: totalDatasize}, nil
 }
 
-func measureDatabasSize(flg flags, rdb agentpb.Request_Database) (int64, error) {
+func measureDatabasSize(flg flags, rdb dbtesterpb.Request_Database) (int64, error) {
 	switch rdb {
-	case agentpb.Request_etcdv2:
+	case dbtesterpb.Request_etcdv2:
 		return fileinspect.Size(flg.etcdDataDir)
-	case agentpb.Request_etcdv3:
+	case dbtesterpb.Request_etcdv3:
 		return fileinspect.Size(flg.etcdDataDir)
-	case agentpb.Request_ZooKeeper:
+	case dbtesterpb.Request_zookeeper:
 		return fileinspect.Size(flg.zkDataDir)
-	case agentpb.Request_Consul:
+	case dbtesterpb.Request_consul:
 		return fileinspect.Size(flg.consulDataDir)
-	case agentpb.Request_cetcd:
+	case dbtesterpb.Request_cetcd:
 		return fileinspect.Size(flg.etcdDataDir)
-	case agentpb.Request_zetcd:
+	case dbtesterpb.Request_zetcd:
 		return fileinspect.Size(flg.etcdDataDir)
 	default:
 		return 0, fmt.Errorf("uknown %q", rdb)

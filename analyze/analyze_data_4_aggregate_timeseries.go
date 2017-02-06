@@ -16,7 +16,7 @@ package analyze
 
 import "sort"
 
-func processTimeSeries(tslice []keyNumAndMemory, unit int64, totalRequests int) []keyNumAndMemory {
+func processTimeSeries(tslice []keyNumAndMemory, unit int64, totalRequests int64) []keyNumAndMemory {
 	sort.Sort(keyNumAndMemorys(tslice))
 
 	cumulKeyN := int64(0)
