@@ -99,7 +99,28 @@ func (cfg *Config) Stress(databaseID string) error {
 				combined.Total += st.Total
 				combined.Lats = append(combined.Lats, st.Lats...)
 				combined.TimeSeries = append(combined.TimeSeries, st.TimeSeries...)
-
+				//
+				// Need to handle duplicate unix second timestamps when two ranges are merged.
+				// This can happen when the following run happens within the same unix timesecond,
+				// since finishing up the previous report and restarting the next range of requests
+				// with different number of clients takes only 100+/- ms.
+				//
+				// For instance, we have the following raw data:
+				//
+				//   unix-second, client-number, throughput
+				//   1486389257,       700,         30335  === ending of previous combined.TimeSeries
+				//   1486389258,      "700",        23188  === ending of previous combined.TimeSeries
+				//   1486389258,       1000,         5739  === beginning of current st.TimeSeries
+				//
+				// And the line below will overwrite the 'client-number' as:
+				//
+				//   unix-second, client-number, throughput
+				//   1486389257,       700,        30335  === ending of previous combined.TimeSeries
+				//   1486389258,      "1000",      23188  === ending of previous combined.TimeSeries
+				//   1486389258,       1000,        5739  === beginning of current st.TimeSeries
+				//
+				// So now we have two duplicate unix time seconds.
+				//
 				clientsN := gcfg.BenchmarkOptions.ConnectionClientNumbers[i]
 				for _, v := range st.TimeSeries {
 					tsToClientN[v.Timestamp] = clientsN
