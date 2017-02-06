@@ -19,42 +19,41 @@
 +----------------------------------------+-------------------+------------------------+-----------------------+
 |                                        | etcd-v3.1-go1.7.4 | zookeeper-r3.4.9-java8 | consul-v0.7.3-go1.7.4 |
 +----------------------------------------+-------------------+------------------------+-----------------------+
-|                          TOTAL-SECONDS |      345.7743 sec |           320.9959 sec |          676.6576 sec |
+|                          TOTAL-SECONDS |      338.7661 sec |           344.3563 sec |          703.7060 sec |
 |                   TOTAL-REQUEST-NUMBER |         1,000,000 |              1,000,000 |             1,000,000 |
-|                         MAX-THROUGHPUT |    35,245 req/sec |         37,580 req/sec |        15,488 req/sec |
-|                         AVG-THROUGHPUT |     2,892 req/sec |          3,108 req/sec |         1,477 req/sec |
-|                         MIN-THROUGHPUT |        23 req/sec |              0 req/sec |             0 req/sec |
-|                        FASTEST-LATENCY |         1.0942 ms |              0.9952 ms |             3.0193 ms |
-|                            AVG-LATENCY |        14.0207 ms |             34.9720 ms |            44.3717 ms |
-|                        SLOWEST-LATENCY |       101.5395 ms |           2334.6007 ms |          3475.2713 ms |
-|                            Latency p10 |       2.308513 ms |            2.378813 ms |           3.971904 ms |
-|                            Latency p25 |       5.879109 ms |            3.595997 ms |           7.811056 ms |
-|                            Latency p50 |      10.100823 ms |            6.320842 ms |          20.224796 ms |
-|                            Latency p75 |      17.160120 ms |           12.677824 ms |          56.790033 ms |
-|                            Latency p90 |      28.890553 ms |           21.506040 ms |          89.507900 ms |
-|                            Latency p95 |      44.861387 ms |           30.713207 ms |         106.807611 ms |
-|                            Latency p99 |      62.570152 ms |         1186.951737 ms |         301.241777 ms |
-|                          Latency p99.9 |      87.467729 ms |         2241.127019 ms |        2634.872172 ms |
-|  SERVER-TOTAL-NETWORK-RECEIVE-DATA-SUM |            5.1 GB |                 5.4 GB |                5.5 GB |
-| SERVER-TOTAL-NETWORK-TRANSMIT-DATA-SUM |            3.9 GB |                 4.4 GB |                4.3 GB |
-|       CLIENT-TOTAL-NETWORK-RECEIVE-SUM |            271 MB |                 356 MB |                202 MB |
+|                         MAX-THROUGHPUT |    35,147 req/sec |         31,726 req/sec |        15,328 req/sec |
+|                         AVG-THROUGHPUT |     2,951 req/sec |          2,903 req/sec |         1,421 req/sec |
+|                         MIN-THROUGHPUT |        90 req/sec |              0 req/sec |             0 req/sec |
+|                        FASTEST-LATENCY |         1.1001 ms |              1.1093 ms |             2.9964 ms |
+|                            AVG-LATENCY |        13.8862 ms |             34.9948 ms |            72.5791 ms |
+|                        SLOWEST-LATENCY |       109.4800 ms |           2618.2703 ms |         20860.6692 ms |
+|                            Latency p10 |       2.295037 ms |            2.620473 ms |           3.982040 ms |
+|                            Latency p25 |       5.788546 ms |            3.932461 ms |           7.888984 ms |
+|                            Latency p50 |       9.935599 ms |            7.747493 ms |          21.950488 ms |
+|                            Latency p75 |      17.040088 ms |           16.891088 ms |          58.936521 ms |
+|                            Latency p90 |      28.513968 ms |           28.114578 ms |         126.568085 ms |
+|                            Latency p95 |      44.023164 ms |           44.599685 ms |         165.331967 ms |
+|                            Latency p99 |      60.351324 ms |         1063.554863 ms |         430.071868 ms |
+|                          Latency p99.9 |      94.058105 ms |         2336.144865 ms |       12648.734251 ms |
+|  SERVER-TOTAL-NETWORK-RECEIVE-DATA-SUM |            5.1 GB |                 5.4 GB |                7.9 GB |
+| SERVER-TOTAL-NETWORK-TRANSMIT-DATA-SUM |            3.9 GB |                 4.4 GB |                6.6 GB |
+|       CLIENT-TOTAL-NETWORK-RECEIVE-SUM |            270 MB |                 357 MB |                202 MB |
 |      CLIENT-TOTAL-NETWORK-TRANSMIT-SUM |            1.5 GB |                 1.4 GB |                1.5 GB |
-|                   SERVER-MAX-CPU-USAGE |          449.90 % |               558.97 % |              421.60 % |
-|                SERVER-MAX-MEMORY-USAGE |            1.4 GB |                 3.9 GB |                4.8 GB |
-|                   CLIENT-MAX-CPU-USAGE |          552.00 % |               617.80 % |              224.00 % |
-|                CLIENT-MAX-MEMORY-USAGE |            361 MB |                 4.4 GB |                225 MB |
-|                     CLIENT-ERROR-COUNT |                 0 |                  2,093 |                     0 |
-|   SERVER-AVG-READS-COMPLETED-DELTA-SUM |                 3 |                    221 |                    11 |
+|                   SERVER-MAX-CPU-USAGE |          434.00 % |               600.67 % |              416.00 % |
+|                SERVER-MAX-MEMORY-USAGE |            1.3 GB |                 4.0 GB |                5.4 GB |
+|                   CLIENT-MAX-CPU-USAGE |          540.00 % |               322.00 % |              204.00 % |
+|                CLIENT-MAX-MEMORY-USAGE |            330 MB |                 3.6 GB |                199 MB |
+|                     CLIENT-ERROR-COUNT |                 0 |                     24 |                     0 |
+|   SERVER-AVG-READS-COMPLETED-DELTA-SUM |                76 |                    334 |                    66 |
 |     SERVER-AVG-SECTORS-READS-DELTA-SUM |                 0 |                      0 |                     0 |
-|  SERVER-AVG-WRITES-COMPLETED-DELTA-SUM |         1,222,851 |                960,275 |             2,333,199 |
-|   SERVER-AVG-SECTORS-WRITTEN-DELTA-SUM |           739,936 |             12,769,072 |             4,013,148 |
-|           SERVER-AVG-DATA-SIZE-ON-DISK |            2.4 GB |                 8.8 GB |                3.0 GB |
+|  SERVER-AVG-WRITES-COMPLETED-DELTA-SUM |         1,217,294 |                953,784 |             2,381,092 |
+|   SERVER-AVG-SECTORS-WRITTEN-DELTA-SUM |           714,152 |              9,304,072 |            10,711,132 |
+|           SERVER-AVG-DATA-SIZE-ON-DISK |            3.0 GB |                 7.9 GB |                3.0 GB |
 +----------------------------------------+-------------------+------------------------+-----------------------+
 
 
 zookeeper errors:
-"zk: connection closed" (count 1,747)
-"zk: could not connect to a server" (count 346)
+"zk: could not connect to a server" (count 24)
 ```
 
 
@@ -143,42 +142,42 @@ zookeeper errors:
 +----------------------------------------+-------------------+------------------------+-----------------------+
 |                                        | etcd-v3.1-go1.7.4 | zookeeper-r3.4.9-java8 | consul-v0.7.3-go1.7.4 |
 +----------------------------------------+-------------------+------------------------+-----------------------+
-|                          TOTAL-SECONDS |       37.4731 sec |            63.8379 sec |          309.0797 sec |
+|                          TOTAL-SECONDS |       37.3284 sec |            75.0700 sec |          304.4858 sec |
 |                   TOTAL-REQUEST-NUMBER |         1,000,000 |              1,000,000 |             1,000,000 |
-|                         MAX-THROUGHPUT |    32,555 req/sec |         38,537 req/sec |        16,919 req/sec |
-|                         AVG-THROUGHPUT |    26,685 req/sec |         15,656 req/sec |         3,235 req/sec |
-|                         MIN-THROUGHPUT |    15,350 req/sec |              0 req/sec |             0 req/sec |
-|                        FASTEST-LATENCY |         4.5030 ms |              2.3895 ms |            14.5025 ms |
-|                            AVG-LATENCY |        26.1688 ms |             17.9204 ms |           154.4720 ms |
-|                        SLOWEST-LATENCY |       205.8298 ms |           3471.7581 ms |         21463.6662 ms |
-|                            Latency p10 |      10.580892 ms |            5.948893 ms |          29.430795 ms |
-|                            Latency p25 |      12.626734 ms |            6.817741 ms |          34.096243 ms |
-|                            Latency p50 |      18.452075 ms |            7.718642 ms |          42.522161 ms |
-|                            Latency p75 |      26.930691 ms |            8.659562 ms |          63.027422 ms |
-|                            Latency p90 |      49.843748 ms |            9.750484 ms |         263.017095 ms |
-|                            Latency p95 |      67.991988 ms |           10.757740 ms |         601.571541 ms |
-|                            Latency p99 |     135.153213 ms |          114.903303 ms |        1237.545701 ms |
-|                          Latency p99.9 |     160.393852 ms |         2248.915050 ms |       11496.380241 ms |
-|  SERVER-TOTAL-NETWORK-RECEIVE-DATA-SUM |            4.9 GB |                 5.4 GB |                 14 GB |
-| SERVER-TOTAL-NETWORK-TRANSMIT-DATA-SUM |            3.8 GB |                 4.3 GB |                 12 GB |
-|       CLIENT-TOTAL-NETWORK-RECEIVE-SUM |            274 MB |                 351 MB |                211 MB |
+|                         MAX-THROUGHPUT |    33,567 req/sec |         35,499 req/sec |        15,141 req/sec |
+|                         AVG-THROUGHPUT |    26,789 req/sec |         13,274 req/sec |         3,284 req/sec |
+|                         MIN-THROUGHPUT |    10,018 req/sec |              0 req/sec |             0 req/sec |
+|                        FASTEST-LATENCY |         4.2842 ms |              2.7405 ms |            11.4297 ms |
+|                            AVG-LATENCY |        26.0603 ms |             18.2231 ms |           152.1359 ms |
+|                        SLOWEST-LATENCY |       520.8716 ms |           4264.2996 ms |         28029.3953 ms |
+|                            Latency p10 |      10.171289 ms |            6.401553 ms |          30.579107 ms |
+|                            Latency p25 |      12.254908 ms |            7.300705 ms |          35.763003 ms |
+|                            Latency p50 |      17.138243 ms |            8.302805 ms |          48.467608 ms |
+|                            Latency p75 |      23.925669 ms |            9.453586 ms |          80.519456 ms |
+|                            Latency p90 |      48.690057 ms |           10.764813 ms |         248.959013 ms |
+|                            Latency p95 |      76.533161 ms |           11.992104 ms |         349.281928 ms |
+|                            Latency p99 |     146.318242 ms |          153.580393 ms |        1324.508306 ms |
+|                          Latency p99.9 |     183.924901 ms |         1935.929712 ms |       10622.316021 ms |
+|  SERVER-TOTAL-NETWORK-RECEIVE-DATA-SUM |            5.0 GB |                 6.2 GB |                 11 GB |
+| SERVER-TOTAL-NETWORK-TRANSMIT-DATA-SUM |            3.8 GB |                 5.1 GB |                 10 GB |
+|       CLIENT-TOTAL-NETWORK-RECEIVE-SUM |            274 MB |                 350 MB |                216 MB |
 |      CLIENT-TOTAL-NETWORK-TRANSMIT-SUM |            1.4 GB |                 1.4 GB |                1.5 GB |
-|                   SERVER-MAX-CPU-USAGE |          416.67 % |               710.17 % |              410.67 % |
-|                SERVER-MAX-MEMORY-USAGE |            1.2 GB |                 4.6 GB |                5.9 GB |
-|                   CLIENT-MAX-CPU-USAGE |          448.00 % |               365.00 % |              223.00 % |
-|                CLIENT-MAX-MEMORY-USAGE |            219 MB |                 1.9 GB |                 90 MB |
-|                     CLIENT-ERROR-COUNT |                 0 |                    509 |                     0 |
-|   SERVER-AVG-READS-COMPLETED-DELTA-SUM |                 3 |                    253 |                   162 |
+|                   SERVER-MAX-CPU-USAGE |          407.67 % |               704.97 % |              380.00 % |
+|                SERVER-MAX-MEMORY-USAGE |            1.1 GB |                 5.1 GB |                6.2 GB |
+|                   CLIENT-MAX-CPU-USAGE |          454.00 % |               292.00 % |              202.00 % |
+|                CLIENT-MAX-MEMORY-USAGE |            210 MB |                 1.7 GB |                 88 MB |
+|                     CLIENT-ERROR-COUNT |                 0 |                  3,452 |                     0 |
+|   SERVER-AVG-READS-COMPLETED-DELTA-SUM |                 5 |                    212 |                   270 |
 |     SERVER-AVG-SECTORS-READS-DELTA-SUM |                 0 |                      0 |                     0 |
-|  SERVER-AVG-WRITES-COMPLETED-DELTA-SUM |           110,436 |                101,558 |               665,193 |
-|   SERVER-AVG-SECTORS-WRITTEN-DELTA-SUM |           371,988 |              9,306,936 |            37,002,460 |
-|           SERVER-AVG-DATA-SIZE-ON-DISK |            2.8 GB |                 7.1 GB |                2.9 GB |
+|  SERVER-AVG-WRITES-COMPLETED-DELTA-SUM |           112,190 |                109,945 |               681,774 |
+|   SERVER-AVG-SECTORS-WRITTEN-DELTA-SUM |           492,444 |             10,249,020 |            32,988,480 |
+|           SERVER-AVG-DATA-SIZE-ON-DISK |            2.8 GB |                 7.3 GB |                2.9 GB |
 +----------------------------------------+-------------------+------------------------+-----------------------+
 
 
 zookeeper errors:
-"zk: could not connect to a server" (count 208)
-"zk: connection closed" (count 301)
+"zk: could not connect to a server" (count 3,152)
+"zk: connection closed" (count 300)
 ```
 
 
@@ -267,42 +266,42 @@ zookeeper errors:
 +----------------------------------------+-------------------+------------------------+-----------------------+
 |                                        | etcd-v3.1-go1.7.4 | zookeeper-r3.4.9-java8 | consul-v0.7.3-go1.7.4 |
 +----------------------------------------+-------------------+------------------------+-----------------------+
-|                          TOTAL-SECONDS |       36.5547 sec |            59.5935 sec |          244.8620 sec |
+|                          TOTAL-SECONDS |       36.3917 sec |            72.1698 sec |          140.9480 sec |
 |                   TOTAL-REQUEST-NUMBER |         1,000,000 |              1,000,000 |             1,000,000 |
-|                         MAX-THROUGHPUT |    35,025 req/sec |         47,693 req/sec |        15,146 req/sec |
-|                         AVG-THROUGHPUT |    27,356 req/sec |         16,697 req/sec |         4,083 req/sec |
-|                         MIN-THROUGHPUT |       228 req/sec |              0 req/sec |             0 req/sec |
-|                        FASTEST-LATENCY |         4.1857 ms |              1.4036 ms |            27.1684 ms |
-|                            AVG-LATENCY |        36.4506 ms |             46.1962 ms |           244.4663 ms |
-|                        SLOWEST-LATENCY |       233.1590 ms |           6787.1829 ms |         30479.0204 ms |
-|                            Latency p10 |      14.321495 ms |           12.447591 ms |          66.233418 ms |
-|                            Latency p25 |      17.784730 ms |           16.822188 ms |          74.271576 ms |
-|                            Latency p50 |      23.783217 ms |           20.026128 ms |          92.736772 ms |
-|                            Latency p75 |      44.930445 ms |           23.615952 ms |         151.332505 ms |
-|                            Latency p90 |      67.957086 ms |           31.726640 ms |         338.858136 ms |
-|                            Latency p95 |     121.316986 ms |           78.842487 ms |         696.780894 ms |
-|                            Latency p99 |     163.614045 ms |          821.197693 ms |        1887.708027 ms |
-|                          Latency p99.9 |     187.122508 ms |         2709.006521 ms |       20942.858889 ms |
-|  SERVER-TOTAL-NETWORK-RECEIVE-DATA-SUM |            5.0 GB |                 5.3 GB |                6.6 GB |
-| SERVER-TOTAL-NETWORK-TRANSMIT-DATA-SUM |            3.9 GB |                 4.2 GB |                5.4 GB |
+|                         MAX-THROUGHPUT |    36,861 req/sec |         39,923 req/sec |        14,455 req/sec |
+|                         AVG-THROUGHPUT |    27,478 req/sec |         13,704 req/sec |         7,094 req/sec |
+|                         MIN-THROUGHPUT |     7,088 req/sec |              0 req/sec |             0 req/sec |
+|                        FASTEST-LATENCY |         3.7509 ms |              4.3350 ms |            12.9159 ms |
+|                            AVG-LATENCY |        36.2639 ms |             49.9165 ms |           140.4538 ms |
+|                        SLOWEST-LATENCY |       244.3595 ms |           6056.0204 ms |         21808.2916 ms |
+|                            Latency p10 |      13.700258 ms |           14.719617 ms |          65.494475 ms |
+|                            Latency p25 |      16.855903 ms |           20.289440 ms |          71.570399 ms |
+|                            Latency p50 |      21.895662 ms |           24.861967 ms |          80.420560 ms |
+|                            Latency p75 |      43.387011 ms |           28.165478 ms |          96.334874 ms |
+|                            Latency p90 |      69.199925 ms |           32.086272 ms |         161.048409 ms |
+|                            Latency p95 |     133.035887 ms |           58.675701 ms |         210.603403 ms |
+|                            Latency p99 |     173.021441 ms |          880.253639 ms |         484.701759 ms |
+|                          Latency p99.9 |     188.144407 ms |         3260.921550 ms |       15472.281038 ms |
+|  SERVER-TOTAL-NETWORK-RECEIVE-DATA-SUM |            5.0 GB |                 5.5 GB |                5.6 GB |
+| SERVER-TOTAL-NETWORK-TRANSMIT-DATA-SUM |            3.9 GB |                 4.4 GB |                4.4 GB |
 |       CLIENT-TOTAL-NETWORK-RECEIVE-SUM |            282 MB |                 357 MB |                243 MB |
 |      CLIENT-TOTAL-NETWORK-TRANSMIT-SUM |            1.4 GB |                 1.4 GB |                1.5 GB |
-|                   SERVER-MAX-CPU-USAGE |          451.00 % |               723.67 % |              436.67 % |
-|                SERVER-MAX-MEMORY-USAGE |            1.2 GB |                 4.7 GB |                4.9 GB |
-|                   CLIENT-MAX-CPU-USAGE |          554.00 % |              1227.00 % |              218.00 % |
-|                CLIENT-MAX-MEMORY-USAGE |            264 MB |                 5.5 GB |                114 MB |
-|                     CLIENT-ERROR-COUNT |                 0 |                  4,962 |                     0 |
-|   SERVER-AVG-READS-COMPLETED-DELTA-SUM |                74 |                    315 |                   102 |
+|                   SERVER-MAX-CPU-USAGE |          443.00 % |               695.00 % |              414.00 % |
+|                SERVER-MAX-MEMORY-USAGE |            1.1 GB |                 4.8 GB |                4.9 GB |
+|                   CLIENT-MAX-CPU-USAGE |          566.00 % |               324.00 % |              205.00 % |
+|                CLIENT-MAX-MEMORY-USAGE |            278 MB |                 5.3 GB |                114 MB |
+|                     CLIENT-ERROR-COUNT |                 0 |                 10,929 |                     0 |
+|   SERVER-AVG-READS-COMPLETED-DELTA-SUM |                 2 |                    216 |                    64 |
 |     SERVER-AVG-SECTORS-READS-DELTA-SUM |                 0 |                      0 |                     0 |
-|  SERVER-AVG-WRITES-COMPLETED-DELTA-SUM |           100,644 |                 82,186 |               481,109 |
-|   SERVER-AVG-SECTORS-WRITTEN-DELTA-SUM |           442,860 |              8,179,180 |            20,434,060 |
-|           SERVER-AVG-DATA-SIZE-ON-DISK |            2.7 GB |                 7.3 GB |                3.0 GB |
+|  SERVER-AVG-WRITES-COMPLETED-DELTA-SUM |           100,985 |                 91,154 |               289,238 |
+|   SERVER-AVG-SECTORS-WRITTEN-DELTA-SUM |           552,592 |              9,923,988 |             9,537,168 |
+|           SERVER-AVG-DATA-SIZE-ON-DISK |            2.7 GB |                 6.7 GB |                3.1 GB |
 +----------------------------------------+-------------------+------------------------+-----------------------+
 
 
 zookeeper errors:
-"zk: could not connect to a server" (count 3,301)
-"zk: connection closed" (count 1,661)
+"zk: could not connect to a server" (count 8,818)
+"zk: connection closed" (count 2,111)
 ```
 
 
