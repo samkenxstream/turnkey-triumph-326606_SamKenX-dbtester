@@ -210,7 +210,7 @@ func (cfg *Config) saveDataLatencyDistributionAll(st report.Stats) {
 	}
 }
 
-func (cfg *Config) saveDataLatencyThroughputTimeseries(gcfg TestGroup, st report.Stats, tsToClientN map[int64]int64) {
+func (cfg *Config) saveDataLatencyThroughputTimeseries(gcfg TestGroup, st report.Stats, clientNs []int64) {
 	c1 := dataframe.NewColumn("UNIX-SECOND")
 	c2 := dataframe.NewColumn("CONTROL-CLIENT-NUM")
 	c3 := dataframe.NewColumn("MIN-LATENCY-MS")
@@ -220,17 +220,10 @@ func (cfg *Config) saveDataLatencyThroughputTimeseries(gcfg TestGroup, st report
 	for i := range st.TimeSeries {
 		// this Timestamp is unix seconds
 		c1.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", st.TimeSeries[i].Timestamp)))
-
-		if len(tsToClientN) == 0 {
-			c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", gcfg.ClientNumber)))
-		} else {
-			c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", tsToClientN[st.TimeSeries[i].Timestamp])))
-		}
-
+		c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", clientNs[i])))
 		c3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(st.TimeSeries[i].MinLatency))))
 		c4.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(st.TimeSeries[i].AvgLatency))))
 		c5.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(st.TimeSeries[i].MaxLatency))))
-
 		c6.PushBack(dataframe.NewStringValue(fmt.Sprintf("%d", st.TimeSeries[i].ThroughPut)))
 	}
 
@@ -290,11 +283,11 @@ func (cfg *Config) saveDataLatencyThroughputTimeseries(gcfg TestGroup, st report
 	}
 }
 
-func (cfg *Config) saveAllStats(gcfg TestGroup, stats report.Stats, tsToClientN map[int64]int64) {
+func (cfg *Config) saveAllStats(gcfg TestGroup, stats report.Stats, clientNs []int64) {
 	cfg.saveDataLatencyDistributionSummary(stats)
 	cfg.saveDataLatencyDistributionPercentile(stats)
 	cfg.saveDataLatencyDistributionAll(stats)
-	cfg.saveDataLatencyThroughputTimeseries(gcfg, stats, tsToClientN)
+	cfg.saveDataLatencyThroughputTimeseries(gcfg, stats, clientNs)
 }
 
 // UploadToGoogle uploads target file to Google Cloud Storage.
