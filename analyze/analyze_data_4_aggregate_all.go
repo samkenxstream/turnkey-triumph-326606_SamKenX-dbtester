@@ -205,7 +205,7 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int6
 
 				if v, ok := sec2minVMRSSMB[ts]; !ok {
 					sec2minVMRSSMB[ts] = vv
-				} else if v > vv {
+				} else if v > vv || (v == 0.0 && vv != 0.0) {
 					sec2minVMRSSMB[ts] = vv
 				}
 				if v, ok := sec2maxVMRSSMB[ts]; !ok {
