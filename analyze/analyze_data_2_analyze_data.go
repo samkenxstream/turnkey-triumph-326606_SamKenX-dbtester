@@ -36,7 +36,7 @@ type analyzeData struct {
 	// aggregated from sysAgg and benchMetrics
 	aggregated dataframe.Frame
 
-	csvOutputpath string
+	allAggregatedOutputPath string
 }
 
 // readSystemMetricsAll reads all system metric files

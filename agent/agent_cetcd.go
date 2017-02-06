@@ -26,7 +26,7 @@ func startCetcd(fs *flags, t *transporterServer) error {
 		return fmt.Errorf("cetcd binary %q does not exist", globalFlags.cetcdExec)
 	}
 
-	peerIPs := strings.Split(t.req.PeerIPString, "___")
+	peerIPs := strings.Split(t.req.PeerIPsString, "___")
 	clientURLs := make([]string, len(peerIPs))
 	for i, u := range peerIPs {
 		clientURLs[i] = fmt.Sprintf("http://%s:2379", u)
@@ -34,8 +34,8 @@ func startCetcd(fs *flags, t *transporterServer) error {
 
 	flags := []string{
 		// "-consuladdr", "0.0.0.0:8500",
-		"-consuladdr", fmt.Sprintf("%s:8500", peerIPs[t.req.ServerIndex]),
-		"-etcd", clientURLs[t.req.ServerIndex], // etcd endpoint
+		"-consuladdr", fmt.Sprintf("%s:8500", peerIPs[t.req.IpIndex]),
+		"-etcd", clientURLs[t.req.IpIndex], // etcd endpoint
 	}
 	flagString := strings.Join(flags, " ")
 

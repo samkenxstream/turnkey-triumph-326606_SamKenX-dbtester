@@ -23,7 +23,7 @@ import (
 )
 
 // aggregateAll aggregates all system metrics from 3+ nodes.
-func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int) error {
+func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int64) error {
 	colSys, err := data.sysAgg.Column("UNIX-SECOND")
 	if err != nil {
 		return err
@@ -471,5 +471,5 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int)
 }
 
 func (data *analyzeData) save() error {
-	return data.aggregated.CSV(data.csvOutputpath)
+	return data.aggregated.CSV(data.allAggregatedOutputPath)
 }

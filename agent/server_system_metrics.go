@@ -28,12 +28,12 @@ func startMetrics(fs *flags, t *transporterServer) (err error) {
 		return fmt.Errorf("cannot find process to track (%+v, %+v)", fs, t)
 	}
 	plog.Infof("starting collecting metrics [database %q | PID: %d | disk device: %q | network interface: %q]",
-		t.req.Database, t.pid, fs.diskDevice, fs.networkInterface)
+		t.req.DatabaseID, t.pid, fs.diskDevice, fs.networkInterface)
 
 	if err = os.RemoveAll(fs.systemMetricsCSV); err != nil {
 		return err
 	}
-	if err = toFile(fmt.Sprintf("%d", t.req.ClientNum), t.clientNumPath); err != nil {
+	if err = toFile(fmt.Sprintf("%d", t.req.CurrentClientNumber), t.clientNumPath); err != nil {
 		return err
 	}
 

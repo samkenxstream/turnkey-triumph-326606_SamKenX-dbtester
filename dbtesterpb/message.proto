@@ -1,0 +1,70 @@
+syntax = "proto3";
+package dbtesterpb;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+
+service Transporter {
+  rpc Transfer(Request) returns (Response) {}
+}
+
+message Request {
+  enum Operation {
+    Start     = 0;
+    Stop      = 1;
+    Heartbeat = 2; 
+  }
+  enum Database {
+    etcdv2    = 0;
+    etcdv3    = 1;
+    zookeeper = 2;
+    consul    = 3;
+    zetcd     = 4;
+    cetcd     = 5;
+  }
+  message Control {
+    string googleCloudProjectName = 1;
+    string googleCloudStorageKey = 2;
+    string googleCloudStorageBucketName = 3;
+    string googleCloudStorageSubDirectory = 4;
+  }
+  message Etcdv3 {
+    int64 snapCount = 1;
+    int64 quotaSizeBytes = 2;
+  }
+  message Zookeeper {
+    uint32 myID = 1;
+    int64 tickTime   = 2;
+    int64 clientPort = 3;
+    int64 initLimit  = 4;
+    int64 syncLimit  = 5;
+    int64 snapCount  = 6;
+    int64 maxClientConnections = 7;
+  }
+
+  Operation operation        = 1;
+  bool      triggerLogUpload = 2;
+  Database  databaseID       = 3;
+  string    databaseTag      = 4;
+
+  string peerIPsString = 5;
+  uint32 ipIndex       = 6;
+
+  int64 currentClientNumber = 7;
+
+  Control control           = 8;
+  Etcdv3 etcdv3Config       = 9;
+  Zookeeper zookeeperConfig = 10;
+}
+
+message Response {
+  bool success = 1;
+  
+  // DatasizeOnDisk is the data size of the database on disk.
+  // It measures after database is requested to stop.
+  int64 datasizeOnDisk = 2;
+}

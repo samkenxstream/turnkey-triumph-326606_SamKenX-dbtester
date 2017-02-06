@@ -30,45 +30,30 @@ dataDir={{.DataDir}}
 clientPort={{.ClientPort}}
 initLimit={{.InitLimit}}
 syncLimit={{.SyncLimit}}
-maxClientCnxns={{.MaxClientCnxns}}
+maxClientCnxns={{.MaxClientConnections}}
 snapCount={{.SnapCount}}
 {{range .Peers}}server.{{.MyID}}={{.IP}}:2888:3888
 {{end}}
 `
-
-	// this is Zookeeper default configuration
-	// http://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html
-	zkConfigDefault = ZookeeperConfig{
-		TickTime:       2000,
-		ClientPort:     "2181",
-		InitLimit:      5,
-		SyncLimit:      5,
-		MaxClientCnxns: 60,
-		Peers: []ZookeeperPeer{
-			{MyID: 1, IP: ""},
-			{MyID: 2, IP: ""},
-			{MyID: 3, IP: ""},
-		},
-	}
 )
+
+// ZookeeperConfig is zookeeper configuration.
+// http://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html
+type ZookeeperConfig struct {
+	TickTime             int64
+	DataDir              string
+	ClientPort           int64
+	InitLimit            int64
+	SyncLimit            int64
+	MaxClientConnections int64
+	SnapCount            int64
+	Peers                []ZookeeperPeer
+}
 
 // ZookeeperPeer defines Zookeeper peer configuration.
 type ZookeeperPeer struct {
 	MyID int
 	IP   string
-}
-
-// ZookeeperConfig is zookeeper configuration.
-// http://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html
-type ZookeeperConfig struct {
-	TickTime       int
-	DataDir        string
-	ClientPort     string
-	InitLimit      int
-	SyncLimit      int
-	MaxClientCnxns int64
-	SnapCount      int64
-	Peers          []ZookeeperPeer
 }
 
 var shell = os.Getenv("SHELL")
@@ -99,23 +84,26 @@ func startZookeeper(fs *flags, t *transporterServer) error {
 	}
 
 	ipath := filepath.Join(fs.zkDataDir, "myid")
-	plog.Infof("writing Zookeeper myid file %d to %s", t.req.ZookeeperMyID, ipath)
-	if err := toFile(fmt.Sprintf("%d", t.req.ZookeeperMyID), ipath); err != nil {
+	plog.Infof("writing Zookeeper myid file %d to %s", t.req.ZookeeperConfig.MyID, ipath)
+	if err := toFile(fmt.Sprintf("%d", t.req.ZookeeperConfig.MyID), ipath); err != nil {
 		return err
 	}
 
-	peerIPs := strings.Split(t.req.PeerIPString, "___")
+	peerIPs := strings.Split(t.req.PeerIPsString, "___")
 	peers := []ZookeeperPeer{}
 	for i := range peerIPs {
 		peers = append(peers, ZookeeperPeer{MyID: i + 1, IP: peerIPs[i]})
 	}
-
-	cfg := zkConfigDefault
-	cfg.DataDir = fs.zkDataDir
-	cfg.Peers = peers
-	cfg.SnapCount = t.req.ZookeeperSnapCount
-	cfg.MaxClientCnxns = t.req.ZookeeperMaxClientCnxns
-
+	cfg := ZookeeperConfig{
+		TickTime:             t.req.ZookeeperConfig.TickTime,
+		DataDir:              fs.zkDataDir,
+		ClientPort:           t.req.ZookeeperConfig.ClientPort,
+		InitLimit:            t.req.ZookeeperConfig.InitLimit,
+		SyncLimit:            t.req.ZookeeperConfig.SyncLimit,
+		MaxClientConnections: t.req.ZookeeperConfig.MaxClientConnections,
+		Peers:                peers,
+		SnapCount:            t.req.ZookeeperConfig.SnapCount,
+	}
 	tpl := template.Must(template.New("zkTemplate").Parse(zkTemplate))
 	buf := new(bytes.Buffer)
 	if err := tpl.Execute(buf, cfg); err != nil {

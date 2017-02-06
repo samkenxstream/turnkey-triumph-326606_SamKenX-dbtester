@@ -5,9 +5,8 @@ if ! [[ "$0" =~ "scripts/tests.sh" ]]; then
     echo "must be run from repository root"
     exit 255
 fi
-
-IGNORE_PKGS="(agent|vendor|remotestorage)"
-TESTS=`find . -name \*_test.go | while read a; do dirname $a; done | sort | uniq | egrep -v "$IGNORE_PKGS"`
+gofmt -l -s -d *.go 
+TESTS="./analyze ./pkg/fileinspect ./pkg/netutil ./pkg/ntp ./pkg/report ./pkg/types"
 
 echo "Checking gofmt..."
 fmtRes=$(gofmt -l -s -d $TESTS)
@@ -15,6 +14,7 @@ if [ -n "${fmtRes}" ]; then
 	echo -e "gofmt checking failed:\n${fmtRes}"
 	exit 255
 fi
+
 echo "Checking govet..."
 vetRes=$(go vet $TESTS 2>&1 >/dev/null)
 if [ -n "${vetRes}" ]; then

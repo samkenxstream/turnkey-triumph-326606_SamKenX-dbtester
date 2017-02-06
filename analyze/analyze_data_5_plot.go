@@ -17,8 +17,8 @@ package analyze
 import (
 	"fmt"
 	"image/color"
-	"strings"
 
+	"github.com/coreos/dbtester"
 	"github.com/gonum/plot"
 	"github.com/gonum/plot/plotter"
 	"github.com/gonum/plot/plotutil"
@@ -37,14 +37,6 @@ func init() {
 	plotter.DefaultGlyphStyle.Radius = vg.Points(2.0)
 }
 
-// PlotConfig defines what to plot.
-type PlotConfig struct {
-	Column         string   `yaml:"column"`
-	XAxis          string   `yaml:"x_axis"`
-	YAxis          string   `yaml:"y_axis"`
-	OutputPathList []string `yaml:"output_path_list"`
-}
-
 type pair struct {
 	x dataframe.Column
 	y dataframe.Column
@@ -57,7 +49,7 @@ type triplet struct {
 	maxCol dataframe.Column
 }
 
-func (all *allAggregatedData) draw(cfg PlotConfig, pairs ...pair) error {
+func (all *allAggregatedData) draw(cfg dbtester.Plot, pairs ...pair) error {
 	// frame now contains
 	// AVG-LATENCY-MS-etcd-v3.1-go1.7.4, AVG-LATENCY-MS-zookeeper-r3.4.9-java8, AVG-LATENCY-MS-consul-v0.7.2-go1.7.4
 	plt, err := plot.New()
@@ -80,11 +72,11 @@ func (all *allAggregatedData) draw(cfg PlotConfig, pairs ...pair) error {
 		if err != nil {
 			return err
 		}
-		l.Color = getRGB(all.headerToLegend[p.y.Header()], i)
+		l.Color = getRGB(all.headerToDatabaseID[p.y.Header()], i)
 		l.Dashes = plotutil.Dashes(i)
 		ps = append(ps, l)
 
-		plt.Legend.Add(all.headerToLegend[p.y.Header()], l)
+		plt.Legend.Add(all.headerToDatabaseID[p.y.Header()], l)
 	}
 	plt.Add(ps...)
 
@@ -96,7 +88,7 @@ func (all *allAggregatedData) draw(cfg PlotConfig, pairs ...pair) error {
 	return nil
 }
 
-func (all *allAggregatedData) drawXY(cfg PlotConfig, pairs ...pair) error {
+func (all *allAggregatedData) drawXY(cfg dbtester.Plot, pairs ...pair) error {
 	// frame now contains
 	// KEYS-DB-TAG-X, AVG-LATENCY-MS-DB-TAG-Y, ...
 	plt, err := plot.New()
@@ -119,11 +111,11 @@ func (all *allAggregatedData) drawXY(cfg PlotConfig, pairs ...pair) error {
 		if err != nil {
 			return err
 		}
-		l.Color = getRGB(all.headerToLegend[p.y.Header()], i)
+		l.Color = getRGB(all.headerToDatabaseID[p.y.Header()], i)
 		l.Dashes = plotutil.Dashes(i)
 		ps = append(ps, l)
 
-		plt.Legend.Add(all.headerToLegend[p.y.Header()], l)
+		plt.Legend.Add(all.headerToDatabaseID[p.y.Header()], l)
 	}
 	plt.Add(ps...)
 
@@ -135,7 +127,7 @@ func (all *allAggregatedData) drawXY(cfg PlotConfig, pairs ...pair) error {
 	return nil
 }
 
-func (all *allAggregatedData) drawXYWithErrorPoints(cfg PlotConfig, triplets ...triplet) error {
+func (all *allAggregatedData) drawXYWithErrorPoints(cfg dbtester.Plot, triplets ...triplet) error {
 	// frame now contains
 	// KEYS-DB-TAG-X, MIN-LATENCY-MS-DB-TAG-Y, AVG-LATENCY-MS-DB-TAG-Y, MAX-LATENCY-MS-DB-TAG-Y, ...
 	plt, err := plot.New()
@@ -158,10 +150,10 @@ func (all *allAggregatedData) drawXYWithErrorPoints(cfg PlotConfig, triplets ...
 			if err != nil {
 				return err
 			}
-			l.Color = getRGBII(all.headerToLegend[triplet.avgCol.Header()], i)
+			l.Color = getRGBII(all.headerToDatabaseID[triplet.avgCol.Header()], i)
 			l.Dashes = plotutil.Dashes(i)
 			ps = append(ps, l)
-			plt.Legend.Add(all.headerToLegend[triplet.avgCol.Header()]+" MIN", l)
+			plt.Legend.Add(all.headerToDatabaseID[triplet.avgCol.Header()]+" MIN", l)
 		}
 		{
 			pt, err := pointsXY(triplet.x, triplet.avgCol)
@@ -172,10 +164,10 @@ func (all *allAggregatedData) drawXYWithErrorPoints(cfg PlotConfig, triplets ...
 			if err != nil {
 				return err
 			}
-			l.Color = getRGB(all.headerToLegend[triplet.avgCol.Header()], i)
+			l.Color = getRGB(all.headerToDatabaseID[triplet.avgCol.Header()], i)
 			l.Dashes = plotutil.Dashes(i)
 			ps = append(ps, l)
-			plt.Legend.Add(all.headerToLegend[triplet.avgCol.Header()], l)
+			plt.Legend.Add(all.headerToDatabaseID[triplet.avgCol.Header()], l)
 		}
 		{
 			pt, err := pointsXY(triplet.x, triplet.maxCol)
@@ -186,10 +178,10 @@ func (all *allAggregatedData) drawXYWithErrorPoints(cfg PlotConfig, triplets ...
 			if err != nil {
 				return err
 			}
-			l.Color = getRGBIII(all.headerToLegend[triplet.avgCol.Header()], i)
+			l.Color = getRGBIII(all.headerToDatabaseID[triplet.avgCol.Header()], i)
 			l.Dashes = plotutil.Dashes(i)
 			ps = append(ps, l)
-			plt.Legend.Add(all.headerToLegend[triplet.avgCol.Header()]+" MAX", l)
+			plt.Legend.Add(all.headerToDatabaseID[triplet.avgCol.Header()]+" MAX", l)
 		}
 	}
 	plt.Add(ps...)
@@ -253,61 +245,55 @@ func pointsXY(colX, colY dataframe.Column) (plotter.XYs, error) {
 	return pts, nil
 }
 
-func getRGB(legend string, i int) color.Color {
-	tag := makeTag(legend)
-	if strings.HasPrefix(tag, "etcd") {
+func getRGB(databaseID string, i int) color.Color {
+	switch databaseID {
+	case "etcdv2":
+		return color.RGBA{218, 97, 229, 255} // purple
+	case "etcdv3":
 		return color.RGBA{24, 90, 169, 255} // blue
-	}
-	if strings.HasPrefix(tag, "zookeeper") {
+	case "zookeeper":
 		return color.RGBA{38, 169, 24, 255} // green
-	}
-	if strings.HasPrefix(tag, "consul") {
+	case "consul":
 		return color.RGBA{198, 53, 53, 255} // red
-	}
-	if strings.HasPrefix(tag, "zetcd") {
+	case "zetcd":
 		return color.RGBA{251, 206, 0, 255} // yellow
-	}
-	if strings.HasPrefix(tag, "cetcd") {
+	case "cetcd":
 		return color.RGBA{116, 24, 169, 255} // purple
 	}
 	return plotutil.Color(i)
 }
 
-func getRGBII(legend string, i int) color.Color {
-	tag := makeTag(legend)
-	if strings.HasPrefix(tag, "etcd") {
+func getRGBII(databaseID string, i int) color.Color {
+	switch databaseID {
+	case "etcdv2":
+		return color.RGBA{229, 212, 231, 255} // light-purple
+	case "etcdv3":
 		return color.RGBA{129, 212, 247, 255} // light-blue
-	}
-	if strings.HasPrefix(tag, "zookeeper") {
+	case "zookeeper":
 		return color.RGBA{129, 247, 152, 255} // light-green
-	}
-	if strings.HasPrefix(tag, "consul") {
+	case "consul":
 		return color.RGBA{247, 156, 156, 255} // light-red
-	}
-	if strings.HasPrefix(tag, "zetcd") {
+	case "zetcd":
 		return color.RGBA{245, 247, 166, 255} // light-yellow
-	}
-	if strings.HasPrefix(tag, "cetcd") {
+	case "cetcd":
 		return color.RGBA{247, 166, 238, 255} // light-purple
 	}
 	return plotutil.Color(i)
 }
 
-func getRGBIII(legend string, i int) color.Color {
-	tag := makeTag(legend)
-	if strings.HasPrefix(tag, "etcd") {
+func getRGBIII(databaseID string, i int) color.Color {
+	switch databaseID {
+	case "etcdv2":
+		return color.RGBA{165, 8, 180, 255} // deep-purple
+	case "etcdv3":
 		return color.RGBA{37, 29, 191, 255} // deep-blue
-	}
-	if strings.HasPrefix(tag, "zookeeper") {
+	case "zookeeper":
 		return color.RGBA{7, 64, 35, 255} // deep-green
-	}
-	if strings.HasPrefix(tag, "consul") {
+	case "consul":
 		return color.RGBA{212, 8, 46, 255} // deep-red
-	}
-	if strings.HasPrefix(tag, "zetcd") {
+	case "zetcd":
 		return color.RGBA{229, 255, 0, 255} // deep-yellow
-	}
-	if strings.HasPrefix(tag, "cetcd") {
+	case "cetcd":
 		return color.RGBA{255, 0, 251, 255} // deep-purple
 	}
 	return plotutil.Color(i)
