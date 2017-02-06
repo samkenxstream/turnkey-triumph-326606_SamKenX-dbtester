@@ -211,6 +211,12 @@ func (cfg *Config) saveDataLatencyDistributionAll(st report.Stats) {
 }
 
 func (cfg *Config) saveDataLatencyThroughputTimeseries(gcfg TestGroup, st report.Stats, clientNs []int64) {
+	if len(clientNs) == 0 && len(gcfg.ConnectionClientNumbers) == 0 {
+		clientNs = make([]int64, len(st.TimeSeries))
+		for i := range clientNs {
+			clientNs[i] = gcfg.BenchmarkOptions.ClientNumber
+		}
+	}
 	c1 := dataframe.NewColumn("UNIX-SECOND")
 	c2 := dataframe.NewColumn("CONTROL-CLIENT-NUM")
 	c3 := dataframe.NewColumn("MIN-LATENCY-MS")
