@@ -135,6 +135,32 @@ func (cfg *Config) Stress(databaseID string) error {
 				}
 			}
 
+			// handle duplicate unix seconds around boundaries
+			sec2dp := make(map[int64]report.DataPoint)
+			for _, tss := range combined.TimeSeries {
+				v, ok := sec2dp[tss.Timestamp]
+				if !ok {
+					sec2dp[tss.Timestamp] = tss
+				}
+
+				// two datapoints share the time unix second
+				if v.MinLatency > tss.MinLatency {
+					v.MinLatency = tss.MinLatency
+				}
+				if v.MaxLatency < tss.MaxLatency {
+					v.MaxLatency = tss.MaxLatency
+				}
+				v.AvgLatency = (v.AvgLatency + tss.AvgLatency) / time.Duration(2)
+				v.ThroughPut += tss.ThroughPut
+				sec2dp[tss.Timestamp] = v
+			}
+			var fts report.TimeSeries
+			for _, dp := range sec2dp {
+				fts = append(fts, dp)
+			}
+			sort.Sort(report.TimeSeries(fts))
+			combined.TimeSeries = fts
+
 			combined.Average = combined.AvgTotal / float64(len(combined.Lats))
 			combined.RPS = float64(len(combined.Lats)) / combined.Total.Seconds()
 			plog.Printf("got total %d data points and total %f seconds (RPS %f)", len(combined.Lats), combined.Total.Seconds(), combined.RPS)
