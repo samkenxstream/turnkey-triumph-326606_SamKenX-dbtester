@@ -99,7 +99,28 @@ func (cfg *Config) Stress(databaseID string) error {
 				combined.Total += st.Total
 				combined.Lats = append(combined.Lats, st.Lats...)
 				combined.TimeSeries = append(combined.TimeSeries, st.TimeSeries...)
-
+				//
+				// Need to handle duplicate unix second timestamps when two ranges are merged.
+				// This can happen when the following run happens within the same unix timesecond,
+				// since finishing up the previous report and restarting the next range of requests
+				// with different number of clients takes only 100+/- ms.
+				//
+				// For instance, we have the following raw data:
+				//
+				//   unix-second, client-number, throughput
+				//   1486389257,       700,         30335  === ending of previous combined.TimeSeries
+				//   1486389258,      "700",        23188  === ending of previous combined.TimeSeries
+				//   1486389258,       1000,         5739  === beginning of current st.TimeSeries
+				//
+				// And the line below will overwrite the 'client-number' as:
+				//
+				//   unix-second, client-number, throughput
+				//   1486389257,       700,        30335  === ending of previous combined.TimeSeries
+				//   1486389258,      "1000",      23188  === ending of previous combined.TimeSeries
+				//   1486389258,       1000,        5739  === beginning of current st.TimeSeries
+				//
+				// So now we have two duplicate unix time seconds.
+				//
 				clientsN := gcfg.BenchmarkOptions.ConnectionClientNumbers[i]
 				for _, v := range st.TimeSeries {
 					tsToClientN[v.Timestamp] = clientsN
@@ -113,6 +134,32 @@ func (cfg *Config) Stress(databaseID string) error {
 					}
 				}
 			}
+
+			// handle duplicate unix seconds around boundaries
+			sec2dp := make(map[int64]report.DataPoint)
+			for _, tss := range combined.TimeSeries {
+				v, ok := sec2dp[tss.Timestamp]
+				if !ok {
+					sec2dp[tss.Timestamp] = tss
+				}
+
+				// two datapoints share the time unix second
+				if v.MinLatency > tss.MinLatency {
+					v.MinLatency = tss.MinLatency
+				}
+				if v.MaxLatency < tss.MaxLatency {
+					v.MaxLatency = tss.MaxLatency
+				}
+				v.AvgLatency = (v.AvgLatency + tss.AvgLatency) / time.Duration(2)
+				v.ThroughPut += tss.ThroughPut
+				sec2dp[tss.Timestamp] = v
+			}
+			var fts report.TimeSeries
+			for _, dp := range sec2dp {
+				fts = append(fts, dp)
+			}
+			sort.Sort(report.TimeSeries(fts))
+			combined.TimeSeries = fts
 
 			combined.Average = combined.AvgTotal / float64(len(combined.Lats))
 			combined.RPS = float64(len(combined.Lats)) / combined.Total.Seconds()
