@@ -16,7 +16,6 @@ package analyze
 
 import (
 	"fmt"
-	"sort"
 	"strings"
 
 	"github.com/gyuho/dataframe"
@@ -436,7 +435,6 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int6
 		}
 		tslice = append(tslice, point)
 	}
-	sort.Sort(keyNumAndMemorys(tslice))
 
 	// aggregate memory by number of keys
 	knms := findRangesMemory(tslice, 1000, totalRequests)

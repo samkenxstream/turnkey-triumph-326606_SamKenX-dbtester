@@ -258,16 +258,16 @@ func (cfg *Config) saveDataLatencyThroughputTimeseries(gcfg TestGroup, st report
 	}
 
 	// aggregate latency by the number of keys
-	tss := findRangesLatency(st.TimeSeries, 1000, gcfg.RequestNumber)
+	tss := FindRangesLatency(st.TimeSeries, 1000, gcfg.RequestNumber)
 	ctt1 := dataframe.NewColumn("KEYS")
 	ctt2 := dataframe.NewColumn("MIN-LATENCY-MS")
 	ctt3 := dataframe.NewColumn("AVG-LATENCY-MS")
 	ctt4 := dataframe.NewColumn("MAX-LATENCY-MS")
 	for i := range tss {
-		ctt1.PushBack(dataframe.NewStringValue(tss[i].keyNum))
-		ctt2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(tss[i].minLat))))
-		ctt3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(tss[i].avgLat))))
-		ctt4.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(tss[i].maxLat))))
+		ctt1.PushBack(dataframe.NewStringValue(tss[i].CumulativeKeyNum))
+		ctt2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(tss[i].MinLatency))))
+		ctt3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(tss[i].AvgLatency))))
+		ctt4.PushBack(dataframe.NewStringValue(fmt.Sprintf("%f", toMillisecond(tss[i].MaxLatency))))
 	}
 
 	frr := dataframe.New()
