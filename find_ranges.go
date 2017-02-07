@@ -32,7 +32,7 @@ type CumulativeKeyNumToAvgLatency struct {
 	MaxLatency time.Duration
 }
 
-// CumulativeKeyNumToAvgLatencySlice is a slice of CumulativeKeyNumToAvgLatency.
+// CumulativeKeyNumToAvgLatencySlice is a slice of CumulativeKeyNumToAvgLatency to sort by CumulativeKeyNum.
 type CumulativeKeyNumToAvgLatencySlice []CumulativeKeyNumToAvgLatency
 
 func (t CumulativeKeyNumToAvgLatencySlice) Swap(i, j int) { t[i], t[j] = t[j], t[i] }
@@ -100,7 +100,8 @@ func FindRangesLatency(data report.TimeSeries, unit int64, totalRequests int64) 
 	}
 
 	kss := []CumulativeKeyNumToAvgLatency{}
-	delete(rm, 0)
+	delete(rm, 0) // drop data at beginning
+
 	for k, v := range rm {
 		// make sure to use 'k' as CumulativeKeyNum
 		kss = append(kss, CumulativeKeyNumToAvgLatency{
@@ -111,8 +112,7 @@ func FindRangesLatency(data report.TimeSeries, unit int64, totalRequests int64) 
 		})
 	}
 
-	// sort by cumulative throughput (number of keys)
-	// in ascending order
+	// sort by cumulative throughput (number of keys) in ascending order
 	sort.Sort(CumulativeKeyNumToAvgLatencySlice(kss))
 	return kss
 }
@@ -121,6 +121,9 @@ func FindRangesLatency(data report.TimeSeries, unit int64, totalRequests int64) 
 // and according memory data. So the higher 'CumulativeKeyNum' is,
 // the later the data points are in the time series.
 type CumulativeKeyNumAndMemory struct {
+	UnixSecond int64
+	Throughput int64
+
 	CumulativeKeyNum int64
 
 	MinMemoryMB float64
@@ -128,7 +131,7 @@ type CumulativeKeyNumAndMemory struct {
 	MaxMemoryMB float64
 }
 
-// CumulativeKeyNumAndMemorySlice is a slice of CumulativeKeyNumAndMemory.
+// CumulativeKeyNumAndMemorySlice is a slice of CumulativeKeyNumAndMemory to sort by CumulativeKeyNum.
 type CumulativeKeyNumAndMemorySlice []CumulativeKeyNumAndMemory
 
 func (t CumulativeKeyNumAndMemorySlice) Swap(i, j int) { t[i], t[j] = t[j], t[i] }
@@ -137,14 +140,23 @@ func (t CumulativeKeyNumAndMemorySlice) Less(i, j int) bool {
 	return t[i].CumulativeKeyNum < t[j].CumulativeKeyNum
 }
 
+// CumulativeKeyNumAndMemoryByUnixSecond is a slice of CumulativeKeyNumAndMemory to sort by UnixSecond.
+type CumulativeKeyNumAndMemoryByUnixSecond []CumulativeKeyNumAndMemory
+
+func (t CumulativeKeyNumAndMemoryByUnixSecond) Swap(i, j int) { t[i], t[j] = t[j], t[i] }
+func (t CumulativeKeyNumAndMemoryByUnixSecond) Len() int      { return len(t) }
+func (t CumulativeKeyNumAndMemoryByUnixSecond) Less(i, j int) bool {
+	return t[i].UnixSecond < t[j].UnixSecond
+}
+
 // FindRangesMemory sorts all data points by its timestamp.
 // And then aggregate by the cumulative throughput,
 // in order to map the number of keys to the average memory usage.
 func FindRangesMemory(data []CumulativeKeyNumAndMemory, unit int64, totalRequests int64) CumulativeKeyNumAndMemorySlice {
-	// TODO: need to sort by timestamps because we want the 'cumulative'
+	// need to sort by timestamps because we want the 'cumulative'
 	// trends as we write more keys, 'report.TimeSeries' already implements
 	// sort interface, so just sort.Sort(data)
-	//
+	sort.Sort(CumulativeKeyNumAndMemoryByUnixSecond(data))
 
 	cumulKeyN := int64(0)
 	maxKey := int64(0)
@@ -156,18 +168,16 @@ func FindRangesMemory(data []CumulativeKeyNumAndMemory, unit int64, totalRequest
 	// so the range is the key
 	// and the value is the cumulative throughput
 	for _, ts := range data {
-		cumulKeyN += ts.CumulativeKeyNum
+		cumulKeyN += ts.Throughput
 		if cumulKeyN < unit {
 			// not enough data points yet
 			continue
 		}
 
-		mem := ts
-
 		// cumulKeyN >= unit
 		for cumulKeyN > maxKey {
 			maxKey += unit
-			rm[maxKey] = mem
+			rm[maxKey] = ts
 		}
 	}
 
@@ -194,8 +204,7 @@ func FindRangesMemory(data []CumulativeKeyNumAndMemory, unit int64, totalRequest
 		})
 	}
 
-	// sort by cumulative throughput (number of keys)
-	// in ascending order
+	// sort by cumulative throughput (number of keys) in ascending order
 	sort.Sort(CumulativeKeyNumAndMemorySlice(kss))
 	return kss
 }

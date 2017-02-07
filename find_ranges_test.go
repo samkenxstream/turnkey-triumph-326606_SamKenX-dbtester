@@ -22,57 +22,6 @@ import (
 	"github.com/coreos/dbtester/pkg/report"
 )
 
-func TestFindRangesMemory(t *testing.T) {
-	var data []CumulativeKeyNumAndMemory
-	for i := int64(0); i < 10; i++ {
-		dp := CumulativeKeyNumAndMemory{
-			CumulativeKeyNum: 50,
-			AvgMemoryMB:      float64(i + 1),
-		}
-		data = append(data, dp)
-	}
-
-	pss := FindRangesMemory(data, 20, 555)
-	expexcted := []CumulativeKeyNumAndMemory{
-		{CumulativeKeyNum: 20, AvgMemoryMB: 1},
-		{CumulativeKeyNum: 40, AvgMemoryMB: 1},
-		{CumulativeKeyNum: 60, AvgMemoryMB: 1},
-		{CumulativeKeyNum: 80, AvgMemoryMB: 2},
-		{CumulativeKeyNum: 100, AvgMemoryMB: 2},
-		{CumulativeKeyNum: 120, AvgMemoryMB: 3},
-		{CumulativeKeyNum: 140, AvgMemoryMB: 3},
-		{CumulativeKeyNum: 160, AvgMemoryMB: 3},
-		{CumulativeKeyNum: 180, AvgMemoryMB: 4},
-		{CumulativeKeyNum: 200, AvgMemoryMB: 4},
-		{CumulativeKeyNum: 220, AvgMemoryMB: 5},
-		{CumulativeKeyNum: 240, AvgMemoryMB: 5},
-		{CumulativeKeyNum: 260, AvgMemoryMB: 5},
-		{CumulativeKeyNum: 280, AvgMemoryMB: 6},
-		{CumulativeKeyNum: 300, AvgMemoryMB: 6},
-		{CumulativeKeyNum: 320, AvgMemoryMB: 7},
-		{CumulativeKeyNum: 340, AvgMemoryMB: 7},
-		{CumulativeKeyNum: 360, AvgMemoryMB: 7},
-		{CumulativeKeyNum: 380, AvgMemoryMB: 8},
-		{CumulativeKeyNum: 400, AvgMemoryMB: 8},
-		{CumulativeKeyNum: 420, AvgMemoryMB: 9},
-		{CumulativeKeyNum: 440, AvgMemoryMB: 9},
-		{CumulativeKeyNum: 460, AvgMemoryMB: 9},
-		{CumulativeKeyNum: 480, AvgMemoryMB: 10},
-		{CumulativeKeyNum: 500, AvgMemoryMB: 10},
-		{CumulativeKeyNum: 520, AvgMemoryMB: 0},
-		{CumulativeKeyNum: 540, AvgMemoryMB: 0},
-		{CumulativeKeyNum: 555, AvgMemoryMB: 0},
-	}
-	if len(pss) != len(expexcted) {
-		t.Fatalf("expected %+v, got %+v", expexcted, pss)
-	}
-	for i, elem := range pss {
-		if !reflect.DeepEqual(elem, expexcted[i]) {
-			t.Fatalf("#%d: processed data point expected %+v, got %+v", i, expexcted[i], elem)
-		}
-	}
-}
-
 func TestFindRangesLatency(t *testing.T) {
 	var data report.TimeSeries
 	for i := int64(0); i < 10; i++ {
@@ -114,6 +63,58 @@ func TestFindRangesLatency(t *testing.T) {
 		{CumulativeKeyNum: 520, AvgLatency: 0},
 		{CumulativeKeyNum: 540, AvgLatency: 0},
 		{CumulativeKeyNum: 555, AvgLatency: 0},
+	}
+	if len(pss) != len(expexcted) {
+		t.Fatalf("expected %+v, got %+v", expexcted, pss)
+	}
+	for i, elem := range pss {
+		if !reflect.DeepEqual(elem, expexcted[i]) {
+			t.Fatalf("#%d: processed data point expected %+v, got %+v", i, expexcted[i], elem)
+		}
+	}
+}
+
+func TestFindRangesMemory(t *testing.T) {
+	var data []CumulativeKeyNumAndMemory
+	for i := int64(0); i < 10; i++ {
+		dp := CumulativeKeyNumAndMemory{
+			UnixSecond:  i + 1,
+			Throughput:  50,
+			AvgMemoryMB: float64(i + 1),
+		}
+		data = append(data, dp)
+	}
+
+	pss := FindRangesMemory(data, 20, 555)
+	expexcted := []CumulativeKeyNumAndMemory{
+		{CumulativeKeyNum: 20, AvgMemoryMB: 1},
+		{CumulativeKeyNum: 40, AvgMemoryMB: 1},
+		{CumulativeKeyNum: 60, AvgMemoryMB: 1},
+		{CumulativeKeyNum: 80, AvgMemoryMB: 2},
+		{CumulativeKeyNum: 100, AvgMemoryMB: 2},
+		{CumulativeKeyNum: 120, AvgMemoryMB: 3},
+		{CumulativeKeyNum: 140, AvgMemoryMB: 3},
+		{CumulativeKeyNum: 160, AvgMemoryMB: 3},
+		{CumulativeKeyNum: 180, AvgMemoryMB: 4},
+		{CumulativeKeyNum: 200, AvgMemoryMB: 4},
+		{CumulativeKeyNum: 220, AvgMemoryMB: 5},
+		{CumulativeKeyNum: 240, AvgMemoryMB: 5},
+		{CumulativeKeyNum: 260, AvgMemoryMB: 5},
+		{CumulativeKeyNum: 280, AvgMemoryMB: 6},
+		{CumulativeKeyNum: 300, AvgMemoryMB: 6},
+		{CumulativeKeyNum: 320, AvgMemoryMB: 7},
+		{CumulativeKeyNum: 340, AvgMemoryMB: 7},
+		{CumulativeKeyNum: 360, AvgMemoryMB: 7},
+		{CumulativeKeyNum: 380, AvgMemoryMB: 8},
+		{CumulativeKeyNum: 400, AvgMemoryMB: 8},
+		{CumulativeKeyNum: 420, AvgMemoryMB: 9},
+		{CumulativeKeyNum: 440, AvgMemoryMB: 9},
+		{CumulativeKeyNum: 460, AvgMemoryMB: 9},
+		{CumulativeKeyNum: 480, AvgMemoryMB: 10},
+		{CumulativeKeyNum: 500, AvgMemoryMB: 10},
+		{CumulativeKeyNum: 520, AvgMemoryMB: 0},
+		{CumulativeKeyNum: 540, AvgMemoryMB: 0},
+		{CumulativeKeyNum: 555, AvgMemoryMB: 0},
 	}
 	if len(pss) != len(expexcted) {
 		t.Fatalf("expected %+v, got %+v", expexcted, pss)
