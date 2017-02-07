@@ -76,7 +76,7 @@ func (all *allAggregatedData) draw(cfg dbtester.Plot, pairs ...pair) error {
 		l.Dashes = plotutil.Dashes(i)
 		ps = append(ps, l)
 
-		plt.Legend.Add(all.headerToDatabaseID[p.y.Header()], l)
+		plt.Legend.Add(all.headerToDatabaseDescription[p.y.Header()], l)
 	}
 	plt.Add(ps...)
 
@@ -115,7 +115,7 @@ func (all *allAggregatedData) drawXY(cfg dbtester.Plot, pairs ...pair) error {
 		l.Dashes = plotutil.Dashes(i)
 		ps = append(ps, l)
 
-		plt.Legend.Add(all.headerToDatabaseID[p.y.Header()], l)
+		plt.Legend.Add(all.headerToDatabaseDescription[p.y.Header()], l)
 	}
 	plt.Add(ps...)
 
@@ -153,7 +153,7 @@ func (all *allAggregatedData) drawXYWithErrorPoints(cfg dbtester.Plot, triplets 
 			l.Color = getRGBII(all.headerToDatabaseID[triplet.avgCol.Header()], i)
 			l.Dashes = plotutil.Dashes(i)
 			ps = append(ps, l)
-			plt.Legend.Add(all.headerToDatabaseID[triplet.avgCol.Header()]+" MIN", l)
+			plt.Legend.Add(all.headerToDatabaseDescription[triplet.avgCol.Header()]+" MIN", l)
 		}
 		{
 			pt, err := pointsXY(triplet.x, triplet.avgCol)
@@ -167,7 +167,7 @@ func (all *allAggregatedData) drawXYWithErrorPoints(cfg dbtester.Plot, triplets 
 			l.Color = getRGB(all.headerToDatabaseID[triplet.avgCol.Header()], i)
 			l.Dashes = plotutil.Dashes(i)
 			ps = append(ps, l)
-			plt.Legend.Add(all.headerToDatabaseID[triplet.avgCol.Header()], l)
+			plt.Legend.Add(all.headerToDatabaseDescription[triplet.avgCol.Header()], l)
 		}
 		{
 			pt, err := pointsXY(triplet.x, triplet.maxCol)
@@ -181,7 +181,7 @@ func (all *allAggregatedData) drawXYWithErrorPoints(cfg dbtester.Plot, triplets 
 			l.Color = getRGBIII(all.headerToDatabaseID[triplet.avgCol.Header()], i)
 			l.Dashes = plotutil.Dashes(i)
 			ps = append(ps, l)
-			plt.Legend.Add(all.headerToDatabaseID[triplet.avgCol.Header()]+" MAX", l)
+			plt.Legend.Add(all.headerToDatabaseDescription[triplet.avgCol.Header()]+" MAX", l)
 		}
 	}
 	plt.Add(ps...)
