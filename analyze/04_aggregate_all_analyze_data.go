@@ -439,7 +439,7 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int6
 	sort.Sort(keyNumAndMemorys(tslice))
 
 	// aggregate memory by number of keys
-	knms := processTimeSeries(tslice, 1000, totalRequests)
+	knms := findRangesMemory(tslice, 1000, totalRequests)
 	ckk1 := dataframe.NewColumn("KEYS")
 	ckk2 := dataframe.NewColumn("MIN-VMRSS-MB")
 	ckk3 := dataframe.NewColumn("AVG-VMRSS-MB")

@@ -16,7 +16,7 @@ package analyze
 
 import "sort"
 
-func processTimeSeries(tslice []keyNumAndMemory, unit int64, totalRequests int64) []keyNumAndMemory {
+func findRangesMemory(tslice []keyNumAndMemory, unit int64, totalRequests int64) []keyNumAndMemory {
 	sort.Sort(keyNumAndMemorys(tslice))
 
 	cumulKeyN := int64(0)
@@ -55,10 +55,16 @@ func processTimeSeries(tslice []keyNumAndMemory, unit int64, totalRequests int64
 	}
 
 	kss := []keyNumAndMemory{}
-	delete(rm, 0)
+	delete(rm, 0) // drop data at beginning
+
 	for k, v := range rm {
 		// make sure to use 'k' as keyNum
-		kss = append(kss, keyNumAndMemory{keyNum: k, minMemoryMB: v.minMemoryMB, avgMemoryMB: v.avgMemoryMB, maxMemoryMB: v.maxMemoryMB})
+		kss = append(kss, keyNumAndMemory{
+			keyNum:      k,
+			minMemoryMB: v.minMemoryMB,
+			avgMemoryMB: v.avgMemoryMB,
+			maxMemoryMB: v.maxMemoryMB,
+		})
 	}
 	sort.Sort(keyNumAndMemorys(kss))
 

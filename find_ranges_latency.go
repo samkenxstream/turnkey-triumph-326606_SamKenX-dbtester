@@ -21,7 +21,7 @@ import (
 	"github.com/coreos/dbtester/pkg/report"
 )
 
-// processTimeSeries sorts all data points by its timestamp.
+// findRangesLatency sorts all data points by its timestamp.
 // And then aggregate by the cumulative throughput,
 // in order to map the number of keys to the average latency.
 //
@@ -36,7 +36,7 @@ import (
 // If unis is 1000 and the average throughput per second is 30,000
 // and its average latency is 10ms, it will have 30 data points with
 // latency 10ms.
-func processTimeSeries(tss report.TimeSeries, unit int64, totalRequests int64) keyNumToAvgLatencys {
+func findRangesLatency(tss report.TimeSeries, unit int64, totalRequests int64) keyNumToAvgLatencys {
 	sort.Sort(tss)
 
 	cumulKeyN := int64(0)

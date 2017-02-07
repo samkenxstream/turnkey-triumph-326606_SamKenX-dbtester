@@ -258,7 +258,7 @@ func (cfg *Config) saveDataLatencyThroughputTimeseries(gcfg TestGroup, st report
 	}
 
 	// aggregate latency by the number of keys
-	tss := processTimeSeries(st.TimeSeries, 1000, gcfg.RequestNumber)
+	tss := findRangesLatency(st.TimeSeries, 1000, gcfg.RequestNumber)
 	ctt1 := dataframe.NewColumn("KEYS")
 	ctt2 := dataframe.NewColumn("MIN-LATENCY-MS")
 	ctt3 := dataframe.NewColumn("AVG-LATENCY-MS")

@@ -19,7 +19,7 @@ import (
 	"testing"
 )
 
-func Test_processTimeSeries(t *testing.T) {
+func Test_findRangesMemory(t *testing.T) {
 	var tslice []keyNumAndMemory
 	for i := int64(0); i < 10; i++ {
 		dp := keyNumAndMemory{
@@ -29,7 +29,7 @@ func Test_processTimeSeries(t *testing.T) {
 		tslice = append(tslice, dp)
 	}
 
-	pss := processTimeSeries(tslice, 20, 555)
+	pss := findRangesMemory(tslice, 20, 555)
 	expexcted := []keyNumAndMemory{
 		{keyNum: 20, avgMemoryMB: 1},
 		{keyNum: 40, avgMemoryMB: 1},

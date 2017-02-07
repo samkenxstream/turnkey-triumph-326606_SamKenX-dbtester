@@ -22,7 +22,7 @@ import (
 	"github.com/coreos/dbtester/pkg/report"
 )
 
-func Test_processTimeSeries(t *testing.T) {
+func Test_findRangesLatency(t *testing.T) {
 	var tslice report.TimeSeries
 	for i := int64(0); i < 10; i++ {
 		dp := report.DataPoint{
@@ -33,7 +33,7 @@ func Test_processTimeSeries(t *testing.T) {
 		tslice = append(tslice, dp)
 	}
 
-	pss := processTimeSeries(tslice, 20, 555)
+	pss := findRangesLatency(tslice, 20, 555)
 	expexcted := []keyNumToAvgLatency{
 		{keyNum: 20, avgLat: 1},
 		{keyNum: 40, avgLat: 1},
