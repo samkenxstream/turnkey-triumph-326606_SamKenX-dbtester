@@ -24,19 +24,6 @@ import (
 	"golang.org/x/net/context"
 )
 
-type values struct {
-	bytes      [][]byte
-	strings    []string
-	sampleSize int
-}
-
-func newValues(gcfg TestGroup) (v values, rerr error) {
-	v.bytes = [][]byte{randBytes(gcfg.BenchmarkOptions.ValueSizeBytes)}
-	v.strings = []string{string(v.bytes[0])}
-	v.sampleSize = 1
-	return
-}
-
 type benchmark struct {
 	bar        *pb.ProgressBar
 	report     report.Report

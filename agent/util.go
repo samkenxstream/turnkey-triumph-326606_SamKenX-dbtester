@@ -19,14 +19,6 @@ import (
 	"runtime"
 )
 
-func openToRead(fpath string) (*os.File, error) {
-	f, err := os.OpenFile(fpath, os.O_RDONLY, 0444)
-	if err != nil {
-		return nil, err
-	}
-	return f, nil
-}
-
 func openToAppend(fpath string) (*os.File, error) {
 	f, err := os.OpenFile(fpath, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0777)
 	if err != nil {
