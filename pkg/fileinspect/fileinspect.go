@@ -17,7 +17,10 @@ package fileinspect
 import (
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
+
+	humanize "github.com/dustin/go-humanize"
 )
 
 // Walk walks all files in the target directory.
@@ -54,4 +57,70 @@ func Size(targetDir string) (int64, error) {
 		size += v.Size()
 	}
 	return size, nil
+}
+
+func walk(targetDir string) (map[string]os.FileInfo, error) {
+	rm := make(map[string]os.FileInfo)
+	visit := func(path string, f os.FileInfo, err error) error {
+		if f != nil {
+			if !f.IsDir() {
+				if !filepath.HasPrefix(path, ".") && !strings.Contains(path, "/.") {
+					wd, err := os.Getwd()
+					if err != nil {
+						return err
+					}
+					rm[filepath.Join(wd, strings.Replace(path, wd, "", -1))] = f
+				}
+			}
+		}
+		return nil
+	}
+	err := filepath.Walk(targetDir, visit)
+	if err != nil {
+		return nil, err
+	}
+	return rm, nil
+}
+
+type filepathSize struct {
+	path    string
+	size    uint64
+	sizeTxt string
+}
+
+func filterByKbs(fs []filepathSize, kbLimit int) []filepathSize {
+	var ns []filepathSize
+	for _, v := range fs {
+		if v.size > uint64(kbLimit*1024) {
+			continue
+		}
+		ns = append(ns, v)
+	}
+	return ns
+}
+
+type filepathSizeSlice []filepathSize
+
+func (f filepathSizeSlice) Len() int           { return len(f) }
+func (f filepathSizeSlice) Swap(i, j int)      { f[i], f[j] = f[j], f[i] }
+func (f filepathSizeSlice) Less(i, j int) bool { return f[i].size < f[j].size }
+
+func walkDir(targetDir string) ([]filepathSize, error) {
+	rm, err := walk(targetDir)
+	if err != nil {
+		return nil, err
+	}
+
+	var fs []filepathSize
+	for k, v := range rm {
+		fv := filepathSize{
+			path:    k,
+			size:    uint64(v.Size()),
+			sizeTxt: humanize.Bytes(uint64(v.Size())),
+		}
+		fs = append(fs, fv)
+	}
+	sort.Sort(filepathSizeSlice(fs))
+
+	return fs, nil
 }

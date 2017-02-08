@@ -15,13 +15,84 @@
 package dbtester
 
 import (
-	"crypto/rand"
 	"fmt"
+	"io"
+	"io/ioutil"
 	mrand "math/rand"
+	"net/http"
 	"os"
 	"strings"
 	"time"
 )
+
+func toMillisecond(d time.Duration) float64 {
+	return d.Seconds() * 1000
+}
+
+func assignRequest(ranges []int64, total int64) (rs []int64) {
+	reqEach := int(float64(total) / float64(len(ranges)))
+	// truncate 10000th digits
+	if reqEach > 10000 {
+		reqEach = (reqEach / 10000) * 10000
+	}
+	// truncate 1000th digits
+	if reqEach > 1000 {
+		reqEach = (reqEach / 1000) * 1000
+	}
+
+	curSum := int64(0)
+	rs = make([]int64, len(ranges))
+	for i := range ranges {
+		if i < len(ranges)-1 {
+			rs[i] = int64(reqEach)
+			curSum += int64(reqEach)
+		} else {
+			rs[i] = int64(total) - curSum
+		}
+	}
+	return
+}
+
+func toFile(txt, fpath string) error {
+	f, err := os.OpenFile(fpath, os.O_RDWR|os.O_TRUNC, 0777)
+	if err != nil {
+		f, err = os.Create(fpath)
+		if err != nil {
+			return err
+		}
+	}
+	defer f.Close()
+
+	_, err = f.WriteString(txt)
+	return err
+}
+
+// exist returns true if the file or directory exists.
+func exist(fpath string) bool {
+	st, err := os.Stat(fpath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return false
+		}
+	}
+	if st.IsDir() {
+		return true
+	}
+	if _, err := os.Stat(fpath); err != nil {
+		if os.IsNotExist(err) {
+			return false
+		}
+	}
+	return true
+}
+
+// gracefulClose drains http.Response.Body until it hits EOF
+// and closes it. This prevents TCP/TLS connections from closing,
+// therefore available for reuse.
+func gracefulClose(resp *http.Response) {
+	io.Copy(ioutil.Discard, resp.Body)
+	resp.Body.Close()
+}
 
 // sequentialKey returns '00012' when size is 5 and num is 12.
 func sequentialKey(size, num int64) string {
@@ -58,28 +129,4 @@ func randBytes(bytesN int64) []byte {
 		remain--
 	}
 	return b
-}
-
-func mustRandBytes(n int) []byte {
-	rb := make([]byte, n)
-	_, err := rand.Read(rb)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to generate value: %v\n", err)
-		os.Exit(1)
-	}
-	return rb
-}
-
-func multiRandStrings(keyN, sliceN int64) []string {
-	m := make(map[string]struct{})
-	for int64(len(m)) != sliceN {
-		m[string(randBytes(keyN))] = struct{}{}
-	}
-	rs := make([]string, sliceN)
-	idx := 0
-	for k := range m {
-		rs[idx] = k
-		idx++
-	}
-	return rs
 }

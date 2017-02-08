@@ -16,9 +16,7 @@ package analyze
 
 import (
 	"fmt"
-	"io"
 	"os"
-	"path/filepath"
 )
 
 func minFloat64(a, b float64) float64 {
@@ -39,21 +37,8 @@ func makeHeader(column string, tag string) string {
 	return fmt.Sprintf("%s-%s", column, tag)
 }
 
-// converts unix nanoseconds to unix second.
-func convertUnixNano(ts int64) int64 {
-	return int64(ts / 1e9)
-}
-
 func openToRead(fpath string) (*os.File, error) {
 	f, err := os.OpenFile(fpath, os.O_RDONLY, 0444)
-	if err != nil {
-		return nil, err
-	}
-	return f, nil
-}
-
-func openToAppend(fpath string) (*os.File, error) {
-	f, err := os.OpenFile(fpath, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0777)
 	if err != nil {
 		return nil, err
 	}
@@ -79,34 +64,4 @@ func toFile(txt, fpath string) error {
 	defer f.Close()
 	_, err = f.WriteString(txt)
 	return err
-}
-
-func copyFile(src, dst string) error {
-	if err := os.MkdirAll(filepath.Dir(dst), 0755); err != nil {
-		return fmt.Errorf("copy: mkdirall: %v", err)
-	}
-
-	r, err := os.Open(src)
-	if err != nil {
-		return fmt.Errorf("copy: open(%q): %v", src, err)
-	}
-	defer r.Close()
-
-	w, err := os.Create(dst)
-	if err != nil {
-		return fmt.Errorf("copy: create(%q): %v", dst, err)
-	}
-	defer w.Close()
-
-	// func Copy(dst Writer, src Reader) (written int64, err error)
-	if _, err = io.Copy(w, r); err != nil {
-		return err
-	}
-	if err := w.Sync(); err != nil {
-		return err
-	}
-	if _, err := w.Seek(0, 0); err != nil {
-		return err
-	}
-	return nil
 }
