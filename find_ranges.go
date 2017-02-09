@@ -53,7 +53,7 @@ func (t CumulativeKeyNumToAvgLatencySlice) Less(i, j int) bool {
 //		ThroughPut int64
 //	}
 //
-// If unis is 1000 and the average throughput per second is 30,000
+// If unit is 1000 and the average throughput per second is 30,000
 // and its average latency is 10ms, it will have 30 data points with
 // latency 10ms.
 func FindRangesLatency(data report.TimeSeries, unit int64, totalRequests int64) CumulativeKeyNumToAvgLatencySlice {
