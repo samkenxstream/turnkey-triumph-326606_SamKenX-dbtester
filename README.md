@@ -28,49 +28,39 @@ Snapshot, when writing 1-million entries (256-byte key, 1KB value value), with 3
 
 ```
 # snapshot warnings
+cd 2017Q1-00-etcd-zookeeper-consul/02-write-1M-keys-best-throughput
 grep -r -i fsync-ing\ the zookeeper-r3.4.9-java8-* | less
 
-...
-java.lang.InterruptedException
-  at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquireInterruptibly(AbstractQueuedSynchronizer.java:1220)
-  at java.util.concurrent.locks.ReentrantLock.lockInterruptibly(ReentrantLock.java:335)
-  at java.util.concurrent.LinkedBlockingQueue.put(LinkedBlockingQueue.java:339)
-  at org.apache.zookeeper.server.quorum.LearnerHandler.shutdown(LearnerHandler.java:654)
-  at org.apache.zookeeper.server.quorum.LearnerHandler.run(LearnerHandler.java:647)
-2017-02-06 22:02:19,388 [myid:2] - WARN  [SyncThread:2:FileTxnLog@338] - fsync-ing the write ahead log in SyncThread:2 took 1083ms which will adversely effect operation latency. See the ZooKeeper troubleshooting guide
-2017-02-06 22:02:20,000 [myid:2] - INFO  [SessionTracker:ZooKeeperServer@358] - Expiring session 0x15a15722a570038, timeout of 4000ms exceeded
-2017-02-06 22:02:20,526 [myid:2] - INFO  [SessionTracker:ZooKeeperServer@358] - Expiring session 0x15a15722a570024, timeout of 4000ms exceeded
-2017-02-06 22:02:20,526 [myid:2] - INFO  [SessionTracker:ZooKeeperServer@358] - Expiring session 0x15a15722a570051, timeout of 4000ms exceeded
-2017-02-06 22:02:20,526 [myid:2] - INFO  [SessionTracker:ZooKeeperServer@358] - Expiring session 0x15a15722a570044, timeout of 4000ms exceeded
-2017-02-06 22:02:20,526 [myid:2] - INFO  [SessionTracker:ZooKeeperServer@358] - Expiring session 0x15a15722a570037, timeout of 4000ms exceeded
-2017-02-06 22:02:20,526 [myid:2] - INFO  [SessionTracker:ZooKeeperServer@358] - Expiring session 0x15a15722a570059, timeout of 4000ms exceeded
-2017-02-06 22:02:20,526 [myid:2] - INFO  [SessionTracker:ZooKeeperServer@358] - Expiring session 0x15a15722a570039, timeout of 4000ms exceeded
-2017-02-06 22:02:20,526 [myid:2] - INFO  [SessionTracker:ZooKeeperServer@358] - Expiring session 0x15a15722a570026, timeout of 4000ms exceeded
-2017-02-06 22:02:20,526 [myid:2] - INFO  [SessionTracker:ZooKeeperServer@358] - Expiring session 0x15a15722a570013, timeout of 4000ms exceeded
-2017-02-06 22:02:20,526 [myid:2] - INFO  [SessionTracker:ZooKeeperServer@358] - Expiring session 0x15a15722a57004f, timeout of 4000ms exceeded
-2017-02-06 22:02:20,527 [myid:2] - INFO  [SessionTracker:ZooKeeperServer@358] - Expiring session 0x15a15722a57005b, timeout of 4000ms exceeded
-2017-02-06 22:02:20,527 [myid:2] - WARN  [SyncThread:2:FileTxnLog@338] - fsync-ing the write ahead log in SyncThread:2 took 1023ms which will adversely effect operation latency. See the ZooKeeper troubleshooting guide
-...
+2017-02-10 18:55:38,997 [myid:3] - WARN  [SyncThread:3:SyncRequestProcessor@148] - Too busy to snap, skipping
+2017-02-10 18:55:38,998 [myid:3] - INFO  [SyncThread:3:FileTxnLog@203] - Creating new log file: log.1000c0c51
+2017-02-10 18:55:40,855 [myid:3] - INFO  [SyncThread:3:FileTxnLog@203] - Creating new log file: log.1000cd2e6
+2017-02-10 18:55:40,855 [myid:3] - INFO  [Snapshot Thread:FileTxnSnapLog@240] - Snapshotting: 0x1000cd1ca to /home/gyuho/zookeeper/zookeeper.data/version-2/snapshot.1000cd1ca
+2017-02-10 18:55:46,382 [myid:3] - WARN  [SyncThread:3:FileTxnLog@338] - fsync-ing the write ahead log in SyncThread:3 took 1062ms which will adversely effect operation latency. See the ZooKeeper troubleshooting guide
+2017-02-10 18:55:47,471 [myid:3] - WARN  [SyncThread:3:FileTxnLog@338] - fsync-ing the write ahead log in SyncThread:3 took 1084ms which will adversely effect operation latency. See the ZooKeeper troubleshooting guide
+2017-02-10 18:55:49,425 [myid:3] - WARN  [SyncThread:3:FileTxnLog@338] - fsync-ing the write ahead log in SyncThread:3 took 1142ms which will adversely effect operation latency. See the ZooKeeper troubleshooting guide
+2017-02-10 18:55:51,188 [myid:3] - WARN  [SyncThread:3:FileTxnLog@338] - fsync-ing the write ahead log in SyncThread:3 took 1201ms which will adversely effect operation latency. See the ZooKeeper troubleshooting guide
+2017-02-10 18:55:52,292 [myid:3] - WARN  [SyncThread:3:FileTxnLog@338] - fsync-ing the write ahead log in SyncThread:3 took 1102ms which will adversely effect operation latency. See the ZooKeeper troubleshooting guide
 ```
 
 When writing more than 2-million entries (256-byte key, 1KB value value) with 300 concurrent clients
 
 ```
 # leader election
+cd 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys
 grep -r -i election\ took  zookeeper-r3.4.9-java8-* | less
 
-...
-zookeeper-r3.4.9-java8-1-database.log:2017-02-06 15:15:50,966 [myid:1] - INFO  [QuorumPeer[myid=1]/0:0:0:0:0:0:0:0:2181:Follower@61] - FOLLOWING - LEADER ELECTION TOOK - 15202
-zookeeper-r3.4.9-java8-1-database.log:2017-02-06 15:16:14,346 [myid:1] - INFO  [QuorumPeer[myid=1]/0:0:0:0:0:0:0:0:2181:Follower@61] - FOLLOWING - LEADER ELECTION TOOK - 13354
-zookeeper-r3.4.9-java8-1-database.log:2017-02-06 15:16:24,781 [myid:1] - INFO  [QuorumPeer[myid=1]/0:0:0:0:0:0:0:0:2181:Follower@61] - FOLLOWING - LEADER ELECTION TOOK - 6426
-zookeeper-r3.4.9-java8-1-database.log:2017-02-06 15:16:48,327 [myid:1] - INFO  [QuorumPeer[myid=1]/0:0:0:0:0:0:0:0:2181:Follower@61] - FOLLOWING - LEADER ELECTION TOOK - 12808
-zookeeper-r3.4.9-java8-1-database.log:2017-02-06 15:16:55,542 [myid:1] - INFO  [QuorumPeer[myid=1]/0:0:0:0:0:0:0:0:2181:Follower@61] - FOLLOWING - LEADER ELECTION TOOK - 3207
-zookeeper-r3.4.9-java8-1-database.log:2017-02-06 15:17:19,225 [myid:1] - INFO  [QuorumPeer[myid=1]/0:0:0:0:0:0:0:0:2181:Follower@61] - FOLLOWING - LEADER ELECTION TOOK - 13652
-zookeeper-r3.4.9-java8-1-database.log:2017-02-06 15:17:37,581 [myid:1] - INFO  [QuorumPeer[myid=1]/0:0:0:0:0:0:0:0:2181:Follower@61] - FOLLOWING - LEADER ELECTION TOOK - 15147
-zookeeper-r3.4.9-java8-1-database.log:2017-02-06 15:18:01,784 [myid:1] - INFO  [QuorumPeer[myid=1]/0:0:0:0:0:0:0:0:2181:Follower@61] - FOLLOWING - LEADER ELECTION TOOK - 13368
-zookeeper-r3.4.9-java8-1-database.log:2017-02-06 15:18:20,758 [myid:1] - INFO  [QuorumPeer[myid=1]/0:0:0:0:0:0:0:0:2181:Follower@61] - FOLLOWING - LEADER ELECTION TOOK - 15025
-zookeeper-r3.4.9-java8-1-database.log:2017-02-06 15:18:43,963 [myid:1] - INFO  [QuorumPeer[myid=1]/0:0:0:0:0:0:0:0:2181:Follower@61] - FOLLOWING - LEADER ELECTION TOOK - 13176
-...
+# leader election is taking more than 10 seconds...
+zookeeper-r3.4.9-java8-2-database.log:2017-02-10 19:22:16,549 [myid:2] - INFO  [QuorumPeer[myid=2]/0:0:0:0:0:0:0:0:2181:Follower@61] - FOLLOWING - LEADER ELECTION TOOK - 22978
+zookeeper-r3.4.9-java8-2-database.log:2017-02-10 19:23:02,279 [myid:2] - INFO  [QuorumPeer[myid=2]/0:0:0:0:0:0:0:0:2181:Leader@361] - LEADING - LEADER ELECTION TOOK - 10210
+zookeeper-r3.4.9-java8-2-database.log:2017-02-10 19:23:14,498 [myid:2] - INFO  [QuorumPeer[myid=2]/0:0:0:0:0:0:0:0:2181:Leader@361] - LEADING - LEADER ELECTION TOOK - 203
+zookeeper-r3.4.9-java8-2-database.log:2017-02-10 19:23:36,303 [myid:2] - INFO  [QuorumPeer[myid=2]/0:0:0:0:0:0:0:0:2181:Leader@361] - LEADING - LEADER ELECTION TOOK - 9791
+zookeeper-r3.4.9-java8-2-database.log:2017-02-10 19:23:52,151 [myid:2] - INFO  [QuorumPeer[myid=2]/0:0:0:0:0:0:0:0:2181:Leader@361] - LEADING - LEADER ELECTION TOOK - 3836
+zookeeper-r3.4.9-java8-2-database.log:2017-02-10 19:24:13,849 [myid:2] - INFO  [QuorumPeer[myid=2]/0:0:0:0:0:0:0:0:2181:Leader@361] - LEADING - LEADER ELECTION TOOK - 9686
+zookeeper-r3.4.9-java8-2-database.log:2017-02-10 19:24:29,694 [myid:2] - INFO  [QuorumPeer[myid=2]/0:0:0:0:0:0:0:0:2181:Leader@361] - LEADING - LEADER ELECTION TOOK - 3573
+zookeeper-r3.4.9-java8-2-database.log:2017-02-10 19:24:51,392 [myid:2] - INFO  [QuorumPeer[myid=2]/0:0:0:0:0:0:0:0:2181:Leader@361] - LEADING - LEADER ELECTION TOOK - 8686
+zookeeper-r3.4.9-java8-2-database.log:2017-02-10 19:25:07,231 [myid:2] - INFO  [QuorumPeer[myid=2]/0:0:0:0:0:0:0:0:2181:Leader@361] - LEADING - LEADER ELECTION TOOK - 3827
+zookeeper-r3.4.9-java8-2-database.log:2017-02-10 19:25:28,940 [myid:2] - INFO  [QuorumPeer[myid=2]/0:0:0:0:0:0:0:0:2181:Leader@361] - LEADING - LEADER ELECTION TOOK - 9697
+zookeeper-r3.4.9-java8-2-database.log:2017-02-10 19:25:44,772 [myid:2] - INFO  [QuorumPeer[myid=2]/0:0:0:0:0:0:0:0:2181:Leader@361] - LEADING - LEADER ELECTION TOOK - 3820
 ```
 
 
@@ -81,21 +71,20 @@ Snapshot, when writing 1-million entries (256-byte key, 1KB value value), with 5
 
 ```
 # snapshot warnings
-grep -r -i installed\ remote consul-v0.7.3-go1.7.4-* | less
+cd 2017Q1-00-etcd-zookeeper-consul/02-write-1M-keys-best-throughput
+grep -r -i installed\ remote consul-v0.7.4-go1.7.5-* | less
 
-    2017/02/06 22:04:23 [ERR] raft-net: Failed to flush response: write tcp 10.240.0.31:8300->10.240.0.30:46032: write: connection reset by peer
-    2017/02/06 22:04:24 [INFO] snapshot: Creating new snapshot at /home/gyuho/consul.data/raft/snapshots/2-740201-1486418664486.tmp
-    2017/02/06 22:04:26 [INFO] snapshot: reaping snapshot /home/gyuho/consul.data/raft/snapshots/2-688951-1486418642600
-    2017/02/06 22:04:26 [INFO] raft: Copied 1005637598 bytes to local snapshot
-    2017/02/06 22:04:34 [INFO] raft: Compacting logs from 724865 to 725120
-    2017/02/06 22:04:34 [INFO] raft: Installed remote snapshot
-    2017/02/06 22:04:35 [INFO] snapshot: Creating new snapshot at /home/gyuho/consul.data/raft/snapshots/2-756515-1486418675363.tmp
-    2017/02/06 22:04:37 [INFO] snapshot: reaping snapshot /home/gyuho/consul.data/raft/snapshots/2-734528-1486418655488
-    2017/02/06 22:04:37 [INFO] raft: Copied 1027808324 bytes to local snapshot
-    2017/02/06 22:04:45 [INFO] consul.fsm: snapshot created in 18.935µs
-    2017/02/06 22:04:45 [INFO] raft: Compacting logs from 725121 to 725120
-    2017/02/06 22:04:46 [INFO] raft: Installed remote snapshot
-    2017/02/06 22:04:46 [INFO] raft: Starting snapshot up to 756515
+    2017/02/10 18:58:43 [INFO] snapshot: Creating new snapshot at /home/gyuho/consul.data/raft/snapshots/2-900345-1486753123478.tmp
+    2017/02/10 18:58:45 [INFO] snapshot: reaping snapshot /home/gyuho/consul.data/raft/snapshots/2-849399-1486753096972
+    2017/02/10 18:58:46 [INFO] raft: Copied 1223270573 bytes to local snapshot
+    2017/02/10 18:58:55 [INFO] raft: Compacting logs from 868354 to 868801
+    2017/02/10 18:58:56 [INFO] raft: Installed remote snapshot
+    2017/02/10 18:58:57 [INFO] snapshot: Creating new snapshot at /home/gyuho/consul.data/raft/snapshots/2-911546-1486753137827.tmp
+    2017/02/10 18:58:59 [INFO] consul.fsm: snapshot created in 32.255µs
+    2017/02/10 18:59:01 [INFO] snapshot: reaping snapshot /home/gyuho/consul.data/raft/snapshots/2-873921-1486753116619
+    2017/02/10 18:59:02 [INFO] raft: Copied 1238491373 bytes to local snapshot
+    2017/02/10 18:59:11 [INFO] raft: Compacting logs from 868802 to 868801
+    2017/02/10 18:59:11 [INFO] raft: Installed remote snapshot
 ```
 
 Logs do not tell much but average latency spikes (e.g. from 258.28656 ms to 6265.185836 ms)
