@@ -3,13 +3,13 @@ test_description: |
   - Google Cloud Compute Engine
   - 4 machines of 16 vCPUs + 30 GB Memory + 150 GB SSD (1 for client)
   - Ubuntu 16.10
-  - etcd v3.1 (Go 1.7.4)
+  - etcd v3.1 (Go 1.7.5)
   - Zookeeper r3.4.9
     - Java 8
     - javac 1.8.0_121
     - Java(TM) SE Runtime Environment (build 1.8.0_121-b13)
     - Java HotSpot(TM) 64-Bit Server VM (build 25.121-b13, mixed mode)
-  - Consul v0.7.3 (Go 1.7.4)
+  - Consul v0.7.4 (Go 1.7.5)
 
 # common control options for all client machines
 control:
@@ -36,7 +36,7 @@ all_database_id_list: [etcdv3, zookeeper, consul]
 
 datatbase_id_to_test_group:
   etcdv3:
-    database_description: etcd v3.1 (Go 1.7.4)
+    database_description: etcd v3.1 (Go 1.7.5)
     peer_ips:
     - 10.240.0.20
     - 10.240.0.21
@@ -131,7 +131,7 @@ datatbase_id_to_test_group:
       step4_upload_logs: true
 
   consul:
-    database_description: Consul v0.7.3 (Go 1.7.4)
+    database_description: Consul v0.7.4 (Go 1.7.5)
     peer_ips:
     - 10.240.0.30
     - 10.240.0.31
@@ -167,7 +167,7 @@ datatbase_id_to_test_group:
 datatbase_id_to_test_data:
   etcdv3:
     # if not empty, all test data paths are prefixed
-    path_prefix: 2017Q1-00-etcd-zookeeper-consul/02-write-1M-keys-best-throughput/etcd-v3.1-go1.7.4
+    path_prefix: 2017Q1-00-etcd-zookeeper-consul/02-write-1M-keys-best-throughput/etcd-v3.1-go1.7.5
     client_system_metrics_interpolated_path: client-system-metrics-interpolated.csv
     client_latency_throughput_timeseries_path: client-latency-throughput-timeseries.csv
     client_latency_distribution_all_path: client-latency-distribution-all.csv
@@ -201,7 +201,7 @@ datatbase_id_to_test_data:
 
   consul:
     # if not empty, all test data paths are prefixed
-    path_prefix: 2017Q1-00-etcd-zookeeper-consul/02-write-1M-keys-best-throughput/consul-v0.7.3-go1.7.4
+    path_prefix: 2017Q1-00-etcd-zookeeper-consul/02-write-1M-keys-best-throughput/consul-v0.7.4-go1.7.5
     client_system_metrics_interpolated_path: client-system-metrics-interpolated.csv
     client_latency_throughput_timeseries_path: client-latency-throughput-timeseries.csv
     client_latency_distribution_all_path: client-latency-distribution-all.csv
