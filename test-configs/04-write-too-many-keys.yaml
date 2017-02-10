@@ -1,4 +1,4 @@
-test_title: Write 3-million keys, 256-byte key, 1KB value, Best Throughput (etcd 700, Zookeeper 300, Consul 500 clients)
+test_title: Write 3-million keys, 256-byte key, 1KB value, Best Throughput (etcd 1,000, Zookeeper 500, Consul 500 clients)
 test_description: |
   - Google Cloud Compute Engine
   - 4 machines of 16 vCPUs + 30 GB Memory + 150 GB SSD (1 for client)
@@ -53,8 +53,8 @@ datatbase_id_to_test_group:
     benchmark_options:
       type: write
       request_number: 3000000
-      connection_number: 700 # for best throughput
-      client_number: 700 # for best throughput
+      connection_number: 1000 # for best throughput
+      client_number: 1000 # for best throughput
       # if specified, overwrite 'connection_number', 'connection_number'
       connection_client_numbers: []
 
@@ -109,8 +109,8 @@ datatbase_id_to_test_group:
     benchmark_options:
       type: write
       request_number: 3000000
-      connection_number: 300 # for best throughput
-      client_number: 300 # for best throughput
+      connection_number: 500 # for best throughput
+      client_number: 500 # for best throughput
       # if specified, overwrite 'connection_number', 'connection_number'
       connection_client_numbers: []
 
