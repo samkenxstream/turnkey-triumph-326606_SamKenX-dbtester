@@ -119,16 +119,16 @@ func do(configPath string) error {
 		}
 	}
 
-	row19ServerReceiveBytesSum := []string{"SERVER-TOTAL-NETWORK-RX-DATA-SUM"}
-	row19ServerReceiveBytesSumRaw := []string{"SERVER-TOTAL-NETWORK-RX-DATA-BYTES-SUM-RAW"}
-	row20ServerTransmitBytesSum := []string{"SERVER-TOTAL-NETWORK-TX-DATA-SUM"}
-	row20ServerTransmitBytesSumRaw := []string{"SERVER-TOTAL-NETWORK-TX-DATA-BYTES-SUM-RAW"}
-	row23ServerMaxCPUUsage := []string{"SERVER-MAX-CPU-USAGE"}
-	row24ServerMaxMemoryUsage := []string{"SERVER-MAX-MEMORY-USAGE"}
-	row28ReadsCompletedDeltaSum := []string{"SERVER-AVG-READS-COMPLETED-DELTA-SUM"}
-	row29SectorsReadDeltaSum := []string{"SERVER-AVG-SECTORS-READS-DELTA-SUM"}
-	row30WritesCompletedDeltaSum := []string{"SERVER-AVG-WRITES-COMPLETED-DELTA-SUM"}
-	row31SectorsWrittenDeltaSum := []string{"SERVER-AVG-SECTORS-WRITTEN-DELTA-SUM"}
+	row17ServerReceiveBytesSum := []string{"SERVER-TOTAL-NETWORK-RX-DATA-SUM"}
+	row17ServerReceiveBytesSumRaw := []string{"SERVER-TOTAL-NETWORK-RX-DATA-BYTES-SUM-RAW"}
+	row18ServerTransmitBytesSum := []string{"SERVER-TOTAL-NETWORK-TX-DATA-SUM"}
+	row18ServerTransmitBytesSumRaw := []string{"SERVER-TOTAL-NETWORK-TX-DATA-BYTES-SUM-RAW"}
+	row21ServerMaxCPUUsage := []string{"SERVER-MAX-CPU-USAGE"}
+	row22ServerMaxMemoryUsage := []string{"SERVER-MAX-MEMORY-USAGE"}
+	row26ReadsCompletedDeltaSum := []string{"SERVER-AVG-READS-COMPLETED-DELTA-SUM"}
+	row27SectorsReadDeltaSum := []string{"SERVER-AVG-SECTORS-READS-DELTA-SUM"}
+	row28WritesCompletedDeltaSum := []string{"SERVER-AVG-WRITES-COMPLETED-DELTA-SUM"}
+	row29SectorsWrittenDeltaSum := []string{"SERVER-AVG-SECTORS-WRITTEN-DELTA-SUM"}
 
 	// iterate each database's all data
 	for _, ad := range all.data {
@@ -229,47 +229,47 @@ func do(configPath string) error {
 			}
 		}
 
-		row19ServerReceiveBytesSum = append(row19ServerReceiveBytesSum, humanize.Bytes(uint64(receiveBytesNumDeltaSum)))
-		row19ServerReceiveBytesSumRaw = append(row19ServerReceiveBytesSumRaw, fmt.Sprintf("%.2f", receiveBytesNumDeltaSum))
-		row20ServerTransmitBytesSum = append(row20ServerTransmitBytesSum, humanize.Bytes(uint64(transmitBytesNumDeltaSum)))
-		row20ServerTransmitBytesSumRaw = append(row20ServerTransmitBytesSumRaw, fmt.Sprintf("%.2f", transmitBytesNumDeltaSum))
-		row23ServerMaxCPUUsage = append(row23ServerMaxCPUUsage, fmt.Sprintf("%.2f %%", maxAvgCPU))
-		row28ReadsCompletedDeltaSum = append(row28ReadsCompletedDeltaSum, humanize.Comma(int64(readsCompletedDeltaSum)))
-		row29SectorsReadDeltaSum = append(row29SectorsReadDeltaSum, humanize.Comma(int64(sectorsReadDeltaSum)))
-		row30WritesCompletedDeltaSum = append(row30WritesCompletedDeltaSum, humanize.Comma(int64(writesCompletedDeltaSum)))
-		row31SectorsWrittenDeltaSum = append(row31SectorsWrittenDeltaSum, humanize.Comma(int64(sectorsWrittenDeltaSum)))
+		row17ServerReceiveBytesSum = append(row17ServerReceiveBytesSum, humanize.Bytes(uint64(receiveBytesNumDeltaSum)))
+		row17ServerReceiveBytesSumRaw = append(row17ServerReceiveBytesSumRaw, fmt.Sprintf("%.2f", receiveBytesNumDeltaSum))
+		row18ServerTransmitBytesSum = append(row18ServerTransmitBytesSum, humanize.Bytes(uint64(transmitBytesNumDeltaSum)))
+		row18ServerTransmitBytesSumRaw = append(row18ServerTransmitBytesSumRaw, fmt.Sprintf("%.2f", transmitBytesNumDeltaSum))
+		row21ServerMaxCPUUsage = append(row21ServerMaxCPUUsage, fmt.Sprintf("%.2f %%", maxAvgCPU))
+		row26ReadsCompletedDeltaSum = append(row26ReadsCompletedDeltaSum, humanize.Comma(int64(readsCompletedDeltaSum)))
+		row27SectorsReadDeltaSum = append(row27SectorsReadDeltaSum, humanize.Comma(int64(sectorsReadDeltaSum)))
+		row28WritesCompletedDeltaSum = append(row28WritesCompletedDeltaSum, humanize.Comma(int64(writesCompletedDeltaSum)))
+		row29SectorsWrittenDeltaSum = append(row29SectorsWrittenDeltaSum, humanize.Comma(int64(sectorsWrittenDeltaSum)))
 
 		// TODO: handle overflowed memory value?
 		sort.Float64s(maxAvgVMRSSMBs)
 		mv := maxAvgVMRSSMBs[len(maxAvgVMRSSMBs)-1]
 		mb := uint64(mv * 1000000)
-		row24ServerMaxMemoryUsage = append(row24ServerMaxMemoryUsage, humanize.Bytes(mb))
+		row22ServerMaxMemoryUsage = append(row22ServerMaxMemoryUsage, humanize.Bytes(mb))
 	}
 
 	row01TotalSeconds := []string{"TOTAL-SECONDS"} // TOTAL-SECONDS
 	row02TotalRequestNumber := []string{"TOTAL-REQUEST-NUMBER"}
-	row05MaxThroughput := []string{"MAX-THROUGHPUT"}                                    // MAX AVG-THROUGHPUT
-	row06AverageThroughput := []string{"AVG-THROUGHPUT"}                                // REQUESTS-PER-SECOND
-	row07MinThroughput := []string{"MIN-THROUGHPUT"}                                    // MIN AVG-THROUGHPUT
-	row08FastestLatency := []string{"FASTEST-LATENCY"}                                  // FASTEST-LATENCY-MS
-	row09AverageLatency := []string{"AVG-LATENCY"}                                      // AVERAGE-LATENCY-MS
-	row10SlowestLatency := []string{"SLOWEST-LATENCY"}                                  // SLOWEST-LATENCY-MS
-	row11p10 := []string{"Latency p10"}                                                 // p10
-	row12p25 := []string{"Latency p25"}                                                 // p25
-	row13p50 := []string{"Latency p50"}                                                 // p50
-	row14p75 := []string{"Latency p75"}                                                 // p75
-	row15p90 := []string{"Latency p90"}                                                 // p90
-	row16p95 := []string{"Latency p95"}                                                 // p95
-	row17p99 := []string{"Latency p99"}                                                 // p99
-	row18p999 := []string{"Latency p99.9"}                                              // p99.9
-	row21ClientReceiveBytesSum := []string{"CLIENT-TOTAL-NETWORK-RX-SUM"}               // RECEIVE-BYTES-NUM-DELTA
-	row21ClientReceiveBytesSumRaw := []string{"CLIENT-TOTAL-NETWORK-RX-BYTES-SUM-RAW"}  // RECEIVE-BYTES-NUM-DELTA
-	row22ClientTransmitBytesSum := []string{"CLIENT-TOTAL-NETWORK-TX-SUM"}              // TRANSMIT-BYTES-DELTA
-	row22ClientTransmitBytesSumRaw := []string{"CLIENT-TOTAL-NETWORK-TX-BYTES-SUM-RAW"} // TRANSMIT-BYTES-DELTA
-	row25ClientMaxCPU := []string{"CLIENT-MAX-CPU-USAGE"}                               // CPU-NUM
-	row26ClientMaxMemory := []string{"CLIENT-MAX-MEMORY-USAGE"}                         // VMRSS-NUM
-	row27ClientErrorCount := []string{"CLIENT-ERROR-COUNT"}                             // ERROR:
-	row32AverageDatasize := []string{"SERVER-AVG-DATA-SIZE-ON-DISK"}                    // TOTAL-DATA-SIZE
+	row03MaxThroughput := []string{"MAX-THROUGHPUT"}                                    // MAX AVG-THROUGHPUT
+	row04AverageThroughput := []string{"AVG-THROUGHPUT"}                                // REQUESTS-PER-SECOND
+	row05MinThroughput := []string{"MIN-THROUGHPUT"}                                    // MIN AVG-THROUGHPUT
+	row06FastestLatency := []string{"FASTEST-LATENCY"}                                  // FASTEST-LATENCY-MS
+	row07AverageLatency := []string{"AVG-LATENCY"}                                      // AVERAGE-LATENCY-MS
+	row08SlowestLatency := []string{"SLOWEST-LATENCY"}                                  // SLOWEST-LATENCY-MS
+	row09p10 := []string{"Latency p10"}                                                 // p10
+	row10p25 := []string{"Latency p25"}                                                 // p25
+	row11p50 := []string{"Latency p50"}                                                 // p50
+	row12p75 := []string{"Latency p75"}                                                 // p75
+	row13p90 := []string{"Latency p90"}                                                 // p90
+	row14p95 := []string{"Latency p95"}                                                 // p95
+	row15p99 := []string{"Latency p99"}                                                 // p99
+	row16p999 := []string{"Latency p99.9"}                                              // p99.9
+	row19ClientReceiveBytesSum := []string{"CLIENT-TOTAL-NETWORK-RX-SUM"}               // RECEIVE-BYTES-NUM-DELTA
+	row19ClientReceiveBytesSumRaw := []string{"CLIENT-TOTAL-NETWORK-RX-BYTES-SUM-RAW"}  // RECEIVE-BYTES-NUM-DELTA
+	row20ClientTransmitBytesSum := []string{"CLIENT-TOTAL-NETWORK-TX-SUM"}              // TRANSMIT-BYTES-DELTA
+	row20ClientTransmitBytesSumRaw := []string{"CLIENT-TOTAL-NETWORK-TX-BYTES-SUM-RAW"} // TRANSMIT-BYTES-DELTA
+	row23ClientMaxCPU := []string{"CLIENT-MAX-CPU-USAGE"}                               // CPU-NUM
+	row24ClientMaxMemory := []string{"CLIENT-MAX-MEMORY-USAGE"}                         // VMRSS-NUM
+	row25ClientErrorCount := []string{"CLIENT-ERROR-COUNT"}                             // ERROR:
+	row30AverageDatasize := []string{"SERVER-AVG-DATA-SIZE-ON-DISK"}                    // TOTAL-DATA-SIZE
 
 	databaseIDToErrs := make(map[string][]string)
 	for i, databaseID := range cfg.AllDatabaseIDList {
@@ -348,12 +348,12 @@ func do(configPath string) error {
 				}
 			}
 
-			row21ClientReceiveBytesSum = append(row21ClientReceiveBytesSum, humanize.Bytes(uint64(receiveBytesNumDeltaSum)))
-			row21ClientReceiveBytesSumRaw = append(row21ClientReceiveBytesSumRaw, fmt.Sprintf("%.2f", receiveBytesNumDeltaSum))
-			row22ClientTransmitBytesSum = append(row22ClientTransmitBytesSum, humanize.Bytes(uint64(transmitBytesNumDeltaSum)))
-			row22ClientTransmitBytesSumRaw = append(row22ClientTransmitBytesSumRaw, fmt.Sprintf("%.2f", transmitBytesNumDeltaSum))
-			row25ClientMaxCPU = append(row25ClientMaxCPU, fmt.Sprintf("%.2f %%", maxAvgCPU))
-			row26ClientMaxMemory = append(row26ClientMaxMemory, humanize.Bytes(maxVMRSSNum))
+			row19ClientReceiveBytesSum = append(row19ClientReceiveBytesSum, humanize.Bytes(uint64(receiveBytesNumDeltaSum)))
+			row19ClientReceiveBytesSumRaw = append(row19ClientReceiveBytesSumRaw, fmt.Sprintf("%.2f", receiveBytesNumDeltaSum))
+			row20ClientTransmitBytesSum = append(row20ClientTransmitBytesSum, humanize.Bytes(uint64(transmitBytesNumDeltaSum)))
+			row20ClientTransmitBytesSumRaw = append(row20ClientTransmitBytesSumRaw, fmt.Sprintf("%.2f", transmitBytesNumDeltaSum))
+			row23ClientMaxCPU = append(row23ClientMaxCPU, fmt.Sprintf("%.2f %%", maxAvgCPU))
+			row24ClientMaxMemory = append(row24ClientMaxMemory, humanize.Bytes(maxVMRSSNum))
 		}
 		{
 			f, err := openToRead(testdata.ClientLatencyDistributionSummaryPath)
@@ -388,13 +388,13 @@ func do(configPath string) error {
 						return err
 					}
 					avg := int64(fv)
-					row06AverageThroughput = append(row06AverageThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(avg)))
+					row04AverageThroughput = append(row04AverageThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(avg)))
 				case "SLOWEST-LATENCY-MS":
-					row10SlowestLatency = append(row10SlowestLatency, fmt.Sprintf("%s ms", row[1]))
+					row08SlowestLatency = append(row08SlowestLatency, fmt.Sprintf("%s ms", row[1]))
 				case "FASTEST-LATENCY-MS":
-					row08FastestLatency = append(row08FastestLatency, fmt.Sprintf("%s ms", row[1]))
+					row06FastestLatency = append(row06FastestLatency, fmt.Sprintf("%s ms", row[1]))
 				case "AVERAGE-LATENCY-MS":
-					row09AverageLatency = append(row09AverageLatency, fmt.Sprintf("%s ms", row[1]))
+					row07AverageLatency = append(row07AverageLatency, fmt.Sprintf("%s ms", row[1]))
 				}
 
 				if strings.HasPrefix(row[0], "ERROR:") {
@@ -414,7 +414,7 @@ func do(configPath string) error {
 					}
 				}
 			}
-			row27ClientErrorCount = append(row27ClientErrorCount, humanize.Comma(totalErrCnt))
+			row25ClientErrorCount = append(row25ClientErrorCount, humanize.Comma(totalErrCnt))
 		}
 		{
 			fr, err := dataframe.NewFromCSV(nil, testdata.ClientLatencyThroughputTimeseriesPath)
@@ -444,8 +444,8 @@ func do(configPath string) error {
 					min = int64(fv)
 				}
 			}
-			row05MaxThroughput = append(row05MaxThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(max)))
-			row07MinThroughput = append(row07MinThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(min)))
+			row03MaxThroughput = append(row03MaxThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(max)))
+			row05MinThroughput = append(row05MinThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(min)))
 		}
 		{
 			fr, err := dataframe.NewFromCSV(nil, testdata.ServerDatasizeOnDiskSummaryPath)
@@ -466,7 +466,7 @@ func do(configPath string) error {
 				sum += fv
 			}
 			avg := uint64(sum / float64(col.Count()))
-			row32AverageDatasize = append(row32AverageDatasize, humanize.Bytes(avg))
+			row30AverageDatasize = append(row30AverageDatasize, humanize.Bytes(avg))
 		}
 		{
 			f, err := openToRead(testdata.ClientLatencyDistributionPercentilePath)
@@ -496,21 +496,21 @@ func do(configPath string) error {
 				}
 				switch row[0] {
 				case "p10":
-					row11p10 = append(row11p10, fmt.Sprintf("%s ms", row[1]))
+					row09p10 = append(row09p10, fmt.Sprintf("%s ms", row[1]))
 				case "p25":
-					row12p25 = append(row12p25, fmt.Sprintf("%s ms", row[1]))
+					row10p25 = append(row10p25, fmt.Sprintf("%s ms", row[1]))
 				case "p50":
-					row13p50 = append(row13p50, fmt.Sprintf("%s ms", row[1]))
+					row11p50 = append(row11p50, fmt.Sprintf("%s ms", row[1]))
 				case "p75":
-					row14p75 = append(row14p75, fmt.Sprintf("%s ms", row[1]))
+					row12p75 = append(row12p75, fmt.Sprintf("%s ms", row[1]))
 				case "p90":
-					row15p90 = append(row15p90, fmt.Sprintf("%s ms", row[1]))
+					row13p90 = append(row13p90, fmt.Sprintf("%s ms", row[1]))
 				case "p95":
-					row16p95 = append(row16p95, fmt.Sprintf("%s ms", row[1]))
+					row14p95 = append(row14p95, fmt.Sprintf("%s ms", row[1]))
 				case "p99":
-					row17p99 = append(row17p99, fmt.Sprintf("%s ms", row[1]))
+					row15p99 = append(row15p99, fmt.Sprintf("%s ms", row[1]))
 				case "p99.9":
-					row18p999 = append(row18p999, fmt.Sprintf("%s ms", row[1]))
+					row16p999 = append(row16p999, fmt.Sprintf("%s ms", row[1]))
 				}
 			}
 		}
@@ -521,42 +521,44 @@ func do(configPath string) error {
 		row00Header,
 		row01TotalSeconds,
 		row02TotalRequestNumber,
-		row05MaxThroughput,
-		row06AverageThroughput,
-		row07MinThroughput,
-		row08FastestLatency,
-		row09AverageLatency,
-		row10SlowestLatency,
-		row11p10,
-		row12p25,
-		row13p50,
-		row14p75,
-		row15p90,
-		row16p95,
-		row17p99,
-		row18p999,
+		row03MaxThroughput,
+		row04AverageThroughput,
+		row05MinThroughput,
 
-		row19ServerReceiveBytesSum,
-		row19ServerReceiveBytesSumRaw,
-		row20ServerTransmitBytesSum,
-		row20ServerTransmitBytesSumRaw,
-		row21ClientReceiveBytesSum,
-		row21ClientReceiveBytesSumRaw,
-		row22ClientTransmitBytesSum,
-		row22ClientTransmitBytesSumRaw,
+		row06FastestLatency,
+		row07AverageLatency,
+		row08SlowestLatency,
 
-		row23ServerMaxCPUUsage,
-		row24ServerMaxMemoryUsage,
-		row25ClientMaxCPU,
-		row26ClientMaxMemory,
+		row09p10,
+		row10p25,
+		row11p50,
+		row12p75,
+		row13p90,
+		row14p95,
+		row15p99,
+		row16p999,
 
-		row27ClientErrorCount,
+		row17ServerReceiveBytesSum,
+		row17ServerReceiveBytesSumRaw,
+		row18ServerTransmitBytesSum,
+		row18ServerTransmitBytesSumRaw,
+		row19ClientReceiveBytesSum,
+		row19ClientReceiveBytesSumRaw,
+		row20ClientTransmitBytesSum,
+		row20ClientTransmitBytesSumRaw,
 
-		row28ReadsCompletedDeltaSum,
-		row29SectorsReadDeltaSum,
-		row30WritesCompletedDeltaSum,
-		row31SectorsWrittenDeltaSum,
-		row32AverageDatasize,
+		row21ServerMaxCPUUsage,
+		row22ServerMaxMemoryUsage,
+		row23ClientMaxCPU,
+		row24ClientMaxMemory,
+
+		row25ClientErrorCount,
+
+		row26ReadsCompletedDeltaSum,
+		row27SectorsReadDeltaSum,
+		row28WritesCompletedDeltaSum,
+		row29SectorsWrittenDeltaSum,
+		row30AverageDatasize,
 	}
 	file, err := openToOverwrite(cfg.Analyze.AllAggregatedOutputPathCSV)
 	if err != nil {
@@ -577,38 +579,40 @@ func do(configPath string) error {
 		row00Header,
 		row01TotalSeconds,
 		row02TotalRequestNumber,
-		row05MaxThroughput,
-		row06AverageThroughput,
-		row07MinThroughput,
-		row08FastestLatency,
-		row09AverageLatency,
-		row10SlowestLatency,
-		row11p10,
-		row12p25,
-		row13p50,
-		row14p75,
-		row15p90,
-		row16p95,
-		row17p99,
-		row18p999,
+		row03MaxThroughput,
+		row04AverageThroughput,
+		row05MinThroughput,
 
-		row19ServerReceiveBytesSum,
-		row20ServerTransmitBytesSum,
-		row21ClientReceiveBytesSum,
-		row22ClientTransmitBytesSum,
+		row06FastestLatency,
+		row07AverageLatency,
+		row08SlowestLatency,
 
-		row23ServerMaxCPUUsage,
-		row24ServerMaxMemoryUsage,
-		row25ClientMaxCPU,
-		row26ClientMaxMemory,
+		row09p10,
+		row10p25,
+		row11p50,
+		row12p75,
+		row13p90,
+		row14p95,
+		row15p99,
+		row16p999,
 
-		row27ClientErrorCount,
+		row17ServerReceiveBytesSum,
+		row18ServerTransmitBytesSum,
+		row19ClientReceiveBytesSum,
+		row20ClientTransmitBytesSum,
 
-		row28ReadsCompletedDeltaSum,
-		row29SectorsReadDeltaSum,
-		row30WritesCompletedDeltaSum,
-		row31SectorsWrittenDeltaSum,
-		row32AverageDatasize,
+		row21ServerMaxCPUUsage,
+		row22ServerMaxMemoryUsage,
+		row23ClientMaxCPU,
+		row24ClientMaxMemory,
+
+		row25ClientErrorCount,
+
+		row26ReadsCompletedDeltaSum,
+		row27SectorsReadDeltaSum,
+		row28WritesCompletedDeltaSum,
+		row29SectorsWrittenDeltaSum,
+		row30AverageDatasize,
 	}
 	buf := new(bytes.Buffer)
 	tw := tablewriter.NewWriter(buf)
