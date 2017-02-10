@@ -197,7 +197,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 		time.Sleep(time.Second)
 		println()
 		plog.Info("step 3: saving responses...")
-		if err = cfg.SaveDatasizeOnDiskSummary(databaseID, idxToResp); err != nil {
+		if err = cfg.SaveDiskSpaceUsageSummary(databaseID, idxToResp); err != nil {
 			return err
 		}
 	}
@@ -234,7 +234,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 		if err = cfg.UploadToGoogle(databaseID, cfg.Control.ClientLatencyByKeyNumberPath); err != nil {
 			return err
 		}
-		if err = cfg.UploadToGoogle(databaseID, cfg.Control.ServerDatasizeOnDiskSummaryPath); err != nil {
+		if err = cfg.UploadToGoogle(databaseID, cfg.Control.ServerDiskSpaceUsageSummaryPath); err != nil {
 			return err
 		}
 	}

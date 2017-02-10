@@ -64,7 +64,7 @@ message Request {
 message Response {
   bool success = 1;
   
-  // DatasizeOnDisk is the data size of the database on disk.
+  // DiskSpaceUsageBytes is the data size of the database on disk in bytes.
   // It measures after database is requested to stop.
-  int64 datasizeOnDisk = 2;
+  int64 diskSpaceUsageBytes = 2;
 }

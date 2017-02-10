@@ -49,7 +49,7 @@ func TestConfig(t *testing.T) {
 			ClientLatencyDistributionPercentilePath: "/home/gyuho/client-latency-distribution-percentile.csv",
 			ClientLatencyDistributionSummaryPath:    "/home/gyuho/client-latency-distribution-summary.csv",
 			ClientLatencyByKeyNumberPath:            "/home/gyuho/client-latency-by-key-number.csv",
-			ServerDatasizeOnDiskSummaryPath:         "/home/gyuho/server-data-size-on-disk-summary.csv",
+			ServerDiskSpaceUsageSummaryPath:         "/home/gyuho/server-disk-space-usage-summary.csv",
 			GoogleCloudProjectName:                  "etcd-development",
 			GoogleCloudStorageKeyPath:               "config-dbtester-gcloud-key.json",
 			GoogleCloudStorageKey:                   "test-key",
@@ -171,7 +171,7 @@ func TestConfig(t *testing.T) {
 				ClientLatencyDistributionSummaryPath:    "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4-client-latency-distribution-summary.csv",
 				ClientLatencyByKeyNumberPath:            "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4-client-latency-by-key-number.csv",
 				ServerMemoryByKeyNumberPath:             "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4-server-memory-by-key-number.csv",
-				ServerDatasizeOnDiskSummaryPath:         "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4-server-data-size-on-disk-summary.csv",
+				ServerDiskSpaceUsageSummaryPath:         "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4-server-disk-space-usage-summary.csv",
 				ServerSystemMetricsInterpolatedPathList: []string{
 					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4-1-server-system-metrics-interpolated.csv",
 					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4-2-server-system-metrics-interpolated.csv",
@@ -192,7 +192,7 @@ func TestConfig(t *testing.T) {
 				ClientLatencyDistributionSummaryPath:    "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.4.9-java8-client-latency-distribution-summary.csv",
 				ClientLatencyByKeyNumberPath:            "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.4.9-java8-client-latency-by-key-number.csv",
 				ServerMemoryByKeyNumberPath:             "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.4.9-java8-server-memory-by-key-number.csv",
-				ServerDatasizeOnDiskSummaryPath:         "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.4.9-java8-server-data-size-on-disk-summary.csv",
+				ServerDiskSpaceUsageSummaryPath:         "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.4.9-java8-server-disk-space-usage-summary.csv",
 				ServerSystemMetricsInterpolatedPathList: []string{
 					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.4.9-java8-1-server-system-metrics-interpolated.csv",
 					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.4.9-java8-2-server-system-metrics-interpolated.csv",
@@ -213,7 +213,7 @@ func TestConfig(t *testing.T) {
 				ClientLatencyDistributionSummaryPath:    "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4-client-latency-distribution-summary.csv",
 				ClientLatencyByKeyNumberPath:            "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4-client-latency-by-key-number.csv",
 				ServerMemoryByKeyNumberPath:             "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4-server-memory-by-key-number.csv",
-				ServerDatasizeOnDiskSummaryPath:         "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4-server-data-size-on-disk-summary.csv",
+				ServerDiskSpaceUsageSummaryPath:         "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4-server-disk-space-usage-summary.csv",
 				ServerSystemMetricsInterpolatedPathList: []string{
 					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4-1-server-system-metrics-interpolated.csv",
 					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4-2-server-system-metrics-interpolated.csv",

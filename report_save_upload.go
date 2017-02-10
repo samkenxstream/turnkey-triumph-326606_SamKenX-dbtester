@@ -28,30 +28,30 @@ import (
 	"github.com/gyuho/dataframe"
 )
 
-// DatasizeOnDiskSummaryColumns defines summary columns.
-var DatasizeOnDiskSummaryColumns = []string{
+// DiskSpaceUsageSummaryColumns defines summary columns.
+var DiskSpaceUsageSummaryColumns = []string{
 	"INDEX",
 	"DATABASE-ENDPOINT",
-	"TOTAL-DATA-SIZE",
-	"TOTAL-DATA-SIZE-BYTES-NUM",
+	"DISK-SPACE-USAGE",
+	"DISK-SPACE-USAGE-BYTES-NUM",
 }
 
-// SaveDatasizeOnDiskSummary saves data size summary.
-func (cfg *Config) SaveDatasizeOnDiskSummary(databaseID string, idxToResponse map[int]dbtesterpb.Response) error {
+// SaveDiskSpaceUsageSummary saves data size summary.
+func (cfg *Config) SaveDiskSpaceUsageSummary(databaseID string, idxToResponse map[int]dbtesterpb.Response) error {
 	gcfg, ok := cfg.DatabaseIDToTestGroup[databaseID]
 	if !ok {
 		return fmt.Errorf("%q does not exist", databaseID)
 	}
 
-	c1 := dataframe.NewColumn(DatasizeOnDiskSummaryColumns[0])
-	c2 := dataframe.NewColumn(DatasizeOnDiskSummaryColumns[1])
-	c3 := dataframe.NewColumn(DatasizeOnDiskSummaryColumns[2])
-	c4 := dataframe.NewColumn(DatasizeOnDiskSummaryColumns[3])
+	c1 := dataframe.NewColumn(DiskSpaceUsageSummaryColumns[0])
+	c2 := dataframe.NewColumn(DiskSpaceUsageSummaryColumns[1])
+	c3 := dataframe.NewColumn(DiskSpaceUsageSummaryColumns[2])
+	c4 := dataframe.NewColumn(DiskSpaceUsageSummaryColumns[3])
 	for i := range gcfg.DatabaseEndpoints {
 		c1.PushBack(dataframe.NewStringValue(i))
 		c2.PushBack(dataframe.NewStringValue(gcfg.DatabaseEndpoints[i]))
-		c3.PushBack(dataframe.NewStringValue(humanize.Bytes(uint64(idxToResponse[i].DatasizeOnDisk))))
-		c4.PushBack(dataframe.NewStringValue(idxToResponse[i].DatasizeOnDisk))
+		c3.PushBack(dataframe.NewStringValue(humanize.Bytes(uint64(idxToResponse[i].DiskSpaceUsageBytes))))
+		c4.PushBack(dataframe.NewStringValue(idxToResponse[i].DiskSpaceUsageBytes))
 	}
 
 	fr := dataframe.New()
@@ -68,7 +68,7 @@ func (cfg *Config) SaveDatasizeOnDiskSummary(databaseID string, idxToResponse ma
 		return err
 	}
 
-	return fr.CSV(cfg.Control.ServerDatasizeOnDiskSummaryPath)
+	return fr.CSV(cfg.Control.ServerDiskSpaceUsageSummaryPath)
 }
 
 func (cfg *Config) saveDataLatencyDistributionSummary(st report.Stats) {

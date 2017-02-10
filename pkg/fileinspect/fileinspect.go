@@ -45,7 +45,7 @@ func Walk(targetDir string) (map[string]os.FileInfo, error) {
 	return rm, nil
 }
 
-// Size returns the size of target directory.
+// Size returns the size of target directory, in bytes.
 // Same as 'du -sh $DIR'.
 func Size(targetDir string) (int64, error) {
 	fm, err := Walk(targetDir)

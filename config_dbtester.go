@@ -52,7 +52,7 @@ type Control struct {
 	ClientLatencyDistributionPercentilePath string `yaml:"client_latency_distribution_percentile_path"`
 	ClientLatencyDistributionSummaryPath    string `yaml:"client_latency_distribution_summary_path"`
 	ClientLatencyByKeyNumberPath            string `yaml:"client_latency_by_key_number_path"`
-	ServerDatasizeOnDiskSummaryPath         string `yaml:"server_data_size_on_disk_summary_path"`
+	ServerDiskSpaceUsageSummaryPath         string `yaml:"server_disk_space_usage_summary_path"`
 
 	GoogleCloudProjectName         string `yaml:"google_cloud_project_name"`
 	GoogleCloudStorageKeyPath      string `yaml:"google_cloud_storage_key_path"`
@@ -129,7 +129,7 @@ type TestData struct {
 	ClientLatencyDistributionPercentilePath string   `yaml:"client_latency_distribution_percentile_path"`
 	ClientLatencyDistributionSummaryPath    string   `yaml:"client_latency_distribution_summary_path"`
 	ClientLatencyByKeyNumberPath            string   `yaml:"client_latency_by_key_number_path"`
-	ServerDatasizeOnDiskSummaryPath         string   `yaml:"server_data_size_on_disk_summary_path"`
+	ServerDiskSpaceUsageSummaryPath         string   `yaml:"server_disk_space_usage_summary_path"`
 	ServerMemoryByKeyNumberPath             string   `yaml:"server_memory_by_key_number_path"`
 	ServerSystemMetricsInterpolatedPathList []string `yaml:"server_system_metrics_interpolated_path_list"`
 	AllAggregatedOutputPath                 string   `yaml:"all_aggregated_output_path"`
@@ -183,7 +183,7 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		cfg.Control.ClientLatencyDistributionPercentilePath = filepath.Join(cfg.Control.PathPrefix, cfg.Control.ClientLatencyDistributionPercentilePath)
 		cfg.Control.ClientLatencyDistributionSummaryPath = filepath.Join(cfg.Control.PathPrefix, cfg.Control.ClientLatencyDistributionSummaryPath)
 		cfg.Control.ClientLatencyByKeyNumberPath = filepath.Join(cfg.Control.PathPrefix, cfg.Control.ClientLatencyByKeyNumberPath)
-		cfg.Control.ServerDatasizeOnDiskSummaryPath = filepath.Join(cfg.Control.PathPrefix, cfg.Control.ServerDatasizeOnDiskSummaryPath)
+		cfg.Control.ServerDiskSpaceUsageSummaryPath = filepath.Join(cfg.Control.PathPrefix, cfg.Control.ServerDiskSpaceUsageSummaryPath)
 	}
 
 	for databaseID, group := range cfg.DatabaseIDToTestGroup {
@@ -212,7 +212,7 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 			testdata.ClientLatencyDistributionPercentilePath = testdata.PathPrefix + "-" + testdata.ClientLatencyDistributionPercentilePath
 			testdata.ClientLatencyDistributionSummaryPath = testdata.PathPrefix + "-" + testdata.ClientLatencyDistributionSummaryPath
 			testdata.ClientLatencyByKeyNumberPath = testdata.PathPrefix + "-" + testdata.ClientLatencyByKeyNumberPath
-			testdata.ServerDatasizeOnDiskSummaryPath = testdata.PathPrefix + "-" + testdata.ServerDatasizeOnDiskSummaryPath
+			testdata.ServerDiskSpaceUsageSummaryPath = testdata.PathPrefix + "-" + testdata.ServerDiskSpaceUsageSummaryPath
 			testdata.ServerMemoryByKeyNumberPath = testdata.PathPrefix + "-" + testdata.ServerMemoryByKeyNumberPath
 			for i := range testdata.ServerSystemMetricsInterpolatedPathList {
 				testdata.ServerSystemMetricsInterpolatedPathList[i] = testdata.PathPrefix + "-" + testdata.ServerSystemMetricsInterpolatedPathList[i]

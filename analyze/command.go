@@ -269,7 +269,7 @@ func do(configPath string) error {
 	row23ClientMaxCPU := []string{"CLIENT-MAX-CPU-USAGE"}                               // CPU-NUM
 	row24ClientMaxMemory := []string{"CLIENT-MAX-MEMORY-USAGE"}                         // VMRSS-NUM
 	row25ClientErrorCount := []string{"CLIENT-ERROR-COUNT"}                             // ERROR:
-	row30AverageDatasize := []string{"SERVER-AVG-DATA-SIZE-ON-DISK"}                    // TOTAL-DATA-SIZE
+	row30AvgDiskSpaceUsage := []string{"SERVER-AVG-DISK-SPACE-USAGE"}                   // DISK-SPACE-USAGE
 
 	databaseIDToErrs := make(map[string][]string)
 	for i, databaseID := range cfg.AllDatabaseIDList {
@@ -448,11 +448,11 @@ func do(configPath string) error {
 			row05MinThroughput = append(row05MinThroughput, fmt.Sprintf("%s req/sec", humanize.Comma(min)))
 		}
 		{
-			fr, err := dataframe.NewFromCSV(nil, testdata.ServerDatasizeOnDiskSummaryPath)
+			fr, err := dataframe.NewFromCSV(nil, testdata.ServerDiskSpaceUsageSummaryPath)
 			if err != nil {
 				return err
 			}
-			col, err := fr.Column(dbtester.DatasizeOnDiskSummaryColumns[3]) // datasize in bytes
+			col, err := fr.Column(dbtester.DiskSpaceUsageSummaryColumns[3]) // datasize in bytes
 			if err != nil {
 				return err
 			}
@@ -466,7 +466,7 @@ func do(configPath string) error {
 				sum += fv
 			}
 			avg := uint64(sum / float64(col.Count()))
-			row30AverageDatasize = append(row30AverageDatasize, humanize.Bytes(avg))
+			row30AvgDiskSpaceUsage = append(row30AvgDiskSpaceUsage, humanize.Bytes(avg))
 		}
 		{
 			f, err := openToRead(testdata.ClientLatencyDistributionPercentilePath)
@@ -558,7 +558,7 @@ func do(configPath string) error {
 		row27SectorsReadDeltaSum,
 		row28WritesCompletedDeltaSum,
 		row29SectorsWrittenDeltaSum,
-		row30AverageDatasize,
+		row30AvgDiskSpaceUsage,
 	}
 	file, err := openToOverwrite(cfg.Analyze.AllAggregatedOutputPathCSV)
 	if err != nil {
@@ -612,7 +612,7 @@ func do(configPath string) error {
 		row27SectorsReadDeltaSum,
 		row28WritesCompletedDeltaSum,
 		row29SectorsWrittenDeltaSum,
-		row30AverageDatasize,
+		row30AvgDiskSpaceUsage,
 	}
 	buf := new(bytes.Buffer)
 	tw := tablewriter.NewWriter(buf)

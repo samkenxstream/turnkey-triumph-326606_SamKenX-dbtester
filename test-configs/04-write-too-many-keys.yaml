@@ -23,7 +23,7 @@ control:
   client_latency_distribution_percentile_path: client-latency-distribution-percentile.csv
   client_latency_distribution_summary_path: client-latency-distribution-summary.csv
   client_latency_by_key_number_path: client-latency-by-key-number.csv
-  server_data_size_on_disk_summary_path: server-data-size-on-disk-summary.csv
+  server_disk_space_usage_summary_path: server-disk-space-usage-summary.csv
 
   # (optional) to automatically upload all files in client machine
   google_cloud_project_name: etcd-development
@@ -174,7 +174,7 @@ datatbase_id_to_test_data:
     client_latency_distribution_percentile_path: client-latency-distribution-percentile.csv
     client_latency_distribution_summary_path: client-latency-distribution-summary.csv
     client_latency_by_key_number_path: client-latency-by-key-number.csv
-    server_data_size_on_disk_summary_path: server-data-size-on-disk-summary.csv
+    server_disk_space_usage_summary_path: server-disk-space-usage-summary.csv
     server_memory_by_key_number_path: server-memory-by-key-number.csv
     server_system_metrics_interpolated_path_list:
     - 1-server-system-metrics-interpolated.csv
@@ -191,7 +191,7 @@ datatbase_id_to_test_data:
     client_latency_distribution_percentile_path: client-latency-distribution-percentile.csv
     client_latency_distribution_summary_path: client-latency-distribution-summary.csv
     client_latency_by_key_number_path: client-latency-by-key-number.csv
-    server_data_size_on_disk_summary_path: server-data-size-on-disk-summary.csv
+    server_disk_space_usage_summary_path: server-disk-space-usage-summary.csv
     server_memory_by_key_number_path: server-memory-by-key-number.csv
     server_system_metrics_interpolated_path_list:
     - 1-server-system-metrics-interpolated.csv
@@ -208,7 +208,7 @@ datatbase_id_to_test_data:
     client_latency_distribution_percentile_path: client-latency-distribution-percentile.csv
     client_latency_distribution_summary_path: client-latency-distribution-summary.csv
     client_latency_by_key_number_path: client-latency-by-key-number.csv
-    server_data_size_on_disk_summary_path: server-data-size-on-disk-summary.csv
+    server_disk_space_usage_summary_path: server-disk-space-usage-summary.csv
     server_memory_by_key_number_path: server-memory-by-key-number.csv
     server_system_metrics_interpolated_path_list:
     - 1-server-system-metrics-interpolated.csv
