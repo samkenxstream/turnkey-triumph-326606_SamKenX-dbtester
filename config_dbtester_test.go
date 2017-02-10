@@ -31,13 +31,13 @@ func TestConfig(t *testing.T) {
 		TestDescription: `- Google Cloud Compute Engine
 - 4 machines of 16 vCPUs + 30 GB Memory + 150 GB SSD (1 for client)
 - Ubuntu 16.10
-- etcd v3.1 (Go 1.7.4)
+- etcd v3.1 (Go 1.7.5)
 - Zookeeper r3.4.9
   - Java 8
   - javac 1.8.0_121
   - Java(TM) SE Runtime Environment (build 1.8.0_121-b13)
   - Java HotSpot(TM) 64-Bit Server VM (build 25.121-b13, mixed mode)
-- Consul v0.7.3 (Go 1.7.4)
+- Consul v0.7.4 (Go 1.7.5)
 `,
 		Control: Control{
 			PathPrefix:                              "/home/gyuho",
@@ -60,8 +60,8 @@ func TestConfig(t *testing.T) {
 		DatabaseIDToTestGroup: map[string]TestGroup{
 			"etcdv3": {
 				DatabaseID:            "etcdv3",
-				DatabaseTag:           "etcd-v3.1-go1.7.4",
-				DatabaseDescription:   "etcd v3.1 (Go 1.7.4)",
+				DatabaseTag:           "etcd-v3.1-go1.7.5",
+				DatabaseDescription:   "etcd v3.1 (Go 1.7.5)",
 				PeerIPs:               []string{"10.240.0.20", "10.240.0.21", "10.240.0.22"},
 				PeerIPsString:         "10.240.0.20___10.240.0.21___10.240.0.22",
 				DatabasePortToConnect: 2379,
@@ -129,8 +129,8 @@ func TestConfig(t *testing.T) {
 			},
 			"consul": {
 				DatabaseID:            "consul",
-				DatabaseTag:           "consul-v0.7.3-go1.7.4",
-				DatabaseDescription:   "Consul v0.7.3 (Go 1.7.4)",
+				DatabaseTag:           "consul-v0.7.4-go1.7.5",
+				DatabaseDescription:   "Consul v0.7.4 (Go 1.7.5)",
 				PeerIPs:               []string{"10.240.0.30", "10.240.0.31", "10.240.0.33"},
 				PeerIPsString:         "10.240.0.30___10.240.0.31___10.240.0.33",
 				DatabasePortToConnect: 8500,
@@ -160,24 +160,24 @@ func TestConfig(t *testing.T) {
 		DatabaseIDToTestData: map[string]TestData{
 			"etcdv3": {
 				DatabaseID:          "etcdv3",
-				DatabaseTag:         "etcd-v3.1-go1.7.4",
-				DatabaseDescription: "etcd v3.1 (Go 1.7.4)",
-				PathPrefix:          "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4",
+				DatabaseTag:         "etcd-v3.1-go1.7.5",
+				DatabaseDescription: "etcd v3.1 (Go 1.7.5)",
+				PathPrefix:          "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5",
 
-				ClientSystemMetricsInterpolatedPath:     "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4-client-system-metrics-interpolated.csv",
-				ClientLatencyThroughputTimeseriesPath:   "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4-client-latency-throughput-timeseries.csv",
-				ClientLatencyDistributionAllPath:        "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4-client-latency-distribution-all.csv",
-				ClientLatencyDistributionPercentilePath: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4-client-latency-distribution-percentile.csv",
-				ClientLatencyDistributionSummaryPath:    "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4-client-latency-distribution-summary.csv",
-				ClientLatencyByKeyNumberPath:            "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4-client-latency-by-key-number.csv",
-				ServerMemoryByKeyNumberPath:             "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4-server-memory-by-key-number.csv",
-				ServerDiskSpaceUsageSummaryPath:         "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4-server-disk-space-usage-summary.csv",
+				ClientSystemMetricsInterpolatedPath:     "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5-client-system-metrics-interpolated.csv",
+				ClientLatencyThroughputTimeseriesPath:   "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5-client-latency-throughput-timeseries.csv",
+				ClientLatencyDistributionAllPath:        "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5-client-latency-distribution-all.csv",
+				ClientLatencyDistributionPercentilePath: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5-client-latency-distribution-percentile.csv",
+				ClientLatencyDistributionSummaryPath:    "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5-client-latency-distribution-summary.csv",
+				ClientLatencyByKeyNumberPath:            "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5-client-latency-by-key-number.csv",
+				ServerMemoryByKeyNumberPath:             "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5-server-memory-by-key-number.csv",
+				ServerDiskSpaceUsageSummaryPath:         "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5-server-disk-space-usage-summary.csv",
 				ServerSystemMetricsInterpolatedPathList: []string{
-					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4-1-server-system-metrics-interpolated.csv",
-					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4-2-server-system-metrics-interpolated.csv",
-					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4-3-server-system-metrics-interpolated.csv",
+					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5-1-server-system-metrics-interpolated.csv",
+					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5-2-server-system-metrics-interpolated.csv",
+					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5-3-server-system-metrics-interpolated.csv",
 				},
-				AllAggregatedOutputPath: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.4-all-aggregated.csv",
+				AllAggregatedOutputPath: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5-all-aggregated.csv",
 			},
 			"zookeeper": {
 				DatabaseID:          "zookeeper",
@@ -202,24 +202,24 @@ func TestConfig(t *testing.T) {
 			},
 			"consul": {
 				DatabaseID:          "consul",
-				DatabaseTag:         "consul-v0.7.3-go1.7.4",
-				DatabaseDescription: "Consul v0.7.3 (Go 1.7.4)",
-				PathPrefix:          "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4",
+				DatabaseTag:         "consul-v0.7.4-go1.7.5",
+				DatabaseDescription: "Consul v0.7.4 (Go 1.7.5)",
+				PathPrefix:          "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5",
 
-				ClientSystemMetricsInterpolatedPath:     "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4-client-system-metrics-interpolated.csv",
-				ClientLatencyThroughputTimeseriesPath:   "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4-client-latency-throughput-timeseries.csv",
-				ClientLatencyDistributionAllPath:        "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4-client-latency-distribution-all.csv",
-				ClientLatencyDistributionPercentilePath: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4-client-latency-distribution-percentile.csv",
-				ClientLatencyDistributionSummaryPath:    "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4-client-latency-distribution-summary.csv",
-				ClientLatencyByKeyNumberPath:            "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4-client-latency-by-key-number.csv",
-				ServerMemoryByKeyNumberPath:             "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4-server-memory-by-key-number.csv",
-				ServerDiskSpaceUsageSummaryPath:         "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4-server-disk-space-usage-summary.csv",
+				ClientSystemMetricsInterpolatedPath:     "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5-client-system-metrics-interpolated.csv",
+				ClientLatencyThroughputTimeseriesPath:   "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5-client-latency-throughput-timeseries.csv",
+				ClientLatencyDistributionAllPath:        "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5-client-latency-distribution-all.csv",
+				ClientLatencyDistributionPercentilePath: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5-client-latency-distribution-percentile.csv",
+				ClientLatencyDistributionSummaryPath:    "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5-client-latency-distribution-summary.csv",
+				ClientLatencyByKeyNumberPath:            "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5-client-latency-by-key-number.csv",
+				ServerMemoryByKeyNumberPath:             "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5-server-memory-by-key-number.csv",
+				ServerDiskSpaceUsageSummaryPath:         "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5-server-disk-space-usage-summary.csv",
 				ServerSystemMetricsInterpolatedPathList: []string{
-					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4-1-server-system-metrics-interpolated.csv",
-					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4-2-server-system-metrics-interpolated.csv",
-					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4-3-server-system-metrics-interpolated.csv",
+					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5-1-server-system-metrics-interpolated.csv",
+					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5-2-server-system-metrics-interpolated.csv",
+					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5-3-server-system-metrics-interpolated.csv",
 				},
-				AllAggregatedOutputPath: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.3-go1.7.4-all-aggregated.csv",
+				AllAggregatedOutputPath: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5-all-aggregated.csv",
 			},
 		},
 		Analyze: Analyze{
@@ -448,7 +448,7 @@ func TestConfig(t *testing.T) {
 		Operation:           dbtesterpb.Request_Start,
 		TriggerLogUpload:    true,
 		DatabaseID:          dbtesterpb.Request_etcdv3,
-		DatabaseTag:         "etcd-v3.1-go1.7.4",
+		DatabaseTag:         "etcd-v3.1-go1.7.5",
 		PeerIPsString:       "10.240.0.20___10.240.0.21___10.240.0.22",
 		IpIndex:             0,
 		CurrentClientNumber: 0,
