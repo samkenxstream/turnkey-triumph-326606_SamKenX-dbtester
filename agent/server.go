@@ -128,7 +128,7 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 		t.req.CurrentClientNumber = req.CurrentClientNumber
 	}
 
-	var totalDatasize int64
+	var diskSpaceUsageBytes int64
 	switch req.Operation {
 	case dbtesterpb.Request_Start:
 		switch t.req.DatabaseID {
@@ -251,7 +251,7 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 			plog.Warningf("measureDatabasSize error %v", err)
 			return nil, err
 		}
-		totalDatasize = dbs
+		diskSpaceUsageBytes = dbs
 
 	case dbtesterpb.Request_Heartbeat:
 		plog.Infof("overwriting clients num %d to %q", t.req.CurrentClientNumber, t.clientNumPath)
@@ -264,7 +264,7 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 	}
 
 	plog.Info("Transfer success!")
-	return &dbtesterpb.Response{Success: true, DatasizeOnDisk: totalDatasize}, nil
+	return &dbtesterpb.Response{Success: true, DiskSpaceUsageBytes: diskSpaceUsageBytes}, nil
 }
 
 func measureDatabasSize(flg flags, rdb dbtesterpb.Request_Database) (int64, error) {
