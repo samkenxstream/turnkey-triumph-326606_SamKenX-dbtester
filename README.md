@@ -69,7 +69,7 @@ All logs and results can be found at https://github.com/coreos/dbtester/tree/mas
 |    SERVER-AVG-SECTORS-READS-DELTA-SUM |                 0 |                      0 |                     0 |
 | SERVER-AVG-WRITES-COMPLETED-DELTA-SUM |         1,217,294 |                953,784 |             2,381,092 |
 |  SERVER-AVG-SECTORS-WRITTEN-DELTA-SUM |           714,152 |              9,304,072 |            10,711,132 |
-|          SERVER-AVG-DATA-SIZE-ON-DISK |            3.0 GB |                 7.9 GB |                3.0 GB |
+|           SERVER-AVG-DISK-SPACE-USAGE |            3.0 GB |                 7.9 GB |                3.0 GB |
 +---------------------------------------+-------------------+------------------------+-----------------------+
 
 
@@ -192,7 +192,7 @@ zookeeper errors:
 |    SERVER-AVG-SECTORS-READS-DELTA-SUM |                 0 |                      0 |                     0 |
 | SERVER-AVG-WRITES-COMPLETED-DELTA-SUM |           112,190 |                109,945 |               681,774 |
 |  SERVER-AVG-SECTORS-WRITTEN-DELTA-SUM |           492,444 |             10,249,020 |            32,988,480 |
-|          SERVER-AVG-DATA-SIZE-ON-DISK |            2.8 GB |                 7.3 GB |                2.9 GB |
+|           SERVER-AVG-DISK-SPACE-USAGE |            2.8 GB |                 7.3 GB |                2.9 GB |
 +---------------------------------------+-------------------+------------------------+-----------------------+
 
 
@@ -316,7 +316,7 @@ zookeeper errors:
 |    SERVER-AVG-SECTORS-READS-DELTA-SUM |                 0 |                      0 |                     0 |
 | SERVER-AVG-WRITES-COMPLETED-DELTA-SUM |           100,985 |                 91,154 |               289,238 |
 |  SERVER-AVG-SECTORS-WRITTEN-DELTA-SUM |           552,592 |              9,923,988 |             9,537,168 |
-|          SERVER-AVG-DATA-SIZE-ON-DISK |            2.7 GB |                 6.7 GB |                3.1 GB |
+|           SERVER-AVG-DISK-SPACE-USAGE |            2.7 GB |                 6.7 GB |                3.1 GB |
 +---------------------------------------+-------------------+------------------------+-----------------------+
 
 
@@ -440,7 +440,7 @@ zookeeper errors:
 |    SERVER-AVG-SECTORS-READS-DELTA-SUM |                 0 |                      0 |                     0 |
 | SERVER-AVG-WRITES-COMPLETED-DELTA-SUM |           333,196 |                360,314 |             3,689,221 |
 |  SERVER-AVG-SECTORS-WRITTEN-DELTA-SUM |         1,604,172 |             67,295,610 |           794,919,246 |
-|          SERVER-AVG-DATA-SIZE-ON-DISK |            6.5 GB |                  27 GB |                8.2 GB |
+|           SERVER-AVG-DISK-SPACE-USAGE |            6.5 GB |                  27 GB |                8.2 GB |
 +---------------------------------------+-------------------+------------------------+-----------------------+
 
 
