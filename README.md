@@ -17,7 +17,7 @@ Distributed database benchmark tester: etcd, Zookeeper, Consul, zetcd, cetcd
 
 For etcd, we recommend [etcd benchmark tool](https://github.com/coreos/etcd/tree/master/tools/benchmark).
 
-All logs and results can be found at https://github.com/coreos/dbtester/tree/master/test-results
+All logs and results can be found at https://github.com/coreos/dbtester/tree/master/test-results or https://console.cloud.google.com/storage/browser/dbtester-results/?authuser=0&project=etcd-development.
 
 
 
