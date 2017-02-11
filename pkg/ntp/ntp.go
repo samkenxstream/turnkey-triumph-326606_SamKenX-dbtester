@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package ntp syncs system time with NTP server.
 package ntp
 
 import (
