@@ -24,7 +24,7 @@ All logs and results can be found at https://github.com/coreos/dbtester/tree/mas
 <br><br><hr>
 ##### Noticeable Warnings: Zookeeper
 
-Snapshot, when writing 1-million entries (256-byte key, 1KB value value), with 300 concurrent clients
+Snapshot, when writing 1-million entries (256-byte key, 1KB value value), with 500 concurrent clients
 
 ```
 # snapshot warnings
@@ -42,7 +42,7 @@ grep -r -i fsync-ing\ the zookeeper-r3.4.9-java8-* | less
 2017-02-10 18:55:52,292 [myid:3] - WARN  [SyncThread:3:FileTxnLog@338] - fsync-ing the write ahead log in SyncThread:3 took 1102ms which will adversely effect operation latency. See the ZooKeeper troubleshooting guide
 ```
 
-When writing more than 2-million entries (256-byte key, 1KB value value) with 300 concurrent clients
+When writing more than 2-million entries (256-byte key, 1KB value value) with 500 concurrent clients
 
 ```
 # leader election
