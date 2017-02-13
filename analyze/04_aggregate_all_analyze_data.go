@@ -133,6 +133,8 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int6
 		avgWritesCompletedDeltaCol  = dataframe.NewColumn("AVG-WRITES-COMPLETED-DELTA")      // from WRITES-COMPLETED-DELTA
 		avgSectorsWrittenCol        = dataframe.NewColumn("AVG-SECTORS-WRITTEN")             // from SECTORS-WRITTEN
 		avgSectorsWrittenDeltaCol   = dataframe.NewColumn("AVG-SECTORS-WRITTEN-DELTA")       // from SECTORS-WRITTEN-DELTA
+		avgReadBytesNumDeltaCol     = dataframe.NewColumn("AVG-READ-BYTES-NUM-DELTA")        // from READ-BYTES-DELTA
+		avgWriteBytesNumDeltaCol    = dataframe.NewColumn("AVG-WRITE-BYTES-NUM-DELTA")       // from WRITE-BYTES-DELTA
 		avgReceiveBytesNumCol       = dataframe.NewColumn("AVG-RECEIVE-BYTES-NUM")           // from RECEIVE-BYTES-NUM
 		avgReceiveBytesNumDeltaCol  = dataframe.NewColumn("AVG-RECEIVE-BYTES-NUM-DELTA")     // from RECEIVE-BYTES-NUM-DELTA
 		avgTransmitBytesNumCol      = dataframe.NewColumn("AVG-TRANSMIT-BYTES-NUM")          // from TRANSMIT-BYTES-NUM
@@ -160,6 +162,8 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int6
 			writesCompletedDeltaSum  float64
 			sectorsWrittenSum        float64
 			sectorsWrittenDeltaSum   float64
+			readBytesDeltaSum        float64
+			writeBytesDeltaSum       float64
 			receiveBytesNumSum       float64
 			receiveBytesNumDeltaSum  float64
 			transmitBytesNumSum      float64
@@ -230,6 +234,10 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int6
 				sectorsWrittenDeltaSum += vv
 			case strings.HasPrefix(hd, "SECTORS-WRITTEN-"):
 				sectorsWrittenSum += vv
+			case strings.HasPrefix(hd, "READ-BYTES-DELTA-"):
+				readBytesDeltaSum += vv
+			case strings.HasPrefix(hd, "WRITE-BYTES-DELTA-"):
+				writeBytesDeltaSum += vv
 			case strings.HasPrefix(hd, "RECEIVE-BYTES-NUM-DELTA-"):
 				receiveBytesNumDeltaSum += vv
 			case strings.HasPrefix(hd, "RECEIVE-BYTES-NUM-"):
@@ -255,6 +263,8 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int6
 		avgWritesCompletedDeltaCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", writesCompletedDeltaSum/sampleSize)))
 		avgSectorsWrittenCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", sectorsWrittenSum/sampleSize)))
 		avgSectorsWrittenDeltaCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", sectorsWrittenDeltaSum/sampleSize)))
+		avgReadBytesNumDeltaCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", readBytesDeltaSum/sampleSize)))
+		avgWriteBytesNumDeltaCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", writeBytesDeltaSum/sampleSize)))
 		avgReceiveBytesNumCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", receiveBytesNumSum/sampleSize)))
 		avgReceiveBytesNumDeltaCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", receiveBytesNumDeltaSum/sampleSize)))
 		avgTransmitBytesNumCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", transmitBytesNumSum/sampleSize)))
@@ -305,6 +315,12 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int6
 		return err
 	}
 	if err = data.aggregated.AddColumn(avgSectorsWrittenDeltaCol); err != nil {
+		return err
+	}
+	if err = data.aggregated.AddColumn(avgReadBytesNumDeltaCol); err != nil {
+		return err
+	}
+	if err = data.aggregated.AddColumn(avgWriteBytesNumDeltaCol); err != nil {
 		return err
 	}
 	if err = data.aggregated.AddColumn(avgReceiveBytesNumCol); err != nil {
@@ -366,6 +382,8 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int6
 		"AVG-READS-COMPLETED-DELTA",
 		"AVG-SECTORS-READ",
 		"AVG-SECTORS-READ-DELTA",
+		"AVG-READ-BYTES-NUM-DELTA",
+		"AVG-WRITE-BYTES-NUM-DELTA",
 		"AVG-RECEIVE-BYTES-NUM",
 		"AVG-RECEIVE-BYTES-NUM-DELTA",
 		"AVG-TRANSMIT-BYTES-NUM",
