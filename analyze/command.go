@@ -88,7 +88,7 @@ func do(configPath string) error {
 		if err = ad.importBenchMetrics(testdata.ClientLatencyThroughputTimeseriesPath); err != nil {
 			return err
 		}
-		if err = ad.aggregateAll(testdata.ServerMemoryByKeyNumberPath, testgroup.RequestNumber); err != nil {
+		if err = ad.aggregateAll(testdata.ServerMemoryByKeyNumberPath, testdata.ServerReadBytesDeltaByKeyNumberPath, testdata.ServerWriteBytesDeltaByKeyNumberPath, testgroup.RequestNumber); err != nil {
 			return err
 		}
 		if err = ad.save(); err != nil {
@@ -239,7 +239,6 @@ func do(configPath string) error {
 		row28WritesCompletedDeltaSum = append(row28WritesCompletedDeltaSum, humanize.Comma(int64(writesCompletedDeltaSum)))
 		row29SectorsWrittenDeltaSum = append(row29SectorsWrittenDeltaSum, humanize.Comma(int64(sectorsWrittenDeltaSum)))
 
-		// TODO: handle overflowed memory value?
 		sort.Float64s(maxAvgVMRSSMBs)
 		mv := maxAvgVMRSSMBs[len(maxAvgVMRSSMBs)-1]
 		mb := uint64(mv * 1000000)
