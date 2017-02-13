@@ -1,7 +1,7 @@
 test_title: Write 3-million keys, 256-byte key, 1KB value, Best Throughput (etcd 1,000, Zookeeper 500, Consul 500 clients)
 test_description: |
   - Google Cloud Compute Engine
-  - 4 machines of 16 vCPUs + 30 GB Memory + 150 GB SSD (1 for client)
+  - 4 machines of 16 vCPUs + 30 GB Memory + 300 GB SSD (1 for client)
   - Ubuntu 16.10
   - etcd v3.1 (Go 1.7.5)
   - Zookeeper r3.4.9
