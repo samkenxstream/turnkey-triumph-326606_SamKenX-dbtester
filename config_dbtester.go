@@ -131,6 +131,8 @@ type TestData struct {
 	ClientLatencyByKeyNumberPath            string   `yaml:"client_latency_by_key_number_path"`
 	ServerDiskSpaceUsageSummaryPath         string   `yaml:"server_disk_space_usage_summary_path"`
 	ServerMemoryByKeyNumberPath             string   `yaml:"server_memory_by_key_number_path"`
+	ServerReadBytesDeltaByKeyNumberPath     string   `yaml:"server_read_bytes_delta_by_key_number_path"`
+	ServerWriteBytesDeltaByKeyNumberPath    string   `yaml:"server_write_bytes_delta_by_key_number_path"`
 	ServerSystemMetricsInterpolatedPathList []string `yaml:"server_system_metrics_interpolated_path_list"`
 	AllAggregatedOutputPath                 string   `yaml:"all_aggregated_output_path"`
 }
@@ -214,6 +216,8 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 			testdata.ClientLatencyByKeyNumberPath = testdata.PathPrefix + "-" + testdata.ClientLatencyByKeyNumberPath
 			testdata.ServerDiskSpaceUsageSummaryPath = testdata.PathPrefix + "-" + testdata.ServerDiskSpaceUsageSummaryPath
 			testdata.ServerMemoryByKeyNumberPath = testdata.PathPrefix + "-" + testdata.ServerMemoryByKeyNumberPath
+			testdata.ServerReadBytesDeltaByKeyNumberPath = testdata.PathPrefix + "-" + testdata.ServerReadBytesDeltaByKeyNumberPath
+			testdata.ServerWriteBytesDeltaByKeyNumberPath = testdata.PathPrefix + "-" + testdata.ServerWriteBytesDeltaByKeyNumberPath
 			for i := range testdata.ServerSystemMetricsInterpolatedPathList {
 				testdata.ServerSystemMetricsInterpolatedPathList[i] = testdata.PathPrefix + "-" + testdata.ServerSystemMetricsInterpolatedPathList[i]
 			}
