@@ -268,6 +268,14 @@ plot_list:
   x_axis: Second
   y_axis: Sectors Written (Delta per Second)
 
+- column: AVG-READ-BYTES-DELTA
+  x_axis: Second
+  y_axis: Read Bytes (Delta per Second)
+
+- column: AVG-WRITE-BYTES-DELTA
+  x_axis: Second
+  y_axis: Write Bytes (Delta per Second)
+
 - column: AVG-RECEIVE-BYTES-NUM-DELTA
   x_axis: Second
   y_axis: Network Receive(bytes) (Delta per Second)
@@ -334,6 +342,14 @@ readme:
 
   - title: 2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-SECTORS-WRITTEN-DELTA
     path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-SECTORS-WRITTEN-DELTA.svg
+    type: remote
+
+  - title: 2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-READ-BYTES-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-READ-BYTES-DELTA.svg
+    type: remote
+
+  - title: 2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-WRITE-BYTES-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-WRITE-BYTES-DELTA.svg
     type: remote
 
   - title: 2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-RECEIVE-BYTES-NUM-DELTA
