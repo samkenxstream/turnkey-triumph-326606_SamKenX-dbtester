@@ -335,6 +335,26 @@ func TestConfig(t *testing.T) {
 				},
 			},
 			{
+				Column:        "AVG-READ-BYTES-DELTA",
+				XAxis:         "Second",
+				YAxis:         "Read Bytes (Delta per Second)",
+				OutputPathCSV: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-READ-BYTES-DELTA.csv",
+				OutputPathList: []string{
+					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-READ-BYTES-DELTA.svg",
+					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-READ-BYTES-DELTA.png",
+				},
+			},
+			{
+				Column:        "AVG-WRITE-BYTES-DELTA",
+				XAxis:         "Second",
+				YAxis:         "Write Bytes (Delta per Second)",
+				OutputPathCSV: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-WRITE-BYTES-DELTA.csv",
+				OutputPathList: []string{
+					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-WRITE-BYTES-DELTA.svg",
+					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-WRITE-BYTES-DELTA.png",
+				},
+			},
+			{
 				Column:        "AVG-RECEIVE-BYTES-NUM-DELTA",
 				XAxis:         "Second",
 				YAxis:         "Network Receive(bytes) (Delta per Second)",
@@ -427,6 +447,16 @@ func TestConfig(t *testing.T) {
 				{
 					Title: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-SECTORS-WRITTEN-DELTA",
 					Path:  "https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-SECTORS-WRITTEN-DELTA.svg",
+					Type:  "remote",
+				},
+				{
+					Title: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-READ-BYTES-DELTA",
+					Path:  "https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-READ-BYTES-DELTA.svg",
+					Type:  "remote",
+				},
+				{
+					Title: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-WRITE-BYTES-DELTA",
+					Path:  "https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-WRITE-BYTES-DELTA.svg",
 					Type:  "remote",
 				},
 				{
