@@ -285,6 +285,16 @@ func TestConfig(t *testing.T) {
 				},
 			},
 			{
+				Column:        "MAX-CPU",
+				XAxis:         "Second",
+				YAxis:         "CPU(%)",
+				OutputPathCSV: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/MAX-CPU.csv",
+				OutputPathList: []string{
+					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/MAX-CPU.svg",
+					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/MAX-CPU.png",
+				},
+			},
+			{
 				Column:        "AVG-VMRSS-MB",
 				XAxis:         "Second",
 				YAxis:         "Memory(MB)",
@@ -412,6 +422,11 @@ func TestConfig(t *testing.T) {
 				{
 					Title: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-CPU",
 					Path:  "https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-CPU.svg",
+					Type:  "remote",
+				},
+				{
+					Title: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/MAX-CPU",
+					Path:  "https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/MAX-CPU.svg",
 					Type:  "remote",
 				},
 				{
