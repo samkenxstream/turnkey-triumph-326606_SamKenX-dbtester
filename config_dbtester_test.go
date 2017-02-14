@@ -29,7 +29,7 @@ func TestConfig(t *testing.T) {
 	expected := &Config{
 		TestTitle: "Write 1M keys, 256-byte key, 1KB value value, clients 1 to 1,000",
 		TestDescription: `- Google Cloud Compute Engine
-- 4 machines of 16 vCPUs + 30 GB Memory + 150 GB SSD (1 for client)
+- 4 machines of 16 vCPUs + 30 GB Memory + 300 GB SSD (1 for client)
 - Ubuntu 16.10
 - etcd v3.1 (Go 1.7.5)
 - Zookeeper r3.4.9
@@ -171,6 +171,8 @@ func TestConfig(t *testing.T) {
 				ClientLatencyDistributionSummaryPath:    "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5-client-latency-distribution-summary.csv",
 				ClientLatencyByKeyNumberPath:            "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5-client-latency-by-key-number.csv",
 				ServerMemoryByKeyNumberPath:             "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5-server-memory-by-key-number.csv",
+				ServerReadBytesDeltaByKeyNumberPath:     "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5-server-read-bytes-delta-by-key-number.csv",
+				ServerWriteBytesDeltaByKeyNumberPath:    "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5-server-write-bytes-delta-by-key-number.csv",
 				ServerDiskSpaceUsageSummaryPath:         "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5-server-disk-space-usage-summary.csv",
 				ServerSystemMetricsInterpolatedPathList: []string{
 					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-v3.1-go1.7.5-1-server-system-metrics-interpolated.csv",
@@ -192,6 +194,8 @@ func TestConfig(t *testing.T) {
 				ClientLatencyDistributionSummaryPath:    "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.4.9-java8-client-latency-distribution-summary.csv",
 				ClientLatencyByKeyNumberPath:            "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.4.9-java8-client-latency-by-key-number.csv",
 				ServerMemoryByKeyNumberPath:             "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.4.9-java8-server-memory-by-key-number.csv",
+				ServerReadBytesDeltaByKeyNumberPath:     "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.4.9-java8-server-read-bytes-delta-by-key-number.csv",
+				ServerWriteBytesDeltaByKeyNumberPath:    "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.4.9-java8-server-write-bytes-delta-by-key-number.csv",
 				ServerDiskSpaceUsageSummaryPath:         "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.4.9-java8-server-disk-space-usage-summary.csv",
 				ServerSystemMetricsInterpolatedPathList: []string{
 					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.4.9-java8-1-server-system-metrics-interpolated.csv",
@@ -213,6 +217,8 @@ func TestConfig(t *testing.T) {
 				ClientLatencyDistributionSummaryPath:    "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5-client-latency-distribution-summary.csv",
 				ClientLatencyByKeyNumberPath:            "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5-client-latency-by-key-number.csv",
 				ServerMemoryByKeyNumberPath:             "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5-server-memory-by-key-number.csv",
+				ServerReadBytesDeltaByKeyNumberPath:     "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5-server-read-bytes-delta-by-key-number.csv",
+				ServerWriteBytesDeltaByKeyNumberPath:    "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5-server-write-bytes-delta-by-key-number.csv",
 				ServerDiskSpaceUsageSummaryPath:         "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5-server-disk-space-usage-summary.csv",
 				ServerSystemMetricsInterpolatedPathList: []string{
 					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.4-go1.7.5-1-server-system-metrics-interpolated.csv",
@@ -329,6 +335,26 @@ func TestConfig(t *testing.T) {
 				},
 			},
 			{
+				Column:        "AVG-READ-BYTES-DELTA",
+				XAxis:         "Second",
+				YAxis:         "Read Bytes (Delta per Second)",
+				OutputPathCSV: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-READ-BYTES-DELTA.csv",
+				OutputPathList: []string{
+					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-READ-BYTES-DELTA.svg",
+					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-READ-BYTES-DELTA.png",
+				},
+			},
+			{
+				Column:        "AVG-WRITE-BYTES-DELTA",
+				XAxis:         "Second",
+				YAxis:         "Write Bytes (Delta per Second)",
+				OutputPathCSV: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-WRITE-BYTES-DELTA.csv",
+				OutputPathList: []string{
+					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-WRITE-BYTES-DELTA.svg",
+					"2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-WRITE-BYTES-DELTA.png",
+				},
+			},
+			{
 				Column:        "AVG-RECEIVE-BYTES-NUM-DELTA",
 				XAxis:         "Second",
 				YAxis:         "Network Receive(bytes) (Delta per Second)",
@@ -421,6 +447,16 @@ func TestConfig(t *testing.T) {
 				{
 					Title: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-SECTORS-WRITTEN-DELTA",
 					Path:  "https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-SECTORS-WRITTEN-DELTA.svg",
+					Type:  "remote",
+				},
+				{
+					Title: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-READ-BYTES-DELTA",
+					Path:  "https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-READ-BYTES-DELTA.svg",
+					Type:  "remote",
+				},
+				{
+					Title: "2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-WRITE-BYTES-DELTA",
+					Path:  "https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-WRITE-BYTES-DELTA.svg",
 					Type:  "remote",
 				},
 				{

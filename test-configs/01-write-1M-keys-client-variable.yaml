@@ -1,7 +1,7 @@
 test_title: Write 1M keys, 256-byte key, 1KB value value, clients 1 to 1,000
 test_description: |
   - Google Cloud Compute Engine
-  - 4 machines of 16 vCPUs + 30 GB Memory + 150 GB SSD (1 for client)
+  - 4 machines of 16 vCPUs + 30 GB Memory + 300 GB SSD (1 for client)
   - Ubuntu 16.10
   - etcd v3.1 (Go 1.7.5)
   - Zookeeper r3.4.9
@@ -176,6 +176,8 @@ datatbase_id_to_test_data:
     client_latency_by_key_number_path: client-latency-by-key-number.csv
     server_disk_space_usage_summary_path: server-disk-space-usage-summary.csv
     server_memory_by_key_number_path: server-memory-by-key-number.csv
+    server_read_bytes_delta_by_key_number_path: server-read-bytes-delta-by-key-number.csv
+    server_write_bytes_delta_by_key_number_path: server-write-bytes-delta-by-key-number.csv
     server_system_metrics_interpolated_path_list:
     - 1-server-system-metrics-interpolated.csv
     - 2-server-system-metrics-interpolated.csv
@@ -193,6 +195,8 @@ datatbase_id_to_test_data:
     client_latency_by_key_number_path: client-latency-by-key-number.csv
     server_disk_space_usage_summary_path: server-disk-space-usage-summary.csv
     server_memory_by_key_number_path: server-memory-by-key-number.csv
+    server_read_bytes_delta_by_key_number_path: server-read-bytes-delta-by-key-number.csv
+    server_write_bytes_delta_by_key_number_path: server-write-bytes-delta-by-key-number.csv
     server_system_metrics_interpolated_path_list:
     - 1-server-system-metrics-interpolated.csv
     - 2-server-system-metrics-interpolated.csv
@@ -210,6 +214,8 @@ datatbase_id_to_test_data:
     client_latency_by_key_number_path: client-latency-by-key-number.csv
     server_disk_space_usage_summary_path: server-disk-space-usage-summary.csv
     server_memory_by_key_number_path: server-memory-by-key-number.csv
+    server_read_bytes_delta_by_key_number_path: server-read-bytes-delta-by-key-number.csv
+    server_write_bytes_delta_by_key_number_path: server-write-bytes-delta-by-key-number.csv
     server_system_metrics_interpolated_path_list:
     - 1-server-system-metrics-interpolated.csv
     - 2-server-system-metrics-interpolated.csv
@@ -261,6 +267,14 @@ plot_list:
 - column: AVG-SECTORS-WRITTEN-DELTA
   x_axis: Second
   y_axis: Sectors Written (Delta per Second)
+
+- column: AVG-READ-BYTES-DELTA
+  x_axis: Second
+  y_axis: Read Bytes (Delta per Second)
+
+- column: AVG-WRITE-BYTES-DELTA
+  x_axis: Second
+  y_axis: Write Bytes (Delta per Second)
 
 - column: AVG-RECEIVE-BYTES-NUM-DELTA
   x_axis: Second
@@ -328,6 +342,14 @@ readme:
 
   - title: 2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-SECTORS-WRITTEN-DELTA
     path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-SECTORS-WRITTEN-DELTA.svg
+    type: remote
+
+  - title: 2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-READ-BYTES-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-READ-BYTES-DELTA.svg
+    type: remote
+
+  - title: 2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-WRITE-BYTES-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-WRITE-BYTES-DELTA.svg
     type: remote
 
   - title: 2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-RECEIVE-BYTES-NUM-DELTA

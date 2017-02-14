@@ -1,7 +1,7 @@
 test_title: Write 3-million keys, 256-byte key, 1KB value, Best Throughput (etcd 1,000, Zookeeper 500, Consul 500 clients)
 test_description: |
   - Google Cloud Compute Engine
-  - 4 machines of 16 vCPUs + 30 GB Memory + 150 GB SSD (1 for client)
+  - 4 machines of 16 vCPUs + 30 GB Memory + 300 GB SSD (1 for client)
   - Ubuntu 16.10
   - etcd v3.1 (Go 1.7.5)
   - Zookeeper r3.4.9
@@ -30,7 +30,7 @@ control:
   # set this in 'control' machine, to automate log uploading in remote 'agent' machines
   google_cloud_storage_key_path: /home/gyuho/gcloud-key.json
   google_cloud_storage_bucket_name: dbtester-results
-  google_cloud_storage_sub_directory: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys
+  google_cloud_storage_sub_directory: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys
 
 all_database_id_list: [etcdv3, zookeeper, consul]
 
@@ -167,7 +167,7 @@ datatbase_id_to_test_group:
 datatbase_id_to_test_data:
   etcdv3:
     # if not empty, all test data paths are prefixed
-    path_prefix: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/etcd-v3.1-go1.7.5
+    path_prefix: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/etcd-v3.1-go1.7.5
     client_system_metrics_interpolated_path: client-system-metrics-interpolated.csv
     client_latency_throughput_timeseries_path: client-latency-throughput-timeseries.csv
     client_latency_distribution_all_path: client-latency-distribution-all.csv
@@ -184,7 +184,7 @@ datatbase_id_to_test_data:
 
   zookeeper:
     # if not empty, all test data paths are prefixed
-    path_prefix: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/zookeeper-r3.4.9-java8
+    path_prefix: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/zookeeper-r3.4.9-java8
     client_system_metrics_interpolated_path: client-system-metrics-interpolated.csv
     client_latency_throughput_timeseries_path: client-latency-throughput-timeseries.csv
     client_latency_distribution_all_path: client-latency-distribution-all.csv
@@ -201,7 +201,7 @@ datatbase_id_to_test_data:
 
   consul:
     # if not empty, all test data paths are prefixed
-    path_prefix: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/consul-v0.7.4-go1.7.5
+    path_prefix: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/consul-v0.7.4-go1.7.5
     client_system_metrics_interpolated_path: client-system-metrics-interpolated.csv
     client_latency_throughput_timeseries_path: client-latency-throughput-timeseries.csv
     client_latency_distribution_all_path: client-latency-distribution-all.csv
@@ -217,10 +217,10 @@ datatbase_id_to_test_data:
     all_aggregated_output_path: all-aggregated.csv
 
 analyze:
-  all_aggregated_output_path_csv: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/all-aggregated.csv
-  all_aggregated_output_path_txt: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/all-aggregated.txt
+  all_aggregated_output_path_csv: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/all-aggregated.csv
+  all_aggregated_output_path_txt: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/all-aggregated.txt
 
-plot_path_prefix: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys
+plot_path_prefix: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys
 plot_list:
 - column: AVG-LATENCY-MS
   x_axis: Second
@@ -262,6 +262,14 @@ plot_list:
   x_axis: Second
   y_axis: Sectors Written (Delta per Second)
 
+- column: AVG-READ-BYTES-DELTA
+  x_axis: Second
+  y_axis: Read Bytes (Delta per Second)
+
+- column: AVG-WRITE-BYTES-DELTA
+  x_axis: Second
+  y_axis: Write Bytes (Delta per Second)
+
 - column: AVG-RECEIVE-BYTES-NUM-DELTA
   x_axis: Second
   y_axis: Network Receive(bytes) (Delta per Second)
@@ -271,69 +279,77 @@ plot_list:
   y_axis: Network Transmit(bytes) (Delta per Second)
 
 readme:
-  output_path: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/README.md
+  output_path: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/README.md
 
   images:
-  - title: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-LATENCY-MS
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-LATENCY-MS.svg
+  - title: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-LATENCY-MS
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-LATENCY-MS.svg
     type: remote
 
-  - title: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-LATENCY-MS-BY-KEY
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-LATENCY-MS-BY-KEY.svg
+  - title: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-LATENCY-MS-BY-KEY
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-LATENCY-MS-BY-KEY.svg
     type: remote
 
-  - title: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.svg
+  - title: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.svg
     type: remote
 
-  - title: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-THROUGHPUT
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-THROUGHPUT.svg
+  - title: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-THROUGHPUT
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-THROUGHPUT.svg
     type: remote
 
-  - title: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-VOLUNTARY-CTXT-SWITCHES
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-VOLUNTARY-CTXT-SWITCHES.svg
+  - title: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-VOLUNTARY-CTXT-SWITCHES
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-VOLUNTARY-CTXT-SWITCHES.svg
     type: remote
 
-  - title: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-NON-VOLUNTARY-CTXT-SWITCHES
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-NON-VOLUNTARY-CTXT-SWITCHES.svg
+  - title: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-NON-VOLUNTARY-CTXT-SWITCHES
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-NON-VOLUNTARY-CTXT-SWITCHES.svg
     type: remote
 
-  - title: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-CPU
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-CPU.svg
+  - title: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-CPU
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-CPU.svg
     type: remote
 
-  - title: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-VMRSS-MB
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-VMRSS-MB.svg
+  - title: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-VMRSS-MB
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-VMRSS-MB.svg
     type: remote
 
-  - title: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-VMRSS-MB-BY-KEY
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-VMRSS-MB-BY-KEY.svg
+  - title: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-VMRSS-MB-BY-KEY
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-VMRSS-MB-BY-KEY.svg
     type: remote
 
-  - title: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.svg
+  - title: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.svg
     type: remote
 
-  - title: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-READS-COMPLETED-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-READS-COMPLETED-DELTA.svg
+  - title: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-READS-COMPLETED-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-READS-COMPLETED-DELTA.svg
     type: remote
 
-  - title: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-SECTORS-READ-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-SECTORS-READ-DELTA.svg
+  - title: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-SECTORS-READ-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-SECTORS-READ-DELTA.svg
     type: remote
 
-  - title: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-WRITES-COMPLETED-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-WRITES-COMPLETED-DELTA.svg
+  - title: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-WRITES-COMPLETED-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-WRITES-COMPLETED-DELTA.svg
     type: remote
 
-  - title: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-SECTORS-WRITTEN-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-SECTORS-WRITTEN-DELTA.svg
+  - title: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-SECTORS-WRITTEN-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-SECTORS-WRITTEN-DELTA.svg
     type: remote
 
-  - title: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-RECEIVE-BYTES-NUM-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-RECEIVE-BYTES-NUM-DELTA.svg
+  - title: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-READ-BYTES-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-READ-BYTES-DELTA.svg
     type: remote
 
-  - title: 2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-TRANSMIT-BYTES-NUM-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/04-write-too-many-keys/AVG-TRANSMIT-BYTES-NUM-DELTA.svg
+  - title: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-WRITE-BYTES-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-WRITE-BYTES-DELTA.svg
+    type: remote
+
+  - title: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-RECEIVE-BYTES-NUM-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-RECEIVE-BYTES-NUM-DELTA.svg
+    type: remote
+
+  - title: 2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-TRANSMIT-BYTES-NUM-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/03-write-too-many-keys/AVG-TRANSMIT-BYTES-NUM-DELTA.svg
     type: remote

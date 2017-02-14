@@ -74,10 +74,10 @@ func TestFindRangesLatency(t *testing.T) {
 	}
 }
 
-func TestFindRangesMemory(t *testing.T) {
-	var data []CumulativeKeyNumAndMemory
+func TestFindRangesData(t *testing.T) {
+	var data []CumulativeKeyNumAndOtherData
 	for i := int64(0); i < 10; i++ {
-		dp := CumulativeKeyNumAndMemory{
+		dp := CumulativeKeyNumAndOtherData{
 			UnixSecond:  i + 1,
 			Throughput:  50,
 			AvgMemoryMB: float64(i + 1),
@@ -85,8 +85,8 @@ func TestFindRangesMemory(t *testing.T) {
 		data = append(data, dp)
 	}
 
-	pss := FindRangesMemory(data, 20, 555)
-	expexcted := []CumulativeKeyNumAndMemory{
+	pss := FindRangesData(data, 20, 555)
+	expexcted := []CumulativeKeyNumAndOtherData{
 		{CumulativeKeyNum: 20, AvgMemoryMB: 1},
 		{CumulativeKeyNum: 40, AvgMemoryMB: 1},
 		{CumulativeKeyNum: 60, AvgMemoryMB: 1},

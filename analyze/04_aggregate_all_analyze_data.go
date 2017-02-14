@@ -19,11 +19,12 @@ import (
 	"strings"
 
 	"github.com/coreos/dbtester"
+	humanize "github.com/dustin/go-humanize"
 	"github.com/gyuho/dataframe"
 )
 
 // aggregateAll aggregates all system metrics from 3+ nodes.
-func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int64) error {
+func (data *analyzeData) aggregateAll(memoryByKeyPath string, readBytesDeltaByKeyPath string, writeBytesDeltaByKeyPath string, totalRequests int64) error {
 	colSys, err := data.sysAgg.Column("UNIX-SECOND")
 	if err != nil {
 		return err
@@ -133,6 +134,8 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int6
 		avgWritesCompletedDeltaCol  = dataframe.NewColumn("AVG-WRITES-COMPLETED-DELTA")      // from WRITES-COMPLETED-DELTA
 		avgSectorsWrittenCol        = dataframe.NewColumn("AVG-SECTORS-WRITTEN")             // from SECTORS-WRITTEN
 		avgSectorsWrittenDeltaCol   = dataframe.NewColumn("AVG-SECTORS-WRITTEN-DELTA")       // from SECTORS-WRITTEN-DELTA
+		avgReadBytesNumDeltaCol     = dataframe.NewColumn("AVG-READ-BYTES-NUM-DELTA")        // from READ-BYTES-DELTA
+		avgWriteBytesNumDeltaCol    = dataframe.NewColumn("AVG-WRITE-BYTES-NUM-DELTA")       // from WRITE-BYTES-DELTA
 		avgReceiveBytesNumCol       = dataframe.NewColumn("AVG-RECEIVE-BYTES-NUM")           // from RECEIVE-BYTES-NUM
 		avgReceiveBytesNumDeltaCol  = dataframe.NewColumn("AVG-RECEIVE-BYTES-NUM-DELTA")     // from RECEIVE-BYTES-NUM-DELTA
 		avgTransmitBytesNumCol      = dataframe.NewColumn("AVG-TRANSMIT-BYTES-NUM")          // from TRANSMIT-BYTES-NUM
@@ -160,6 +163,8 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int6
 			writesCompletedDeltaSum  float64
 			sectorsWrittenSum        float64
 			sectorsWrittenDeltaSum   float64
+			readBytesDeltaSum        float64
+			writeBytesDeltaSum       float64
 			receiveBytesNumSum       float64
 			receiveBytesNumDeltaSum  float64
 			transmitBytesNumSum      float64
@@ -230,6 +235,10 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int6
 				sectorsWrittenDeltaSum += vv
 			case strings.HasPrefix(hd, "SECTORS-WRITTEN-"):
 				sectorsWrittenSum += vv
+			case strings.HasPrefix(hd, "READ-BYTES-DELTA-"):
+				readBytesDeltaSum += vv
+			case strings.HasPrefix(hd, "WRITE-BYTES-DELTA-"):
+				writeBytesDeltaSum += vv
 			case strings.HasPrefix(hd, "RECEIVE-BYTES-NUM-DELTA-"):
 				receiveBytesNumDeltaSum += vv
 			case strings.HasPrefix(hd, "RECEIVE-BYTES-NUM-"):
@@ -255,6 +264,8 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int6
 		avgWritesCompletedDeltaCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", writesCompletedDeltaSum/sampleSize)))
 		avgSectorsWrittenCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", sectorsWrittenSum/sampleSize)))
 		avgSectorsWrittenDeltaCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", sectorsWrittenDeltaSum/sampleSize)))
+		avgReadBytesNumDeltaCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", readBytesDeltaSum/sampleSize)))
+		avgWriteBytesNumDeltaCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", writeBytesDeltaSum/sampleSize)))
 		avgReceiveBytesNumCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", receiveBytesNumSum/sampleSize)))
 		avgReceiveBytesNumDeltaCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", receiveBytesNumDeltaSum/sampleSize)))
 		avgTransmitBytesNumCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", transmitBytesNumSum/sampleSize)))
@@ -305,6 +316,12 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int6
 		return err
 	}
 	if err = data.aggregated.AddColumn(avgSectorsWrittenDeltaCol); err != nil {
+		return err
+	}
+	if err = data.aggregated.AddColumn(avgReadBytesNumDeltaCol); err != nil {
+		return err
+	}
+	if err = data.aggregated.AddColumn(avgWriteBytesNumDeltaCol); err != nil {
 		return err
 	}
 	if err = data.aggregated.AddColumn(avgReceiveBytesNumCol); err != nil {
@@ -366,6 +383,8 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int6
 		"AVG-READS-COMPLETED-DELTA",
 		"AVG-SECTORS-READ",
 		"AVG-SECTORS-READ-DELTA",
+		"AVG-READ-BYTES-NUM-DELTA",
+		"AVG-WRITE-BYTES-NUM-DELTA",
 		"AVG-RECEIVE-BYTES-NUM",
 		"AVG-RECEIVE-BYTES-NUM-DELTA",
 		"AVG-TRANSMIT-BYTES-NUM",
@@ -398,6 +417,14 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int6
 	if err != nil {
 		return err
 	}
+	colReadBytesNumDelta, err := data.aggregated.Column("AVG-READ-BYTES-NUM-DELTA")
+	if err != nil {
+		return err
+	}
+	colWriteBytesNumDelta, err := data.aggregated.Column("AVG-WRITE-BYTES-NUM-DELTA")
+	if err != nil {
+		return err
+	}
 	if colUnixSecond.Count() != colMemoryMB.Count() {
 		return fmt.Errorf("SECOND column count %d, AVG-VMRSS-MB column count %d", colUnixSecond.Count(), colMemoryMB.Count())
 	}
@@ -407,8 +434,14 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int6
 	if colUnixSecond.Count() != colAvgThroughput.Count() {
 		return fmt.Errorf("SECOND column count %d, AVG-THROUGHPUT column count %d", colUnixSecond.Count(), colAvgThroughput.Count())
 	}
+	if colReadBytesNumDelta.Count() != colAvgThroughput.Count() {
+		return fmt.Errorf("AVG-READ-BYTES-NUM-DELTA column count %d, AVG-THROUGHPUT column count %d", colReadBytesNumDelta.Count(), colAvgThroughput.Count())
+	}
+	if colWriteBytesNumDelta.Count() != colAvgThroughput.Count() {
+		return fmt.Errorf("AVG-WRITE-BYTES-NUM-DELTA column count %d, AVG-THROUGHPUT column count %d", colWriteBytesNumDelta.Count(), colAvgThroughput.Count())
+	}
 
-	var cdata []dbtester.CumulativeKeyNumAndMemory
+	var cdata []dbtester.CumulativeKeyNumAndOtherData
 	for i := 0; i < colUnixSecond.Count(); i++ {
 		vv0, err := colUnixSecond.Value(i)
 		if err != nil {
@@ -428,43 +461,98 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, totalRequests int6
 		}
 		vf2, _ := vv2.Float64()
 
-		point := dbtester.CumulativeKeyNumAndMemory{
+		vv3, err := colReadBytesNumDelta.Value(i)
+		if err != nil {
+			return err
+		}
+		vf3, _ := vv3.Float64()
+
+		vv4, err := colWriteBytesNumDelta.Value(i)
+		if err != nil {
+			return err
+		}
+		vf4, _ := vv4.Float64()
+
+		point := dbtester.CumulativeKeyNumAndOtherData{
 			UnixSecond: v0,
 			Throughput: int64(vf2),
 
 			MinMemoryMB: sec2minVMRSSMB[v0],
 			AvgMemoryMB: vf1,
 			MaxMemoryMB: sec2maxVMRSSMB[v0],
+
+			AvgReadBytesDelta:  vf3,
+			AvgWriteBytesDelta: vf4,
 		}
 		cdata = append(cdata, point)
 	}
 
-	// aggregate memory by number of keys
-	knms := dbtester.FindRangesMemory(cdata, 1000, totalRequests)
+	// aggregate memory,write/read bytes by number of keys
+	knms := dbtester.FindRangesData(cdata, 1000, totalRequests)
+
 	ckk1 := dataframe.NewColumn("KEYS")
 	ckk2 := dataframe.NewColumn("MIN-VMRSS-MB")
 	ckk3 := dataframe.NewColumn("AVG-VMRSS-MB")
 	ckk4 := dataframe.NewColumn("MAX-VMRSS-MB")
+	ckk5 := dataframe.NewColumn("AVG-READ-BYTES-NUM-DELTA")
+	ckk6 := dataframe.NewColumn("AVG-READ-BYTES")
+	ckk7 := dataframe.NewColumn("AVG-WRITE-BYTES-NUM-DELTA")
+	ckk8 := dataframe.NewColumn("AVG-WRITE-BYTES")
 	for i := range knms {
 		ckk1.PushBack(dataframe.NewStringValue(knms[i].CumulativeKeyNum))
 		ckk2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", knms[i].MinMemoryMB)))
 		ckk3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", knms[i].AvgMemoryMB)))
 		ckk4.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", knms[i].MaxMemoryMB)))
+		ckk5.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", knms[i].AvgReadBytesDelta)))
+		ckk6.PushBack(dataframe.NewStringValue(humanize.Bytes(uint64(knms[i].AvgReadBytesDelta))))
+		ckk7.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", knms[i].AvgWriteBytesDelta)))
+		ckk8.PushBack(dataframe.NewStringValue(humanize.Bytes(uint64(knms[i].AvgWriteBytesDelta))))
 	}
-	fr := dataframe.New()
-	if err := fr.AddColumn(ckk1); err != nil {
+
+	fr1 := dataframe.New()
+	if err := fr1.AddColumn(ckk1); err != nil {
 		plog.Fatal(err)
 	}
-	if err := fr.AddColumn(ckk2); err != nil {
+	if err := fr1.AddColumn(ckk2); err != nil {
 		plog.Fatal(err)
 	}
-	if err := fr.AddColumn(ckk3); err != nil {
+	if err := fr1.AddColumn(ckk3); err != nil {
 		plog.Fatal(err)
 	}
-	if err := fr.AddColumn(ckk4); err != nil {
+	if err := fr1.AddColumn(ckk4); err != nil {
 		plog.Fatal(err)
 	}
-	if err := fr.CSV(memoryByKeyPath); err != nil {
+	if err := fr1.CSV(memoryByKeyPath); err != nil {
+		plog.Fatal(err)
+	}
+
+	// aggregate read bytes by number of keys
+	fr2 := dataframe.New()
+	if err := fr2.AddColumn(ckk1); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr2.AddColumn(ckk5); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr2.AddColumn(ckk6); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr2.CSV(readBytesDeltaByKeyPath); err != nil {
+		plog.Fatal(err)
+	}
+
+	// aggregate write bytes by number of keys
+	fr3 := dataframe.New()
+	if err := fr3.AddColumn(ckk1); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr3.AddColumn(ckk7); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr3.AddColumn(ckk8); err != nil {
+		plog.Fatal(err)
+	}
+	if err := fr3.CSV(writeBytesDeltaByKeyPath); err != nil {
 		plog.Fatal(err)
 	}
 
