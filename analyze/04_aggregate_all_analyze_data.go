@@ -124,6 +124,7 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, readBytesDeltaByKe
 		avgVolCtxSwitchCol          = dataframe.NewColumn("AVG-VOLUNTARY-CTXT-SWITCHES")     // from VOLUNTARY-CTXT-SWITCHES
 		avgNonVolCtxSwitchCol       = dataframe.NewColumn("AVG-NON-VOLUNTARY-CTXT-SWITCHES") // from NON-VOLUNTARY-CTXT-SWITCHES
 		avgCPUCol                   = dataframe.NewColumn("AVG-CPU")                         // from CPU-NUM
+		maxCPUCol                   = dataframe.NewColumn("MAX-CPU")                         // from CPU-NUM
 		avgSystemLoadCol            = dataframe.NewColumn("AVG-SYSTEM-LOAD-1-MIN")           // from LOAD-AVERAGE-1-MINUTE
 		avgVMRSSMBCol               = dataframe.NewColumn("AVG-VMRSS-MB")                    // from VMRSS-NUM
 		avgReadsCompletedCol        = dataframe.NewColumn("AVG-READS-COMPLETED")             // from READS-COMPLETED
@@ -153,6 +154,7 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, readBytesDeltaByKe
 			volCtxSwitchSum          float64
 			nonVolCtxSwitchSum       float64
 			cpuSum                   float64
+			cpuMax                   float64
 			loadAvgSum               float64
 			vmrssMBSum               float64
 			readsCompletedSum        float64
@@ -197,6 +199,9 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, readBytesDeltaByKe
 				nonVolCtxSwitchSum += vv
 			case strings.HasPrefix(hd, "CPU-"): // CPU-NUM was converted to CPU-1, CPU-2, CPU-3
 				cpuSum += vv
+				if cpuMax == 0.0 || cpuMax < vv {
+					cpuMax = vv
+				}
 			case strings.HasPrefix(hd, "LOAD-AVERAGE-1-"): // LOAD-AVERAGE-1-MINUTE
 				loadAvgSum += vv
 			case strings.HasPrefix(hd, "VMRSS-MB-"): // VMRSS-NUM-NUM was converted to VMRSS-MB-1, VMRSS-MB-2, VMRSS-MB-3
@@ -254,6 +259,7 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, readBytesDeltaByKe
 		avgVolCtxSwitchCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", volCtxSwitchSum/sampleSize)))
 		avgNonVolCtxSwitchCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", nonVolCtxSwitchSum/sampleSize)))
 		avgCPUCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", cpuSum/sampleSize)))
+		maxCPUCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", cpuMax)))
 		avgSystemLoadCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", loadAvgSum/sampleSize)))
 		avgVMRSSMBCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", vmrssMBSum/sampleSize)))
 		avgReadsCompletedCol.PushBack(dataframe.NewStringValue(fmt.Sprintf("%.2f", readsCompletedSum/sampleSize)))
@@ -286,6 +292,9 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, readBytesDeltaByKe
 		return err
 	}
 	if err = data.aggregated.AddColumn(avgCPUCol); err != nil {
+		return err
+	}
+	if err = data.aggregated.AddColumn(maxCPUCol); err != nil {
 		return err
 	}
 	if err = data.aggregated.AddColumn(avgSystemLoadCol); err != nil {
@@ -373,6 +382,7 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, readBytesDeltaByKe
 	reorder := []string{
 		"CUMULATIVE-THROUGHPUT",
 		"AVG-CPU",
+		"MAX-CPU",
 		"AVG-SYSTEM-LOAD-1-MIN",
 		"AVG-VMRSS-MB",
 		"AVG-WRITES-COMPLETED",

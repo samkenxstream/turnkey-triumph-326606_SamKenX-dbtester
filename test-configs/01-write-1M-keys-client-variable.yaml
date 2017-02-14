@@ -248,6 +248,10 @@ plot_list:
   x_axis: Second
   y_axis: CPU(%)
 
+- column: MAX-CPU
+  x_axis: Second
+  y_axis: CPU(%)
+
 - column: AVG-VMRSS-MB
   x_axis: Second
   y_axis: Memory(MB)
@@ -314,6 +318,10 @@ readme:
 
   - title: 2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-CPU
     path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-CPU.svg
+    type: remote
+
+  - title: 2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/MAX-CPU
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/MAX-CPU.svg
     type: remote
 
   - title: 2017Q1-00-etcd-zookeeper-consul/01-write-1M-keys-client-variable/AVG-VMRSS-MB
