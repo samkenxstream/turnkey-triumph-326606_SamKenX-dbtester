@@ -247,6 +247,12 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		}
 		cfg.DatabaseIDToTestGroup["etcdv3"] = v
 	}
+	if v, ok := cfg.DatabaseIDToTestGroup["etcdtip"]; ok {
+		if v.Etcdv3.SnapCount == 0 {
+			v.Etcdv3.SnapCount = defaultEtcdSnapCount
+		}
+		cfg.DatabaseIDToTestGroup["etcdtip"] = v
+	}
 	if v, ok := cfg.DatabaseIDToTestGroup["zookeeper"]; ok {
 		if v.Zookeeper.TickTime == 0 {
 			v.Zookeeper.TickTime = defaultZookeeperTickTime

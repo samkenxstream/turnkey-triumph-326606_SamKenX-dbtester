@@ -175,7 +175,7 @@ func (cfg *Config) Stress(databaseID string) error {
 		switch gcfg.DatabaseID {
 		case "etcdv2":
 			totalKeysFunc = getTotalKeysEtcdv2
-		case "etcdv3":
+		case "etcdv3", "etcdtip":
 			totalKeysFunc = getTotalKeysEtcdv3
 		case "zookeeper", "zetcd":
 			totalKeysFunc = getTotalKeysZk
@@ -208,7 +208,7 @@ func (cfg *Config) Stress(databaseID string) error {
 				os.Exit(1)
 			}
 
-		case "etcdv3":
+		case "etcdv3", "etcdtip":
 			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
 			var err error
 			for i := 0; i < 7; i++ {
@@ -280,7 +280,7 @@ func (cfg *Config) Stress(databaseID string) error {
 			clients := mustCreateClientsEtcdv2(gcfg.DatabaseEndpoints, 1)
 			_, err = clients[0].Set(context.Background(), key, value, nil)
 
-		case "etcdv3":
+		case "etcdv3", "etcdtip":
 			clients := mustCreateClientsEtcdv3(gcfg.DatabaseEndpoints, etcdv3ClientCfg{
 				totalConns:   1,
 				totalClients: 1,
@@ -319,7 +319,7 @@ func newReadHandlers(gcfg TestGroup) (rhs []ReqHandler, done func()) {
 		for i := range conns {
 			rhs[i] = newGetEtcd2(conns[i])
 		}
-	case "etcdv3":
+	case "etcdv3", "etcdtip":
 		clients := mustCreateClientsEtcdv3(gcfg.DatabaseEndpoints, etcdv3ClientCfg{
 			totalConns:   gcfg.BenchmarkOptions.ConnectionNumber,
 			totalClients: gcfg.BenchmarkOptions.ClientNumber,
@@ -359,7 +359,7 @@ func newWriteHandlers(gcfg TestGroup) (rhs []ReqHandler, done func()) {
 		for i := range conns {
 			rhs[i] = newPutEtcd2(conns[i])
 		}
-	case "etcdv3":
+	case "etcdv3", "etcdtip":
 		etcdClients := mustCreateClientsEtcdv3(gcfg.DatabaseEndpoints, etcdv3ClientCfg{
 			totalConns:   gcfg.BenchmarkOptions.ConnectionNumber,
 			totalClients: gcfg.BenchmarkOptions.ClientNumber,
@@ -434,7 +434,7 @@ func newReadOneshotHandlers(gcfg TestGroup) []ReqHandler {
 				return newGetEtcd2(conns[0])(ctx, req)
 			}
 		}
-	case "etcdv3":
+	case "etcdv3", "etcdtip":
 		for i := range rhs {
 			rhs[i] = func(ctx context.Context, req *request) error {
 				conns := mustCreateClientsEtcdv3(gcfg.DatabaseEndpoints, etcdv3ClientCfg{
@@ -485,7 +485,7 @@ func generateReads(gcfg TestGroup, key string, inflightReqs chan<- request) {
 			// serializable read by default
 			inflightReqs <- request{etcdv2Op: etcdv2Op{key: key}}
 
-		case "etcdv3":
+		case "etcdv3", "etcdtip":
 			opts := []clientv3.OpOption{clientv3.WithRange("")}
 			if gcfg.BenchmarkOptions.StaleRead {
 				opts = append(opts, clientv3.WithSerializable())
@@ -540,7 +540,7 @@ func generateWrites(gcfg TestGroup, startIdx int64, vals values, inflightReqs ch
 		switch gcfg.DatabaseID {
 		case "etcdv2":
 			inflightReqs <- request{etcdv2Op: etcdv2Op{key: k, value: vs}}
-		case "etcdv3":
+		case "etcdv3", "etcdtip":
 			inflightReqs <- request{etcdv3Op: clientv3.OpPut(k, vs)}
 		case "zookeeper", "zetcd":
 			inflightReqs <- request{zkOp: zkOp{key: "/" + k, value: v}}
