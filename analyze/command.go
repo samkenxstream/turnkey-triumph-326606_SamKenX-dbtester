@@ -730,6 +730,80 @@ func do(configPath string) error {
 			return err
 		}
 	}
+	// KEYS, AVG-READ-BYTES-NUM-DELTA, AVG-READ-BYTES
+	plog.Info("combining all server read bytes delta by keys")
+	allReadBytesDeltaFrame := dataframe.New()
+	for _, databaseID := range cfg.AllDatabaseIDList {
+		testdata := cfg.DatabaseIDToTestData[databaseID]
+
+		fr, err := dataframe.NewFromCSV(nil, testdata.ServerReadBytesDeltaByKeyNumberPath)
+		if err != nil {
+			return err
+		}
+		colKeys, err := fr.Column("KEYS")
+		if err != nil {
+			return err
+		}
+		colKeys.UpdateHeader(makeHeader("KEYS", testdata.DatabaseTag))
+		if err = allReadBytesDeltaFrame.AddColumn(colKeys); err != nil {
+			return err
+		}
+
+		col1, err := fr.Column("AVG-READ-BYTES-NUM-DELTA")
+		if err != nil {
+			return err
+		}
+		col1.UpdateHeader(makeHeader("AVG-READ-BYTES-NUM-DELTA", testdata.DatabaseTag))
+		if err = allReadBytesDeltaFrame.AddColumn(col1); err != nil {
+			return err
+		}
+
+		col2, err := fr.Column("AVG-READ-BYTES")
+		if err != nil {
+			return err
+		}
+		col2.UpdateHeader(makeHeader("AVG-READ-BYTES", testdata.DatabaseTag))
+		if err = allReadBytesDeltaFrame.AddColumn(col2); err != nil {
+			return err
+		}
+	}
+	// KEYS, AVG-WRITE-BYTES-NUM-DELTA, AVG-WRITE-BYTES
+	plog.Info("combining all server write bytes delta by keys")
+	allWriteBytesDeltaFrame := dataframe.New()
+	for _, databaseID := range cfg.AllDatabaseIDList {
+		testdata := cfg.DatabaseIDToTestData[databaseID]
+
+		fr, err := dataframe.NewFromCSV(nil, testdata.ServerWriteBytesDeltaByKeyNumberPath)
+		if err != nil {
+			return err
+		}
+		colKeys, err := fr.Column("KEYS")
+		if err != nil {
+			return err
+		}
+		colKeys.UpdateHeader(makeHeader("KEYS", testdata.DatabaseTag))
+		if err = allWriteBytesDeltaFrame.AddColumn(colKeys); err != nil {
+			return err
+		}
+
+		col1, err := fr.Column("AVG-WRITE-BYTES-NUM-DELTA")
+		if err != nil {
+			return err
+		}
+		col1.UpdateHeader(makeHeader("AVG-WRITE-BYTES-NUM-DELTA", testdata.DatabaseTag))
+		if err = allWriteBytesDeltaFrame.AddColumn(col1); err != nil {
+			return err
+		}
+
+		col2, err := fr.Column("AVG-WRITE-BYTES")
+		if err != nil {
+			return err
+		}
+		col2.UpdateHeader(makeHeader("AVG-WRITE-BYTES", testdata.DatabaseTag))
+		if err = allWriteBytesDeltaFrame.AddColumn(col2); err != nil {
+			return err
+		}
+	}
 
 	{
 		allLatencyFrameCfg := dbtester.Plot{
@@ -886,6 +960,58 @@ func do(configPath string) error {
 		}
 		csvPath := filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.csv")
 		if err := newCSV.CSV(csvPath); err != nil {
+			return err
+		}
+	}
+	{
+		allReadBytesDeltaFrameCfg := dbtester.Plot{
+			Column:         "AVG-READ-BYTES-NUM-DELTA",
+			XAxis:          "Cumulative Number of Keys",
+			YAxis:          "Average Read Bytes Delta by Keys",
+			OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
+		}
+		allReadBytesDeltaFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-READ-BYTES-NUM-DELTA-BY-KEY.svg")
+		allReadBytesDeltaFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-READ-BYTES-NUM-DELTA-BY-KEY.png")
+		plog.Printf("plotting %v", allReadBytesDeltaFrameCfg.OutputPathList)
+		var pairs []pair
+		allCols := allReadBytesDeltaFrame.Columns()
+		for i := 0; i < len(allCols)-2; i += 3 {
+			pairs = append(pairs, pair{
+				x: allCols[i],   // x
+				y: allCols[i+1], // avg
+			})
+		}
+		if err = all.drawXY(allReadBytesDeltaFrameCfg, pairs...); err != nil {
+			return err
+		}
+		csvPath := filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-READ-BYTES-NUM-DELTA-BY-KEY.csv")
+		if err := allReadBytesDeltaFrame.CSV(csvPath); err != nil {
+			return err
+		}
+	}
+	{
+		allWriteBytesDeltaFrameCfg := dbtester.Plot{
+			Column:         "AVG-WRITE-BYTES-NUM-DELTA",
+			XAxis:          "Cumulative Number of Keys",
+			YAxis:          "Average Write Bytes Delta by Keys",
+			OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
+		}
+		allWriteBytesDeltaFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-WRITE-BYTES-NUM-DELTA-BY-KEY.svg")
+		allWriteBytesDeltaFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-WRITE-BYTES-NUM-DELTA-BY-KEY.png")
+		plog.Printf("plotting %v", allWriteBytesDeltaFrameCfg.OutputPathList)
+		var pairs []pair
+		allCols := allWriteBytesDeltaFrame.Columns()
+		for i := 0; i < len(allCols)-2; i += 3 {
+			pairs = append(pairs, pair{
+				x: allCols[i],   // x
+				y: allCols[i+1], // avg
+			})
+		}
+		if err = all.drawXY(allWriteBytesDeltaFrameCfg, pairs...); err != nil {
+			return err
+		}
+		csvPath := filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-WRITE-BYTES-NUM-DELTA-BY-KEY.csv")
+		if err := allWriteBytesDeltaFrame.CSV(csvPath); err != nil {
 			return err
 		}
 	}
