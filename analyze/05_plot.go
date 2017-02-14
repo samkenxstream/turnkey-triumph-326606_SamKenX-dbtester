@@ -251,6 +251,8 @@ func getRGB(databaseID string, i int) color.Color {
 		return color.RGBA{218, 97, 229, 255} // purple
 	case "etcdv3":
 		return color.RGBA{24, 90, 169, 255} // blue
+	case "etcdtip":
+		return color.RGBA{0, 229, 255, 255} // cyan
 	case "zookeeper":
 		return color.RGBA{38, 169, 24, 255} // green
 	case "consul":
@@ -258,7 +260,7 @@ func getRGB(databaseID string, i int) color.Color {
 	case "zetcd":
 		return color.RGBA{251, 206, 0, 255} // yellow
 	case "cetcd":
-		return color.RGBA{116, 24, 169, 255} // purple
+		return color.RGBA{205, 220, 57, 255} // lime
 	}
 	return plotutil.Color(i)
 }
@@ -269,6 +271,8 @@ func getRGBII(databaseID string, i int) color.Color {
 		return color.RGBA{229, 212, 231, 255} // light-purple
 	case "etcdv3":
 		return color.RGBA{129, 212, 247, 255} // light-blue
+	case "etcdtip":
+		return color.RGBA{132, 255, 255, 255} // light-cyan
 	case "zookeeper":
 		return color.RGBA{129, 247, 152, 255} // light-green
 	case "consul":
@@ -276,7 +280,7 @@ func getRGBII(databaseID string, i int) color.Color {
 	case "zetcd":
 		return color.RGBA{245, 247, 166, 255} // light-yellow
 	case "cetcd":
-		return color.RGBA{247, 166, 238, 255} // light-purple
+		return color.RGBA{238, 255, 65, 255} // light-lime
 	}
 	return plotutil.Color(i)
 }
@@ -287,6 +291,8 @@ func getRGBIII(databaseID string, i int) color.Color {
 		return color.RGBA{165, 8, 180, 255} // deep-purple
 	case "etcdv3":
 		return color.RGBA{37, 29, 191, 255} // deep-blue
+	case "etcdtip":
+		return color.RGBA{0, 96, 100, 255} // deep-cyan
 	case "zookeeper":
 		return color.RGBA{7, 64, 35, 255} // deep-green
 	case "consul":
@@ -294,7 +300,7 @@ func getRGBIII(databaseID string, i int) color.Color {
 	case "zetcd":
 		return color.RGBA{229, 255, 0, 255} // deep-yellow
 	case "cetcd":
-		return color.RGBA{255, 0, 251, 255} // deep-purple
+		return color.RGBA{205, 220, 57, 255} // deep-lime
 	}
 	return plotutil.Color(i)
 }
