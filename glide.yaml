@@ -9,7 +9,7 @@ import:
 - package: github.com/cheggaaa/pb
   version: d7e6ca3010b6f084d8056847f55d7f572f180678
 - package: github.com/coreos/etcd
-  version: bad2f03cd027c8cee60df2f55713946b86a36659
+  version: 2510a1488c51eb503c396c7e4e44ee910e4857a6
   subpackages:
   - auth/authpb
   - client
@@ -22,6 +22,7 @@ import:
   - pkg/tlsutil
   - pkg/netutil
   - pkg/types
+  - pkg/report
 - package: github.com/coreos/pkg
   version: fa29b1d70f0beaddd4c7021607cc3c3be8ce94b8
   subpackages:

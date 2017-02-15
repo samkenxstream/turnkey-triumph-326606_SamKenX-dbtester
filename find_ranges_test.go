@@ -19,7 +19,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/coreos/dbtester/pkg/report"
+	"github.com/coreos/etcd/pkg/report"
 )
 
 func TestFindRangesLatency(t *testing.T) {
