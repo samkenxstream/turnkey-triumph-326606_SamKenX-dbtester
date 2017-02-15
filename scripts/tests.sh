@@ -5,8 +5,8 @@ if ! [[ "$0" =~ "scripts/tests.sh" ]]; then
     echo "must be run from repository root"
     exit 255
 fi
-gofmt -l -s -d *.go 
-TESTS="./analyze ./pkg/fileinspect ./pkg/netutil ./pkg/ntp ./pkg/report ./pkg/types"
+gofmt -l -s -d *.go
+TESTS="./analyze ./pkg/fileinspect ./pkg/ntp"
 
 echo "Checking gofmt..."
 fmtRes=$(gofmt -l -s -d $TESTS)
