@@ -23,7 +23,7 @@ import (
 
 	"github.com/coreos/dbtester/dbtesterpb"
 	"github.com/coreos/dbtester/pkg/remotestorage"
-	"github.com/coreos/dbtester/pkg/report"
+	"github.com/coreos/etcd/pkg/report"
 	humanize "github.com/dustin/go-humanize"
 	"github.com/gyuho/dataframe"
 )

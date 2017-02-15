@@ -20,8 +20,8 @@ import (
 	"path/filepath"
 
 	"github.com/coreos/dbtester/dbtesterpb"
-	"github.com/coreos/dbtester/pkg/netutil"
 	"github.com/coreos/dbtester/pkg/ntp"
+	"github.com/coreos/etcd/pkg/netutil"
 	"github.com/coreos/pkg/capnslog"
 	"github.com/gyuho/psn"
 	"github.com/spf13/cobra"

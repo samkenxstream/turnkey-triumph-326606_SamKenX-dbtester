@@ -23,8 +23,8 @@ import (
 	"time"
 
 	"github.com/coreos/dbtester/dbtesterpb"
-	"github.com/coreos/dbtester/pkg/report"
 	"github.com/coreos/etcd/clientv3"
+	"github.com/coreos/etcd/pkg/report"
 	consulapi "github.com/hashicorp/consul/api"
 	"golang.org/x/net/context"
 	"golang.org/x/time/rate"

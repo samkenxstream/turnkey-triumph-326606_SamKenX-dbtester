@@ -18,7 +18,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/coreos/dbtester/pkg/report"
+	"github.com/coreos/etcd/pkg/report"
 )
 
 // CumulativeKeyNumToAvgLatency wraps the cumulative number of keys
