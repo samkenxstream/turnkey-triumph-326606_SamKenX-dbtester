@@ -1,5 +1,5 @@
 hash: 6bd04d9644a95f1caa2c1df864c296078eadff2a349eb724fbc0486aa5a2a72f
-updated: 2017-02-13T13:49:21.228470942-08:00
+updated: 2017-02-15T10:49:57.073799273-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -145,7 +145,9 @@ imports:
   - internal/bitbucket.org/ww/goautoneg
   - model
 - name: github.com/prometheus/procfs
-  version: 1878d9fbb537119d24b21ca07effd591627cd160
+  version: a59ae619c824360be3641ceb5a456ff13dd58be6
+  subpackages:
+  - xfs
 - name: github.com/samuel/go-zookeeper
   version: 1d7be4effb13d2d908342d349d71a284a7542693
   subpackages:
@@ -159,7 +161,7 @@ imports:
   subpackages:
   - codec
 - name: golang.org/x/image
-  version: df2aa51d4407e30b309afc8c4d6fdca045d97fb0
+  version: 306b8294319cca33073246c5f75e5142f54f4cca
   subpackages:
   - draw
   - font
