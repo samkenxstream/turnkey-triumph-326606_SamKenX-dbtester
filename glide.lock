@@ -1,5 +1,5 @@
-hash: 6bd04d9644a95f1caa2c1df864c296078eadff2a349eb724fbc0486aa5a2a72f
-updated: 2017-02-15T10:49:57.073799273-08:00
+hash: d814a9bd4d998e7b38f52abf3bf6284b4ce1b9e0d1bbb3aecfcedb9dcbf9de16
+updated: 2017-02-15T11:01:56.215783528-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -14,10 +14,6 @@ imports:
   - storage
 - name: github.com/ajstarks/svgo
   version: 9f597be83ea4fd9bbc17dfc950ced53b9dbc7f19
-- name: github.com/beorn7/perks
-  version: 4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9
-  subpackages:
-  - quantile
 - name: github.com/biogo/graphics
   version: ee9e4a4ad8d5c6c55688ec8da3f96f8bd3f09b85
   subpackages:
@@ -25,7 +21,7 @@ imports:
 - name: github.com/cheggaaa/pb
   version: d7e6ca3010b6f084d8056847f55d7f572f180678
 - name: github.com/coreos/etcd
-  version: bad2f03cd027c8cee60df2f55713946b86a36659
+  version: 2510a1488c51eb503c396c7e4e44ee910e4857a6
   subpackages:
   - auth/authpb
   - client
@@ -33,11 +29,18 @@ imports:
   - etcdserver/api/v3rpc/rpctypes
   - etcdserver/etcdserverpb
   - mvcc/mvccpb
+  - pkg/cpuutil
   - pkg/netutil
   - pkg/pathutil
   - pkg/report
+  - pkg/report
   - pkg/tlsutil
   - pkg/types
+  - version
+- name: github.com/coreos/go-semver
+  version: 568e959cd89871e61434c1143528d9162da89ef2
+  subpackages:
+  - semver
 - name: github.com/coreos/go-systemd
   version: 48702e0da86bd25e76cfef347e2adeb434a0d0a6
   subpackages:
@@ -50,8 +53,6 @@ imports:
   - capnslog
 - name: github.com/dustin/go-humanize
   version: ef638b6c2e62b857442c6443dace9366a48c0ee2
-- name: github.com/ghodss/yaml
-  version: 73d445a93680fa1a78ae23a5839bad48f32ba1ee
 - name: github.com/gogo/protobuf
   version: 8d70fb3182befc465c4a1eac8ad4d38ff49778e2
   subpackages:
@@ -89,8 +90,6 @@ imports:
   - vg/vgsvg
 - name: github.com/googleapis/gax-go
   version: da06d194a00e19ce00d9011a13931c3f6f6887c7
-- name: github.com/grpc-ecosystem/go-grpc-prometheus
-  version: 6b7015e65d366bf3f19b2b2a000a831940f0f7e0
 - name: github.com/grpc-ecosystem/grpc-gateway
   version: 84398b94e188ee336f307779b57b3aa91af7063c
   subpackages:
@@ -124,30 +123,8 @@ imports:
   - draw2dimg
 - name: github.com/mattn/go-runewidth
   version: 14207d285c6c197daabb5c9793d63e7af9ab2d50
-- name: github.com/matttproud/golang_protobuf_extensions
-  version: c12348ce28de40eed0136aa2b644d0ee0650e56c
-  subpackages:
-  - pbutil
 - name: github.com/olekukonko/tablewriter
   version: febf2d34b54a69ce7530036c7503b1c9fbfdf0bb
-- name: github.com/prometheus/client_golang
-  version: c5b7fccd204277076155f10851dad72b76a49317
-  subpackages:
-  - prometheus
-- name: github.com/prometheus/client_model
-  version: fa8ad6fec33561be4280a8f0514318c79d7f6cb6
-  subpackages:
-  - go
-- name: github.com/prometheus/common
-  version: dd2f054febf4a6c00f2343686efb775948a8bff4
-  subpackages:
-  - expfmt
-  - internal/bitbucket.org/ww/goautoneg
-  - model
-- name: github.com/prometheus/procfs
-  version: a59ae619c824360be3641ceb5a456ff13dd58be6
-  subpackages:
-  - xfs
 - name: github.com/samuel/go-zookeeper
   version: 1d7be4effb13d2d908342d349d71a284a7542693
   subpackages:

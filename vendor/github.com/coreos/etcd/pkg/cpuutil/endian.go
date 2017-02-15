@@ -1,4 +1,4 @@
-// Copyright 2013 Matt T. Proud
+// Copyright 2017 The etcd Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,5 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package pbutil provides record length-delimited Protocol Buffer streaming.
-package pbutil
+package cpuutil
+
+import (
+	"encoding/binary"
+	"unsafe"
+)
+
+const intWidth int = int(unsafe.Sizeof(0))
+
+var byteOrder binary.ByteOrder
+
+// ByteOrder returns the byte order for the CPU's native endianness.
+func ByteOrder() binary.ByteOrder { return byteOrder }
+
+func init() {
+	var i int = 0x1
+	if v := (*[intWidth]byte)(unsafe.Pointer(&i)); v[0] == 0 {
+		byteOrder = binary.BigEndian
+	} else {
+		byteOrder = binary.LittleEndian
+	}
+}
