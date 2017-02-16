@@ -4,6 +4,8 @@
 
 Distributed database benchmark tester: etcd, Zookeeper, Consul, zetcd, cetcd
 
+![dbtester system architecture](./dbtester.png)
+
 - Database Agent
   - https://github.com/coreos/dbtester/tree/master/agent
 - Database Client
