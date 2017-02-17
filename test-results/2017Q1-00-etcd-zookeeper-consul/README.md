@@ -75,7 +75,7 @@ Logs do not tell much but average latency spikes (e.g. from 70.27517 ms to 10407
 ##### Write 1M keys, 256-byte key, 1KB value value, clients 1 to 1,000
 
 - Google Cloud Compute Engine
-- 4 machines of 16 vCPUs + 30 GB Memory + 150 GB SSD (1 for client)
+- 4 machines of 16 vCPUs + 30 GB Memory + 300 GB SSD (1 for client)
 - Ubuntu 16.10
 - etcd v3.1 (Go 1.7.5)
 - Zookeeper r3.4.9
@@ -198,7 +198,7 @@ zookeeper errors:
 ##### Write 1M keys, 256-byte key, 1KB value, Best Throughput (etcd 1,000, Zookeeper 500, Consul 500 clients)
 
 - Google Cloud Compute Engine
-- 4 machines of 16 vCPUs + 30 GB Memory + 150 GB SSD (1 for client)
+- 4 machines of 16 vCPUs + 30 GB Memory + 300 GB SSD (1 for client)
 - Ubuntu 16.10
 - etcd v3.1 (Go 1.7.5)
 - Zookeeper r3.4.9
@@ -322,7 +322,7 @@ zookeeper errors:
 ##### Write 1M keys, 256-byte key, 1KB value, 1,000 client
 
 - Google Cloud Compute Engine
-- 4 machines of 16 vCPUs + 30 GB Memory + 150 GB SSD (1 for client)
+- 4 machines of 16 vCPUs + 30 GB Memory + 300 GB SSD (1 for client)
 - Ubuntu 16.10
 - etcd v3.1 (Go 1.7.5)
 - Zookeeper r3.4.9
@@ -446,7 +446,7 @@ zookeeper errors:
 ##### Write 3-million keys, 256-byte key, 1KB value, Best Throughput (etcd 1,000, Zookeeper 500, Consul 500 clients)
 
 - Google Cloud Compute Engine
-- 4 machines of 16 vCPUs + 30 GB Memory + 150 GB SSD (1 for client)
+- 4 machines of 16 vCPUs + 30 GB Memory + 300 GB SSD (1 for client)
 - Ubuntu 16.10
 - etcd v3.1 (Go 1.7.5)
 - Zookeeper r3.4.9
