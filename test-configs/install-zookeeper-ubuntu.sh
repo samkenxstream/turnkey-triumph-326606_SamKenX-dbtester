@@ -59,12 +59,24 @@ ansible-playbook /tmp/install-java.yml
 java -version
 javac -version
 
-echo "Installing Zookeeper..."
-ZOOKEEPER_VERSION=3.4.9
+<<COMMENT
+ZK_VERSION=3.4.9
 sudo rm -rf $HOME/zookeeper
-sudo curl -sf -o /tmp/zookeeper-$ZOOKEEPER_VERSION.tar.gz -L https://www.apache.org/dist/zookeeper/zookeeper-$ZOOKEEPER_VERSION/zookeeper-$ZOOKEEPER_VERSION.tar.gz
-sudo tar -xzf /tmp/zookeeper-$ZOOKEEPER_VERSION.tar.gz -C /tmp/
-sudo mv /tmp/zookeeper-$ZOOKEEPER_VERSION /tmp/zookeeper
+sudo curl -sf -o /tmp/zookeeper-$ZK_VERSION.tar.gz -L https://www.apache.org/dist/zookeeper/zookeeper-$ZK_VERSION/zookeeper-$ZK_VERSION.tar.gz
+sudo tar -xzf /tmp/zookeeper-$ZK_VERSION.tar.gz -C /tmp/
+sudo mv /tmp/zookeeper-$ZK_VERSION /tmp/zookeeper
+sudo mv /tmp/zookeeper $HOME/
+sudo chmod -R 777 $HOME/zookeeper/
+mkdir -p $HOME/zookeeper/zookeeper.data
+touch $HOME/zookeeper/zookeeper.data/myid
+sudo chmod -R 777 $HOME/zookeeper/zookeeper.data/
+COMMENT
+
+ZK_VERSION=3.5.2-alpha
+sudo rm -rf $HOME/zookeeper
+sudo curl -sf -o /tmp/zookeeper-$ZK_VERSION.tar.gz -L https://www.apache.org/dist/zookeeper/zookeeper-$ZK_VERSION/zookeeper-$ZK_VERSION.tar.gz
+sudo tar -xzf /tmp/zookeeper-$ZK_VERSION.tar.gz -C /tmp/
+sudo mv /tmp/zookeeper-$ZK_VERSION /tmp/zookeeper
 sudo mv /tmp/zookeeper $HOME/
 sudo chmod -R 777 $HOME/zookeeper/
 mkdir -p $HOME/zookeeper/zookeeper.data
