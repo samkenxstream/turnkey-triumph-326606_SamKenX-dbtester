@@ -296,6 +296,8 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 	return &cfg, nil
 }
 
+const maxEtcdQuotaSize = 8000000000
+
 // ToRequest converts configuration to 'dbtesterpb.Request'.
 func (cfg *Config) ToRequest(databaseID string, op dbtesterpb.Operation, idx int) (req *dbtesterpb.Request, err error) {
 	gcfg, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[databaseID]
@@ -326,16 +328,28 @@ func (cfg *Config) ToRequest(databaseID string, op dbtesterpb.Operation, idx int
 			SnapshotCount: gcfg.Flag_Etcd_V2_3.SnapshotCount,
 		}
 	case dbtesterpb.DatabaseID_etcd__v3_1:
+		if gcfg.Flag_Etcd_V3_1.QuotaSizeBytes > maxEtcdQuotaSize {
+			err = fmt.Errorf("maximum etcd quota is 8 GB (%d), got %d", maxEtcdQuotaSize, gcfg.Flag_Etcd_V3_1.QuotaSizeBytes)
+			return
+		}
 		req.Flag_Etcd_V3_1 = &dbtesterpb.Flag_Etcd_V3_1{
 			SnapshotCount:  gcfg.Flag_Etcd_V3_1.SnapshotCount,
 			QuotaSizeBytes: gcfg.Flag_Etcd_V3_1.QuotaSizeBytes,
 		}
 	case dbtesterpb.DatabaseID_etcd__v3_2:
+		if gcfg.Flag_Etcd_V3_2.QuotaSizeBytes > maxEtcdQuotaSize {
+			err = fmt.Errorf("maximum etcd quota is 8 GB (%d), got %d", maxEtcdQuotaSize, gcfg.Flag_Etcd_V3_2.QuotaSizeBytes)
+			return
+		}
 		req.Flag_Etcd_V3_2 = &dbtesterpb.Flag_Etcd_V3_2{
 			SnapshotCount:  gcfg.Flag_Etcd_V3_2.SnapshotCount,
 			QuotaSizeBytes: gcfg.Flag_Etcd_V3_2.QuotaSizeBytes,
 		}
 	case dbtesterpb.DatabaseID_etcd__tip:
+		if gcfg.Flag_Etcd_Tip.QuotaSizeBytes > maxEtcdQuotaSize {
+			err = fmt.Errorf("maximum etcd quota is 8 GB (%d), got %d", maxEtcdQuotaSize, gcfg.Flag_Etcd_Tip.QuotaSizeBytes)
+			return
+		}
 		req.Flag_Etcd_Tip = &dbtesterpb.Flag_Etcd_Tip{
 			SnapshotCount:  gcfg.Flag_Etcd_Tip.SnapshotCount,
 			QuotaSizeBytes: gcfg.Flag_Etcd_Tip.QuotaSizeBytes,
