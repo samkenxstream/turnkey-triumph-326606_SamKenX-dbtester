@@ -278,6 +278,26 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_8_0.String()] = v
 	}
 
+	// need etcd configs since it's backed by etcd
+	if _, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zetcd__beta.String()]; ok {
+		_, ok1 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v2_3.String()]
+		_, ok2 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_1.String()]
+		_, ok3 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_2.String()]
+		_, ok4 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()]
+		if !ok1 && !ok2 && !ok3 && !ok4 {
+			return nil, fmt.Errorf("got %q config, but no etcd config is given", dbtesterpb.DatabaseID_zetcd__beta.String())
+		}
+	}
+	if _, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_cetcd__beta.String()]; ok {
+		_, ok1 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v2_3.String()]
+		_, ok2 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_1.String()]
+		_, ok3 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_2.String()]
+		_, ok4 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()]
+		if !ok1 && !ok2 && !ok3 && !ok4 {
+			return nil, fmt.Errorf("got %q config, but no etcd config is given", dbtesterpb.DatabaseID_cetcd__beta.String())
+		}
+	}
+
 	if cfg.ConfigClientMachineInitial.GoogleCloudStorageKeyPath != "" && !analyze {
 		bts, err = ioutil.ReadFile(cfg.ConfigClientMachineInitial.GoogleCloudStorageKeyPath)
 		if err != nil {
@@ -305,11 +325,12 @@ func (cfg *Config) ToRequest(databaseID string, op dbtesterpb.Operation, idx int
 		err = fmt.Errorf("database ID %q is not defined", databaseID)
 		return
 	}
+	did := dbtesterpb.DatabaseID(dbtesterpb.DatabaseID_value[databaseID])
 
 	req = &dbtesterpb.Request{
 		Operation:           op,
 		TriggerLogUpload:    gcfg.ConfigClientMachineBenchmarkSteps.Step4UploadLogs,
-		DatabaseID:          dbtesterpb.DatabaseID(dbtesterpb.DatabaseID_value[databaseID]),
+		DatabaseID:          did,
 		DatabaseTag:         gcfg.DatabaseTag,
 		PeerIPsString:       gcfg.PeerIPsString,
 		IPIndex:             uint32(idx),
