@@ -33,7 +33,7 @@ cp ${GOPATH}/src/${GIT_PATH}/bin/etcdctl ${GOPATH}/bin/etcdctl
 sudo cp ${GOPATH}/src/${GIT_PATH}/bin/etcdctl /etcdctl
 COMMENT
 
-ETCD_VER=v3.1.0
+ETCD_VER=v3.1.1
 
 GOOGLE_URL=https://storage.googleapis.com/etcd
 GITHUB_URL=https://github.com/coreos/etcd/releases/download
