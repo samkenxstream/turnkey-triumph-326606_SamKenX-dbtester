@@ -9,6 +9,7 @@ test_description: |
     - javac 1.8.0_121
     - Java(TM) SE Runtime Environment (build 1.8.0_121-b13)
     - Java HotSpot(TM) 64-Bit Server VM (build 25.121-b13, mixed mode)
+    - `/usr/bin/java -Djute.maxbuffer=33554432 -Xms50G -Xmx50G`
   - Consul v0.7.5 (Go 1.8.0)
 
 # common control options for all client machines
@@ -85,6 +86,14 @@ datatbase_id_to_config_client_machine_agent_control:
 
     # http://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html
     zookeeper__r3_5_2_alpha:
+      # maximum size, in bytes, of a request or response
+      # set it to 33 MB
+      java_d_jute_max_buffer: 33554432
+
+      # JVM min,max heap size
+      java_xms: 50G
+      java_xmx: 50G
+
       # tickTime; the length of a single tick, which is the basic time unit used by ZooKeeper,
       # as measured in milliseconds.
       tick_time: 2000
