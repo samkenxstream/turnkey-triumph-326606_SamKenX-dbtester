@@ -19,6 +19,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/coreos/dbtester/dbtesterpb"
 )
 
 // startConsul starts Consul.
@@ -34,27 +36,55 @@ func startConsul(fs *flags, t *transporterServer) error {
 	peerIPs := strings.Split(t.req.PeerIPsString, "___")
 
 	var flags []string
-	switch t.req.IpIndex {
-	case 0: // leader
-		flags = []string{
-			"agent",
-			"-server",
-			"-data-dir", fs.consulDataDir,
-			"-bind", peerIPs[t.req.IpIndex],
-			"-client", peerIPs[t.req.IpIndex],
-			"-bootstrap-expect", "3",
+	switch t.req.DatabaseID {
+	case dbtesterpb.DatabaseID_consul__v0_7_5:
+		switch t.req.IPIndex {
+		case 0: // leader
+			flags = []string{
+				"agent",
+				"-server",
+				"-data-dir", fs.consulDataDir,
+				"-bind", peerIPs[t.req.IPIndex],
+				"-client", peerIPs[t.req.IPIndex],
+				"-bootstrap-expect", fmt.Sprintf("%d", len(peerIPs)),
+			}
+		default:
+			flags = []string{
+				"agent",
+				"-server",
+				"-data-dir", fs.consulDataDir,
+				"-bind", peerIPs[t.req.IPIndex],
+				"-client", peerIPs[t.req.IPIndex],
+				"-join", peerIPs[0],
+			}
+		}
+
+	case dbtesterpb.DatabaseID_consul__v0_8_0:
+		switch t.req.IPIndex {
+		case 0: // leader
+			flags = []string{
+				"agent",
+				"-server",
+				"-data-dir", fs.consulDataDir,
+				"-bind", peerIPs[t.req.IPIndex],
+				"-client", peerIPs[t.req.IPIndex],
+				"-bootstrap-expect", fmt.Sprintf("%d", len(peerIPs)),
+			}
+		default:
+			flags = []string{
+				"agent",
+				"-server",
+				"-data-dir", fs.consulDataDir,
+				"-bind", peerIPs[t.req.IPIndex],
+				"-client", peerIPs[t.req.IPIndex],
+				"-join", peerIPs[0],
+			}
 		}
 
 	default:
-		flags = []string{
-			"agent",
-			"-server",
-			"-data-dir", fs.consulDataDir,
-			"-bind", peerIPs[t.req.IpIndex],
-			"-client", peerIPs[t.req.IpIndex],
-			"-join", peerIPs[0],
-		}
+		return fmt.Errorf("database ID %q is not supported", t.req.DatabaseID)
 	}
+
 	flagString := strings.Join(flags, " ")
 
 	cmd := exec.Command(fs.consulExec, flags...)
@@ -69,7 +99,7 @@ func startConsul(fs *flags, t *transporterServer) error {
 	t.cmd = cmd
 	t.cmdWait = make(chan struct{})
 	t.pid = int64(cmd.Process.Pid)
-	plog.Infof("started database %q (PID: %d)", cs, t.pid)
 
+	plog.Infof("started database %q (PID: %d)", cs, t.pid)
 	return nil
 }

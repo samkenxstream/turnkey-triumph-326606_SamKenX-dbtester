@@ -1,0 +1,14 @@
+syntax = "proto3";
+package dbtesterpb;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+
+// Flag_Zetcd_Beta is zetcd-specific flags
+// (https://github.com/coreos/zetcd).
+message flag__zetcd__beta {
+}

@@ -22,6 +22,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/coreos/dbtester/dbtesterpb"
 )
 
 var (
@@ -64,6 +66,23 @@ func init() {
 	}
 }
 
+// Java class paths for Zookeeper.
+// '-cp' is for 'class search path of directories and zip/jar files'.
+// See https://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html for more.
+const (
+	// JavaClassPathZookeeperr349 is the Java class paths of Zookeeper r3.4.9.
+	// CHANGE THIS FOR DIFFERENT ZOOKEEPER RELEASE!
+	// THIS IS ONLY VALID FOR Zookeeper r3.4.9.
+	// Search correct paths with 'find ./zookeeper/lib | sort'.
+	JavaClassPathZookeeperr349 = `-cp zookeeper-3.4.9.jar:lib/slf4j-api-1.6.1.jar:lib/slf4j-log4j12-1.6.1.jar:lib/log4j-1.2.16.jar:conf org.apache.zookeeper.server.quorum.QuorumPeerMain`
+
+	// JavaClassPathZookeeperr352alpha is the Java class paths of Zookeeper r3.5.2-alpha.
+	// CHANGE THIS FOR DIFFERENT ZOOKEEPER RELEASE!
+	// THIS IS ONLY VALID FOR Zookeeper r3.5.2-alpha.
+	// Search correct paths with 'find ./zookeeper/lib | sort'.
+	JavaClassPathZookeeperr352alpha = `-cp zookeeper-3.5.2-alpha.jar:lib/slf4j-api-1.7.5.jar:lib/slf4j-log4j12-1.7.5.jar:lib/log4j-1.2.17.jar:conf org.apache.zookeeper.server.quorum.QuorumPeerMain`
+)
+
 // startZookeeper starts Zookeeper.
 func startZookeeper(fs *flags, t *transporterServer) error {
 	if !exist(fs.javaExec) {
@@ -84,44 +103,104 @@ func startZookeeper(fs *flags, t *transporterServer) error {
 	}
 
 	ipath := filepath.Join(fs.zkDataDir, "myid")
-	plog.Infof("writing Zookeeper myid file %d to %s", t.req.ZookeeperConfig.MyID, ipath)
-	if err := toFile(fmt.Sprintf("%d", t.req.ZookeeperConfig.MyID), ipath); err != nil {
-		return err
+	switch t.req.DatabaseID {
+	case dbtesterpb.DatabaseID_zookeeper__r3_4_9:
+		if t.req.Flag_Zookeeper_R3_4_9 == nil {
+			return fmt.Errorf("request 'Flag_Zookeeper_R3_4_9' is nil")
+		}
+		plog.Infof("writing Zookeeper myid file %d to %s", t.req.Flag_Zookeeper_R3_4_9.MyID, ipath)
+		if err := toFile(fmt.Sprintf("%d", t.req.Flag_Zookeeper_R3_4_9.MyID), ipath); err != nil {
+			return err
+		}
+	case dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha:
+		if t.req.Flag_Zookeeper_R3_5_2Alpha == nil {
+			return fmt.Errorf("request 'Flag_Zookeeper_R3_5_2Alpha' is nil")
+		}
+		plog.Infof("writing Zookeeper myid file %d to %s", t.req.Flag_Zookeeper_R3_5_2Alpha.MyID, ipath)
+		if err := toFile(fmt.Sprintf("%d", t.req.Flag_Zookeeper_R3_5_2Alpha.MyID), ipath); err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("database ID %q is not supported", t.req.DatabaseID)
 	}
 
+	var cfg ZookeeperConfig
 	peerIPs := strings.Split(t.req.PeerIPsString, "___")
 	peers := []ZookeeperPeer{}
 	for i := range peerIPs {
 		peers = append(peers, ZookeeperPeer{MyID: i + 1, IP: peerIPs[i]})
 	}
-	cfg := ZookeeperConfig{
-		TickTime:             t.req.ZookeeperConfig.TickTime,
-		DataDir:              fs.zkDataDir,
-		ClientPort:           t.req.ZookeeperConfig.ClientPort,
-		InitLimit:            t.req.ZookeeperConfig.InitLimit,
-		SyncLimit:            t.req.ZookeeperConfig.SyncLimit,
-		MaxClientConnections: t.req.ZookeeperConfig.MaxClientConnections,
-		Peers:                peers,
-		SnapCount:            t.req.ZookeeperConfig.SnapCount,
+	switch t.req.DatabaseID {
+	case dbtesterpb.DatabaseID_zookeeper__r3_4_9:
+		cfg = ZookeeperConfig{
+			TickTime:             t.req.Flag_Zookeeper_R3_4_9.TickTime,
+			DataDir:              fs.zkDataDir,
+			ClientPort:           t.req.Flag_Zookeeper_R3_4_9.ClientPort,
+			InitLimit:            t.req.Flag_Zookeeper_R3_4_9.InitLimit,
+			SyncLimit:            t.req.Flag_Zookeeper_R3_4_9.SyncLimit,
+			MaxClientConnections: t.req.Flag_Zookeeper_R3_4_9.MaxClientConnections,
+			Peers:                peers,
+			SnapCount:            t.req.Flag_Zookeeper_R3_4_9.SnapCount,
+		}
+	case dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha:
+		cfg = ZookeeperConfig{
+			TickTime:             t.req.Flag_Zookeeper_R3_5_2Alpha.TickTime,
+			DataDir:              fs.zkDataDir,
+			ClientPort:           t.req.Flag_Zookeeper_R3_5_2Alpha.ClientPort,
+			InitLimit:            t.req.Flag_Zookeeper_R3_5_2Alpha.InitLimit,
+			SyncLimit:            t.req.Flag_Zookeeper_R3_5_2Alpha.SyncLimit,
+			MaxClientConnections: t.req.Flag_Zookeeper_R3_5_2Alpha.MaxClientConnections,
+			Peers:                peers,
+			SnapCount:            t.req.Flag_Zookeeper_R3_5_2Alpha.SnapCount,
+		}
+	default:
+		return fmt.Errorf("database ID %q is not supported", t.req.DatabaseID)
 	}
 	tpl := template.Must(template.New("zkTemplate").Parse(zkTemplate))
 	buf := new(bytes.Buffer)
 	if err := tpl.Execute(buf, cfg); err != nil {
 		return err
 	}
-	zc := buf.String()
-
-	plog.Infof("writing Zookeeper config file %q (config %q)", fs.zkConfig, zc)
-	if err := toFile(zc, fs.zkConfig); err != nil {
+	zctxt := buf.String()
+	plog.Infof("writing Zookeeper config file %q (config %q)", fs.zkConfig, zctxt)
+	if err := toFile(zctxt, fs.zkConfig); err != nil {
 		return err
 	}
 
-	// CHANGE THIS FOR DIFFERENT ZOOKEEPER RELEASE
-	// https://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html
-	// THIS IS ONLY VALID FOR Zookeeper r3.4.9
-	flagString := `-cp zookeeper-3.4.9.jar:lib/slf4j-api-1.6.1.jar:lib/slf4j-log4j12-1.6.1.jar:lib/log4j-1.2.16.jar:conf org.apache.zookeeper.server.quorum.QuorumPeerMain`
+	args := []string{shell}
+	var flagString string
+	switch t.req.DatabaseID {
+	case dbtesterpb.DatabaseID_zookeeper__r3_4_9:
+		flagString = JavaClassPathZookeeperr349
+		// -Djute.maxbuffer=33554432 -Xms50G -Xmx50G
+		if t.req.Flag_Zookeeper_R3_4_9.JavaDJuteMaxBuffer != 0 {
+			args = append(args, fmt.Sprintf("-Djute.maxbuffer=%d", t.req.Flag_Zookeeper_R3_4_9.JavaDJuteMaxBuffer))
+		}
+		if t.req.Flag_Zookeeper_R3_4_9.JavaDJuteMaxBuffer != 0 {
+			args = append(args, fmt.Sprintf("-Xms%s", t.req.Flag_Zookeeper_R3_4_9.JavaXms))
+		}
+		if t.req.Flag_Zookeeper_R3_4_9.JavaDJuteMaxBuffer != 0 {
+			args = append(args, fmt.Sprintf("-Xmx%s", t.req.Flag_Zookeeper_R3_4_9.JavaXmx))
+		}
 
-	args := []string{shell, "-c", fs.javaExec + " " + flagString + " " + fs.zkConfig}
+	case dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha:
+		flagString = JavaClassPathZookeeperr352alpha
+		// -Djute.maxbuffer=33554432 -Xms50G -Xmx50G
+		if t.req.Flag_Zookeeper_R3_5_2Alpha.JavaDJuteMaxBuffer != 0 {
+			args = append(args, fmt.Sprintf("-Djute.maxbuffer=%d", t.req.Flag_Zookeeper_R3_5_2Alpha.JavaDJuteMaxBuffer))
+		}
+		if t.req.Flag_Zookeeper_R3_5_2Alpha.JavaDJuteMaxBuffer != 0 {
+			args = append(args, fmt.Sprintf("-Xms%s", t.req.Flag_Zookeeper_R3_5_2Alpha.JavaXms))
+		}
+		if t.req.Flag_Zookeeper_R3_5_2Alpha.JavaDJuteMaxBuffer != 0 {
+			args = append(args, fmt.Sprintf("-Xmx%s", t.req.Flag_Zookeeper_R3_5_2Alpha.JavaXmx))
+		}
+
+	default:
+		return fmt.Errorf("database ID %q is not supported", t.req.DatabaseID)
+	}
+
+	args = append(args, "-c", fs.javaExec+" "+flagString+" "+fs.zkConfig)
 
 	cmd := exec.Command(args[0], args[1:]...)
 	cmd.Stdout = t.databaseLogFile
@@ -135,7 +214,7 @@ func startZookeeper(fs *flags, t *transporterServer) error {
 	t.cmd = cmd
 	t.cmdWait = make(chan struct{})
 	t.pid = int64(cmd.Process.Pid)
-	plog.Infof("started database %q (PID: %d)", cs, t.pid)
 
+	plog.Infof("started database %q (PID: %d)", cs, t.pid)
 	return nil
 }

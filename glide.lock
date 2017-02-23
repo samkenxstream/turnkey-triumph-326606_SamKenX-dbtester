@@ -1,5 +1,5 @@
-hash: d814a9bd4d998e7b38f52abf3bf6284b4ce1b9e0d1bbb3aecfcedb9dcbf9de16
-updated: 2017-02-15T11:01:56.215783528-08:00
+hash: fd49652adb4ec58cdca302dab916ff1d3bb80ccdf078dff45579becd0e75d613
+updated: 2017-02-22T19:06:28.732861827-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -21,7 +21,7 @@ imports:
 - name: github.com/cheggaaa/pb
   version: d7e6ca3010b6f084d8056847f55d7f572f180678
 - name: github.com/coreos/etcd
-  version: 2510a1488c51eb503c396c7e4e44ee910e4857a6
+  version: 86c9bf5c3f68707048e2cea63101e0d8d156331d
   subpackages:
   - auth/authpb
   - client
@@ -76,7 +76,7 @@ imports:
   subpackages:
   - asm/f64
 - name: github.com/gonum/plot
-  version: 0a603a9b2d3cc81f4736b30c5155495fb900700d
+  version: e6157b766208b18c1fdb8ba52f1c6eb75b650314
   subpackages:
   - palette
   - plotter
@@ -103,13 +103,13 @@ imports:
   subpackages:
   - schema
 - name: github.com/hashicorp/consul
-  version: 3da73be55c82a7f88f1dfd3ec16d267970ac8ff0
+  version: 65b7ed462cc574d57dc6dcc9bca74676089f7fee
   subpackages:
   - api
 - name: github.com/hashicorp/go-cleanhttp
   version: 3573b8b52aa7b37b9358d966a898feb387f62437
 - name: github.com/hashicorp/serf
-  version: cb45b412ee4f9d6cc2eeb2b2b7dd0f6cfd7545c1
+  version: 050c56d31a1ff2ebc50e3f4810fdff7e7563f6c8
   subpackages:
   - coordinate
 - name: github.com/inconshreveable/mousetrap
@@ -138,7 +138,7 @@ imports:
   subpackages:
   - codec
 - name: golang.org/x/image
-  version: 306b8294319cca33073246c5f75e5142f54f4cca
+  version: b952c941a68f1a00c1f8d855a12a8282d2f1b4f0
   subpackages:
   - draw
   - font
@@ -180,7 +180,7 @@ imports:
   - storage/v1
   - transport
 - name: google.golang.org/appengine
-  version: 2e4a801b39fc199db615bfca7d0b9f8cd9580599
+  version: 3a452f9e00122ead39586d68ffdb9c6e1326af3c
   subpackages:
   - internal
   - internal/app_identity

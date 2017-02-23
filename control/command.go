@@ -55,47 +55,39 @@ func init() {
 		break
 	}
 
-	Command.PersistentFlags().StringVar(&databaseID, "database-id", "etcdv3", "etcdv2, etcdv3, zookeeper, consul, zetcd, cetcd.")
+	Command.PersistentFlags().StringVar(&databaseID, "database-id", "etcd__tip", "See dbtesterpb/database_id.pb.go")
 	Command.PersistentFlags().StringVarP(&configPath, "config", "c", "", "YAML configuration file path.")
 	Command.PersistentFlags().StringVar(&diskDevice, "disk-device", dn, "Disk device to collect disk statistics metrics from.")
 	Command.PersistentFlags().StringVar(&networkInterface, "network-interface", nt, "Network interface to record in/outgoing packets.")
 }
 
 func commandFunc(cmd *cobra.Command, args []string) error {
-	switch databaseID {
-	case "etcdv2":
-	case "etcdv3":
-	case "zookeeper":
-	case "zetcd":
-	case "consul":
-	case "cetcd":
-	default:
-		return fmt.Errorf("%q is not supported", databaseID)
+	if !dbtesterpb.IsValidDatabaseID(databaseID) {
+		return fmt.Errorf("database id %q is unknown", databaseID)
 	}
 
 	cfg, err := dbtester.ReadConfig(configPath, false)
 	if err != nil {
 		return err
 	}
-
-	gcfg, ok := cfg.DatabaseIDToTestGroup[databaseID]
+	gcfg, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[databaseID]
 	if !ok {
 		return fmt.Errorf("%q is not found", databaseID)
 	}
 
-	if gcfg.BenchmarkSteps.Step2StressDatabase {
-		switch gcfg.BenchmarkOptions.Type {
+	if gcfg.ConfigClientMachineBenchmarkSteps.Step2StressDatabase {
+		switch gcfg.ConfigClientMachineBenchmarkOptions.Type {
 		case "write":
 		case "read":
 		case "read-oneshot":
 		default:
-			return fmt.Errorf("%q is not supported", gcfg.BenchmarkOptions.Type)
+			return fmt.Errorf("%q is not supported", gcfg.ConfigClientMachineBenchmarkOptions.Type)
 		}
 	}
 
 	pid := int64(os.Getpid())
-	plog.Infof("starting collecting system metrics at %q [disk device: %q | network interface: %q | PID: %d]", cfg.Control.ClientSystemMetricsPath, diskDevice, networkInterface, pid)
-	if err = os.RemoveAll(cfg.Control.ClientSystemMetricsPath); err != nil {
+	plog.Infof("starting collecting system metrics at %q [disk device: %q | network interface: %q | PID: %d]", cfg.ConfigClientMachineInitial.ClientSystemMetricsPath, diskDevice, networkInterface, pid)
+	if err = os.RemoveAll(cfg.ConfigClientMachineInitial.ClientSystemMetricsPath); err != nil {
 		return err
 	}
 	tcfg := &psn.TopConfig{
@@ -105,7 +97,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 	}
 	var metricsCSV *psn.CSV
 	metricsCSV, err = psn.NewCSV(
-		cfg.Control.ClientSystemMetricsPath,
+		cfg.ConfigClientMachineInitial.ClientSystemMetricsPath,
 		pid,
 		diskDevice,
 		networkInterface,
@@ -127,7 +119,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 				}
 
 			case <-donec:
-				plog.Infof("finishing collecting system metrics; saving CSV at %q", cfg.Control.ClientSystemMetricsPath)
+				plog.Infof("finishing collecting system metrics; saving CSV at %q", cfg.ConfigClientMachineInitial.ClientSystemMetricsPath)
 
 				if err := metricsCSV.Save(); err != nil {
 					plog.Errorf("psn.CSV.Save(%q) error %v", metricsCSV.FilePath, err)
@@ -139,7 +131,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 				if err != nil {
 					plog.Fatalf("psn.CSV.Interpolate(%q) failed with %v", metricsCSV.FilePath, err)
 				}
-				interpolated.FilePath = cfg.Control.ClientSystemMetricsInterpolatedPath
+				interpolated.FilePath = cfg.ConfigClientMachineInitial.ClientSystemMetricsInterpolatedPath
 				if err := interpolated.Save(); err != nil {
 					plog.Errorf("psn.CSV.Save(%q) error %v", interpolated.FilePath, err)
 				} else {
@@ -158,14 +150,14 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 	plog.Infof("npt update error: %v", nerr)
 
 	println()
-	if gcfg.BenchmarkSteps.Step1StartDatabase {
+	if gcfg.ConfigClientMachineBenchmarkSteps.Step1StartDatabase {
 		plog.Info("step 1: starting databases...")
-		if _, err = cfg.BroadcaseRequest(databaseID, dbtesterpb.Request_Start); err != nil {
+		if _, err = cfg.BroadcaseRequest(databaseID, dbtesterpb.Operation_Start); err != nil {
 			return err
 		}
 	}
 
-	if gcfg.BenchmarkSteps.Step2StressDatabase {
+	if gcfg.ConfigClientMachineBenchmarkSteps.Step2StressDatabase {
 		println()
 		time.Sleep(5 * time.Second)
 		println()
@@ -175,14 +167,14 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	if gcfg.BenchmarkSteps.Step3StopDatabase {
+	if gcfg.ConfigClientMachineBenchmarkSteps.Step3StopDatabase {
 		println()
 		time.Sleep(5 * time.Second)
 		println()
 		plog.Info("step 3: stopping tests...")
 		var idxToResp map[int]dbtesterpb.Response
 		for i := 0; i < 5; i++ {
-			idxToResp, err = cfg.BroadcaseRequest(databaseID, dbtesterpb.Request_Stop)
+			idxToResp, err = cfg.BroadcaseRequest(databaseID, dbtesterpb.Operation_Stop)
 			if err != nil {
 				plog.Warningf("#%d: STOP failed at %v", i, err)
 				time.Sleep(300 * time.Millisecond)
@@ -206,36 +198,36 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 	close(donec)
 	<-sysdonec
 
-	if gcfg.BenchmarkSteps.Step4UploadLogs {
+	if gcfg.ConfigClientMachineBenchmarkSteps.Step4UploadLogs {
 		println()
 		time.Sleep(3 * time.Second)
 		println()
 		plog.Info("step 4: uploading logs...")
-		if err = cfg.UploadToGoogle(databaseID, cfg.Control.LogPath); err != nil {
+		if err = cfg.UploadToGoogle(databaseID, cfg.ConfigClientMachineInitial.LogPath); err != nil {
 			return err
 		}
-		if err = cfg.UploadToGoogle(databaseID, cfg.Control.ClientSystemMetricsPath); err != nil {
+		if err = cfg.UploadToGoogle(databaseID, cfg.ConfigClientMachineInitial.ClientSystemMetricsPath); err != nil {
 			return err
 		}
-		if err = cfg.UploadToGoogle(databaseID, cfg.Control.ClientSystemMetricsInterpolatedPath); err != nil {
+		if err = cfg.UploadToGoogle(databaseID, cfg.ConfigClientMachineInitial.ClientSystemMetricsInterpolatedPath); err != nil {
 			return err
 		}
-		if err = cfg.UploadToGoogle(databaseID, cfg.Control.ClientLatencyThroughputTimeseriesPath); err != nil {
+		if err = cfg.UploadToGoogle(databaseID, cfg.ConfigClientMachineInitial.ClientLatencyThroughputTimeseriesPath); err != nil {
 			return err
 		}
-		if err = cfg.UploadToGoogle(databaseID, cfg.Control.ClientLatencyDistributionAllPath); err != nil {
+		if err = cfg.UploadToGoogle(databaseID, cfg.ConfigClientMachineInitial.ClientLatencyDistributionAllPath); err != nil {
 			return err
 		}
-		if err = cfg.UploadToGoogle(databaseID, cfg.Control.ClientLatencyDistributionPercentilePath); err != nil {
+		if err = cfg.UploadToGoogle(databaseID, cfg.ConfigClientMachineInitial.ClientLatencyDistributionPercentilePath); err != nil {
 			return err
 		}
-		if err = cfg.UploadToGoogle(databaseID, cfg.Control.ClientLatencyDistributionSummaryPath); err != nil {
+		if err = cfg.UploadToGoogle(databaseID, cfg.ConfigClientMachineInitial.ClientLatencyDistributionSummaryPath); err != nil {
 			return err
 		}
-		if err = cfg.UploadToGoogle(databaseID, cfg.Control.ClientLatencyByKeyNumberPath); err != nil {
+		if err = cfg.UploadToGoogle(databaseID, cfg.ConfigClientMachineInitial.ClientLatencyByKeyNumberPath); err != nil {
 			return err
 		}
-		if err = cfg.UploadToGoogle(databaseID, cfg.Control.ServerDiskSpaceUsageSummaryPath); err != nil {
+		if err = cfg.UploadToGoogle(databaseID, cfg.ConfigClientMachineInitial.ServerDiskSpaceUsageSummaryPath); err != nil {
 			return err
 		}
 	}

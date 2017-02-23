@@ -3,6 +3,16 @@ package dbtesterpb;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
+import "dbtesterpb/database_id.proto";
+
+import "dbtesterpb/flag_etcd.proto";
+import "dbtesterpb/flag_zookeeper.proto";
+import "dbtesterpb/flag_consul.proto";
+import "dbtesterpb/flag_zetcd.proto";
+import "dbtesterpb/flag_cetcd.proto";
+
+import "dbtesterpb/config_client_machine.proto";
+
 option (gogoproto.marshaler_all) = true;
 option (gogoproto.sizer_all) = true;
 option (gogoproto.unmarshaler_all) = true;
@@ -12,59 +22,45 @@ service Transporter {
   rpc Transfer(Request) returns (Response) {}
 }
 
+enum Operation {
+  Start = 0;
+  Stop = 1;
+  Heartbeat = 2; 
+}
+
 message Request {
-  enum Operation {
-    Start     = 0;
-    Stop      = 1;
-    Heartbeat = 2; 
-  }
-  enum Database {
-    etcdv2    = 0;
-    etcdv3    = 1;
-    zookeeper = 2;
-    consul    = 3;
-    zetcd     = 4;
-    cetcd     = 5;
-  }
-  message Control {
-    string googleCloudProjectName = 1;
-    string googleCloudStorageKey = 2;
-    string googleCloudStorageBucketName = 3;
-    string googleCloudStorageSubDirectory = 4;
-  }
-  message Etcdv3 {
-    int64 snapCount = 1;
-    int64 quotaSizeBytes = 2;
-  }
-  message Zookeeper {
-    uint32 myID = 1;
-    int64 tickTime   = 2;
-    int64 clientPort = 3;
-    int64 initLimit  = 4;
-    int64 syncLimit  = 5;
-    int64 snapCount  = 6;
-    int64 maxClientConnections = 7;
-  }
+  Operation Operation = 1;
+  bool TriggerLogUpload = 2;
 
-  Operation operation        = 1;
-  bool      triggerLogUpload = 2;
-  Database  databaseID       = 3;
-  string    databaseTag      = 4;
+  DatabaseID DatabaseID = 3;
+  string DatabaseTag = 4;
 
-  string peerIPsString = 5;
-  uint32 ipIndex       = 6;
+  string PeerIPsString = 5;
+  uint32 IPIndex = 6;
 
-  int64 currentClientNumber = 7;
+  int64 CurrentClientNumber = 7;
 
-  Control control           = 8;
-  Etcdv3 etcdv3Config       = 9;
-  Zookeeper zookeeperConfig = 10;
+  ConfigClientMachineInitial ConfigClientMachineInitial = 8;
+
+  flag__etcd__v2_3 flag__etcd__v2_3 = 100;
+  flag__etcd__v3_1 flag__etcd__v3_1 = 101;
+  flag__etcd__v3_2 flag__etcd__v3_2 = 102;
+  flag__etcd__tip flag__etcd__tip = 103;
+
+  flag__zookeeper__r3_4_9 flag__zookeeper__r3_4_9 = 200;
+  flag__zookeeper__r3_5_2_alpha flag__zookeeper__r3_5_2_alpha = 201;
+
+  flag__consul__v0_7_5 flag__consul__v0_7_5 = 300;
+  flag__consul__v0_8_0 flag__consul__v0_8_0 = 301;
+
+  flag__cetcd__beta flag__cetcd__beta = 400;
+  flag__zetcd__beta flag__zetcd__beta = 500;
 }
 
 message Response {
-  bool success = 1;
-  
+  bool Success = 1;
+
   // DiskSpaceUsageBytes is the data size of the database on disk in bytes.
   // It measures after database is requested to stop.
-  int64 diskSpaceUsageBytes = 2;
+  int64 DiskSpaceUsageBytes = 2;
 }

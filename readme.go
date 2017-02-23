@@ -1,3 +1,17 @@
+// Copyright 2017 CoreOS, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package dbtester
 
 import (
@@ -8,7 +22,7 @@ import (
 
 // WriteREADME writes README.
 func (cfg *Config) WriteREADME(summary string) error {
-	plog.Printf("writing README at %q", cfg.README.OutputPath)
+	plog.Printf("writing README at %q", cfg.ConfigAnalyzeMachineREADME.OutputPath)
 
 	buf := new(bytes.Buffer)
 	buf.WriteString("\n\n")
@@ -33,5 +47,5 @@ func (cfg *Config) WriteREADME(summary string) error {
 		buf.WriteString("\n\n")
 	}
 
-	return toFile(buf.String(), cfg.README.OutputPath)
+	return toFile(buf.String(), cfg.ConfigAnalyzeMachineREADME.OutputPath)
 }

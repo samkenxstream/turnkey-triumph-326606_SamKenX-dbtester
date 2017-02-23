@@ -36,8 +36,8 @@ type values struct {
 	sampleSize int
 }
 
-func newValues(gcfg TestGroup) (v values, rerr error) {
-	v.bytes = [][]byte{randBytes(gcfg.BenchmarkOptions.ValueSizeBytes)}
+func newValues(gcfg dbtesterpb.ConfigClientMachineAgentControl) (v values, rerr error) {
+	v.bytes = [][]byte{randBytes(gcfg.ConfigClientMachineBenchmarkOptions.ValueSizeBytes)}
 	v.strings = []string{string(v.bytes[0])}
 	v.sampleSize = 1
 	return
@@ -45,7 +45,7 @@ func newValues(gcfg TestGroup) (v values, rerr error) {
 
 // Stress stresses the database.
 func (cfg *Config) Stress(databaseID string) error {
-	gcfg, ok := cfg.DatabaseIDToTestGroup[databaseID]
+	gcfg, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[databaseID]
 	if !ok {
 		return fmt.Errorf("%q does not exist", databaseID)
 	}
@@ -55,40 +55,40 @@ func (cfg *Config) Stress(databaseID string) error {
 		return err
 	}
 
-	switch gcfg.BenchmarkOptions.Type {
+	switch gcfg.ConfigClientMachineBenchmarkOptions.Type {
 	case "write":
 		plog.Println("write generateReport is started...")
 
 		// fixed number of client numbers
-		if len(gcfg.BenchmarkOptions.ConnectionClientNumbers) == 0 {
+		if len(gcfg.ConfigClientMachineBenchmarkOptions.ConnectionClientNumbers) == 0 {
 			h, done := newWriteHandlers(gcfg)
 			reqGen := func(inflightReqs chan<- request) { generateWrites(gcfg, 0, vals, inflightReqs) }
 			cfg.generateReport(gcfg, h, done, reqGen)
 
 		} else {
 			// variable client numbers
-			rs := assignRequest(gcfg.BenchmarkOptions.ConnectionClientNumbers, gcfg.BenchmarkOptions.RequestNumber)
+			rs := assignRequest(gcfg.ConfigClientMachineBenchmarkOptions.ConnectionClientNumbers, gcfg.ConfigClientMachineBenchmarkOptions.RequestNumber)
 
 			var stats []report.Stats
 			reqCompleted := int64(0)
 			for i := 0; i < len(rs); i++ {
 				copied := gcfg
-				copied.BenchmarkOptions.ConnectionNumber = gcfg.BenchmarkOptions.ConnectionClientNumbers[i]
-				copied.BenchmarkOptions.ClientNumber = gcfg.BenchmarkOptions.ConnectionClientNumbers[i]
-				copied.BenchmarkOptions.RequestNumber = rs[i]
+				copied.ConfigClientMachineBenchmarkOptions.ConnectionNumber = gcfg.ConfigClientMachineBenchmarkOptions.ConnectionClientNumbers[i]
+				copied.ConfigClientMachineBenchmarkOptions.ClientNumber = gcfg.ConfigClientMachineBenchmarkOptions.ConnectionClientNumbers[i]
+				copied.ConfigClientMachineBenchmarkOptions.RequestNumber = rs[i]
 				ncfg := *cfg
-				ncfg.DatabaseIDToTestGroup[databaseID] = copied
+				ncfg.DatabaseIDToConfigClientMachineAgentControl[databaseID] = copied
 
 				go func() {
-					plog.Infof("signaling agent with client number %d", copied.BenchmarkOptions.ClientNumber)
-					if _, err := (&ncfg).BroadcaseRequest(databaseID, dbtesterpb.Request_Heartbeat); err != nil {
+					plog.Infof("signaling agent with client number %d", copied.ConfigClientMachineBenchmarkOptions.ClientNumber)
+					if _, err := (&ncfg).BroadcaseRequest(databaseID, dbtesterpb.Operation_Heartbeat); err != nil {
 						plog.Panic(err)
 					}
 				}()
 
 				h, done := newWriteHandlers(copied)
 				reqGen := func(inflightReqs chan<- request) { generateWrites(copied, reqCompleted, vals, inflightReqs) }
-				b := newBenchmark(copied.BenchmarkOptions.RequestNumber, copied.BenchmarkOptions.ClientNumber, h, done, reqGen)
+				b := newBenchmark(copied.ConfigClientMachineBenchmarkOptions.RequestNumber, copied.ConfigClientMachineBenchmarkOptions.ClientNumber, h, done, reqGen)
 
 				// wait until rs[i] requests are finished
 				// do not end reports yet
@@ -106,7 +106,7 @@ func (cfg *Config) Stress(databaseID string) error {
 			plog.Info("combining all reports")
 
 			combined := report.Stats{ErrorDist: make(map[string]int)}
-			combinedClientNumber := make([]int64, 0, gcfg.BenchmarkOptions.RequestNumber)
+			combinedClientNumber := make([]int64, 0, gcfg.ConfigClientMachineBenchmarkOptions.RequestNumber)
 			for i, st := range stats {
 				combined.AvgTotal += st.AvgTotal
 				combined.Total += st.Total
@@ -128,7 +128,7 @@ func (cfg *Config) Stress(databaseID string) error {
 				// So now we have two duplicate unix time seconds.
 				// This will be handled in aggregating by keys.
 				//
-				clientN := gcfg.BenchmarkOptions.ConnectionClientNumbers[i]
+				clientN := gcfg.ConfigClientMachineBenchmarkOptions.ConnectionClientNumbers[i]
 				clientNs := make([]int64, len(st.TimeSeries))
 				for i := range st.TimeSeries {
 					clientNs[i] = clientN
@@ -184,18 +184,18 @@ func (cfg *Config) Stress(databaseID string) error {
 		}
 		for k, v := range totalKeysFunc(gcfg.DatabaseEndpoints) {
 			plog.Infof("expected write total results [expected_total: %d | database: %q | endpoint: %q | number_of_keys: %d]",
-				gcfg.BenchmarkOptions.RequestNumber, gcfg.DatabaseID, k, v)
+				gcfg.ConfigClientMachineBenchmarkOptions.RequestNumber, gcfg.DatabaseID, k, v)
 		}
 
 	case "read":
-		key, value := sameKey(gcfg.BenchmarkOptions.KeySizeBytes), vals.strings[0]
+		key, value := sameKey(gcfg.ConfigClientMachineBenchmarkOptions.KeySizeBytes), vals.strings[0]
 
 		switch gcfg.DatabaseID {
 		case "etcdv2":
 			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
 			var err error
 			for i := 0; i < 7; i++ {
-				clients := mustCreateClientsEtcdv2(gcfg.DatabaseEndpoints, gcfg.BenchmarkOptions.ConnectionNumber)
+				clients := mustCreateClientsEtcdv2(gcfg.DatabaseEndpoints, gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber)
 				_, err = clients[0].Set(context.Background(), key, value, nil)
 				if err != nil {
 					continue
@@ -232,7 +232,7 @@ func (cfg *Config) Stress(databaseID string) error {
 			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
 			var err error
 			for i := 0; i < 7; i++ {
-				conns := mustCreateConnsZk(gcfg.DatabaseEndpoints, gcfg.BenchmarkOptions.ConnectionNumber)
+				conns := mustCreateConnsZk(gcfg.DatabaseEndpoints, gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber)
 				_, err = conns[0].Create("/"+key, vals.bytes[0], zkCreateFlags, zkCreateACL)
 				if err != nil {
 					continue
@@ -252,7 +252,7 @@ func (cfg *Config) Stress(databaseID string) error {
 			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
 			var err error
 			for i := 0; i < 7; i++ {
-				clients := mustCreateConnsConsul(gcfg.DatabaseEndpoints, gcfg.BenchmarkOptions.ConnectionNumber)
+				clients := mustCreateConnsConsul(gcfg.DatabaseEndpoints, gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber)
 				_, err = clients[0].Put(&consulapi.KVPair{Key: key, Value: vals.bytes[0]}, nil)
 				if err != nil {
 					continue
@@ -272,7 +272,7 @@ func (cfg *Config) Stress(databaseID string) error {
 		plog.Println("read generateReport is finished...")
 
 	case "read-oneshot":
-		key, value := sameKey(gcfg.BenchmarkOptions.KeySizeBytes), vals.strings[0]
+		key, value := sameKey(gcfg.ConfigClientMachineBenchmarkOptions.KeySizeBytes), vals.strings[0]
 		plog.Infof("writing key for read-oneshot [key: %q | database: %q]", key, gcfg.DatabaseID)
 		var err error
 		switch gcfg.DatabaseID {
@@ -311,18 +311,18 @@ func (cfg *Config) Stress(databaseID string) error {
 	return nil
 }
 
-func newReadHandlers(gcfg TestGroup) (rhs []ReqHandler, done func()) {
-	rhs = make([]ReqHandler, gcfg.BenchmarkOptions.ClientNumber)
+func newReadHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) (rhs []ReqHandler, done func()) {
+	rhs = make([]ReqHandler, gcfg.ConfigClientMachineBenchmarkOptions.ClientNumber)
 	switch gcfg.DatabaseID {
 	case "etcdv2":
-		conns := mustCreateClientsEtcdv2(gcfg.DatabaseEndpoints, gcfg.BenchmarkOptions.ConnectionNumber)
+		conns := mustCreateClientsEtcdv2(gcfg.DatabaseEndpoints, gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber)
 		for i := range conns {
 			rhs[i] = newGetEtcd2(conns[i])
 		}
 	case "etcdv3", "etcdtip":
 		clients := mustCreateClientsEtcdv3(gcfg.DatabaseEndpoints, etcdv3ClientCfg{
-			totalConns:   gcfg.BenchmarkOptions.ConnectionNumber,
-			totalClients: gcfg.BenchmarkOptions.ClientNumber,
+			totalConns:   gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber,
+			totalClients: gcfg.ConfigClientMachineBenchmarkOptions.ClientNumber,
 		})
 		for i := range clients {
 			rhs[i] = newGetEtcd3(clients[i].KV)
@@ -333,7 +333,7 @@ func newReadHandlers(gcfg TestGroup) (rhs []ReqHandler, done func()) {
 			}
 		}
 	case "zookeeper", "zetcd":
-		conns := mustCreateConnsZk(gcfg.DatabaseEndpoints, gcfg.BenchmarkOptions.ConnectionNumber)
+		conns := mustCreateConnsZk(gcfg.DatabaseEndpoints, gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber)
 		for i := range conns {
 			rhs[i] = newGetZK(conns[i])
 		}
@@ -343,7 +343,7 @@ func newReadHandlers(gcfg TestGroup) (rhs []ReqHandler, done func()) {
 			}
 		}
 	case "consul", "cetcd":
-		conns := mustCreateConnsConsul(gcfg.DatabaseEndpoints, gcfg.BenchmarkOptions.ConnectionNumber)
+		conns := mustCreateConnsConsul(gcfg.DatabaseEndpoints, gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber)
 		for i := range conns {
 			rhs[i] = newGetConsul(conns[i])
 		}
@@ -351,18 +351,18 @@ func newReadHandlers(gcfg TestGroup) (rhs []ReqHandler, done func()) {
 	return rhs, done
 }
 
-func newWriteHandlers(gcfg TestGroup) (rhs []ReqHandler, done func()) {
-	rhs = make([]ReqHandler, gcfg.BenchmarkOptions.ClientNumber)
+func newWriteHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) (rhs []ReqHandler, done func()) {
+	rhs = make([]ReqHandler, gcfg.ConfigClientMachineBenchmarkOptions.ClientNumber)
 	switch gcfg.DatabaseID {
 	case "etcdv2":
-		conns := mustCreateClientsEtcdv2(gcfg.DatabaseEndpoints, gcfg.BenchmarkOptions.ConnectionNumber)
+		conns := mustCreateClientsEtcdv2(gcfg.DatabaseEndpoints, gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber)
 		for i := range conns {
 			rhs[i] = newPutEtcd2(conns[i])
 		}
 	case "etcdv3", "etcdtip":
 		etcdClients := mustCreateClientsEtcdv3(gcfg.DatabaseEndpoints, etcdv3ClientCfg{
-			totalConns:   gcfg.BenchmarkOptions.ConnectionNumber,
-			totalClients: gcfg.BenchmarkOptions.ClientNumber,
+			totalConns:   gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber,
+			totalClients: gcfg.ConfigClientMachineBenchmarkOptions.ClientNumber,
 		})
 		for i := range etcdClients {
 			rhs[i] = newPutEtcd3(etcdClients[i])
@@ -373,13 +373,13 @@ func newWriteHandlers(gcfg TestGroup) (rhs []ReqHandler, done func()) {
 			}
 		}
 	case "zookeeper", "zetcd":
-		if gcfg.BenchmarkOptions.SameKey {
-			key := sameKey(gcfg.BenchmarkOptions.KeySizeBytes)
-			valueBts := randBytes(gcfg.BenchmarkOptions.ValueSizeBytes)
+		if gcfg.ConfigClientMachineBenchmarkOptions.SameKey {
+			key := sameKey(gcfg.ConfigClientMachineBenchmarkOptions.KeySizeBytes)
+			valueBts := randBytes(gcfg.ConfigClientMachineBenchmarkOptions.ValueSizeBytes)
 			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
 			var err error
 			for i := 0; i < 7; i++ {
-				conns := mustCreateConnsZk(gcfg.DatabaseEndpoints, gcfg.BenchmarkOptions.ConnectionNumber)
+				conns := mustCreateConnsZk(gcfg.DatabaseEndpoints, gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber)
 				_, err = conns[0].Create("/"+key, valueBts, zkCreateFlags, zkCreateACL)
 				if err != nil {
 					continue
@@ -396,9 +396,9 @@ func newWriteHandlers(gcfg TestGroup) (rhs []ReqHandler, done func()) {
 			}
 		}
 
-		conns := mustCreateConnsZk(gcfg.DatabaseEndpoints, gcfg.BenchmarkOptions.ConnectionNumber)
+		conns := mustCreateConnsZk(gcfg.DatabaseEndpoints, gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber)
 		for i := range conns {
-			if gcfg.BenchmarkOptions.SameKey {
+			if gcfg.ConfigClientMachineBenchmarkOptions.SameKey {
 				rhs[i] = newPutOverwriteZK(conns[i])
 			} else {
 				rhs[i] = newPutCreateZK(conns[i])
@@ -410,7 +410,7 @@ func newWriteHandlers(gcfg TestGroup) (rhs []ReqHandler, done func()) {
 			}
 		}
 	case "consul", "cetcd":
-		conns := mustCreateConnsConsul(gcfg.DatabaseEndpoints, gcfg.BenchmarkOptions.ConnectionNumber)
+		conns := mustCreateConnsConsul(gcfg.DatabaseEndpoints, gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber)
 		for i := range conns {
 			rhs[i] = newPutConsul(conns[i])
 		}
@@ -424,8 +424,8 @@ func newWriteHandlers(gcfg TestGroup) (rhs []ReqHandler, done func()) {
 	return
 }
 
-func newReadOneshotHandlers(gcfg TestGroup) []ReqHandler {
-	rhs := make([]ReqHandler, gcfg.BenchmarkOptions.ClientNumber)
+func newReadOneshotHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) []ReqHandler {
+	rhs := make([]ReqHandler, gcfg.ConfigClientMachineBenchmarkOptions.ClientNumber)
 	switch gcfg.DatabaseID {
 	case "etcdv2":
 		for i := range rhs {
@@ -448,7 +448,7 @@ func newReadOneshotHandlers(gcfg TestGroup) []ReqHandler {
 	case "zookeeper", "zetcd":
 		for i := range rhs {
 			rhs[i] = func(ctx context.Context, req *request) error {
-				conns := mustCreateConnsZk(gcfg.DatabaseEndpoints, gcfg.BenchmarkOptions.ConnectionNumber)
+				conns := mustCreateConnsZk(gcfg.DatabaseEndpoints, gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber)
 				defer conns[0].Close()
 				return newGetZK(conns[0])(ctx, req)
 			}
@@ -464,18 +464,18 @@ func newReadOneshotHandlers(gcfg TestGroup) []ReqHandler {
 	return rhs
 }
 
-func generateReads(gcfg TestGroup, key string, inflightReqs chan<- request) {
+func generateReads(gcfg dbtesterpb.ConfigClientMachineAgentControl, key string, inflightReqs chan<- request) {
 	defer close(inflightReqs)
 
 	var rateLimiter *rate.Limiter
-	if gcfg.BenchmarkOptions.RateLimitRequestsPerSecond > 0 {
+	if gcfg.ConfigClientMachineBenchmarkOptions.RateLimitRequestsPerSecond > 0 {
 		rateLimiter = rate.NewLimiter(
-			rate.Limit(gcfg.BenchmarkOptions.RateLimitRequestsPerSecond),
-			int(gcfg.BenchmarkOptions.RateLimitRequestsPerSecond),
+			rate.Limit(gcfg.ConfigClientMachineBenchmarkOptions.RateLimitRequestsPerSecond),
+			int(gcfg.ConfigClientMachineBenchmarkOptions.RateLimitRequestsPerSecond),
 		)
 	}
 
-	for i := int64(0); i < gcfg.BenchmarkOptions.RequestNumber; i++ {
+	for i := int64(0); i < gcfg.ConfigClientMachineBenchmarkOptions.RequestNumber; i++ {
 		if rateLimiter != nil {
 			rateLimiter.Wait(context.TODO())
 		}
@@ -487,21 +487,21 @@ func generateReads(gcfg TestGroup, key string, inflightReqs chan<- request) {
 
 		case "etcdv3", "etcdtip":
 			opts := []clientv3.OpOption{clientv3.WithRange("")}
-			if gcfg.BenchmarkOptions.StaleRead {
+			if gcfg.ConfigClientMachineBenchmarkOptions.StaleRead {
 				opts = append(opts, clientv3.WithSerializable())
 			}
 			inflightReqs <- request{etcdv3Op: clientv3.OpGet(key, opts...)}
 
 		case "zookeeper", "zetcd":
 			op := zkOp{key: key}
-			if gcfg.BenchmarkOptions.StaleRead {
+			if gcfg.ConfigClientMachineBenchmarkOptions.StaleRead {
 				op.staleRead = true
 			}
 			inflightReqs <- request{zkOp: op}
 
 		case "consul", "cetcd":
 			op := consulOp{key: key}
-			if gcfg.BenchmarkOptions.StaleRead {
+			if gcfg.ConfigClientMachineBenchmarkOptions.StaleRead {
 				op.staleRead = true
 			}
 			inflightReqs <- request{consulOp: op}
@@ -509,12 +509,12 @@ func generateReads(gcfg TestGroup, key string, inflightReqs chan<- request) {
 	}
 }
 
-func generateWrites(gcfg TestGroup, startIdx int64, vals values, inflightReqs chan<- request) {
+func generateWrites(gcfg dbtesterpb.ConfigClientMachineAgentControl, startIdx int64, vals values, inflightReqs chan<- request) {
 	var rateLimiter *rate.Limiter
-	if gcfg.BenchmarkOptions.RateLimitRequestsPerSecond > 0 {
+	if gcfg.ConfigClientMachineBenchmarkOptions.RateLimitRequestsPerSecond > 0 {
 		rateLimiter = rate.NewLimiter(
-			rate.Limit(gcfg.BenchmarkOptions.RateLimitRequestsPerSecond),
-			int(gcfg.BenchmarkOptions.RateLimitRequestsPerSecond),
+			rate.Limit(gcfg.ConfigClientMachineBenchmarkOptions.RateLimitRequestsPerSecond),
+			int(gcfg.ConfigClientMachineBenchmarkOptions.RateLimitRequestsPerSecond),
 		)
 	}
 
@@ -524,10 +524,10 @@ func generateWrites(gcfg TestGroup, startIdx int64, vals values, inflightReqs ch
 		wg.Wait()
 	}()
 
-	for i := int64(0); i < gcfg.BenchmarkOptions.RequestNumber; i++ {
-		k := sequentialKey(gcfg.BenchmarkOptions.KeySizeBytes, i+startIdx)
-		if gcfg.BenchmarkOptions.SameKey {
-			k = sameKey(gcfg.BenchmarkOptions.KeySizeBytes)
+	for i := int64(0); i < gcfg.ConfigClientMachineBenchmarkOptions.RequestNumber; i++ {
+		k := sequentialKey(gcfg.ConfigClientMachineBenchmarkOptions.KeySizeBytes, i+startIdx)
+		if gcfg.ConfigClientMachineBenchmarkOptions.SameKey {
+			k = sameKey(gcfg.ConfigClientMachineBenchmarkOptions.KeySizeBytes)
 		}
 
 		v := vals.bytes[i%int64(vals.sampleSize)]

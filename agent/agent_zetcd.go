@@ -18,6 +18,8 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
+
+	"github.com/coreos/dbtester/dbtesterpb"
 )
 
 // startZetcd starts zetcd. This assumes that etcd is already started.
@@ -32,11 +34,19 @@ func startZetcd(fs *flags, t *transporterServer) error {
 		clientURLs[i] = fmt.Sprintf("http://%s:2379", u)
 	}
 
-	flags := []string{
-		// "-zkaddr", "0.0.0.0:2181",
-		"-zkaddr", fmt.Sprintf("%s:2181", peerIPs[t.req.IpIndex]),
-		"-endpoint", clientURLs[t.req.IpIndex],
+	var flags []string
+	switch t.req.DatabaseID {
+	case dbtesterpb.DatabaseID_zetcd__beta:
+		flags = []string{
+			// "-zkaddr", "0.0.0.0:2181",
+			"-zkaddr", fmt.Sprintf("%s:2181", peerIPs[t.req.IPIndex]),
+			"-endpoint", clientURLs[t.req.IPIndex],
+		}
+
+	default:
+		return fmt.Errorf("database ID %q is not supported", t.req.DatabaseID)
 	}
+
 	flagString := strings.Join(flags, " ")
 
 	cmd := exec.Command(fs.zetcdExec, flags...)
@@ -51,7 +61,7 @@ func startZetcd(fs *flags, t *transporterServer) error {
 	t.proxyCmd = cmd
 	t.proxyCmdWait = make(chan struct{})
 	t.proxyPid = int64(cmd.Process.Pid)
-	plog.Infof("started database %q (PID: %d)", cs, t.pid)
 
+	plog.Infof("started database %q (PID: %d)", cs, t.pid)
 	return nil
 }

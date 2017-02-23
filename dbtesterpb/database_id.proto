@@ -1,0 +1,28 @@
+syntax = "proto3";
+package dbtesterpb;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+
+// DatabaseID differentiates between major or minor releases (possibly different APIs)
+// of each database. Make sure to make accordingn changes in 'flag_*' whenever an ID
+// is added/removed.
+enum DatabaseID {
+  etcd__v2_3 = 0;
+  etcd__v3_1 = 1;
+  etcd__v3_2 = 2;
+  etcd__tip = 3;
+
+  zookeeper__r3_4_9 = 10;
+  zookeeper__r3_5_2_alpha = 11;
+
+  consul__v0_7_5 = 20;
+  consul__v0_8_0 = 21;
+
+  zetcd__beta = 30;
+  cetcd__beta = 40;
+}

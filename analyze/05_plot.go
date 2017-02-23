@@ -16,9 +16,9 @@ package analyze
 
 import (
 	"fmt"
-	"image/color"
 
-	"github.com/coreos/dbtester"
+	"github.com/coreos/dbtester/dbtesterpb"
+
 	"github.com/gonum/plot"
 	"github.com/gonum/plot/plotter"
 	"github.com/gonum/plot/plotutil"
@@ -49,7 +49,7 @@ type triplet struct {
 	maxCol dataframe.Column
 }
 
-func (all *allAggregatedData) draw(cfg dbtester.Plot, pairs ...pair) error {
+func (all *allAggregatedData) draw(cfg dbtesterpb.ConfigAnalyzeMachinePlot, pairs ...pair) error {
 	// frame now contains
 	// AVG-LATENCY-MS-etcd-v3.1-go1.7.4, AVG-LATENCY-MS-zookeeper-r3.4.9-java8, AVG-LATENCY-MS-consul-v0.7.2-go1.7.4
 	plt, err := plot.New()
@@ -72,7 +72,7 @@ func (all *allAggregatedData) draw(cfg dbtester.Plot, pairs ...pair) error {
 		if err != nil {
 			return err
 		}
-		l.Color = getRGB(all.headerToDatabaseID[p.y.Header()], i)
+		l.Color = dbtesterpb.GetRGBI(all.headerToDatabaseID[p.y.Header()], i)
 		l.Dashes = plotutil.Dashes(i)
 		ps = append(ps, l)
 
@@ -88,7 +88,7 @@ func (all *allAggregatedData) draw(cfg dbtester.Plot, pairs ...pair) error {
 	return nil
 }
 
-func (all *allAggregatedData) drawXY(cfg dbtester.Plot, pairs ...pair) error {
+func (all *allAggregatedData) drawXY(cfg dbtesterpb.ConfigAnalyzeMachinePlot, pairs ...pair) error {
 	// frame now contains
 	// KEYS-DB-TAG-X, AVG-LATENCY-MS-DB-TAG-Y, ...
 	plt, err := plot.New()
@@ -111,7 +111,7 @@ func (all *allAggregatedData) drawXY(cfg dbtester.Plot, pairs ...pair) error {
 		if err != nil {
 			return err
 		}
-		l.Color = getRGB(all.headerToDatabaseID[p.y.Header()], i)
+		l.Color = dbtesterpb.GetRGBI(all.headerToDatabaseID[p.y.Header()], i)
 		l.Dashes = plotutil.Dashes(i)
 		ps = append(ps, l)
 
@@ -127,7 +127,7 @@ func (all *allAggregatedData) drawXY(cfg dbtester.Plot, pairs ...pair) error {
 	return nil
 }
 
-func (all *allAggregatedData) drawXYWithErrorPoints(cfg dbtester.Plot, triplets ...triplet) error {
+func (all *allAggregatedData) drawXYWithErrorPoints(cfg dbtesterpb.ConfigAnalyzeMachinePlot, triplets ...triplet) error {
 	// frame now contains
 	// KEYS-DB-TAG-X, MIN-LATENCY-MS-DB-TAG-Y, AVG-LATENCY-MS-DB-TAG-Y, MAX-LATENCY-MS-DB-TAG-Y, ...
 	plt, err := plot.New()
@@ -150,7 +150,7 @@ func (all *allAggregatedData) drawXYWithErrorPoints(cfg dbtester.Plot, triplets 
 			if err != nil {
 				return err
 			}
-			l.Color = getRGBII(all.headerToDatabaseID[triplet.avgCol.Header()], i)
+			l.Color = dbtesterpb.GetRGBII(all.headerToDatabaseID[triplet.avgCol.Header()], i)
 			l.Dashes = plotutil.Dashes(i)
 			ps = append(ps, l)
 			plt.Legend.Add(all.headerToDatabaseDescription[triplet.avgCol.Header()]+" MIN", l)
@@ -164,7 +164,7 @@ func (all *allAggregatedData) drawXYWithErrorPoints(cfg dbtester.Plot, triplets 
 			if err != nil {
 				return err
 			}
-			l.Color = getRGB(all.headerToDatabaseID[triplet.avgCol.Header()], i)
+			l.Color = dbtesterpb.GetRGBI(all.headerToDatabaseID[triplet.avgCol.Header()], i)
 			l.Dashes = plotutil.Dashes(i)
 			ps = append(ps, l)
 			plt.Legend.Add(all.headerToDatabaseDescription[triplet.avgCol.Header()], l)
@@ -178,7 +178,7 @@ func (all *allAggregatedData) drawXYWithErrorPoints(cfg dbtester.Plot, triplets 
 			if err != nil {
 				return err
 			}
-			l.Color = getRGBIII(all.headerToDatabaseID[triplet.avgCol.Header()], i)
+			l.Color = dbtesterpb.GetRGBIII(all.headerToDatabaseID[triplet.avgCol.Header()], i)
 			l.Dashes = plotutil.Dashes(i)
 			ps = append(ps, l)
 			plt.Legend.Add(all.headerToDatabaseDescription[triplet.avgCol.Header()]+" MAX", l)
@@ -243,64 +243,4 @@ func pointsXY(colX, colY dataframe.Column) (plotter.XYs, error) {
 		pts[i].Y = y
 	}
 	return pts, nil
-}
-
-func getRGB(databaseID string, i int) color.Color {
-	switch databaseID {
-	case "etcdv2":
-		return color.RGBA{218, 97, 229, 255} // purple
-	case "etcdv3":
-		return color.RGBA{24, 90, 169, 255} // blue
-	case "etcdtip":
-		return color.RGBA{0, 229, 255, 255} // cyan
-	case "zookeeper":
-		return color.RGBA{38, 169, 24, 255} // green
-	case "consul":
-		return color.RGBA{198, 53, 53, 255} // red
-	case "zetcd":
-		return color.RGBA{251, 206, 0, 255} // yellow
-	case "cetcd":
-		return color.RGBA{205, 220, 57, 255} // lime
-	}
-	return plotutil.Color(i)
-}
-
-func getRGBII(databaseID string, i int) color.Color {
-	switch databaseID {
-	case "etcdv2":
-		return color.RGBA{229, 212, 231, 255} // light-purple
-	case "etcdv3":
-		return color.RGBA{129, 212, 247, 255} // light-blue
-	case "etcdtip":
-		return color.RGBA{132, 255, 255, 255} // light-cyan
-	case "zookeeper":
-		return color.RGBA{129, 247, 152, 255} // light-green
-	case "consul":
-		return color.RGBA{247, 156, 156, 255} // light-red
-	case "zetcd":
-		return color.RGBA{245, 247, 166, 255} // light-yellow
-	case "cetcd":
-		return color.RGBA{238, 255, 65, 255} // light-lime
-	}
-	return plotutil.Color(i)
-}
-
-func getRGBIII(databaseID string, i int) color.Color {
-	switch databaseID {
-	case "etcdv2":
-		return color.RGBA{165, 8, 180, 255} // deep-purple
-	case "etcdv3":
-		return color.RGBA{37, 29, 191, 255} // deep-blue
-	case "etcdtip":
-		return color.RGBA{0, 96, 100, 255} // deep-cyan
-	case "zookeeper":
-		return color.RGBA{7, 64, 35, 255} // deep-green
-	case "consul":
-		return color.RGBA{212, 8, 46, 255} // deep-red
-	case "zetcd":
-		return color.RGBA{229, 255, 0, 255} // deep-yellow
-	case "cetcd":
-		return color.RGBA{205, 220, 57, 255} // deep-lime
-	}
-	return plotutil.Color(i)
 }
