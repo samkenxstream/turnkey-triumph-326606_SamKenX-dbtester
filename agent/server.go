@@ -24,6 +24,7 @@ import (
 
 	"github.com/coreos/dbtester/dbtesterpb"
 	"github.com/coreos/dbtester/pkg/fileinspect"
+
 	"github.com/gyuho/psn"
 	"golang.org/x/net/context"
 )
@@ -78,7 +79,7 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 		plog.Infof("received gRPC request %q with database %q (clients: %d)", req.Operation, req.DatabaseID, req.CurrentClientNumber)
 	}
 
-	if req.Operation == dbtesterpb.Request_Start {
+	if req.Operation == dbtesterpb.Operation_Start {
 		f, err := openToAppend(globalFlags.databaseLog)
 		if err != nil {
 			return nil, err
@@ -87,7 +88,7 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 
 		plog.Infof("agent log path: %q", globalFlags.agentLog)
 		plog.Infof("database log path: %q", globalFlags.databaseLog)
-		if req.DatabaseID == dbtesterpb.Request_zetcd || req.DatabaseID == dbtesterpb.Request_cetcd {
+		if req.DatabaseID == dbtesterpb.DatabaseID_zetcd__beta || req.DatabaseID == dbtesterpb.DatabaseID_cetcd__beta {
 			proxyLog := globalFlags.databaseLog + "-" + t.req.DatabaseID.String()
 			pf, err := openToAppend(proxyLog)
 			if err != nil {
@@ -99,24 +100,24 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 		plog.Infof("system metrics CSV path: %q", globalFlags.systemMetricsCSV)
 
 		switch req.DatabaseID {
-		case dbtesterpb.Request_zookeeper:
+		case dbtesterpb.DatabaseID_zookeeper__r3_4_9:
 			plog.Infof("Zookeeper working directory: %q", globalFlags.zkWorkDir)
 			plog.Infof("Zookeeper data directory: %q", globalFlags.zkDataDir)
 			plog.Infof("Zookeeper configuration path: %q", globalFlags.zkConfig)
 
-		case dbtesterpb.Request_etcdv2, dbtesterpb.Request_etcdv3:
+		case dbtesterpb.DatabaseID_etcd__v2_3, dbtesterpb.DatabaseID_etcd__tip:
 			plog.Infof("etcd executable binary path: %q", globalFlags.etcdExec)
 			plog.Infof("etcd data directory: %q", globalFlags.etcdDataDir)
 
-		case dbtesterpb.Request_zetcd:
+		case dbtesterpb.DatabaseID_zetcd__beta:
 			plog.Infof("zetcd executable binary path: %q", globalFlags.zetcdExec)
 			plog.Infof("zetcd data directory: %q", globalFlags.etcdDataDir)
 
-		case dbtesterpb.Request_cetcd:
+		case dbtesterpb.DatabaseID_cetcd__beta:
 			plog.Infof("cetcd executable binary path: %q", globalFlags.cetcdExec)
 			plog.Infof("cetcd data directory: %q", globalFlags.etcdDataDir)
 
-		case dbtesterpb.Request_consul:
+		case dbtesterpb.DatabaseID_consul__v0_7_5:
 			plog.Infof("Consul executable binary path: %q", globalFlags.consulExec)
 			plog.Infof("Consul data directory: %q", globalFlags.consulDataDir)
 		}
@@ -124,21 +125,21 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 		// re-use configurations for next requests
 		t.req = *req
 	}
-	if req.Operation == dbtesterpb.Request_Heartbeat {
+	if req.Operation == dbtesterpb.Operation_Heartbeat {
 		t.req.CurrentClientNumber = req.CurrentClientNumber
 	}
 
 	var diskSpaceUsageBytes int64
 	switch req.Operation {
-	case dbtesterpb.Request_Start:
+	case dbtesterpb.Operation_Start:
 		switch t.req.DatabaseID {
-		case dbtesterpb.Request_etcdv2, dbtesterpb.Request_etcdv3, dbtesterpb.Request_zetcd, dbtesterpb.Request_cetcd:
+		case dbtesterpb.DatabaseID_etcd__v2_3, dbtesterpb.DatabaseID_etcd__tip, dbtesterpb.DatabaseID_zetcd__beta, dbtesterpb.DatabaseID_cetcd__beta:
 			if err := startEtcd(&globalFlags, t); err != nil {
 				plog.Errorf("startEtcd error %v", err)
 				return nil, err
 			}
 			switch t.req.DatabaseID {
-			case dbtesterpb.Request_zetcd:
+			case dbtesterpb.DatabaseID_zetcd__beta:
 				if err := startZetcd(&globalFlags, t); err != nil {
 					plog.Errorf("startZetcd error %v", err)
 					return nil, err
@@ -151,7 +152,7 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 					}
 					plog.Infof("exiting %q", t.proxyCmd.Path)
 				}()
-			case dbtesterpb.Request_cetcd:
+			case dbtesterpb.DatabaseID_cetcd__beta:
 				if err := startCetcd(&globalFlags, t); err != nil {
 					plog.Errorf("startCetcd error %v", err)
 					return nil, err
@@ -165,12 +166,12 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 					plog.Infof("exiting %q", t.proxyCmd.Path)
 				}()
 			}
-		case dbtesterpb.Request_zookeeper:
+		case dbtesterpb.DatabaseID_zookeeper__r3_4_9:
 			if err := startZookeeper(&globalFlags, t); err != nil {
 				plog.Errorf("startZookeeper error %v", err)
 				return nil, err
 			}
-		case dbtesterpb.Request_consul:
+		case dbtesterpb.DatabaseID_consul__v0_7_5:
 			if err := startConsul(&globalFlags, t); err != nil {
 				plog.Errorf("startConsul error %v", err)
 				return nil, err
@@ -193,7 +194,7 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 			return nil, err
 		}
 
-	case dbtesterpb.Request_Stop:
+	case dbtesterpb.Operation_Stop:
 		if t.cmd == nil {
 			return nil, fmt.Errorf("nil command")
 		}
@@ -253,7 +254,7 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 		}
 		diskSpaceUsageBytes = dbs
 
-	case dbtesterpb.Request_Heartbeat:
+	case dbtesterpb.Operation_Heartbeat:
 		plog.Infof("overwriting clients num %d to %q", t.req.CurrentClientNumber, t.clientNumPath)
 		if err := toFile(fmt.Sprintf("%d", t.req.CurrentClientNumber), t.clientNumPath); err != nil {
 			return nil, err
@@ -267,19 +268,19 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 	return &dbtesterpb.Response{Success: true, DiskSpaceUsageBytes: diskSpaceUsageBytes}, nil
 }
 
-func measureDatabasSize(flg flags, rdb dbtesterpb.Request_Database) (int64, error) {
+func measureDatabasSize(flg flags, rdb dbtesterpb.DatabaseID) (int64, error) {
 	switch rdb {
-	case dbtesterpb.Request_etcdv2:
+	case dbtesterpb.DatabaseID_etcd__v2_3:
 		return fileinspect.Size(flg.etcdDataDir)
-	case dbtesterpb.Request_etcdv3:
+	case dbtesterpb.DatabaseID_etcd__tip:
 		return fileinspect.Size(flg.etcdDataDir)
-	case dbtesterpb.Request_zookeeper:
+	case dbtesterpb.DatabaseID_zookeeper__r3_4_9:
 		return fileinspect.Size(flg.zkDataDir)
-	case dbtesterpb.Request_consul:
+	case dbtesterpb.DatabaseID_consul__v0_7_5:
 		return fileinspect.Size(flg.consulDataDir)
-	case dbtesterpb.Request_cetcd:
+	case dbtesterpb.DatabaseID_cetcd__beta:
 		return fileinspect.Size(flg.etcdDataDir)
-	case dbtesterpb.Request_zetcd:
+	case dbtesterpb.DatabaseID_zetcd__beta:
 		return fileinspect.Size(flg.etcdDataDir)
 	default:
 		return 0, fmt.Errorf("uknown %q", rdb)

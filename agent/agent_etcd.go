@@ -44,23 +44,23 @@ func startEtcd(fs *flags, t *transporterServer) error {
 		members[i] = fmt.Sprintf("%s=%s", names[i], peerURLs[i])
 	}
 
-	qv := t.req.Etcdv3Config.QuotaSizeBytes
+	qv := t.req.Flag_Etcd_Tip.QuotaSizeBytes
 	if qv > 8000000000 {
 		plog.Warningf("maximum etcd quota is 8GB (got %d)... resetting to 8GB...", qv)
 		qv = 8000000000
 	}
 	flags := []string{
-		"--name", names[t.req.IpIndex],
+		"--name", names[t.req.IPIndex],
 		"--data-dir", fs.etcdDataDir,
 		"--quota-backend-bytes", fmt.Sprintf("%d", qv),
 
-		"--snapshot-count", fmt.Sprintf("%d", t.req.Etcdv3Config.SnapCount),
+		"--snapshot-count", fmt.Sprintf("%d", t.req.Flag_Etcd_Tip.SnapshotCount),
 
-		"--listen-client-urls", clientURLs[t.req.IpIndex],
-		"--advertise-client-urls", clientURLs[t.req.IpIndex],
+		"--listen-client-urls", clientURLs[t.req.IPIndex],
+		"--advertise-client-urls", clientURLs[t.req.IPIndex],
 
-		"--listen-peer-urls", peerURLs[t.req.IpIndex],
-		"--initial-advertise-peer-urls", peerURLs[t.req.IpIndex],
+		"--listen-peer-urls", peerURLs[t.req.IPIndex],
+		"--initial-advertise-peer-urls", peerURLs[t.req.IPIndex],
 
 		"--initial-cluster-token", "dbtester-etcd-token",
 		"--initial-cluster", strings.Join(members, ","),

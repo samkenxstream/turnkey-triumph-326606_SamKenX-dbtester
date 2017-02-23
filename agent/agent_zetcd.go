@@ -34,8 +34,8 @@ func startZetcd(fs *flags, t *transporterServer) error {
 
 	flags := []string{
 		// "-zkaddr", "0.0.0.0:2181",
-		"-zkaddr", fmt.Sprintf("%s:2181", peerIPs[t.req.IpIndex]),
-		"-endpoint", clientURLs[t.req.IpIndex],
+		"-zkaddr", fmt.Sprintf("%s:2181", peerIPs[t.req.IPIndex]),
+		"-endpoint", clientURLs[t.req.IPIndex],
 	}
 	flagString := strings.Join(flags, " ")
 

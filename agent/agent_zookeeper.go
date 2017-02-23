@@ -83,9 +83,10 @@ func startZookeeper(fs *flags, t *transporterServer) error {
 		return err
 	}
 
+	// TODO: support r3.5.2
 	ipath := filepath.Join(fs.zkDataDir, "myid")
-	plog.Infof("writing Zookeeper myid file %d to %s", t.req.ZookeeperConfig.MyID, ipath)
-	if err := toFile(fmt.Sprintf("%d", t.req.ZookeeperConfig.MyID), ipath); err != nil {
+	plog.Infof("writing Zookeeper myid file %d to %s", t.req.Flag_Zookeeper_R3_4_9.MyID, ipath)
+	if err := toFile(fmt.Sprintf("%d", t.req.Flag_Zookeeper_R3_4_9.MyID), ipath); err != nil {
 		return err
 	}
 
@@ -95,14 +96,14 @@ func startZookeeper(fs *flags, t *transporterServer) error {
 		peers = append(peers, ZookeeperPeer{MyID: i + 1, IP: peerIPs[i]})
 	}
 	cfg := ZookeeperConfig{
-		TickTime:             t.req.ZookeeperConfig.TickTime,
+		TickTime:             t.req.Flag_Zookeeper_R3_4_9.TickTime,
 		DataDir:              fs.zkDataDir,
-		ClientPort:           t.req.ZookeeperConfig.ClientPort,
-		InitLimit:            t.req.ZookeeperConfig.InitLimit,
-		SyncLimit:            t.req.ZookeeperConfig.SyncLimit,
-		MaxClientConnections: t.req.ZookeeperConfig.MaxClientConnections,
+		ClientPort:           t.req.Flag_Zookeeper_R3_4_9.ClientPort,
+		InitLimit:            t.req.Flag_Zookeeper_R3_4_9.InitLimit,
+		SyncLimit:            t.req.Flag_Zookeeper_R3_4_9.SyncLimit,
+		MaxClientConnections: t.req.Flag_Zookeeper_R3_4_9.MaxClientConnections,
 		Peers:                peers,
-		SnapCount:            t.req.ZookeeperConfig.SnapCount,
+		SnapCount:            t.req.Flag_Zookeeper_R3_4_9.SnapCount,
 	}
 	tpl := template.Must(template.New("zkTemplate").Parse(zkTemplate))
 	buf := new(bytes.Buffer)

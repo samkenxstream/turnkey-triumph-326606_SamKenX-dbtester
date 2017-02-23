@@ -34,14 +34,14 @@ func startConsul(fs *flags, t *transporterServer) error {
 	peerIPs := strings.Split(t.req.PeerIPsString, "___")
 
 	var flags []string
-	switch t.req.IpIndex {
+	switch t.req.IPIndex {
 	case 0: // leader
 		flags = []string{
 			"agent",
 			"-server",
 			"-data-dir", fs.consulDataDir,
-			"-bind", peerIPs[t.req.IpIndex],
-			"-client", peerIPs[t.req.IpIndex],
+			"-bind", peerIPs[t.req.IPIndex],
+			"-client", peerIPs[t.req.IPIndex],
 			"-bootstrap-expect", "3",
 		}
 
@@ -50,8 +50,8 @@ func startConsul(fs *flags, t *transporterServer) error {
 			"agent",
 			"-server",
 			"-data-dir", fs.consulDataDir,
-			"-bind", peerIPs[t.req.IpIndex],
-			"-client", peerIPs[t.req.IpIndex],
+			"-bind", peerIPs[t.req.IPIndex],
+			"-client", peerIPs[t.req.IPIndex],
 			"-join", peerIPs[0],
 		}
 	}

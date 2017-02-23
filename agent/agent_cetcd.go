@@ -34,8 +34,8 @@ func startCetcd(fs *flags, t *transporterServer) error {
 
 	flags := []string{
 		// "-consuladdr", "0.0.0.0:8500",
-		"-consuladdr", fmt.Sprintf("%s:8500", peerIPs[t.req.IpIndex]),
-		"-etcd", clientURLs[t.req.IpIndex], // etcd endpoint
+		"-consuladdr", fmt.Sprintf("%s:8500", peerIPs[t.req.IPIndex]),
+		"-etcd", clientURLs[t.req.IPIndex], // etcd endpoint
 	}
 	flagString := strings.Join(flags, " ")
 
