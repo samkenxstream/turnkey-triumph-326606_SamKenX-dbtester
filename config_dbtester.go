@@ -131,6 +131,7 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 	}
 
 	const (
+		defaultAgentPort           int64 = 3500
 		defaultEtcdClientPort      int64 = 2379
 		defaultZookeeperClientPort int64 = 2181
 		defaultConsulClientPort    int64 = 8500
@@ -145,6 +146,9 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 	)
 
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v2_3.String()]; ok {
+		if v.AgentPortToConnect == 0 {
+			v.AgentPortToConnect = defaultAgentPort
+		}
 		if v.DatabasePortToConnect == 0 {
 			v.DatabasePortToConnect = defaultEtcdClientPort
 		}
@@ -154,6 +158,9 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v2_3.String()] = v
 	}
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_1.String()]; ok {
+		if v.AgentPortToConnect == 0 {
+			v.AgentPortToConnect = defaultAgentPort
+		}
 		if v.DatabasePortToConnect == 0 {
 			v.DatabasePortToConnect = defaultEtcdClientPort
 		}
@@ -166,6 +173,9 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_1.String()] = v
 	}
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_2.String()]; ok {
+		if v.AgentPortToConnect == 0 {
+			v.AgentPortToConnect = defaultAgentPort
+		}
 		if v.DatabasePortToConnect == 0 {
 			v.DatabasePortToConnect = defaultEtcdClientPort
 		}
@@ -178,6 +188,9 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_2.String()] = v
 	}
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()]; ok {
+		if v.AgentPortToConnect == 0 {
+			v.AgentPortToConnect = defaultAgentPort
+		}
 		if v.DatabasePortToConnect == 0 {
 			v.DatabasePortToConnect = defaultEtcdClientPort
 		}
@@ -190,11 +203,14 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()] = v
 	}
 
-	// TODO: add JVM flags
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_4_9.String()]; ok {
+		if v.AgentPortToConnect == 0 {
+			v.AgentPortToConnect = defaultAgentPort
+		}
 		if v.DatabasePortToConnect == 0 {
 			v.DatabasePortToConnect = defaultZookeeperClientPort
 		}
+
 		v.Flag_Zookeeper_R3_4_9.ClientPort = v.DatabasePortToConnect
 		if v.Flag_Zookeeper_R3_4_9.TickTime == 0 {
 			v.Flag_Zookeeper_R3_4_9.TickTime = defaultZookeeperTickTime
@@ -214,9 +230,13 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_4_9.String()] = v
 	}
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha.String()]; ok {
+		if v.AgentPortToConnect == 0 {
+			v.AgentPortToConnect = defaultAgentPort
+		}
 		if v.DatabasePortToConnect == 0 {
 			v.DatabasePortToConnect = defaultZookeeperClientPort
 		}
+
 		v.Flag_Zookeeper_R3_5_2Alpha.ClientPort = v.DatabasePortToConnect
 		if v.Flag_Zookeeper_R3_5_2Alpha.TickTime == 0 {
 			v.Flag_Zookeeper_R3_5_2Alpha.TickTime = defaultZookeeperTickTime
@@ -240,12 +260,18 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 	}
 
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_7_5.String()]; ok {
+		if v.AgentPortToConnect == 0 {
+			v.AgentPortToConnect = defaultAgentPort
+		}
 		if v.DatabasePortToConnect == 0 {
 			v.DatabasePortToConnect = defaultConsulClientPort
 		}
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_7_5.String()] = v
 	}
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_8_0.String()]; ok {
+		if v.AgentPortToConnect == 0 {
+			v.AgentPortToConnect = defaultAgentPort
+		}
 		if v.DatabasePortToConnect == 0 {
 			v.DatabasePortToConnect = defaultConsulClientPort
 		}

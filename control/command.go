@@ -55,29 +55,21 @@ func init() {
 		break
 	}
 
-	Command.PersistentFlags().StringVar(&databaseID, "database-id", "etcdv3", "etcdv2, etcdv3, zookeeper, consul, zetcd, cetcd.")
+	Command.PersistentFlags().StringVar(&databaseID, "database-id", "etcd__tip", "See dbtesterpb/database_id.pb.go")
 	Command.PersistentFlags().StringVarP(&configPath, "config", "c", "", "YAML configuration file path.")
 	Command.PersistentFlags().StringVar(&diskDevice, "disk-device", dn, "Disk device to collect disk statistics metrics from.")
 	Command.PersistentFlags().StringVar(&networkInterface, "network-interface", nt, "Network interface to record in/outgoing packets.")
 }
 
 func commandFunc(cmd *cobra.Command, args []string) error {
-	switch databaseID {
-	case "etcdv2":
-	case "etcdv3":
-	case "zookeeper":
-	case "zetcd":
-	case "consul":
-	case "cetcd":
-	default:
-		return fmt.Errorf("%q is not supported", databaseID)
+	if !dbtesterpb.IsValidDatabaseID(databaseID) {
+		return fmt.Errorf("database id %q is unknown", databaseID)
 	}
 
 	cfg, err := dbtester.ReadConfig(configPath, false)
 	if err != nil {
 		return err
 	}
-
 	gcfg, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[databaseID]
 	if !ok {
 		return fmt.Errorf("%q is not found", databaseID)

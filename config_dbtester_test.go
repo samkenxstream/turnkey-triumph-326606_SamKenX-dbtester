@@ -37,6 +37,7 @@ func TestConfig(t *testing.T) {
   - javac 1.8.0_121
   - Java(TM) SE Runtime Environment (build 1.8.0_121-b13)
   - Java HotSpot(TM) 64-Bit Server VM (build 25.121-b13, mixed mode)
+  - ` + "`/usr/bin/java -Djute.maxbuffer=33554432 -Xms50G -Xmx50G`" + `
 - Consul v0.7.5 (Go 1.8.0)
 `,
 		ConfigClientMachineInitial: dbtesterpb.ConfigClientMachineInitial{
@@ -102,6 +103,9 @@ func TestConfig(t *testing.T) {
 				AgentPortToConnect:    3500,
 				AgentEndpoints:        []string{"10.240.0.21:3500", "10.240.0.22:3500", "10.240.0.23:3500"},
 				Flag_Zookeeper_R3_5_2Alpha: &dbtesterpb.Flag_Zookeeper_R3_5_2Alpha{
+					JavaDJuteMaxBuffer:   33554432,
+					JavaXms:              "50G",
+					JavaXmx:              "50G",
 					ClientPort:           2181,
 					TickTime:             2000,
 					InitLimit:            5,
