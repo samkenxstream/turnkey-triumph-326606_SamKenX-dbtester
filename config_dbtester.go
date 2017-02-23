@@ -302,7 +302,7 @@ const maxEtcdQuotaSize = 8000000000
 func (cfg *Config) ToRequest(databaseID string, op dbtesterpb.Operation, idx int) (req *dbtesterpb.Request, err error) {
 	gcfg, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[databaseID]
 	if !ok {
-		err = fmt.Errorf("%q is not defined", databaseID)
+		err = fmt.Errorf("database ID %q is not defined", databaseID)
 		return
 	}
 

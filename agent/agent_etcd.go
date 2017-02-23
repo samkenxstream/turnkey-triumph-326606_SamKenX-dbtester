@@ -19,6 +19,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/coreos/dbtester/dbtesterpb"
 )
 
 // startEtcd starts etcd v2 and v3.
@@ -44,28 +46,87 @@ func startEtcd(fs *flags, t *transporterServer) error {
 		members[i] = fmt.Sprintf("%s=%s", names[i], peerURLs[i])
 	}
 
-	qv := t.req.Flag_Etcd_Tip.QuotaSizeBytes
-	if qv > 8000000000 {
-		plog.Warningf("maximum etcd quota is 8GB (got %d)... resetting to 8GB...", qv)
-		qv = 8000000000
+	var flags []string
+	switch t.req.DatabaseID {
+	case dbtesterpb.DatabaseID_etcd__v2_3:
+		flags = []string{
+			"--name", names[t.req.IPIndex],
+			"--data-dir", fs.etcdDataDir,
+
+			"--snapshot-count", fmt.Sprintf("%d", t.req.Flag_Etcd_Tip.SnapshotCount),
+
+			"--listen-client-urls", clientURLs[t.req.IPIndex],
+			"--advertise-client-urls", clientURLs[t.req.IPIndex],
+
+			"--listen-peer-urls", peerURLs[t.req.IPIndex],
+			"--initial-advertise-peer-urls", peerURLs[t.req.IPIndex],
+
+			"--initial-cluster-token", "dbtester-etcd-token",
+			"--initial-cluster", strings.Join(members, ","),
+			"--initial-cluster-state", "new",
+		}
+
+	case dbtesterpb.DatabaseID_etcd__v3_1:
+		flags = []string{
+			"--name", names[t.req.IPIndex],
+			"--data-dir", fs.etcdDataDir,
+			"--quota-backend-bytes", fmt.Sprintf("%d", t.req.Flag_Etcd_Tip.QuotaSizeBytes),
+
+			"--snapshot-count", fmt.Sprintf("%d", t.req.Flag_Etcd_Tip.SnapshotCount),
+
+			"--listen-client-urls", clientURLs[t.req.IPIndex],
+			"--advertise-client-urls", clientURLs[t.req.IPIndex],
+
+			"--listen-peer-urls", peerURLs[t.req.IPIndex],
+			"--initial-advertise-peer-urls", peerURLs[t.req.IPIndex],
+
+			"--initial-cluster-token", "dbtester-etcd-token",
+			"--initial-cluster", strings.Join(members, ","),
+			"--initial-cluster-state", "new",
+		}
+
+	case dbtesterpb.DatabaseID_etcd__v3_2:
+		flags = []string{
+			"--name", names[t.req.IPIndex],
+			"--data-dir", fs.etcdDataDir,
+			"--quota-backend-bytes", fmt.Sprintf("%d", t.req.Flag_Etcd_Tip.QuotaSizeBytes),
+
+			"--snapshot-count", fmt.Sprintf("%d", t.req.Flag_Etcd_Tip.SnapshotCount),
+
+			"--listen-client-urls", clientURLs[t.req.IPIndex],
+			"--advertise-client-urls", clientURLs[t.req.IPIndex],
+
+			"--listen-peer-urls", peerURLs[t.req.IPIndex],
+			"--initial-advertise-peer-urls", peerURLs[t.req.IPIndex],
+
+			"--initial-cluster-token", "dbtester-etcd-token",
+			"--initial-cluster", strings.Join(members, ","),
+			"--initial-cluster-state", "new",
+		}
+
+	case dbtesterpb.DatabaseID_etcd__tip:
+		flags = []string{
+			"--name", names[t.req.IPIndex],
+			"--data-dir", fs.etcdDataDir,
+			"--quota-backend-bytes", fmt.Sprintf("%d", t.req.Flag_Etcd_Tip.QuotaSizeBytes),
+
+			"--snapshot-count", fmt.Sprintf("%d", t.req.Flag_Etcd_Tip.SnapshotCount),
+
+			"--listen-client-urls", clientURLs[t.req.IPIndex],
+			"--advertise-client-urls", clientURLs[t.req.IPIndex],
+
+			"--listen-peer-urls", peerURLs[t.req.IPIndex],
+			"--initial-advertise-peer-urls", peerURLs[t.req.IPIndex],
+
+			"--initial-cluster-token", "dbtester-etcd-token",
+			"--initial-cluster", strings.Join(members, ","),
+			"--initial-cluster-state", "new",
+		}
+
+	default:
+		return fmt.Errorf("database ID %q is not supported", t.req.DatabaseID)
 	}
-	flags := []string{
-		"--name", names[t.req.IPIndex],
-		"--data-dir", fs.etcdDataDir,
-		"--quota-backend-bytes", fmt.Sprintf("%d", qv),
 
-		"--snapshot-count", fmt.Sprintf("%d", t.req.Flag_Etcd_Tip.SnapshotCount),
-
-		"--listen-client-urls", clientURLs[t.req.IPIndex],
-		"--advertise-client-urls", clientURLs[t.req.IPIndex],
-
-		"--listen-peer-urls", peerURLs[t.req.IPIndex],
-		"--initial-advertise-peer-urls", peerURLs[t.req.IPIndex],
-
-		"--initial-cluster-token", "dbtester-etcd-token",
-		"--initial-cluster", strings.Join(members, ","),
-		"--initial-cluster-state", "new",
-	}
 	flagString := strings.Join(flags, " ")
 
 	cmd := exec.Command(fs.etcdExec, flags...)
@@ -80,7 +141,7 @@ func startEtcd(fs *flags, t *transporterServer) error {
 	t.cmd = cmd
 	t.cmdWait = make(chan struct{})
 	t.pid = int64(cmd.Process.Pid)
-	plog.Infof("started database %q (PID: %d)", cs, t.pid)
 
+	plog.Infof("started database %q (PID: %d)", cs, t.pid)
 	return nil
 }

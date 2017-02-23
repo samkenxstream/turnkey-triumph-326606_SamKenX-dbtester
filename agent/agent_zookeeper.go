@@ -210,7 +210,7 @@ func startZookeeper(fs *flags, t *transporterServer) error {
 	t.cmd = cmd
 	t.cmdWait = make(chan struct{})
 	t.pid = int64(cmd.Process.Pid)
-	plog.Infof("started database %q (PID: %d)", cs, t.pid)
 
+	plog.Infof("started database %q (PID: %d)", cs, t.pid)
 	return nil
 }
