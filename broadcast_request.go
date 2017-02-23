@@ -24,8 +24,8 @@ import (
 )
 
 // BroadcaseRequest sends request to all endpoints.
-func (cfg *Config) BroadcaseRequest(databaseID string, op dbtesterpb.Request_Operation) (map[int]dbtesterpb.Response, error) {
-	gcfg, ok := cfg.DatabaseIDToTestGroup[databaseID]
+func (cfg *Config) BroadcaseRequest(databaseID string, op dbtesterpb.Operation) (map[int]dbtesterpb.Response, error) {
+	gcfg, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[databaseID]
 	if !ok {
 		return nil, fmt.Errorf("database id %q does not exist", databaseID)
 	}

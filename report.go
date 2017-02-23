@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/cheggaaa/pb"
+	"github.com/coreos/dbtester/dbtesterpb"
 	"github.com/coreos/etcd/pkg/report"
 	"golang.org/x/net/context"
 )
@@ -135,8 +136,8 @@ func printStats(st report.Stats) {
 	}
 }
 
-func (cfg *Config) generateReport(gcfg TestGroup, h []ReqHandler, reqDone func(), reqGen func(chan<- request)) {
-	b := newBenchmark(gcfg.RequestNumber, gcfg.ClientNumber, h, reqDone, reqGen)
+func (cfg *Config) generateReport(gcfg dbtesterpb.ConfigClientMachineAgentControl, h []ReqHandler, reqDone func(), reqGen func(chan<- request)) {
+	b := newBenchmark(gcfg.ConfigClientMachineBenchmarkOptions.RequestNumber, gcfg.ConfigClientMachineBenchmarkOptions.ClientNumber, h, reqDone, reqGen)
 	b.startRequests()
 	b.waitAll()
 

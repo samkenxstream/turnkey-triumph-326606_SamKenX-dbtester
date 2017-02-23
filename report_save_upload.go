@@ -38,7 +38,7 @@ var DiskSpaceUsageSummaryColumns = []string{
 
 // SaveDiskSpaceUsageSummary saves data size summary.
 func (cfg *Config) SaveDiskSpaceUsageSummary(databaseID string, idxToResponse map[int]dbtesterpb.Response) error {
-	gcfg, ok := cfg.DatabaseIDToTestGroup[databaseID]
+	gcfg, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[databaseID]
 	if !ok {
 		return fmt.Errorf("%q does not exist", databaseID)
 	}
@@ -68,7 +68,7 @@ func (cfg *Config) SaveDiskSpaceUsageSummary(databaseID string, idxToResponse ma
 		return err
 	}
 
-	return fr.CSV(cfg.Control.ServerDiskSpaceUsageSummaryPath)
+	return fr.CSV(cfg.ConfigClientMachineInitial.ServerDiskSpaceUsageSummaryPath)
 }
 
 func (cfg *Config) saveDataLatencyDistributionSummary(st report.Stats) {
@@ -126,7 +126,7 @@ func (cfg *Config) saveDataLatencyDistributionSummary(st report.Stats) {
 		}
 	}
 
-	if err := fr.CSVHorizontal(cfg.Control.ClientLatencyDistributionSummaryPath); err != nil {
+	if err := fr.CSVHorizontal(cfg.ConfigClientMachineInitial.ClientLatencyDistributionSummaryPath); err != nil {
 		plog.Fatal(err)
 	}
 }
@@ -152,7 +152,7 @@ func (cfg *Config) saveDataLatencyDistributionPercentile(st report.Stats) {
 	if err := fr.AddColumn(c2); err != nil {
 		plog.Fatal(err)
 	}
-	if err := fr.CSV(cfg.Control.ClientLatencyDistributionPercentilePath); err != nil {
+	if err := fr.CSV(cfg.ConfigClientMachineInitial.ClientLatencyDistributionPercentilePath); err != nil {
 		plog.Fatal(err)
 	}
 }
@@ -205,16 +205,16 @@ func (cfg *Config) saveDataLatencyDistributionAll(st report.Stats) {
 	if err := fr.AddColumn(c2); err != nil {
 		plog.Fatal(err)
 	}
-	if err := fr.CSV(cfg.Control.ClientLatencyDistributionAllPath); err != nil {
+	if err := fr.CSV(cfg.ConfigClientMachineInitial.ClientLatencyDistributionAllPath); err != nil {
 		plog.Fatal(err)
 	}
 }
 
-func (cfg *Config) saveDataLatencyThroughputTimeseries(gcfg TestGroup, st report.Stats, clientNs []int64) {
-	if len(clientNs) == 0 && len(gcfg.ConnectionClientNumbers) == 0 {
+func (cfg *Config) saveDataLatencyThroughputTimeseries(gcfg dbtesterpb.ConfigClientMachineAgentControl, st report.Stats, clientNs []int64) {
+	if len(clientNs) == 0 && len(gcfg.ConfigClientMachineBenchmarkOptions.ConnectionClientNumbers) == 0 {
 		clientNs = make([]int64, len(st.TimeSeries))
 		for i := range clientNs {
-			clientNs[i] = gcfg.BenchmarkOptions.ClientNumber
+			clientNs[i] = gcfg.ConfigClientMachineBenchmarkOptions.ClientNumber
 		}
 	}
 	c1 := dataframe.NewColumn("UNIX-SECOND")
@@ -253,12 +253,12 @@ func (cfg *Config) saveDataLatencyThroughputTimeseries(gcfg TestGroup, st report
 		plog.Fatal(err)
 	}
 
-	if err := fr.CSV(cfg.Control.ClientLatencyThroughputTimeseriesPath); err != nil {
+	if err := fr.CSV(cfg.ConfigClientMachineInitial.ClientLatencyThroughputTimeseriesPath); err != nil {
 		plog.Fatal(err)
 	}
 
 	// aggregate latency by the number of keys
-	tss := FindRangesLatency(st.TimeSeries, 1000, gcfg.RequestNumber)
+	tss := FindRangesLatency(st.TimeSeries, 1000, gcfg.ConfigClientMachineBenchmarkOptions.RequestNumber)
 	ctt1 := dataframe.NewColumn("KEYS")
 	ctt2 := dataframe.NewColumn("MIN-LATENCY-MS")
 	ctt3 := dataframe.NewColumn("AVG-LATENCY-MS")
@@ -284,12 +284,12 @@ func (cfg *Config) saveDataLatencyThroughputTimeseries(gcfg TestGroup, st report
 		plog.Fatal(err)
 	}
 
-	if err := frr.CSV(cfg.Control.ClientLatencyByKeyNumberPath); err != nil {
+	if err := frr.CSV(cfg.ConfigClientMachineInitial.ClientLatencyByKeyNumberPath); err != nil {
 		plog.Fatal(err)
 	}
 }
 
-func (cfg *Config) saveAllStats(gcfg TestGroup, stats report.Stats, clientNs []int64) {
+func (cfg *Config) saveAllStats(gcfg dbtesterpb.ConfigClientMachineAgentControl, stats report.Stats, clientNs []int64) {
 	cfg.saveDataLatencyDistributionSummary(stats)
 	cfg.saveDataLatencyDistributionPercentile(stats)
 	cfg.saveDataLatencyDistributionAll(stats)
@@ -298,14 +298,14 @@ func (cfg *Config) saveAllStats(gcfg TestGroup, stats report.Stats, clientNs []i
 
 // UploadToGoogle uploads target file to Google Cloud Storage.
 func (cfg *Config) UploadToGoogle(databaseID string, targetPath string) error {
-	gcfg, ok := cfg.DatabaseIDToTestGroup[databaseID]
+	gcfg, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[databaseID]
 	if !ok {
 		return fmt.Errorf("%q does not exist", databaseID)
 	}
 	if !exist(targetPath) {
 		return fmt.Errorf("%q does not exist", targetPath)
 	}
-	u, err := remotestorage.NewGoogleCloudStorage([]byte(cfg.Control.GoogleCloudStorageKey), cfg.Control.GoogleCloudProjectName)
+	u, err := remotestorage.NewGoogleCloudStorage([]byte(cfg.ConfigClientMachineInitial.GoogleCloudStorageKey), cfg.ConfigClientMachineInitial.GoogleCloudProjectName)
 	if err != nil {
 		return err
 	}
@@ -315,11 +315,11 @@ func (cfg *Config) UploadToGoogle(databaseID string, targetPath string) error {
 	if !strings.HasPrefix(dstPath, gcfg.DatabaseTag) {
 		dstPath = fmt.Sprintf("%s-%s", gcfg.DatabaseTag, dstPath)
 	}
-	dstPath = filepath.Join(cfg.Control.GoogleCloudStorageSubDirectory, dstPath)
+	dstPath = filepath.Join(cfg.ConfigClientMachineInitial.GoogleCloudStorageSubDirectory, dstPath)
 
 	var uerr error
 	for k := 0; k < 30; k++ {
-		if uerr = u.UploadFile(cfg.Control.GoogleCloudStorageBucketName, srcPath, dstPath); uerr != nil {
+		if uerr = u.UploadFile(cfg.ConfigClientMachineInitial.GoogleCloudStorageBucketName, srcPath, dstPath); uerr != nil {
 			plog.Printf("#%d: error %v while uploading %q", k, uerr, targetPath)
 			time.Sleep(2 * time.Second)
 			continue
