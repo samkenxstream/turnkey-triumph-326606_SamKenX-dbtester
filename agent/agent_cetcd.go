@@ -18,6 +18,8 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
+
+	"github.com/coreos/dbtester/dbtesterpb"
 )
 
 // startCetcd starts cetcd. This assumes that etcd is already started.
@@ -32,11 +34,19 @@ func startCetcd(fs *flags, t *transporterServer) error {
 		clientURLs[i] = fmt.Sprintf("http://%s:2379", u)
 	}
 
-	flags := []string{
-		// "-consuladdr", "0.0.0.0:8500",
-		"-consuladdr", fmt.Sprintf("%s:8500", peerIPs[t.req.IPIndex]),
-		"-etcd", clientURLs[t.req.IPIndex], // etcd endpoint
+	var flags []string
+	switch t.req.DatabaseID {
+	case dbtesterpb.DatabaseID_cetcd__beta:
+		flags = []string{
+			// "-consuladdr", "0.0.0.0:8500",
+			"-consuladdr", fmt.Sprintf("%s:8500", peerIPs[t.req.IPIndex]),
+			"-etcd", clientURLs[t.req.IPIndex], // etcd endpoint
+		}
+
+	default:
+		return fmt.Errorf("database ID %q is not supported", t.req.DatabaseID)
 	}
+
 	flagString := strings.Join(flags, " ")
 
 	cmd := exec.Command(fs.cetcdExec, flags...)
