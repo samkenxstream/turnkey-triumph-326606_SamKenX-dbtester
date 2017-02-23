@@ -1,0 +1,92 @@
+syntax = "proto3";
+package dbtesterpb;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+import "dbtesterpb/flag_etcd.proto";
+import "dbtesterpb/flag_zookeeper.proto";
+import "dbtesterpb/flag_consul.proto";
+import "dbtesterpb/flag_zetcd.proto";
+import "dbtesterpb/flag_cetcd.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+
+// ConfigClientMachineInitial represents common control options on client machine.
+message ConfigClientMachineInitial {
+  string PathPrefix = 1 [(gogoproto.moretags) = "yaml:\"path_prefix\""];
+  string LogPath = 2 [(gogoproto.moretags) = "yaml:\"log_path\""];
+  string ClientSystemMetricsPath = 3 [(gogoproto.moretags) = "yaml:\"client_system_metrics_path\""];
+  string ClientSystemMetricsInterpolatedPath = 4 [(gogoproto.moretags) = "yaml:\"client_system_metrics_interpolated_path\""];
+  string ClientLatencyThroughputTimeseriesPath = 5 [(gogoproto.moretags) = "yaml:\"client_latency_throughput_timeseries_path\""];
+  string ClientLatencyDistributionAllPath = 6 [(gogoproto.moretags) = "yaml:\"client_latency_distribution_all_path\""];
+  string ClientLatencyDistributionPercentilePath = 7 [(gogoproto.moretags) = "yaml:\"client_latency_distribution_percentile_path\""];
+  string ClientLatencyDistributionSummaryPath = 8 [(gogoproto.moretags) = "yaml:\"client_latency_distribution_summary_path\""];
+  string ClientLatencyByKeyNumberPath = 9 [(gogoproto.moretags) = "yaml:\"client_latency_by_key_number_path\""];
+  string ServerDiskSpaceUsageSummaryPath = 10 [(gogoproto.moretags) = "yaml:\"server_disk_space_usage_summary_path\""];
+
+  string GoogleCloudProjectName = 100 [(gogoproto.moretags) = "yaml:\"google_cloud_project_name\""];
+  string GoogleCloudStorageKeyPath = 101 [(gogoproto.moretags) = "yaml:\"google_cloud_storage_key_path\""];
+  string GoogleCloudStorageKey = 102;
+  string GoogleCloudStorageBucketName = 103 [(gogoproto.moretags) = "yaml:\"google_cloud_storage_bucket_name\""];
+  string GoogleCloudStorageSubDirectory = 104 [(gogoproto.moretags) = "yaml:\"google_cloud_storage_sub_directory\""];
+}
+
+// ConfigClientMachineBenchmarkOptions represents benchmark options.
+message ConfigClientMachineBenchmarkOptions {
+  string Type = 1 [(gogoproto.moretags) = "yaml:\"type\""];
+  int64 RequestNumber = 2 [(gogoproto.moretags) = "yaml:\"request_number\""];
+  int64 ConnectionNumber = 3 [(gogoproto.moretags) = "yaml:\"connection_number\""];
+  int64 ClientNumber = 4 [(gogoproto.moretags) = "yaml:\"client_number\""];
+  repeated int64 ConnectionClientNumbers = 5 [(gogoproto.moretags) = "yaml:\"connection_client_numbers\""];
+  int64 RateLimitRequestsPerSecond = 6 [(gogoproto.moretags) = "yaml:\"rate_limit_requests_per_second\""];
+
+  bool SameKey = 7 [(gogoproto.moretags) = "yaml:\"same_key\""];
+  int64 KeySizeBytes = 8 [(gogoproto.moretags) = "yaml:\"key_size_bytes\""];
+  int64 ValueSizeBytes = 9 [(gogoproto.moretags) = "yaml:\"value_size_bytes\""];
+
+  bool StaleRead = 10 [(gogoproto.moretags) = "yaml:\"stale_read\""];
+}
+
+// ConfigClientMachineBenchmarkSteps represents benchmark steps.
+message ConfigClientMachineBenchmarkSteps {
+  bool Step1StartDatabase = 1 [(gogoproto.moretags) = "yaml:\"step1_start_database\""];
+  bool Step2StressDatabase = 2 [(gogoproto.moretags) = "yaml:\"step2_stress_database\""];
+  bool Step3StopDatabase = 3 [(gogoproto.moretags) = "yaml:\"step3_stop_database\""];
+  bool Step4UploadLogs = 4 [(gogoproto.moretags) = "yaml:\"step4_upload_logs\""];
+}
+
+// ConfigClientMachineAgentControl represents control options on client machine.
+message ConfigClientMachineAgentControl {
+  string DatabaseID = 1 [(gogoproto.moretags) = "yaml:\"database_id\""];
+  string DatabaseDescription = 2 [(gogoproto.moretags) = "yaml:\"database_description\""];
+  string DatabaseTag = 3 [(gogoproto.moretags) = "yaml:\"database_tag\""];
+
+  repeated string PeerIPs = 4 [(gogoproto.moretags) = "yaml:\"peer_ips\""];
+  string PeerIPsString = 5 [(gogoproto.moretags) = "yaml:\"peer_ips_string\""];
+
+  int64 AgentPortToConnect = 6 [(gogoproto.moretags) = "yaml:\"agent_port_to_connect\""];
+  repeated string AgentEndpoints = 7 [(gogoproto.moretags) = "yaml:\"agent_endpoints\""];
+
+  int64 DatabasePortToConnect = 8 [(gogoproto.moretags) = "yaml:\"database_port_to_connect\""];
+  repeated string DatabaseEndpoints = 9 [(gogoproto.moretags) = "yaml:\"database_endpoints\""];
+
+  flag__etcd__v2_3 flag__etcd__v2_3 = 100 [(gogoproto.moretags) = "yaml:\"etcd__v2_3\""];
+  flag__etcd__v3_1 flag__etcd__v3_1 = 101 [(gogoproto.moretags) = "yaml:\"etcd__v3_1\""];
+  flag__etcd__v3_2 flag__etcd__v3_2 = 102 [(gogoproto.moretags) = "yaml:\"etcd__v3_2\""];
+  flag__etcd__tip flag__etcd__tip = 103 [(gogoproto.moretags) = "yaml:\"etcd__tip\""];
+
+  flag__zookeeper__r3_4_9 flag__zookeeper__r3_4_9 = 200 [(gogoproto.moretags) = "yaml:\"zookeeper__r3_4_9\""];
+  flag__zookeeper__r3_5_2_alpha flag__zookeeper__r3_5_2_alpha = 201 [(gogoproto.moretags) = "yaml:\"zookeeper__r3_5_2_alpha\""];
+
+  flag__consul__v0_7_5 flag__consul__v0_7_5 = 300 [(gogoproto.moretags) = "yaml:\"consul__v0_7_5\""];
+  flag__consul__v0_8_0 flag__consul__v0_8_0 = 301 [(gogoproto.moretags) = "yaml:\"consul__v0_8_0\""];
+
+  flag__cetcd__beta flag__cetcd__beta = 400 [(gogoproto.moretags) = "yaml:\"cetcd__beta\""];
+  flag__zetcd__beta flag__zetcd__beta = 500 [(gogoproto.moretags) = "yaml:\"zetcd__beta\""];
+
+  ConfigClientMachineBenchmarkOptions ConfigClientMachineBenchmarkOptions = 1000 [(gogoproto.moretags) = "yaml:\"benchmark_options\""];
+  ConfigClientMachineBenchmarkSteps ConfigClientMachineBenchmarkSteps = 1001 [(gogoproto.moretags) = "yaml:\"benchmark_steps\""];
+}

@@ -1,0 +1,57 @@
+syntax = "proto3";
+package dbtesterpb;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+
+// ConfigAnalyzeMachineInitial represents common control options and test data information for analyzer machine.
+message ConfigAnalyzeMachineInitial {
+  string DatabaseID = 1;
+  string DatabaseTag = 2;
+  string DatabaseDescription = 3;
+
+  string PathPrefix = 4 [(gogoproto.moretags) = "yaml:\"path_prefix\""];
+  string ClientSystemMetricsInterpolatedPath = 5 [(gogoproto.moretags) = "yaml:\"client_system_metrics_interpolated_path\""];
+  string ClientLatencyThroughputTimeseriesPath = 6 [(gogoproto.moretags) = "yaml:\"client_latency_throughput_timeseries_path\""];
+  string ClientLatencyDistributionAllPath = 7 [(gogoproto.moretags) = "yaml:\"client_latency_distribution_all_path\""];
+  string ClientLatencyDistributionPercentilePath = 8 [(gogoproto.moretags) = "yaml:\"client_latency_distribution_percentile_path\""];
+  string ClientLatencyDistributionSummaryPath = 9 [(gogoproto.moretags) = "yaml:\"client_latency_distribution_summary_path\""];
+  string ClientLatencyByKeyNumberPath = 10 [(gogoproto.moretags) = "yaml:\"client_latency_by_key_number_path\""];
+  string ServerDiskSpaceUsageSummaryPath = 11 [(gogoproto.moretags) = "yaml:\"server_disk_space_usage_summary_path\""];
+  string ServerMemoryByKeyNumberPath = 12 [(gogoproto.moretags) = "yaml:\"server_memory_by_key_number_path\""];
+  string ServerReadBytesDeltaByKeyNumberPath = 13 [(gogoproto.moretags) = "yaml:\"server_read_bytes_delta_by_key_number_path\""];
+  string ServerWriteBytesDeltaByKeyNumberPath = 14 [(gogoproto.moretags) = "yaml:\"server_write_bytes_delta_by_key_number_path\""];
+  repeated string ServerSystemMetricsInterpolatedPathList = 15 [(gogoproto.moretags) = "yaml:\"server_system_metrics_interpolated_path_list\""];
+  string AllAggregatedOutputPath = 16 [(gogoproto.moretags) = "yaml:\"all_aggregated_output_path\""];
+}
+
+message ConfigAnalyzeMachineAllAggregatedOutput {
+  string AllAggregatedOutputPathCSV = 1 [(gogoproto.moretags) = "yaml:\"all_aggregated_output_path_csv\""];
+  string AllAggregatedOutputPathTXT = 2 [(gogoproto.moretags) = "yaml:\"all_aggregated_output_path_txt\""];
+}
+
+// ConfigAnalyzeMachinePlot defines plot configuration.
+message ConfigAnalyzeMachinePlot {
+  string Column = 1 [(gogoproto.moretags) = "yaml:\"column\""];
+  string XAxis = 2 [(gogoproto.moretags) = "yaml:\"x_axis\""];
+  string YAxis = 3 [(gogoproto.moretags) = "yaml:\"y_axis\""];
+  string OutputPathCSV = 4 [(gogoproto.moretags) = "yaml:\"output_path_csv\""];
+  repeated string OutputPathList = 5 [(gogoproto.moretags) = "yaml:\"output_path_list\""];
+}
+
+// ConfigAnalyzeMachineImage defines image configuration.
+message ConfigAnalyzeMachineImage {
+  string Title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string Path = 2 [(gogoproto.moretags) = "yaml:\"path\""];
+  string Type = 3 [(gogoproto.moretags) = "yaml:\"type\""];
+}
+
+// ConfigAnalyzeMachineREADME defines read configuration.
+message ConfigAnalyzeMachineREADME {
+  string OutputPath = 1 [(gogoproto.moretags) = "yaml:\"output_path\""];
+  repeated ConfigAnalyzeMachineImage Images = 2 [(gogoproto.moretags) = "yaml:\"images\""];
+}

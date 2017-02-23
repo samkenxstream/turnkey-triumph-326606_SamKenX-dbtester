@@ -1,0 +1,51 @@
+syntax = "proto3";
+package dbtesterpb;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+
+message flag__zookeeper__r3_4_9 {
+  // JavaDJuteMaxBuffer is for '-Djute.maxbuffer' flag.
+  uint64 JavaDJuteMaxBuffer = 1 [(gogoproto.moretags) = "yaml:\"java_d_jute_max_buffer\""];
+
+  // JavaXms is for '-Xms' flag.
+  string JavaXms = 2 [(gogoproto.moretags) = "yaml:\"java_xms\""];
+
+  // JavaXmx is for '-Xmx' flag.
+  string JavaXmx = 3 [(gogoproto.moretags) = "yaml:\"java_xmx\""];
+
+  uint32 myID = 100;
+  int64 ClientPort = 101;
+
+  // See http://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html for more.
+  int64 TickTime = 102 [(gogoproto.moretags) = "yaml:\"tick_time\""];
+  int64 InitLimit = 103 [(gogoproto.moretags) = "yaml:\"init_limit\""];
+  int64 SyncLimit = 104 [(gogoproto.moretags) = "yaml:\"sync_limit\""];
+  int64 SnapCount = 105 [(gogoproto.moretags) = "yaml:\"snap_count\""];
+  int64 MaxClientConnections = 106 [(gogoproto.moretags) = "yaml:\"max_client_connections\""];
+}
+
+message flag__zookeeper__r3_5_2_alpha {
+  // JavaDJuteMaxBuffer is for '-Djute.maxbuffer' flag.
+  uint64 JavaDJuteMaxBuffer = 1 [(gogoproto.moretags) = "yaml:\"java_d_jute_max_buffer\""];
+
+  // JavaXms is for '-Xms' flag.
+  string JavaXms = 2 [(gogoproto.moretags) = "yaml:\"java_xms\""];
+
+  // JavaXmx is for '-Xmx' flag.
+  string JavaXmx = 3 [(gogoproto.moretags) = "yaml:\"java_xmx\""];
+
+  uint32 myID = 100;
+  int64 ClientPort = 101;
+
+  // See http://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html for more.
+  int64 TickTime = 102 [(gogoproto.moretags) = "yaml:\"tick_time\""];
+  int64 InitLimit = 103 [(gogoproto.moretags) = "yaml:\"init_limit\""];
+  int64 SyncLimit = 104 [(gogoproto.moretags) = "yaml:\"sync_limit\""];
+  int64 SnapCount = 105 [(gogoproto.moretags) = "yaml:\"snap_count\""];
+  int64 MaxClientConnections = 106 [(gogoproto.moretags) = "yaml:\"max_client_connections\""];
+}

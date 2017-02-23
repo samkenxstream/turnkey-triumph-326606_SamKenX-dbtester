@@ -1,0 +1,17 @@
+syntax = "proto3";
+package dbtesterpb;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+
+// See https://github.com/hashicorp/consul for more.
+message flag__consul__v0_7_5 {
+}
+
+// See https://github.com/hashicorp/consul for more.
+message flag__consul__v0_8_0 {
+}

@@ -1,0 +1,14 @@
+syntax = "proto3";
+package dbtesterpb;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+
+// Flag_Cetcd_Beta is cetcd-specific flags
+// (https://github.com/coreos/cetcd).
+message flag__cetcd__beta {
+}
