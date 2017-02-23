@@ -12,7 +12,7 @@ test_description: |
   - Consul v0.7.5 (Go 1.8.0)
 
 # common control options for all client machines
-config_client_machine_common:
+config_client_machine_initial:
   # if not empty, all test data paths are prefixed
   path_prefix: /home/gyuho
   log_path: client-control.log
@@ -164,7 +164,7 @@ datatbase_id_to_config_client_machine_agent_control:
       step4_upload_logs: true
 
 
-datatbase_id_to_config_analyze_machine_common:
+datatbase_id_to_config_analyze_machine_initial:
   etcd__tip:
     # if not empty, all test data paths are prefixed
     path_prefix: 2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-tip-go1.8.0

@@ -40,17 +40,16 @@ type Config struct {
 	TestTitle       string `yaml:"test_title"`
 	TestDescription string `yaml:"test_description"`
 
-	dbtesterpb.ConfigClientMachineInitial `yaml:"config_client_machine_common"`
+	dbtesterpb.ConfigClientMachineInitial `yaml:"config_client_machine_initial"`
 
 	AllDatabaseIDList                           []string                                              `yaml:"all_database_id_list"`
 	DatabaseIDToConfigClientMachineAgentControl map[string]dbtesterpb.ConfigClientMachineAgentControl `yaml:"datatbase_id_to_config_client_machine_agent_control"`
-	DatabaseIDToConfigAnalyzeMachineInitial     map[string]dbtesterpb.ConfigAnalyzeMachineInitial     `yaml:"datatbase_id_to_config_analyze_machine_common"`
+	DatabaseIDToConfigAnalyzeMachineInitial     map[string]dbtesterpb.ConfigAnalyzeMachineInitial     `yaml:"datatbase_id_to_config_analyze_machine_initial"`
 
 	dbtesterpb.ConfigAnalyzeMachineAllAggregatedOutput `yaml:"analyze_all_aggregated_output"`
-
-	AnalyzePlotPathPrefix                 string                                `yaml:"analyze_plot_path_prefix"`
-	AnalyzePlotList                       []dbtesterpb.ConfigAnalyzeMachinePlot `yaml:"analyze_plot_list"`
-	dbtesterpb.ConfigAnalyzeMachineREADME `yaml:"analyze_readme"`
+	AnalyzePlotPathPrefix                              string                                `yaml:"analyze_plot_path_prefix"`
+	AnalyzePlotList                                    []dbtesterpb.ConfigAnalyzeMachinePlot `yaml:"analyze_plot_list"`
+	dbtesterpb.ConfigAnalyzeMachineREADME              `yaml:"analyze_readme"`
 }
 
 // ReadConfig reads control configuration file.
