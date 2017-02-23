@@ -66,17 +66,21 @@ func init() {
 	}
 }
 
-// https://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html
+// Java class paths for Zookeeper.
+// '-cp' is for 'class search path of directories and zip/jar files'.
+// See https://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html for more.
 const (
 	// JavaClassPathZookeeperr349 is the Java class paths of Zookeeper r3.4.9.
 	// CHANGE THIS FOR DIFFERENT ZOOKEEPER RELEASE!
 	// THIS IS ONLY VALID FOR Zookeeper r3.4.9.
+	// Search correct paths with 'find ./zookeeper/lib | sort'.
 	JavaClassPathZookeeperr349 = `-cp zookeeper-3.4.9.jar:lib/slf4j-api-1.6.1.jar:lib/slf4j-log4j12-1.6.1.jar:lib/log4j-1.2.16.jar:conf org.apache.zookeeper.server.quorum.QuorumPeerMain`
 
 	// JavaClassPathZookeeperr352alpha is the Java class paths of Zookeeper r3.5.2-alpha.
 	// CHANGE THIS FOR DIFFERENT ZOOKEEPER RELEASE!
 	// THIS IS ONLY VALID FOR Zookeeper r3.5.2-alpha.
-	JavaClassPathZookeeperr352alpha = `-cp zookeeper-3.4.9.jar:lib/slf4j-api-1.6.1.jar:lib/slf4j-log4j12-1.6.1.jar:lib/log4j-1.2.16.jar:conf org.apache.zookeeper.server.quorum.QuorumPeerMain`
+	// Search correct paths with 'find ./zookeeper/lib | sort'.
+	JavaClassPathZookeeperr352alpha = `-cp zookeeper-3.5.2-alpha.jar:lib/slf4j-api-1.7.5.jar:lib/slf4j-log4j12-1.7.5.jar:lib/log4j-1.2.17.jar:conf org.apache.zookeeper.server.quorum.QuorumPeerMain`
 )
 
 // startZookeeper starts Zookeeper.
