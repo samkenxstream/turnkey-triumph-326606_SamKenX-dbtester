@@ -8,13 +8,13 @@ option (gogoproto.sizer_all) = true;
 option (gogoproto.unmarshaler_all) = true;
 option (gogoproto.goproto_getters_all) = false;
 
-// differentiate between major or minor releases
-// (possibly different APIs)
+// differentiate between major or minor releases (possibly different APIs).
+// Make sure to make accordingn changes in 'flag_*' when a field is added/removed.
 enum DatabaseID {
   etcd__v2_3 = 0;
   etcd__v3_1 = 1;
   etcd__v3_2 = 2;
-  etcd__tip  = 3;
+  etcd__tip = 3;
 
   zookeeper__r3_4_9 = 10;
   zookeeper__r3_5_2_alpha = 11;

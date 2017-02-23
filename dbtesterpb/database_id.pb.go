@@ -14,8 +14,8 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
-// differentiate between major or minor releases
-// (possibly different APIs)
+// differentiate between major or minor releases (possibly different APIs).
+// Make sure to make accordingn changes in 'flag_*' when a field is added/removed.
 type DatabaseID int32
 
 const (
