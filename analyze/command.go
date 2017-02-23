@@ -25,6 +25,7 @@ import (
 	"strings"
 
 	"github.com/coreos/dbtester"
+	"github.com/coreos/dbtester/dbtesterpb"
 	humanize "github.com/dustin/go-humanize"
 	"github.com/gyuho/dataframe"
 	"github.com/olekukonko/tablewriter"
@@ -64,14 +65,14 @@ func do(configPath string) error {
 
 	all := &allAggregatedData{
 		title:                       cfg.TestTitle,
-		data:                        make([]*analyzeData, 0, len(cfg.DatabaseIDToTestData)),
+		data:                        make([]*analyzeData, 0, len(cfg.DatabaseIDToConfigAnalyzeMachineInitial)),
 		headerToDatabaseID:          make(map[string]string),
 		headerToDatabaseDescription: make(map[string]string),
 		allDatabaseIDList:           cfg.AllDatabaseIDList,
 	}
 	for _, databaseID := range cfg.AllDatabaseIDList {
-		testgroup := cfg.DatabaseIDToTestGroup[databaseID]
-		testdata := cfg.DatabaseIDToTestData[databaseID]
+		testgroup := cfg.DatabaseIDToConfigClientMachineAgentControl[databaseID]
+		testdata := cfg.DatabaseIDToConfigAnalyzeMachineInitial[databaseID]
 
 		plog.Printf("reading system metrics data for %s", databaseID)
 		ad, err := readSystemMetricsAll(testdata.ServerSystemMetricsInterpolatedPathList...)
@@ -88,7 +89,7 @@ func do(configPath string) error {
 		if err = ad.importBenchMetrics(testdata.ClientLatencyThroughputTimeseriesPath); err != nil {
 			return err
 		}
-		if err = ad.aggregateAll(testdata.ServerMemoryByKeyNumberPath, testdata.ServerReadBytesDeltaByKeyNumberPath, testdata.ServerWriteBytesDeltaByKeyNumberPath, testgroup.RequestNumber); err != nil {
+		if err = ad.aggregateAll(testdata.ServerMemoryByKeyNumberPath, testdata.ServerReadBytesDeltaByKeyNumberPath, testdata.ServerWriteBytesDeltaByKeyNumberPath, testgroup.ConfigClientMachineBenchmarkOptions.RequestNumber); err != nil {
 			return err
 		}
 		if err = ad.save(); err != nil {
@@ -114,7 +115,7 @@ func do(configPath string) error {
 		// per database
 		for _, col := range ad.aggregated.Columns() {
 			databaseID := all.headerToDatabaseID[col.Header()]
-			row00Header = append(row00Header, cfg.DatabaseIDToTestGroup[databaseID].DatabaseTag)
+			row00Header = append(row00Header, cfg.DatabaseIDToConfigClientMachineAgentControl[databaseID].DatabaseTag)
 			break
 		}
 	}
@@ -272,14 +273,14 @@ func do(configPath string) error {
 
 	databaseIDToErrs := make(map[string][]string)
 	for i, databaseID := range cfg.AllDatabaseIDList {
-		testgroup := cfg.DatabaseIDToTestGroup[databaseID]
-		testdata := cfg.DatabaseIDToTestData[databaseID]
+		testgroup := cfg.DatabaseIDToConfigClientMachineAgentControl[databaseID]
+		testdata := cfg.DatabaseIDToConfigAnalyzeMachineInitial[databaseID]
 
 		tag := testdata.DatabaseTag
 		if tag != row00Header[i+1] {
 			return fmt.Errorf("analyze config has different order; expected %q, got %q", row00Header[i+1], tag)
 		}
-		row02TotalRequestNumber = append(row02TotalRequestNumber, humanize.Comma(testgroup.RequestNumber))
+		row02TotalRequestNumber = append(row02TotalRequestNumber, humanize.Comma(testgroup.ConfigClientMachineBenchmarkOptions.RequestNumber))
 
 		{
 			fr, err := dataframe.NewFromCSV(nil, testdata.ClientSystemMetricsInterpolatedPath)
@@ -515,7 +516,7 @@ func do(configPath string) error {
 		}
 	}
 
-	plog.Printf("saving summary data to %q", cfg.Analyze.AllAggregatedOutputPathCSV)
+	plog.Printf("saving summary data to %q", cfg.ConfigAnalyzeMachineAllAggregatedOutput.AllAggregatedOutputPathCSV)
 	aggRowsForSummaryCSV := [][]string{
 		row00Header,
 		row01TotalSeconds,
@@ -559,7 +560,7 @@ func do(configPath string) error {
 		row29SectorsWrittenDeltaSum,
 		row30AvgDiskSpaceUsage,
 	}
-	file, err := openToOverwrite(cfg.Analyze.AllAggregatedOutputPathCSV)
+	file, err := openToOverwrite(cfg.ConfigAnalyzeMachineAllAggregatedOutput.AllAggregatedOutputPathCSV)
 	if err != nil {
 		return err
 	}
@@ -573,7 +574,7 @@ func do(configPath string) error {
 		return err
 	}
 
-	plog.Printf("saving summary data to %q", cfg.Analyze.AllAggregatedOutputPathTXT)
+	plog.Printf("saving summary data to %q", cfg.ConfigAnalyzeMachineAllAggregatedOutput.AllAggregatedOutputPathTXT)
 	aggRowsForSummaryTXT := [][]string{
 		row00Header,
 		row01TotalSeconds,
@@ -634,7 +635,7 @@ func do(configPath string) error {
 	if errs != "" {
 		stxt += "\n" + "\n" + errs
 	}
-	if err := toFile(stxt, changeExtToTxt(cfg.Analyze.AllAggregatedOutputPathTXT)); err != nil {
+	if err := toFile(stxt, changeExtToTxt(cfg.ConfigAnalyzeMachineAllAggregatedOutput.AllAggregatedOutputPathTXT)); err != nil {
 		return err
 	}
 
@@ -642,7 +643,7 @@ func do(configPath string) error {
 	plog.Info("combining all latency data by keys")
 	allLatencyFrame := dataframe.New()
 	for _, databaseID := range cfg.AllDatabaseIDList {
-		testdata := cfg.DatabaseIDToTestData[databaseID]
+		testdata := cfg.DatabaseIDToConfigAnalyzeMachineInitial[databaseID]
 
 		fr, err := dataframe.NewFromCSV(nil, testdata.ClientLatencyByKeyNumberPath)
 		if err != nil {
@@ -688,7 +689,7 @@ func do(configPath string) error {
 	plog.Info("combining all server memory usage by keys")
 	allMemoryFrame := dataframe.New()
 	for _, databaseID := range cfg.AllDatabaseIDList {
-		testdata := cfg.DatabaseIDToTestData[databaseID]
+		testdata := cfg.DatabaseIDToConfigAnalyzeMachineInitial[databaseID]
 
 		fr, err := dataframe.NewFromCSV(nil, testdata.ServerMemoryByKeyNumberPath)
 		if err != nil {
@@ -734,7 +735,7 @@ func do(configPath string) error {
 	plog.Info("combining all server read bytes delta by keys")
 	allReadBytesDeltaFrame := dataframe.New()
 	for _, databaseID := range cfg.AllDatabaseIDList {
-		testdata := cfg.DatabaseIDToTestData[databaseID]
+		testdata := cfg.DatabaseIDToConfigAnalyzeMachineInitial[databaseID]
 
 		fr, err := dataframe.NewFromCSV(nil, testdata.ServerReadBytesDeltaByKeyNumberPath)
 		if err != nil {
@@ -771,7 +772,7 @@ func do(configPath string) error {
 	plog.Info("combining all server write bytes delta by keys")
 	allWriteBytesDeltaFrame := dataframe.New()
 	for _, databaseID := range cfg.AllDatabaseIDList {
-		testdata := cfg.DatabaseIDToTestData[databaseID]
+		testdata := cfg.DatabaseIDToConfigAnalyzeMachineInitial[databaseID]
 
 		fr, err := dataframe.NewFromCSV(nil, testdata.ServerWriteBytesDeltaByKeyNumberPath)
 		if err != nil {
@@ -806,14 +807,14 @@ func do(configPath string) error {
 	}
 
 	{
-		allLatencyFrameCfg := dbtester.Plot{
+		allLatencyFrameCfg := dbtesterpb.ConfigAnalyzeMachinePlot{
 			Column:         "AVG-LATENCY-MS",
 			XAxis:          "Cumulative Number of Keys",
 			YAxis:          "Latency(millisecond) by Keys",
-			OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
+			OutputPathList: make([]string, len(cfg.AnalyzePlotList[0].OutputPathList)),
 		}
-		allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.svg")
-		allLatencyFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.png")
+		allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.svg")
+		allLatencyFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.png")
 		plog.Printf("plotting %v", allLatencyFrameCfg.OutputPathList)
 		var pairs []pair
 		allCols := allLatencyFrame.Columns()
@@ -835,21 +836,21 @@ func do(configPath string) error {
 				return err
 			}
 		}
-		csvPath := filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.csv")
+		csvPath := filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.csv")
 		if err := newCSV.CSV(csvPath); err != nil {
 			return err
 		}
 	}
 	{
 		// with error points
-		allLatencyFrameCfg := dbtester.Plot{
+		allLatencyFrameCfg := dbtesterpb.ConfigAnalyzeMachinePlot{
 			Column:         "AVG-LATENCY-MS",
 			XAxis:          "Cumulative Number of Keys",
 			YAxis:          "Latency(millisecond) by Keys",
-			OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
+			OutputPathList: make([]string, len(cfg.AnalyzePlotList[0].OutputPathList)),
 		}
-		allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.svg")
-		allLatencyFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.png")
+		allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.svg")
+		allLatencyFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.png")
 		plog.Printf("plotting %v", allLatencyFrameCfg.OutputPathList)
 		var triplets []triplet
 		allCols := allLatencyFrame.Columns()
@@ -879,20 +880,20 @@ func do(configPath string) error {
 				return err
 			}
 		}
-		csvPath := filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.csv")
+		csvPath := filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.csv")
 		if err := newCSV.CSV(csvPath); err != nil {
 			return err
 		}
 	}
 	{
-		allMemoryFrameCfg := dbtester.Plot{
+		allMemoryFrameCfg := dbtesterpb.ConfigAnalyzeMachinePlot{
 			Column:         "AVG-VMRSS-MB",
 			XAxis:          "Cumulative Number of Keys",
 			YAxis:          "Memory(MB) by Keys",
-			OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
+			OutputPathList: make([]string, len(cfg.AnalyzePlotList[0].OutputPathList)),
 		}
-		allMemoryFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.svg")
-		allMemoryFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.png")
+		allMemoryFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.svg")
+		allMemoryFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.png")
 		plog.Printf("plotting %v", allMemoryFrameCfg.OutputPathList)
 		var pairs []pair
 		allCols := allMemoryFrame.Columns()
@@ -914,21 +915,21 @@ func do(configPath string) error {
 				return err
 			}
 		}
-		csvPath := filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.csv")
+		csvPath := filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.csv")
 		if err := newCSV.CSV(csvPath); err != nil {
 			return err
 		}
 	}
 	{
 		// with error points
-		allMemoryFrameCfg := dbtester.Plot{
+		allMemoryFrameCfg := dbtesterpb.ConfigAnalyzeMachinePlot{
 			Column:         "AVG-VMRSS-MB",
 			XAxis:          "Cumulative Number of Keys",
 			YAxis:          "Memory(MB) by Keys",
-			OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
+			OutputPathList: make([]string, len(cfg.AnalyzePlotList[0].OutputPathList)),
 		}
-		allMemoryFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.svg")
-		allMemoryFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.png")
+		allMemoryFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.svg")
+		allMemoryFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.png")
 		plog.Printf("plotting %v", allMemoryFrameCfg.OutputPathList)
 		var triplets []triplet
 		allCols := allMemoryFrame.Columns()
@@ -958,20 +959,20 @@ func do(configPath string) error {
 				return err
 			}
 		}
-		csvPath := filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.csv")
+		csvPath := filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.csv")
 		if err := newCSV.CSV(csvPath); err != nil {
 			return err
 		}
 	}
 	{
-		allReadBytesDeltaFrameCfg := dbtester.Plot{
+		allReadBytesDeltaFrameCfg := dbtesterpb.ConfigAnalyzeMachinePlot{
 			Column:         "AVG-READ-BYTES-NUM-DELTA",
 			XAxis:          "Cumulative Number of Keys",
 			YAxis:          "Average Read Bytes Delta by Keys",
-			OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
+			OutputPathList: make([]string, len(cfg.AnalyzePlotList[0].OutputPathList)),
 		}
-		allReadBytesDeltaFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-READ-BYTES-NUM-DELTA-BY-KEY.svg")
-		allReadBytesDeltaFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-READ-BYTES-NUM-DELTA-BY-KEY.png")
+		allReadBytesDeltaFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-READ-BYTES-NUM-DELTA-BY-KEY.svg")
+		allReadBytesDeltaFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-READ-BYTES-NUM-DELTA-BY-KEY.png")
 		plog.Printf("plotting %v", allReadBytesDeltaFrameCfg.OutputPathList)
 		var pairs []pair
 		allCols := allReadBytesDeltaFrame.Columns()
@@ -984,20 +985,20 @@ func do(configPath string) error {
 		if err = all.drawXY(allReadBytesDeltaFrameCfg, pairs...); err != nil {
 			return err
 		}
-		csvPath := filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-READ-BYTES-NUM-DELTA-BY-KEY.csv")
+		csvPath := filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-READ-BYTES-NUM-DELTA-BY-KEY.csv")
 		if err := allReadBytesDeltaFrame.CSV(csvPath); err != nil {
 			return err
 		}
 	}
 	{
-		allWriteBytesDeltaFrameCfg := dbtester.Plot{
+		allWriteBytesDeltaFrameCfg := dbtesterpb.ConfigAnalyzeMachinePlot{
 			Column:         "AVG-WRITE-BYTES-NUM-DELTA",
 			XAxis:          "Cumulative Number of Keys",
 			YAxis:          "Average Write Bytes Delta by Keys",
-			OutputPathList: make([]string, len(cfg.PlotList[0].OutputPathList)),
+			OutputPathList: make([]string, len(cfg.AnalyzePlotList[0].OutputPathList)),
 		}
-		allWriteBytesDeltaFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-WRITE-BYTES-NUM-DELTA-BY-KEY.svg")
-		allWriteBytesDeltaFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-WRITE-BYTES-NUM-DELTA-BY-KEY.png")
+		allWriteBytesDeltaFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-WRITE-BYTES-NUM-DELTA-BY-KEY.svg")
+		allWriteBytesDeltaFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-WRITE-BYTES-NUM-DELTA-BY-KEY.png")
 		plog.Printf("plotting %v", allWriteBytesDeltaFrameCfg.OutputPathList)
 		var pairs []pair
 		allCols := allWriteBytesDeltaFrame.Columns()
@@ -1010,21 +1011,21 @@ func do(configPath string) error {
 		if err = all.drawXY(allWriteBytesDeltaFrameCfg, pairs...); err != nil {
 			return err
 		}
-		csvPath := filepath.Join(filepath.Dir(cfg.PlotList[0].OutputPathList[0]), "AVG-WRITE-BYTES-NUM-DELTA-BY-KEY.csv")
+		csvPath := filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-WRITE-BYTES-NUM-DELTA-BY-KEY.csv")
 		if err := allWriteBytesDeltaFrame.CSV(csvPath); err != nil {
 			return err
 		}
 	}
 
 	plog.Println("combining data for plotting")
-	for _, plotConfig := range cfg.PlotList {
+	for _, plotConfig := range cfg.AnalyzePlotList {
 		plog.Printf("plotting %q", plotConfig.Column)
 		var clientNumColumns []dataframe.Column
 		var pairs []pair
 		var dataColumns []dataframe.Column
 		for i, ad := range all.data {
 			databaseID := all.allDatabaseIDList[i]
-			tag := cfg.DatabaseIDToTestGroup[databaseID].DatabaseTag
+			tag := cfg.DatabaseIDToConfigClientMachineAgentControl[databaseID].DatabaseTag
 
 			avgCol, err := ad.aggregated.Column("CONTROL-CLIENT-NUM")
 			if err != nil {
@@ -1076,7 +1077,7 @@ func do(configPath string) error {
 			return err
 		}
 
-		if len(cfg.DatabaseIDToTestGroup[cfg.AllDatabaseIDList[0]].BenchmarkOptions.ConnectionClientNumbers) > 0 {
+		if len(cfg.DatabaseIDToConfigClientMachineAgentControl[cfg.AllDatabaseIDList[0]].ConfigClientMachineBenchmarkOptions.ConnectionClientNumbers) > 0 {
 			plog.Printf("aggregating data for %q of all database (by client number)", plotConfig.Column)
 			nf3 := dataframe.New()
 			var firstKeys []int
