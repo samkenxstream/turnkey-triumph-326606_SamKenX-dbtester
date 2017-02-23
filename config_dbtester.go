@@ -44,7 +44,7 @@ type Config struct {
 
 	AllDatabaseIDList                           []string                                              `yaml:"all_database_id_list"`
 	DatabaseIDToConfigClientMachineAgentControl map[string]dbtesterpb.ConfigClientMachineAgentControl `yaml:"datatbase_id_to_config_client_machine_agent_control"`
-	DatabaseIDToConfigAnalyzeMachineInitial      map[string]dbtesterpb.ConfigAnalyzeMachineInitial      `yaml:"datatbase_id_to_config_analyze_machine_common"`
+	DatabaseIDToConfigAnalyzeMachineInitial     map[string]dbtesterpb.ConfigAnalyzeMachineInitial     `yaml:"datatbase_id_to_config_analyze_machine_common"`
 
 	dbtesterpb.ConfigAnalyzeMachineAllAggregatedOutput `yaml:"analyze_all_aggregated_output"`
 
@@ -66,7 +66,7 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 
 	for _, id := range cfg.AllDatabaseIDList {
 		if !dbtesterpb.IsValidDatabaseID(id) {
-			return nil, fmt.Errorf("%q is unknown", id)
+			return nil, fmt.Errorf("databaseID %q is unknown", id)
 		}
 	}
 
@@ -83,6 +83,10 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 	}
 
 	for databaseID, group := range cfg.DatabaseIDToConfigClientMachineAgentControl {
+		if !dbtesterpb.IsValidDatabaseID(databaseID) {
+			return nil, fmt.Errorf("databaseID %q is unknown", databaseID)
+		}
+
 		group.DatabaseID = databaseID
 		group.DatabaseTag = MakeTag(group.DatabaseDescription)
 		group.PeerIPsString = strings.Join(group.PeerIPs, "___")
@@ -154,6 +158,7 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()] = v
 	}
 
+	// TODO: add JVM flags
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_4_9.String()]; ok {
 		if v.Flag_Zookeeper_R3_4_9.TickTime == 0 {
 			v.Flag_Zookeeper_R3_4_9.TickTime = defaultZookeeperTickTime
