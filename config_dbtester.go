@@ -130,35 +130,72 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		}
 	}
 
-	var (
+	const (
+		defaultEtcdClientPort      int64 = 2379
+		defaultZookeeperClientPort int64 = 2181
+		defaultConsulClientPort    int64 = 8500
+
 		defaultEtcdSnapshotCount             int64 = 100000
+		defaultEtcdQuotaSizeBytes            int64 = 8000000000
 		defaultZookeeperSnapCount            int64 = 100000
 		defaultZookeeperTickTime             int64 = 2000
 		defaultZookeeperInitLimit            int64 = 5
 		defaultZookeeperSyncLimit            int64 = 5
 		defaultZookeeperMaxClientConnections int64 = 5000
 	)
+
+	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v2_3.String()]; ok {
+		if v.DatabasePortToConnect == 0 {
+			v.DatabasePortToConnect = defaultEtcdClientPort
+		}
+		if v.Flag_Etcd_V2_3.SnapshotCount == 0 {
+			v.Flag_Etcd_V2_3.SnapshotCount = defaultEtcdSnapshotCount
+		}
+		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v2_3.String()] = v
+	}
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_1.String()]; ok {
+		if v.DatabasePortToConnect == 0 {
+			v.DatabasePortToConnect = defaultEtcdClientPort
+		}
 		if v.Flag_Etcd_V3_1.SnapshotCount == 0 {
 			v.Flag_Etcd_V3_1.SnapshotCount = defaultEtcdSnapshotCount
+		}
+		if v.Flag_Etcd_V3_1.QuotaSizeBytes == 0 {
+			v.Flag_Etcd_V3_1.QuotaSizeBytes = defaultEtcdQuotaSizeBytes
 		}
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_1.String()] = v
 	}
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_2.String()]; ok {
+		if v.DatabasePortToConnect == 0 {
+			v.DatabasePortToConnect = defaultEtcdClientPort
+		}
 		if v.Flag_Etcd_V3_2.SnapshotCount == 0 {
 			v.Flag_Etcd_V3_2.SnapshotCount = defaultEtcdSnapshotCount
+		}
+		if v.Flag_Etcd_V3_2.QuotaSizeBytes == 0 {
+			v.Flag_Etcd_V3_2.QuotaSizeBytes = defaultEtcdQuotaSizeBytes
 		}
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_2.String()] = v
 	}
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()]; ok {
+		if v.DatabasePortToConnect == 0 {
+			v.DatabasePortToConnect = defaultEtcdClientPort
+		}
 		if v.Flag_Etcd_Tip.SnapshotCount == 0 {
 			v.Flag_Etcd_Tip.SnapshotCount = defaultEtcdSnapshotCount
+		}
+		if v.Flag_Etcd_Tip.QuotaSizeBytes == 0 {
+			v.Flag_Etcd_Tip.QuotaSizeBytes = defaultEtcdQuotaSizeBytes
 		}
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()] = v
 	}
 
 	// TODO: add JVM flags
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_4_9.String()]; ok {
+		if v.DatabasePortToConnect == 0 {
+			v.DatabasePortToConnect = defaultZookeeperClientPort
+		}
+		v.Flag_Zookeeper_R3_4_9.ClientPort = v.DatabasePortToConnect
 		if v.Flag_Zookeeper_R3_4_9.TickTime == 0 {
 			v.Flag_Zookeeper_R3_4_9.TickTime = defaultZookeeperTickTime
 		}
@@ -177,6 +214,13 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_4_9.String()] = v
 	}
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha.String()]; ok {
+		if v.DatabasePortToConnect == 0 {
+			v.DatabasePortToConnect = defaultZookeeperClientPort
+		}
+		v.Flag_Zookeeper_R3_5_2Alpha.ClientPort = v.DatabasePortToConnect
+		if v.Flag_Zookeeper_R3_5_2Alpha.TickTime == 0 {
+			v.Flag_Zookeeper_R3_5_2Alpha.TickTime = defaultZookeeperTickTime
+		}
 		if v.Flag_Zookeeper_R3_5_2Alpha.TickTime == 0 {
 			v.Flag_Zookeeper_R3_5_2Alpha.TickTime = defaultZookeeperTickTime
 		}
@@ -193,6 +237,19 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 			v.Flag_Zookeeper_R3_5_2Alpha.MaxClientConnections = defaultZookeeperMaxClientConnections
 		}
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha.String()] = v
+	}
+
+	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_7_5.String()]; ok {
+		if v.DatabasePortToConnect == 0 {
+			v.DatabasePortToConnect = defaultConsulClientPort
+		}
+		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_7_5.String()] = v
+	}
+	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_8_0.String()]; ok {
+		if v.DatabasePortToConnect == 0 {
+			v.DatabasePortToConnect = defaultConsulClientPort
+		}
+		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_8_0.String()] = v
 	}
 
 	if cfg.ConfigClientMachineInitial.GoogleCloudStorageKeyPath != "" && !analyze {
@@ -262,8 +319,8 @@ func (cfg *Config) ToRequest(databaseID string, op dbtesterpb.Operation, idx int
 	case dbtesterpb.DatabaseID_zookeeper__r3_4_9:
 		req.Flag_Zookeeper_R3_4_9 = &dbtesterpb.Flag_Zookeeper_R3_4_9{
 			MyID:                 uint32(idx + 1),
+			ClientPort:           gcfg.Flag_Zookeeper_R3_4_9.ClientPort,
 			TickTime:             gcfg.Flag_Zookeeper_R3_4_9.TickTime,
-			ClientPort:           int64(gcfg.DatabasePortToConnect),
 			InitLimit:            gcfg.Flag_Zookeeper_R3_4_9.InitLimit,
 			SyncLimit:            gcfg.Flag_Zookeeper_R3_4_9.SyncLimit,
 			SnapCount:            gcfg.Flag_Zookeeper_R3_4_9.SnapCount,
@@ -272,8 +329,8 @@ func (cfg *Config) ToRequest(databaseID string, op dbtesterpb.Operation, idx int
 	case dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha:
 		req.Flag_Zookeeper_R3_5_2Alpha = &dbtesterpb.Flag_Zookeeper_R3_5_2Alpha{
 			MyID:                 uint32(idx + 1),
+			ClientPort:           gcfg.Flag_Zookeeper_R3_5_2Alpha.ClientPort,
 			TickTime:             gcfg.Flag_Zookeeper_R3_5_2Alpha.TickTime,
-			ClientPort:           int64(gcfg.DatabasePortToConnect),
 			InitLimit:            gcfg.Flag_Zookeeper_R3_5_2Alpha.InitLimit,
 			SyncLimit:            gcfg.Flag_Zookeeper_R3_5_2Alpha.SyncLimit,
 			SnapCount:            gcfg.Flag_Zookeeper_R3_5_2Alpha.SnapCount,

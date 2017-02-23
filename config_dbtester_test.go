@@ -102,6 +102,7 @@ func TestConfig(t *testing.T) {
 				AgentPortToConnect:    3500,
 				AgentEndpoints:        []string{"10.240.0.21:3500", "10.240.0.22:3500", "10.240.0.23:3500"},
 				Flag_Zookeeper_R3_5_2Alpha: &dbtesterpb.Flag_Zookeeper_R3_5_2Alpha{
+					ClientPort:           2181,
 					TickTime:             2000,
 					InitLimit:            5,
 					SyncLimit:            5,
@@ -538,8 +539,8 @@ func TestConfig(t *testing.T) {
 		},
 		Flag_Zookeeper_R3_5_2Alpha: &dbtesterpb.Flag_Zookeeper_R3_5_2Alpha{
 			MyID:                 3,
-			TickTime:             2000,
 			ClientPort:           2181,
+			TickTime:             2000,
 			InitLimit:            5,
 			SyncLimit:            5,
 			SnapCount:            100000,
