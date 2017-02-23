@@ -341,9 +341,11 @@ func (cfg *Config) ToRequest(databaseID string, op dbtesterpb.Operation, idx int
 			QuotaSizeBytes: gcfg.Flag_Etcd_Tip.QuotaSizeBytes,
 		}
 
-	// TODO: jvm flags
 	case dbtesterpb.DatabaseID_zookeeper__r3_4_9:
 		req.Flag_Zookeeper_R3_4_9 = &dbtesterpb.Flag_Zookeeper_R3_4_9{
+			JavaDJuteMaxBuffer:   gcfg.Flag_Zookeeper_R3_4_9.JavaDJuteMaxBuffer,
+			JavaXms:              gcfg.Flag_Zookeeper_R3_4_9.JavaXms,
+			JavaXmx:              gcfg.Flag_Zookeeper_R3_4_9.JavaXmx,
 			MyID:                 uint32(idx + 1),
 			ClientPort:           gcfg.Flag_Zookeeper_R3_4_9.ClientPort,
 			TickTime:             gcfg.Flag_Zookeeper_R3_4_9.TickTime,
@@ -354,6 +356,9 @@ func (cfg *Config) ToRequest(databaseID string, op dbtesterpb.Operation, idx int
 		}
 	case dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha:
 		req.Flag_Zookeeper_R3_5_2Alpha = &dbtesterpb.Flag_Zookeeper_R3_5_2Alpha{
+			JavaDJuteMaxBuffer:   gcfg.Flag_Zookeeper_R3_5_2Alpha.JavaDJuteMaxBuffer,
+			JavaXms:              gcfg.Flag_Zookeeper_R3_5_2Alpha.JavaXms,
+			JavaXmx:              gcfg.Flag_Zookeeper_R3_5_2Alpha.JavaXmx,
 			MyID:                 uint32(idx + 1),
 			ClientPort:           gcfg.Flag_Zookeeper_R3_5_2Alpha.ClientPort,
 			TickTime:             gcfg.Flag_Zookeeper_R3_5_2Alpha.TickTime,

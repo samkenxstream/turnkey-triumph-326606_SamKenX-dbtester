@@ -542,6 +542,9 @@ func TestConfig(t *testing.T) {
 			GoogleCloudStorageSubDirectory: "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable",
 		},
 		Flag_Zookeeper_R3_5_2Alpha: &dbtesterpb.Flag_Zookeeper_R3_5_2Alpha{
+			JavaDJuteMaxBuffer:   33554432,
+			JavaXms:              "50G",
+			JavaXmx:              "50G",
 			MyID:                 3,
 			ClientPort:           2181,
 			TickTime:             2000,
