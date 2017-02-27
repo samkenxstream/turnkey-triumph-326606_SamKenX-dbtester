@@ -16,6 +16,7 @@ package dbtesterpb
 
 import (
 	"image/color"
+	"sort"
 
 	"github.com/gonum/plot/plotutil"
 )
@@ -24,6 +25,16 @@ import (
 func IsValidDatabaseID(id string) bool {
 	_, ok := DatabaseID_value[id]
 	return ok
+}
+
+// GetAllDatabaseIDs returns all database ids.
+func GetAllDatabaseIDs() []string {
+	var ids []string
+	for k := range DatabaseID_value {
+		ids = append(ids, k)
+	}
+	sort.Strings(ids)
+	return ids
 }
 
 func GetRGBI(databaseID string, i int) color.Color {

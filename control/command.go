@@ -18,6 +18,7 @@ package control
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/coreos/dbtester"
@@ -55,7 +56,8 @@ func init() {
 		break
 	}
 
-	Command.PersistentFlags().StringVar(&databaseID, "database-id", "etcd__tip", "See dbtesterpb/database_id.pb.go")
+	ids := dbtesterpb.GetAllDatabaseIDs()
+	Command.PersistentFlags().StringVar(&databaseID, "database-id", ids[0], strings.Join(ids, ", "))
 	Command.PersistentFlags().StringVarP(&configPath, "config", "c", "", "YAML configuration file path.")
 	Command.PersistentFlags().StringVar(&diskDevice, "disk-device", dn, "Disk device to collect disk statistics metrics from.")
 	Command.PersistentFlags().StringVar(&networkInterface, "network-interface", nt, "Network interface to record in/outgoing packets.")
