@@ -35,6 +35,9 @@ message Request {
   DatabaseID DatabaseID = 3;
   string DatabaseTag = 4;
 
+  // PeerIPsString encodes a list of endpoints in string
+  // because Protocol Buffer does not have a list or array datatype
+  // which is ordered. 'repeated' does not guarantee the ordering.
   string PeerIPsString = 5;
   uint32 IPIndex = 6;
 
