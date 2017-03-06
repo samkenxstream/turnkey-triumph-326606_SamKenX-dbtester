@@ -11,7 +11,7 @@ Distributed database benchmark tester: etcd, Zookeeper, Consul, zetcd, cetcd
 - Database Client
   - https://github.com/coreos/dbtester/tree/master/control
 - System Metrics
-  - https://github.com/gyuho/psn
+  - https://github.com/gyuho/linux-inspect
 - Test Data Analysis
   - https://github.com/coreos/dbtester/tree/master/analyze
   - https://github.com/gyuho/dataframe
