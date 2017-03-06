@@ -23,7 +23,7 @@ import (
 	"github.com/coreos/dbtester/pkg/ntp"
 	"github.com/coreos/etcd/pkg/netutil"
 	"github.com/coreos/pkg/capnslog"
-	"github.com/gyuho/psn"
+	"github.com/gyuho/linux-inspect/psn"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 )
