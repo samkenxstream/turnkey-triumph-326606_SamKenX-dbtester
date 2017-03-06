@@ -25,7 +25,7 @@ import (
 	"github.com/coreos/dbtester/dbtesterpb"
 	"github.com/coreos/dbtester/pkg/fileinspect"
 
-	"github.com/gyuho/psn"
+	"github.com/gyuho/linux-inspect/psn"
 	"golang.org/x/net/context"
 )
 

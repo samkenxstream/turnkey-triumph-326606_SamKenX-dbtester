@@ -19,7 +19,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/gyuho/psn"
+	"github.com/gyuho/linux-inspect/psn"
 )
 
 // startMetrics starts collecting metrics.

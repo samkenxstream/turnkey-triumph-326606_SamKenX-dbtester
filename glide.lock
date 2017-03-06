@@ -1,5 +1,5 @@
-hash: fd49652adb4ec58cdca302dab916ff1d3bb80ccdf078dff45579becd0e75d613
-updated: 2017-02-22T19:06:28.732861827-08:00
+hash: 11e6bd98c99ecd78b59d905847f46dd54ff2306035536eaa0754c8c4868870ed
+updated: 2017-03-06T13:03:02.042405087-08:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -21,7 +21,7 @@ imports:
 - name: github.com/cheggaaa/pb
   version: d7e6ca3010b6f084d8056847f55d7f572f180678
 - name: github.com/coreos/etcd
-  version: 86c9bf5c3f68707048e2cea63101e0d8d156331d
+  version: 317f3571ff9407c17ad6fd68877c4e673954d25a
   subpackages:
   - auth/authpb
   - client
@@ -89,7 +89,7 @@ imports:
   - vg/vgpdf
   - vg/vgsvg
 - name: github.com/googleapis/gax-go
-  version: da06d194a00e19ce00d9011a13931c3f6f6887c7
+  version: 8c5154c0fe5bf18cf649634d4c6df50897a32751
 - name: github.com/grpc-ecosystem/grpc-gateway
   version: 84398b94e188ee336f307779b57b3aa91af7063c
   subpackages:
@@ -98,18 +98,19 @@ imports:
   - utilities
 - name: github.com/gyuho/dataframe
   version: 73de2c550b1177c1640f3dacbbc1af00f913fedb
-- name: github.com/gyuho/psn
-  version: 0a50f90209cfd81ef2a20cbf01679f118f31f0ad
+- name: github.com/gyuho/linux-inspect
+  version: c8b6d38d52ab5870033a270870b39b91dea54649
   subpackages:
+  - psn
   - schema
 - name: github.com/hashicorp/consul
-  version: 65b7ed462cc574d57dc6dcc9bca74676089f7fee
+  version: db4f40f6f05d6ab6712951ad4e5f045f8e9e1c9c
   subpackages:
   - api
 - name: github.com/hashicorp/go-cleanhttp
   version: 3573b8b52aa7b37b9358d966a898feb387f62437
 - name: github.com/hashicorp/serf
-  version: 050c56d31a1ff2ebc50e3f4810fdff7e7563f6c8
+  version: d787b2e8f72b5da48c43b84c2617234401084050
   subpackages:
   - coordinate
 - name: github.com/inconshreveable/mousetrap
@@ -138,7 +139,7 @@ imports:
   subpackages:
   - codec
 - name: golang.org/x/image
-  version: b952c941a68f1a00c1f8d855a12a8282d2f1b4f0
+  version: e6cbe778da3cea914ea6436d0f99309605c3dfc4
   subpackages:
   - draw
   - font
@@ -180,7 +181,7 @@ imports:
   - storage/v1
   - transport
 - name: google.golang.org/appengine
-  version: 3a452f9e00122ead39586d68ffdb9c6e1326af3c
+  version: 5403c08c6e8fb3b2dc1209d2d833d8e8ac8240de
   subpackages:
   - internal
   - internal/app_identity
