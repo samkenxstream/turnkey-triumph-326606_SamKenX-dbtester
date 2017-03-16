@@ -256,11 +256,11 @@ analyze_plot_list:
 
 - column: AVG-CPU
   x_axis: Second
-  y_axis: CPU(%)
+  y_axis: Average CPU(%)
 
 - column: MAX-CPU
   x_axis: Second
-  y_axis: CPU(%)
+  y_axis: Maximum CPU(%)
 
 - column: AVG-VMRSS-MB
   x_axis: Second
