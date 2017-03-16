@@ -210,15 +210,19 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 		plog.Infof("waiting a few more seconds before stopping %q", t.cmd.Path)
 		time.Sleep(3 * time.Second)
 
+		// TODO: https://github.com/coreos/dbtester/issues/330
 		plog.Infof("sending %q to %q [PID: %d]", syscall.SIGINT, t.cmd.Path, t.pid)
 		if err := t.cmd.Process.Signal(syscall.SIGINT); err != nil {
-			return nil, err
+			plog.Warningf("syscall.SIGINT failed with %v", err)
+
+			time.Sleep(3 * time.Second)
+			plog.Infof("sending %q to %q [PID: %d]", syscall.SIGTERM, t.cmd.Path, t.pid)
+			if err := syscall.Kill(int(t.pid), syscall.SIGTERM); err != nil {
+				plog.Warningf("syscall.Kill failed with %v", err)
+			}
 		}
-		time.Sleep(3 * time.Second)
-		plog.Infof("sending %q to %q [PID: %d]", syscall.SIGTERM, t.cmd.Path, t.pid)
-		if err := syscall.Kill(int(t.pid), syscall.SIGTERM); err != nil {
-			plog.Warningf("syscall.Kill failed with %v", err)
-		}
+
+		time.Sleep(time.Second)
 		<-t.cmdWait
 		if t.databaseLogFile != nil {
 			t.databaseLogFile.Sync()
