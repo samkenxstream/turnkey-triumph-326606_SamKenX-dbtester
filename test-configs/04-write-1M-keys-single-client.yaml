@@ -1,4 +1,4 @@
-test_title: Write 1M keys, 256-byte key, 1KB value, Single Client
+test_title: Write 1M keys, 256-byte key, 1KB value, Single Client, 100 QPS Limit
 test_description: |
   - Google Cloud Compute Engine
   - 4 machines of 16 vCPUs + 60 GB Memory + 300 GB SSD (1 for client)
@@ -61,7 +61,7 @@ datatbase_id_to_config_client_machine_agent_control:
       connection_client_numbers: []
 
       # 0, to not rate limit
-      rate_limit_requests_per_second: 0
+      rate_limit_requests_per_second: 100
 
       # for 'write', 'read'
       same_key: false
@@ -125,7 +125,7 @@ datatbase_id_to_config_client_machine_agent_control:
       connection_client_numbers: []
 
       # 0, to not rate limit
-      rate_limit_requests_per_second: 0
+      rate_limit_requests_per_second: 100
 
       # for 'write', 'read'
       same_key: false
@@ -158,7 +158,7 @@ datatbase_id_to_config_client_machine_agent_control:
       connection_client_numbers: []
 
       # 0, to not rate limit
-      rate_limit_requests_per_second: 0
+      rate_limit_requests_per_second: 100
 
       # for 'write', 'read'
       same_key: false
