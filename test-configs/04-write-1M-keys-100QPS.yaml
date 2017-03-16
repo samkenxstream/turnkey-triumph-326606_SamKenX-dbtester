@@ -1,4 +1,4 @@
-test_title: Write 1M keys, 256-byte key, 1KB value, Single Client, 100 QPS Limit
+test_title: Write 1M keys, 256-byte key, 1KB value, 100 clients, 100 QPS Limit
 test_description: |
   - Google Cloud Compute Engine
   - 4 machines of 16 vCPUs + 60 GB Memory + 300 GB SSD (1 for client)
@@ -32,7 +32,7 @@ config_client_machine_initial:
   # set this in 'control' machine, to automate log uploading in remote 'agent' machines
   google_cloud_storage_key_path: /home/gyuho/gcloud-key.json
   google_cloud_storage_bucket_name: dbtester-results
-  google_cloud_storage_sub_directory: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client
+  google_cloud_storage_sub_directory: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS
 
 all_database_id_list: [etcd__tip, zookeeper__r3_5_2_alpha, consul__v0_7_5]
 
@@ -55,8 +55,8 @@ datatbase_id_to_config_client_machine_agent_control:
     benchmark_options:
       type: write
       request_number: 1000000
-      connection_number: 1
-      client_number: 1
+      connection_number: 100
+      client_number: 100
       # if specified, overwrite 'connection_number', 'connection_number'
       connection_client_numbers: []
 
@@ -119,8 +119,8 @@ datatbase_id_to_config_client_machine_agent_control:
     benchmark_options:
       type: write
       request_number: 1000000
-      connection_number: 1
-      client_number: 1
+      connection_number: 100
+      client_number: 100
       # if specified, overwrite 'connection_number', 'connection_number'
       connection_client_numbers: []
 
@@ -152,8 +152,8 @@ datatbase_id_to_config_client_machine_agent_control:
     benchmark_options:
       type: write
       request_number: 1000000
-      connection_number: 1
-      client_number: 1
+      connection_number: 100
+      client_number: 100
       # if specified, overwrite 'connection_number', 'connection_number'
       connection_client_numbers: []
 
@@ -177,7 +177,7 @@ datatbase_id_to_config_client_machine_agent_control:
 datatbase_id_to_config_analyze_machine_initial:
   etcd__tip:
     # if not empty, all test data paths are prefixed
-    path_prefix: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/etcd-tip-go1.8.0
+    path_prefix: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/etcd-tip-go1.8.0
     client_system_metrics_interpolated_path: client-system-metrics-interpolated.csv
     client_latency_throughput_timeseries_path: client-latency-throughput-timeseries.csv
     client_latency_distribution_all_path: client-latency-distribution-all.csv
@@ -186,6 +186,8 @@ datatbase_id_to_config_analyze_machine_initial:
     client_latency_by_key_number_path: client-latency-by-key-number.csv
     server_disk_space_usage_summary_path: server-disk-space-usage-summary.csv
     server_memory_by_key_number_path: server-memory-by-key-number.csv
+    server_read_bytes_delta_by_key_number_path: server-read-bytes-delta-by-key-number.csv
+    server_write_bytes_delta_by_key_number_path: server-write-bytes-delta-by-key-number.csv
     server_system_metrics_interpolated_path_list:
     - 1-server-system-metrics-interpolated.csv
     - 2-server-system-metrics-interpolated.csv
@@ -194,7 +196,7 @@ datatbase_id_to_config_analyze_machine_initial:
 
   zookeeper__r3_5_2_alpha:
     # if not empty, all test data paths are prefixed
-    path_prefix: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/zookeeper-r3.5.2-alpha-java8
+    path_prefix: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/zookeeper-r3.5.2-alpha-java8
     client_system_metrics_interpolated_path: client-system-metrics-interpolated.csv
     client_latency_throughput_timeseries_path: client-latency-throughput-timeseries.csv
     client_latency_distribution_all_path: client-latency-distribution-all.csv
@@ -203,6 +205,8 @@ datatbase_id_to_config_analyze_machine_initial:
     client_latency_by_key_number_path: client-latency-by-key-number.csv
     server_disk_space_usage_summary_path: server-disk-space-usage-summary.csv
     server_memory_by_key_number_path: server-memory-by-key-number.csv
+    server_read_bytes_delta_by_key_number_path: server-read-bytes-delta-by-key-number.csv
+    server_write_bytes_delta_by_key_number_path: server-write-bytes-delta-by-key-number.csv
     server_system_metrics_interpolated_path_list:
     - 1-server-system-metrics-interpolated.csv
     - 2-server-system-metrics-interpolated.csv
@@ -211,7 +215,7 @@ datatbase_id_to_config_analyze_machine_initial:
 
   consul__v0_7_5:
     # if not empty, all test data paths are prefixed
-    path_prefix: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/consul-v0.7.5-go1.8.0
+    path_prefix: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/consul-v0.7.5-go1.8.0
     client_system_metrics_interpolated_path: client-system-metrics-interpolated.csv
     client_latency_throughput_timeseries_path: client-latency-throughput-timeseries.csv
     client_latency_distribution_all_path: client-latency-distribution-all.csv
@@ -220,6 +224,8 @@ datatbase_id_to_config_analyze_machine_initial:
     client_latency_by_key_number_path: client-latency-by-key-number.csv
     server_disk_space_usage_summary_path: server-disk-space-usage-summary.csv
     server_memory_by_key_number_path: server-memory-by-key-number.csv
+    server_read_bytes_delta_by_key_number_path: server-read-bytes-delta-by-key-number.csv
+    server_write_bytes_delta_by_key_number_path: server-write-bytes-delta-by-key-number.csv
     server_system_metrics_interpolated_path_list:
     - 1-server-system-metrics-interpolated.csv
     - 2-server-system-metrics-interpolated.csv
@@ -227,10 +233,10 @@ datatbase_id_to_config_analyze_machine_initial:
     all_aggregated_output_path: all-aggregated.csv
 
 analyze_all_aggregated_output:
-  all_aggregated_output_path_csv: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/all-aggregated.csv
-  all_aggregated_output_path_txt: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/all-aggregated.txt
+  all_aggregated_output_path_csv: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/all-aggregated.csv
+  all_aggregated_output_path_txt: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/all-aggregated.txt
 
-analyze_plot_path_prefix: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client
+analyze_plot_path_prefix: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS
 analyze_plot_list:
 - column: AVG-LATENCY-MS
   x_axis: Second
@@ -293,81 +299,81 @@ analyze_plot_list:
   y_axis: Network Transmit(bytes) (Delta per Second)
 
 analyze_readme:
-  output_path: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/README.md
+  output_path: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/README.md
 
   images:
-  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-LATENCY-MS
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-LATENCY-MS.svg
+  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-LATENCY-MS
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-LATENCY-MS.svg
     type: remote
 
-  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-LATENCY-MS-BY-KEY
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-LATENCY-MS-BY-KEY.svg
+  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-LATENCY-MS-BY-KEY
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-LATENCY-MS-BY-KEY.svg
     type: remote
 
-  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.svg
+  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.svg
     type: remote
 
-  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-THROUGHPUT
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-THROUGHPUT.svg
+  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-THROUGHPUT
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-THROUGHPUT.svg
     type: remote
 
-  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-VOLUNTARY-CTXT-SWITCHES
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-VOLUNTARY-CTXT-SWITCHES.svg
+  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-VOLUNTARY-CTXT-SWITCHES
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-VOLUNTARY-CTXT-SWITCHES.svg
     type: remote
 
-  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-NON-VOLUNTARY-CTXT-SWITCHES
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-NON-VOLUNTARY-CTXT-SWITCHES.svg
+  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-NON-VOLUNTARY-CTXT-SWITCHES
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-NON-VOLUNTARY-CTXT-SWITCHES.svg
     type: remote
 
-  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-CPU
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-CPU.svg
+  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-CPU
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-CPU.svg
     type: remote
 
-  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/MAX-CPU
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/MAX-CPU.svg
+  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/MAX-CPU
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/MAX-CPU.svg
     type: remote
 
-  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-VMRSS-MB
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-VMRSS-MB.svg
+  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-VMRSS-MB
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-VMRSS-MB.svg
     type: remote
 
-  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-VMRSS-MB-BY-KEY
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-VMRSS-MB-BY-KEY.svg
+  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-VMRSS-MB-BY-KEY
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-VMRSS-MB-BY-KEY.svg
     type: remote
 
-  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.svg
+  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.svg
     type: remote
 
-  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-READS-COMPLETED-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-READS-COMPLETED-DELTA.svg
+  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-READS-COMPLETED-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-READS-COMPLETED-DELTA.svg
     type: remote
 
-  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-SECTORS-READ-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-SECTORS-READ-DELTA.svg
+  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-SECTORS-READ-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-SECTORS-READ-DELTA.svg
     type: remote
 
-  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-WRITES-COMPLETED-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-WRITES-COMPLETED-DELTA.svg
+  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-WRITES-COMPLETED-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-WRITES-COMPLETED-DELTA.svg
     type: remote
 
-  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-SECTORS-WRITTEN-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-SECTORS-WRITTEN-DELTA.svg
+  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-SECTORS-WRITTEN-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-SECTORS-WRITTEN-DELTA.svg
     type: remote
 
-  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-READ-BYTES-NUM-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-READ-BYTES-NUM-DELTA.svg
+  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-READ-BYTES-NUM-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-READ-BYTES-NUM-DELTA.svg
     type: remote
 
-  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-WRITE-BYTES-NUM-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-WRITE-BYTES-NUM-DELTA.svg
+  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-WRITE-BYTES-NUM-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-WRITE-BYTES-NUM-DELTA.svg
     type: remote
 
-  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-RECEIVE-BYTES-NUM-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-RECEIVE-BYTES-NUM-DELTA.svg
+  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-RECEIVE-BYTES-NUM-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-RECEIVE-BYTES-NUM-DELTA.svg
     type: remote
 
-  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-TRANSMIT-BYTES-NUM-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-single-client/AVG-TRANSMIT-BYTES-NUM-DELTA.svg
+  - title: 2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-TRANSMIT-BYTES-NUM-DELTA
+    path: https://storage.googleapis.com/dbtester-results/2017Q1-01-etcd-zookeeper-consul/04-write-1M-keys-100QPS/AVG-TRANSMIT-BYTES-NUM-DELTA.svg
     type: remote
