@@ -4,6 +4,18 @@
 
 Distributed database benchmark tester: etcd, Zookeeper, Consul, zetcd, cetcd
 
+
+<br><br><hr>
+##### Performance Analysis
+
+- Latest test results can be found at https://github.com/coreos/dbtester/tree/master/test-results
+- Exploring Performance of etcd, Zookeeper and Consul Consistent Key-value Datastores (February 17, 2017)
+  - https://coreos.com/blog/performance-of-etcd.html
+
+
+<br><br><hr>
+##### Project
+
 ![dbtester system architecture](./dbtester.png)
 
 - Database Agent
@@ -20,7 +32,6 @@ Distributed database benchmark tester: etcd, Zookeeper, Consul, zetcd, cetcd
 For etcd, we recommend [etcd benchmark tool](https://github.com/coreos/etcd/tree/master/tools/benchmark).
 
 All logs and results can be found at https://github.com/coreos/dbtester/tree/master/test-results or https://console.cloud.google.com/storage/browser/dbtester-results/?authuser=0&project=etcd-development.
-
 
 
 <br><br><hr>
