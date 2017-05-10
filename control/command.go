@@ -24,8 +24,11 @@ import (
 	"github.com/coreos/dbtester"
 	"github.com/coreos/dbtester/dbtesterpb"
 	"github.com/coreos/dbtester/pkg/ntp"
+
 	"github.com/coreos/etcd/pkg/netutil"
-	"github.com/gyuho/linux-inspect/psn"
+	"github.com/gyuho/linux-inspect/df"
+	"github.com/gyuho/linux-inspect/inspect"
+	"github.com/gyuho/linux-inspect/top"
 	"github.com/spf13/cobra"
 )
 
@@ -42,7 +45,7 @@ var diskDevice string
 var networkInterface string
 
 func init() {
-	dn, err := psn.GetDevice("/")
+	dn, err := df.GetDevice("/")
 	if err != nil {
 		plog.Warningf("cannot get disk device mounted at '/' (%v)", err)
 	}
@@ -92,13 +95,13 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 	if err = os.RemoveAll(cfg.ConfigClientMachineInitial.ClientSystemMetricsPath); err != nil {
 		return err
 	}
-	tcfg := &psn.TopConfig{
-		Exec:           psn.DefaultTopPath,
+	tcfg := &top.Config{
+		Exec:           top.DefaultExecPath,
 		IntervalSecond: 1,
 		PID:            pid,
 	}
-	var metricsCSV *psn.CSV
-	metricsCSV, err = psn.NewCSV(
+	var metricsCSV *inspect.CSV
+	metricsCSV, err = inspect.NewCSV(
 		cfg.ConfigClientMachineInitial.ClientSystemMetricsPath,
 		pid,
 		diskDevice,
@@ -116,7 +119,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 			select {
 			case <-time.After(time.Second):
 				if err := metricsCSV.Add(); err != nil {
-					plog.Errorf("psn.CSV.Add error (%v)", err)
+					plog.Errorf("inspect.CSV.Add error (%v)", err)
 					continue
 				}
 
@@ -124,18 +127,18 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 				plog.Infof("finishing collecting system metrics; saving CSV at %q", cfg.ConfigClientMachineInitial.ClientSystemMetricsPath)
 
 				if err := metricsCSV.Save(); err != nil {
-					plog.Errorf("psn.CSV.Save(%q) error %v", metricsCSV.FilePath, err)
+					plog.Errorf("inspect.CSV.Save(%q) error %v", metricsCSV.FilePath, err)
 				} else {
 					plog.Infof("CSV saved at %q", metricsCSV.FilePath)
 				}
 
 				interpolated, err := metricsCSV.Interpolate()
 				if err != nil {
-					plog.Fatalf("psn.CSV.Interpolate(%q) failed with %v", metricsCSV.FilePath, err)
+					plog.Fatalf("inspect.CSV.Interpolate(%q) failed with %v", metricsCSV.FilePath, err)
 				}
 				interpolated.FilePath = cfg.ConfigClientMachineInitial.ClientSystemMetricsInterpolatedPath
 				if err := interpolated.Save(); err != nil {
-					plog.Errorf("psn.CSV.Save(%q) error %v", interpolated.FilePath, err)
+					plog.Errorf("inspect.CSV.Save(%q) error %v", interpolated.FilePath, err)
 				} else {
 					plog.Infof("CSV saved at %q", interpolated.FilePath)
 				}
