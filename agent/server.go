@@ -25,7 +25,7 @@ import (
 	"github.com/coreos/dbtester/dbtesterpb"
 	"github.com/coreos/dbtester/pkg/fileinspect"
 
-	"github.com/gyuho/linux-inspect/psn"
+	"github.com/gyuho/linux-inspect/inspect"
 	"golang.org/x/net/context"
 )
 
@@ -49,7 +49,7 @@ type transporterServer struct {
 	proxyCmdWait chan struct{}
 	proxyPid     int64
 
-	metricsCSV *psn.CSV
+	metricsCSV *inspect.CSV
 
 	// trigger log uploads to cloud storage
 	// this should be triggered before we shut down

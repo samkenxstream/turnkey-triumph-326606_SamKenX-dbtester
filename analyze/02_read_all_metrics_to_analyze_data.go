@@ -131,7 +131,7 @@ func (data *analyzeData) aggSystemMetrics() error {
 				}
 
 			case "EXTRA":
-				// dbtester uses psn 'EXTRA' column as 'CLIENT-NUM'
+				// dbtester uses linux-inspect 'EXTRA' column as 'CLIENT-NUM'
 				header = "CLIENT-NUM"
 			}
 

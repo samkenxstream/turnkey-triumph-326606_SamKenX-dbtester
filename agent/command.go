@@ -21,9 +21,10 @@ import (
 
 	"github.com/coreos/dbtester/dbtesterpb"
 	"github.com/coreos/dbtester/pkg/ntp"
+
 	"github.com/coreos/etcd/pkg/netutil"
 	"github.com/coreos/pkg/capnslog"
-	"github.com/gyuho/linux-inspect/psn"
+	"github.com/gyuho/linux-inspect/df"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 )
@@ -55,7 +56,7 @@ type flags struct {
 var globalFlags flags
 
 func init() {
-	dn, err := psn.GetDevice("/")
+	dn, err := df.GetDevice("/")
 	if err != nil {
 		plog.Warningf("cannot get disk device mounted at '/' (%v)", err)
 	}
