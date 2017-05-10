@@ -19,7 +19,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/gyuho/linux-inspect/psn"
+	"github.com/gyuho/linux-inspect/inspect"
+	"github.com/gyuho/linux-inspect/top"
 )
 
 // startMetrics starts collecting metrics.
@@ -37,12 +38,12 @@ func startMetrics(fs *flags, t *transporterServer) (err error) {
 		return err
 	}
 
-	tcfg := &psn.TopConfig{
-		Exec:           psn.DefaultTopPath,
+	tcfg := &top.Config{
+		Exec:           top.DefaultExecPath,
 		IntervalSecond: 1,
 		PID:            t.pid,
 	}
-	t.metricsCSV, err = psn.NewCSV(
+	t.metricsCSV, err = inspect.NewCSV(
 		fs.systemMetricsCSV,
 		t.pid,
 		fs.diskDevice,
@@ -59,7 +60,7 @@ func startMetrics(fs *flags, t *transporterServer) (err error) {
 			select {
 			case <-time.After(time.Second):
 				if err := t.metricsCSV.Add(); err != nil {
-					plog.Errorf("psn.CSV.Add error (%v)", err)
+					plog.Errorf("inspect.CSV.Add error (%v)", err)
 					continue
 				}
 
@@ -67,18 +68,18 @@ func startMetrics(fs *flags, t *transporterServer) (err error) {
 				plog.Infof("upload signal received; saving CSV at %q", t.metricsCSV.FilePath)
 
 				if err := t.metricsCSV.Save(); err != nil {
-					plog.Errorf("psn.CSV.Save(%q) error %v", t.metricsCSV.FilePath, err)
+					plog.Errorf("inspect.CSV.Save(%q) error %v", t.metricsCSV.FilePath, err)
 				} else {
 					plog.Infof("CSV saved at %q", t.metricsCSV.FilePath)
 				}
 
 				interpolated, err := t.metricsCSV.Interpolate()
 				if err != nil {
-					plog.Fatalf("psn.CSV.Interpolate(%q) failed with %v", t.metricsCSV.FilePath, err)
+					plog.Fatalf("inspect.CSV.Interpolate(%q) failed with %v", t.metricsCSV.FilePath, err)
 				}
 				interpolated.FilePath = fs.systemMetricsCSVInterpolated
 				if err := interpolated.Save(); err != nil {
-					plog.Errorf("psn.CSV.Save(%q) error %v", interpolated.FilePath, err)
+					plog.Errorf("inspect.CSV.Save(%q) error %v", interpolated.FilePath, err)
 				} else {
 					plog.Infof("CSV saved at %q", interpolated.FilePath)
 				}
