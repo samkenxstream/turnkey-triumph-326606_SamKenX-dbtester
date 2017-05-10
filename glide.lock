@@ -1,5 +1,5 @@
-hash: 20541f5928e61e5615f373ea6dbcc8731e3cb81beebc1393aca7fae9a59f4850
-updated: 2017-05-09T19:00:39.242844757-07:00
+hash: 9c8365f44c1a3ee476773bcfcd63046fb10178ec73ac87ff39964a76e853bcd1
+updated: 2017-05-09T21:52:14.583085269-07:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -96,7 +96,7 @@ imports:
 - name: github.com/gyuho/dataframe
   version: 73de2c550b1177c1640f3dacbbc1af00f913fedb
 - name: github.com/gyuho/linux-inspect
-  version: a561d8f03516df4de161acbca6afbe8c54d1c833
+  version: 19adc517aa26b17ebaac4264445e116871ffef70
   subpackages:
   - df
   - etc
@@ -104,8 +104,6 @@ imports:
   - pkg/fileutil
   - pkg/timeutil
   - proc
-  - psn
-  - psn/schema
   - schema
   - top
 - name: github.com/hashicorp/consul
