@@ -56,7 +56,7 @@ import:
 - package: github.com/gyuho/dataframe
   version: 73de2c550b1177c1640f3dacbbc1af00f913fedb
 - package: github.com/gyuho/linux-inspect
-  version: a561d8f03516df4de161acbca6afbe8c54d1c833
+  version: 19adc517aa26b17ebaac4264445e116871ffef70
   subpackages:
   - df
   - etc
@@ -66,7 +66,6 @@ import:
   - proc
   - schema
   - top
-  - psn
 - package: github.com/hashicorp/consul
   version: 7fa2471ba75408865496d4f0c7db26d234fb71b8
   subpackages:
