@@ -46,10 +46,13 @@ func (x Operation) String() string {
 func (Operation) EnumDescriptor() ([]byte, []int) { return fileDescriptorMessage, []int{0} }
 
 type Request struct {
-	Operation                  Operation                   `protobuf:"varint,1,opt,name=Operation,proto3,enum=dbtesterpb.Operation" json:"Operation,omitempty"`
-	TriggerLogUpload           bool                        `protobuf:"varint,2,opt,name=TriggerLogUpload,proto3" json:"TriggerLogUpload,omitempty"`
-	DatabaseID                 DatabaseID                  `protobuf:"varint,3,opt,name=DatabaseID,proto3,enum=dbtesterpb.DatabaseID" json:"DatabaseID,omitempty"`
-	DatabaseTag                string                      `protobuf:"bytes,4,opt,name=DatabaseTag,proto3" json:"DatabaseTag,omitempty"`
+	Operation        Operation  `protobuf:"varint,1,opt,name=Operation,proto3,enum=dbtesterpb.Operation" json:"Operation,omitempty"`
+	TriggerLogUpload bool       `protobuf:"varint,2,opt,name=TriggerLogUpload,proto3" json:"TriggerLogUpload,omitempty"`
+	DatabaseID       DatabaseID `protobuf:"varint,3,opt,name=DatabaseID,proto3,enum=dbtesterpb.DatabaseID" json:"DatabaseID,omitempty"`
+	DatabaseTag      string     `protobuf:"bytes,4,opt,name=DatabaseTag,proto3" json:"DatabaseTag,omitempty"`
+	// PeerIPsString encodes a list of endpoints in string
+	// because Protocol Buffer does not have a list or array datatype
+	// which is ordered. 'repeated' does not guarantee the ordering.
 	PeerIPsString              string                      `protobuf:"bytes,5,opt,name=PeerIPsString,proto3" json:"PeerIPsString,omitempty"`
 	IPIndex                    uint32                      `protobuf:"varint,6,opt,name=IPIndex,proto3" json:"IPIndex,omitempty"`
 	CurrentClientNumber        int64                       `protobuf:"varint,7,opt,name=CurrentClientNumber,proto3" json:"CurrentClientNumber,omitempty"`

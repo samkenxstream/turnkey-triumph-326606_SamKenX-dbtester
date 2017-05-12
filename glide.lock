@@ -1,5 +1,5 @@
-hash: 9c8365f44c1a3ee476773bcfcd63046fb10178ec73ac87ff39964a76e853bcd1
-updated: 2017-05-09T21:52:14.583085269-07:00
+hash: 7363da479f04a9f4a0296e6b006f54e6cf28652de9700d4e84982cce6291cd3c
+updated: 2017-05-11T18:23:49.23633434-07:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -17,7 +17,7 @@ imports:
 - name: github.com/cheggaaa/pb
   version: d7e6ca3010b6f084d8056847f55d7f572f180678
 - name: github.com/coreos/etcd
-  version: 5856c8bce9778a12d79038fdb1f3fba9416bd297
+  version: f337754e721ff48921a93fc9a68787911d0c9427
   subpackages:
   - auth/authpb
   - client
@@ -30,6 +30,7 @@ imports:
   - pkg/pathutil
   - pkg/report
   - pkg/report
+  - pkg/srv
   - pkg/tlsutil
   - pkg/types
   - version
@@ -87,16 +88,10 @@ imports:
   - vg/vgsvg
 - name: github.com/googleapis/gax-go
   version: 9af46dd5a1713e8b5cd71106287eba3cefdde50b
-- name: github.com/grpc-ecosystem/grpc-gateway
-  version: 84398b94e188ee336f307779b57b3aa91af7063c
-  subpackages:
-  - runtime
-  - runtime/internal
-  - utilities
 - name: github.com/gyuho/dataframe
   version: 73de2c550b1177c1640f3dacbbc1af00f913fedb
 - name: github.com/gyuho/linux-inspect
-  version: 19adc517aa26b17ebaac4264445e116871ffef70
+  version: 0cbebdd92997b7290328c305e0cfea5666a889d7
   subpackages:
   - df
   - etc
@@ -107,7 +102,7 @@ imports:
   - schema
   - top
 - name: github.com/hashicorp/consul
-  version: 7fa2471ba75408865496d4f0c7db26d234fb71b8
+  version: db3599762f860c83a528cd23d95b3aa10b0b3784
   subpackages:
   - api
 - name: github.com/hashicorp/go-cleanhttp
