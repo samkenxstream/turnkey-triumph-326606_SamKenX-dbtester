@@ -47,10 +47,8 @@ func GetRGBI(databaseID string, i int) color.Color {
 		return color.RGBA{63, 81, 181, 255} // indigo
 	case "etcd__tip":
 		return color.RGBA{24, 90, 169, 255} // blue
-	case "zookeeper__r3_5_2_alpha":
-		return color.RGBA{38, 169, 24, 255} // green
 	case "zookeeper__r3_5_3_beta":
-		return color.RGBA{229, 255, 102, 255} // green
+		return color.RGBA{94, 191, 30, 255} // green
 	case "consul__v0_7_5":
 		return color.RGBA{198, 53, 53, 255} // red
 	case "consul__v0_8_0":
@@ -75,10 +73,8 @@ func GetRGBII(databaseID string, i int) color.Color {
 		return color.RGBA{159, 168, 218, 255} // light-indigo
 	case "etcd__tip":
 		return color.RGBA{129, 212, 247, 255} // light-blue
-	case "zookeeper__r3_5_2_alpha":
-		return color.RGBA{129, 247, 152, 255} // light-green
 	case "zookeeper__r3_5_3_beta":
-		return color.RGBA{236, 254, 102, 255} // light-green
+		return color.RGBA{155, 176, 29, 255} // light-green
 	case "consul__v0_7_5":
 		return color.RGBA{247, 156, 156, 255} // light-red
 	case "consul__v0_8_0":
@@ -103,10 +99,8 @@ func GetRGBIII(databaseID string, i int) color.Color {
 		return color.RGBA{26, 35, 126, 255} // deep-indigo
 	case "etcd__tip":
 		return color.RGBA{37, 29, 191, 255} // deep-blue
-	case "zookeeper__r3_5_2_alpha":
-		return color.RGBA{7, 64, 35, 255} // deep-green
 	case "zookeeper__r3_5_3_beta":
-		return color.RGBA{129, 210, 178, 255} // deep-green
+		return color.RGBA{129, 210, 178, 255} // mid-cyan
 	case "consul__v0_7_5":
 		return color.RGBA{212, 8, 46, 255} // deep-red
 	case "consul__v0_8_0":
