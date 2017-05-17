@@ -56,7 +56,7 @@ import:
 - package: github.com/gyuho/dataframe
   version: 73de2c550b1177c1640f3dacbbc1af00f913fedb
 - package: github.com/gyuho/linux-inspect
-  version: dea6b03d00cdc1d7849f16195d107a2f5884e218
+  version: 459d0d77e4e21890fcedaa601a19db7b80653a86
   subpackages:
   - df
   - etc
