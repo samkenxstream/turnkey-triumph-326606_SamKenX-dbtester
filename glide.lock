@@ -1,5 +1,5 @@
-hash: 7363da479f04a9f4a0296e6b006f54e6cf28652de9700d4e84982cce6291cd3c
-updated: 2017-05-11T18:23:49.23633434-07:00
+hash: 4dcd43827539e50ac5becec4cdc24a88e9aef8a0e7c8aa6a81d17f21c78f1f45
+updated: 2017-05-17T09:07:03.948089644-07:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -13,11 +13,11 @@ imports:
   - internal/optional
   - storage
 - name: github.com/ajstarks/svgo
-  version: 2489f1e6d405e953ac052d1e7ae3769672bf43bb
+  version: 19107c66f5c698e4151e641bc726cadded2f60b5
 - name: github.com/cheggaaa/pb
   version: d7e6ca3010b6f084d8056847f55d7f572f180678
 - name: github.com/coreos/etcd
-  version: f337754e721ff48921a93fc9a68787911d0c9427
+  version: 1763f7d4d1f865f7650d64a6c29983f7dc2494fb
   subpackages:
   - auth/authpb
   - client
@@ -91,7 +91,7 @@ imports:
 - name: github.com/gyuho/dataframe
   version: 73de2c550b1177c1640f3dacbbc1af00f913fedb
 - name: github.com/gyuho/linux-inspect
-  version: 0cbebdd92997b7290328c305e0cfea5666a889d7
+  version: dea6b03d00cdc1d7849f16195d107a2f5884e218
   subpackages:
   - df
   - etc
@@ -102,7 +102,7 @@ imports:
   - schema
   - top
 - name: github.com/hashicorp/consul
-  version: db3599762f860c83a528cd23d95b3aa10b0b3784
+  version: ad40a855bd5003eb5d4c48f791479828d6a9393e
   subpackages:
   - api
 - name: github.com/hashicorp/go-cleanhttp
@@ -118,7 +118,7 @@ imports:
 - name: github.com/kr/pty
   version: f7ee69f31298ecbe5d2b349c711e2547a617d398
 - name: github.com/llgcode/draw2d
-  version: 1286d3b2030ac9952e59c5ef29ef3cc24a8e83d5
+  version: dcbfbe505d35de8166ccfc47ff9e4bb020473e18
   subpackages:
   - draw2dbase
   - draw2dimg
@@ -168,7 +168,7 @@ imports:
   - jws
   - jwt
 - name: golang.org/x/text
-  version: 470f45bf29f4147d6fbd7dfd0a02a848e49f5bf4
+  version: 19e51611da83d6be54ddafce4a4af510cb3e9ea4
   subpackages:
   - secure/bidirule
   - transform
