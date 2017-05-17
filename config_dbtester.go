@@ -59,7 +59,7 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		return nil, err
 	}
 	cfg := Config{}
-	if err := yaml.Unmarshal(bts, &cfg); err != nil {
+	if err = yaml.Unmarshal(bts, &cfg); err != nil {
 		return nil, err
 	}
 
@@ -210,7 +210,6 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		if v.DatabasePortToConnect == 0 {
 			v.DatabasePortToConnect = defaultZookeeperClientPort
 		}
-
 		v.Flag_Zookeeper_R3_4_9.ClientPort = v.DatabasePortToConnect
 		if v.Flag_Zookeeper_R3_4_9.TickTime == 0 {
 			v.Flag_Zookeeper_R3_4_9.TickTime = defaultZookeeperTickTime
@@ -236,7 +235,6 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		if v.DatabasePortToConnect == 0 {
 			v.DatabasePortToConnect = defaultZookeeperClientPort
 		}
-
 		v.Flag_Zookeeper_R3_5_2Alpha.ClientPort = v.DatabasePortToConnect
 		if v.Flag_Zookeeper_R3_5_2Alpha.TickTime == 0 {
 			v.Flag_Zookeeper_R3_5_2Alpha.TickTime = defaultZookeeperTickTime
@@ -258,6 +256,34 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		}
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha.String()] = v
 	}
+	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta.String()]; ok {
+		if v.AgentPortToConnect == 0 {
+			v.AgentPortToConnect = defaultAgentPort
+		}
+		if v.DatabasePortToConnect == 0 {
+			v.DatabasePortToConnect = defaultZookeeperClientPort
+		}
+		v.Flag_Zookeeper_R3_5_3Beta.ClientPort = v.DatabasePortToConnect
+		if v.Flag_Zookeeper_R3_5_3Beta.TickTime == 0 {
+			v.Flag_Zookeeper_R3_5_3Beta.TickTime = defaultZookeeperTickTime
+		}
+		if v.Flag_Zookeeper_R3_5_3Beta.TickTime == 0 {
+			v.Flag_Zookeeper_R3_5_3Beta.TickTime = defaultZookeeperTickTime
+		}
+		if v.Flag_Zookeeper_R3_5_3Beta.InitLimit == 0 {
+			v.Flag_Zookeeper_R3_5_3Beta.InitLimit = defaultZookeeperInitLimit
+		}
+		if v.Flag_Zookeeper_R3_5_3Beta.SyncLimit == 0 {
+			v.Flag_Zookeeper_R3_5_3Beta.SyncLimit = defaultZookeeperSyncLimit
+		}
+		if v.Flag_Zookeeper_R3_5_3Beta.SnapCount == 0 {
+			v.Flag_Zookeeper_R3_5_3Beta.SnapCount = defaultZookeeperSnapCount
+		}
+		if v.Flag_Zookeeper_R3_5_3Beta.MaxClientConnections == 0 {
+			v.Flag_Zookeeper_R3_5_3Beta.MaxClientConnections = defaultZookeeperMaxClientConnections
+		}
+		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta.String()] = v
+	}
 
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_7_5.String()]; ok {
 		if v.AgentPortToConnect == 0 {
@@ -276,6 +302,15 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 			v.DatabasePortToConnect = defaultConsulClientPort
 		}
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_8_0.String()] = v
+	}
+	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_8_3.String()]; ok {
+		if v.AgentPortToConnect == 0 {
+			v.AgentPortToConnect = defaultAgentPort
+		}
+		if v.DatabasePortToConnect == 0 {
+			v.DatabasePortToConnect = defaultConsulClientPort
+		}
+		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_8_3.String()] = v
 	}
 
 	// need etcd configs since it's backed by etcd
@@ -402,9 +437,23 @@ func (cfg *Config) ToRequest(databaseID string, op dbtesterpb.Operation, idx int
 			SnapCount:            gcfg.Flag_Zookeeper_R3_5_2Alpha.SnapCount,
 			MaxClientConnections: gcfg.Flag_Zookeeper_R3_5_2Alpha.MaxClientConnections,
 		}
+	case dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
+		req.Flag_Zookeeper_R3_5_3Beta = &dbtesterpb.Flag_Zookeeper_R3_5_3Beta{
+			JavaDJuteMaxBuffer:   gcfg.Flag_Zookeeper_R3_5_3Beta.JavaDJuteMaxBuffer,
+			JavaXms:              gcfg.Flag_Zookeeper_R3_5_3Beta.JavaXms,
+			JavaXmx:              gcfg.Flag_Zookeeper_R3_5_3Beta.JavaXmx,
+			MyID:                 uint32(idx + 1),
+			ClientPort:           gcfg.Flag_Zookeeper_R3_5_3Beta.ClientPort,
+			TickTime:             gcfg.Flag_Zookeeper_R3_5_3Beta.TickTime,
+			InitLimit:            gcfg.Flag_Zookeeper_R3_5_3Beta.InitLimit,
+			SyncLimit:            gcfg.Flag_Zookeeper_R3_5_3Beta.SyncLimit,
+			SnapCount:            gcfg.Flag_Zookeeper_R3_5_3Beta.SnapCount,
+			MaxClientConnections: gcfg.Flag_Zookeeper_R3_5_3Beta.MaxClientConnections,
+		}
 
 	case dbtesterpb.DatabaseID_consul__v0_7_5:
 	case dbtesterpb.DatabaseID_consul__v0_8_0:
+	case dbtesterpb.DatabaseID_consul__v0_8_3:
 
 	case dbtesterpb.DatabaseID_zetcd__beta:
 	case dbtesterpb.DatabaseID_cetcd__beta:
