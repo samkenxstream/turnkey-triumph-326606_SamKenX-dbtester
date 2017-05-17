@@ -72,7 +72,7 @@ touch $HOME/zookeeper/zookeeper.data/myid
 sudo chmod -R 777 $HOME/zookeeper/zookeeper.data/
 COMMENT
 
-ZK_VERSION=3.5.2-alpha
+ZK_VERSION=3.5.3-beta
 sudo rm -rf $HOME/zookeeper
 sudo curl -sf -o /tmp/zookeeper-$ZK_VERSION.tar.gz -L https://www.apache.org/dist/zookeeper/zookeeper-$ZK_VERSION/zookeeper-$ZK_VERSION.tar.gz
 sudo tar -xzf /tmp/zookeeper-$ZK_VERSION.tar.gz -C /tmp/

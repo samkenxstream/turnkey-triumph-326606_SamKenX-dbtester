@@ -81,6 +81,28 @@ func startConsul(fs *flags, t *transporterServer) error {
 			}
 		}
 
+	case dbtesterpb.DatabaseID_consul__v0_8_3:
+		switch t.req.IPIndex {
+		case 0: // leader
+			flags = []string{
+				"agent",
+				"-server",
+				"-data-dir", fs.consulDataDir,
+				"-bind", peerIPs[t.req.IPIndex],
+				"-client", peerIPs[t.req.IPIndex],
+				"-bootstrap-expect", fmt.Sprintf("%d", len(peerIPs)),
+			}
+		default:
+			flags = []string{
+				"agent",
+				"-server",
+				"-data-dir", fs.consulDataDir,
+				"-bind", peerIPs[t.req.IPIndex],
+				"-client", peerIPs[t.req.IPIndex],
+				"-join", peerIPs[0],
+			}
+		}
+
 	default:
 		return fmt.Errorf("database ID %q is not supported", t.req.DatabaseID)
 	}

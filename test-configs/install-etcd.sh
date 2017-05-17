@@ -32,7 +32,7 @@ git clone https://github.com/${USER_NAME}/etcd \
 
 cd ${GOPATH}/src/${GIT_PATH}
 
-git reset --hard 5856c8bce9778a12d79038fdb1f3fba9416bd297
+git reset --hard HEAD
 
 ./build
 
