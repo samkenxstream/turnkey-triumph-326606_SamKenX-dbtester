@@ -7,7 +7,7 @@
 - 4 machines of 16 vCPUs + 60 GB Memory + 300 GB SSD (1 for client)
 - Ubuntu 16.10 (GNU/Linux kernel 4.8.0-42-generic)
 - `ulimit -n` is 120000
-- etcd tip (Go 1.8.0, git SHA d78b03fb27374c370d82973a94dda9f59647e750)
+- etcd tip (Go 1.8.1, git SHA f4641accc34be80c255ff87673a1cb92342abedd)
 - Zookeeper r3.5.2-alpha
   - Java 8
   - javac 1.8.0_121
@@ -145,7 +145,7 @@ zookeeper__r3_5_2_alpha errors:
 - 4 machines of 16 vCPUs + 60 GB Memory + 300 GB SSD (1 for client)
 - Ubuntu 16.10 (GNU/Linux kernel 4.8.0-42-generic)
 - `ulimit -n` is 120000
-- etcd tip (Go 1.8.0, git SHA d78b03fb27374c370d82973a94dda9f59647e750)
+- etcd tip (Go 1.8.1, git SHA f4641accc34be80c255ff87673a1cb92342abedd)
 - Zookeeper r3.5.2-alpha
   - Java 8
   - javac 1.8.0_121
@@ -282,7 +282,7 @@ zookeeper__r3_5_2_alpha errors:
 - 4 machines of 16 vCPUs + 60 GB Memory + 300 GB SSD (1 for client)
 - Ubuntu 16.10 (GNU/Linux kernel 4.8.0-42-generic)
 - `ulimit -n` is 120000
-- etcd tip (Go 1.8.0, git SHA d78b03fb27374c370d82973a94dda9f59647e750)
+- etcd tip (Go 1.8.1, git SHA f4641accc34be80c255ff87673a1cb92342abedd)
 - Zookeeper r3.5.2-alpha
   - Java 8
   - javac 1.8.0_121
@@ -420,7 +420,7 @@ zookeeper__r3_5_2_alpha errors:
 - 4 machines of 16 vCPUs + 60 GB Memory + 300 GB SSD (1 for client)
 - Ubuntu 16.10 (GNU/Linux kernel 4.8.0-42-generic)
 - `ulimit -n` is 120000
-- etcd tip (Go 1.8.0, git SHA d78b03fb27374c370d82973a94dda9f59647e750)
+- etcd tip (Go 1.8.1, git SHA f4641accc34be80c255ff87673a1cb92342abedd)
 - Zookeeper r3.5.2-alpha
   - Java 8
   - javac 1.8.0_121
