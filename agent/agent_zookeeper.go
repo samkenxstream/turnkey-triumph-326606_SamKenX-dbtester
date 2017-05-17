@@ -69,18 +69,17 @@ func init() {
 // Java class paths for Zookeeper.
 // '-cp' is for 'class search path of directories and zip/jar files'.
 // See https://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html for more.
+// UPDATE FOR EACH ZOOKEEPER RELEASES!
+// Search correct paths with 'find ./zookeeper/lib | sort'.
 const (
 	// JavaClassPathZookeeperr349 is the Java class paths of Zookeeper r3.4.9.
-	// CHANGE THIS FOR DIFFERENT ZOOKEEPER RELEASE!
-	// THIS IS ONLY VALID FOR Zookeeper r3.4.9.
-	// Search correct paths with 'find ./zookeeper/lib | sort'.
 	JavaClassPathZookeeperr349 = `-cp zookeeper-3.4.9.jar:lib/slf4j-api-1.6.1.jar:lib/slf4j-log4j12-1.6.1.jar:lib/log4j-1.2.16.jar:conf org.apache.zookeeper.server.quorum.QuorumPeerMain`
 
 	// JavaClassPathZookeeperr352alpha is the Java class paths of Zookeeper r3.5.2-alpha.
-	// CHANGE THIS FOR DIFFERENT ZOOKEEPER RELEASE!
-	// THIS IS ONLY VALID FOR Zookeeper r3.5.2-alpha.
-	// Search correct paths with 'find ./zookeeper/lib | sort'.
 	JavaClassPathZookeeperr352alpha = `-cp zookeeper-3.5.2-alpha.jar:lib/slf4j-api-1.7.5.jar:lib/slf4j-log4j12-1.7.5.jar:lib/log4j-1.2.17.jar:conf org.apache.zookeeper.server.quorum.QuorumPeerMain`
+
+	// JavaClassPathZookeeperr353beta is the Java class paths of Zookeeper r3.5.3-beta.
+	JavaClassPathZookeeperr353beta = `-cp zookeeper-3.5.3-beta.jar:lib/slf4j-api-1.7.5.jar:lib/slf4j-log4j12-1.7.5.jar:lib/log4j-1.2.17.jar:conf org.apache.zookeeper.server.quorum.QuorumPeerMain`
 )
 
 // startZookeeper starts Zookeeper.
@@ -88,7 +87,6 @@ func startZookeeper(fs *flags, t *transporterServer) error {
 	if !exist(fs.javaExec) {
 		return fmt.Errorf("Java binary %q does not exist", globalFlags.javaExec)
 	}
-
 	if err := os.RemoveAll(fs.zkDataDir); err != nil {
 		return err
 	}
@@ -118,6 +116,14 @@ func startZookeeper(fs *flags, t *transporterServer) error {
 		}
 		plog.Infof("writing Zookeeper myid file %d to %s", t.req.Flag_Zookeeper_R3_5_2Alpha.MyID, ipath)
 		if err := toFile(fmt.Sprintf("%d", t.req.Flag_Zookeeper_R3_5_2Alpha.MyID), ipath); err != nil {
+			return err
+		}
+	case dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
+		if t.req.Flag_Zookeeper_R3_5_3Beta == nil {
+			return fmt.Errorf("request 'Flag_Zookeeper_R3_5_3Beta' is nil")
+		}
+		plog.Infof("writing Zookeeper myid file %d to %s", t.req.Flag_Zookeeper_R3_5_3Beta.MyID, ipath)
+		if err := toFile(fmt.Sprintf("%d", t.req.Flag_Zookeeper_R3_5_3Beta.MyID), ipath); err != nil {
 			return err
 		}
 	default:
@@ -152,6 +158,17 @@ func startZookeeper(fs *flags, t *transporterServer) error {
 			MaxClientConnections: t.req.Flag_Zookeeper_R3_5_2Alpha.MaxClientConnections,
 			Peers:                peers,
 			SnapCount:            t.req.Flag_Zookeeper_R3_5_2Alpha.SnapCount,
+		}
+	case dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
+		cfg = ZookeeperConfig{
+			TickTime:             t.req.Flag_Zookeeper_R3_5_3Beta.TickTime,
+			DataDir:              fs.zkDataDir,
+			ClientPort:           t.req.Flag_Zookeeper_R3_5_3Beta.ClientPort,
+			InitLimit:            t.req.Flag_Zookeeper_R3_5_3Beta.InitLimit,
+			SyncLimit:            t.req.Flag_Zookeeper_R3_5_3Beta.SyncLimit,
+			MaxClientConnections: t.req.Flag_Zookeeper_R3_5_3Beta.MaxClientConnections,
+			Peers:                peers,
+			SnapCount:            t.req.Flag_Zookeeper_R3_5_3Beta.SnapCount,
 		}
 	default:
 		return fmt.Errorf("database ID %q is not supported", t.req.DatabaseID)
@@ -218,6 +235,31 @@ func startZookeeper(fs *flags, t *transporterServer) error {
 			flagString += " "
 		}
 		flagString += JavaClassPathZookeeperr352alpha
+
+	case dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
+		if t.req.Flag_Zookeeper_R3_5_3Beta.JavaDJuteMaxBuffer != 0 {
+			if len(flagString) > 0 {
+				flagString += " "
+			}
+			flagString += fmt.Sprintf("-Djute.maxbuffer=%d", t.req.Flag_Zookeeper_R3_5_3Beta.JavaDJuteMaxBuffer)
+		}
+		if t.req.Flag_Zookeeper_R3_5_3Beta.JavaDJuteMaxBuffer != 0 {
+			if len(flagString) > 0 {
+				flagString += " "
+			}
+			flagString += fmt.Sprintf("-Xms%s", t.req.Flag_Zookeeper_R3_5_3Beta.JavaXms)
+		}
+		if t.req.Flag_Zookeeper_R3_5_3Beta.JavaDJuteMaxBuffer != 0 {
+			if len(flagString) > 0 {
+				flagString += " "
+			}
+			flagString += fmt.Sprintf("-Xmx%s", t.req.Flag_Zookeeper_R3_5_3Beta.JavaXmx)
+		}
+		// -Djute.maxbuffer=33554432 -Xms50G -Xmx50G
+		if len(flagString) > 0 {
+			flagString += " "
+		}
+		flagString += JavaClassPathZookeeperr353beta
 
 	default:
 		return fmt.Errorf("database ID %q is not supported", t.req.DatabaseID)

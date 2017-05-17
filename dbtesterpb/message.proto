@@ -25,7 +25,7 @@ service Transporter {
 enum Operation {
   Start = 0;
   Stop = 1;
-  Heartbeat = 2; 
+  Heartbeat = 2;
 }
 
 message Request {
@@ -52,9 +52,11 @@ message Request {
 
   flag__zookeeper__r3_4_9 flag__zookeeper__r3_4_9 = 200;
   flag__zookeeper__r3_5_2_alpha flag__zookeeper__r3_5_2_alpha = 201;
+  flag__zookeeper__r3_5_3_beta flag__zookeeper__r3_5_3_beta = 202;
 
   flag__consul__v0_7_5 flag__consul__v0_7_5 = 300;
   flag__consul__v0_8_0 flag__consul__v0_8_0 = 301;
+  flag__consul__v0_8_3 flag__consul__v0_8_3 = 302;
 
   flag__cetcd__beta flag__cetcd__beta = 400;
   flag__zetcd__beta flag__zetcd__beta = 500;

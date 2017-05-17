@@ -19,9 +19,11 @@ enum DatabaseID {
 
   zookeeper__r3_4_9 = 10;
   zookeeper__r3_5_2_alpha = 11;
+  zookeeper__r3_5_3_beta = 12;
 
   consul__v0_7_5 = 20;
   consul__v0_8_0 = 21;
+  consul__v0_8_3 = 22;
 
   zetcd__beta = 30;
   cetcd__beta = 40;

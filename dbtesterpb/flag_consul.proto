@@ -15,3 +15,7 @@ message flag__consul__v0_7_5 {
 // See https://github.com/hashicorp/consul for more.
 message flag__consul__v0_8_0 {
 }
+
+// See https://github.com/hashicorp/consul for more.
+message flag__consul__v0_8_3 {
+}
