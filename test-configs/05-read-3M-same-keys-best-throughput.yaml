@@ -1,4 +1,4 @@
-test_title: Read 3M same keys, 256-byte key, 1KB value, Best Throughput (etcd 1,000, Zookeeper 500, Consul 500 clients)
+test_title: Read 3M same keys, 256-byte key, 1KB value, Best Throughput (etcd 1,000, Zookeeper 700, Consul 500 clients)
 test_description: |
   - Google Cloud Compute Engine
   - 4 machines of 16 vCPUs + 60 GB Memory + 300 GB SSD (1 for client)
@@ -119,8 +119,8 @@ datatbase_id_to_config_client_machine_agent_control:
     benchmark_options:
       type: read
       request_number: 3000000
-      connection_number: 500 # for best throughput
-      client_number: 500 # for best throughput
+      connection_number: 700 # for best throughput
+      client_number: 700 # for best throughput
       # if specified, overwrite 'connection_number', 'connection_number'
       connection_client_numbers: []
 
