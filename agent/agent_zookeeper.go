@@ -79,6 +79,7 @@ const (
 	JavaClassPathZookeeperr352alpha = `-cp zookeeper-3.5.2-alpha.jar:lib/slf4j-api-1.7.5.jar:lib/slf4j-log4j12-1.7.5.jar:lib/log4j-1.2.17.jar:conf org.apache.zookeeper.server.quorum.QuorumPeerMain`
 
 	// JavaClassPathZookeeperr353beta is the Java class paths of Zookeeper r3.5.3-beta.
+	// http://zookeeper.apache.org/doc/r3.5.3-beta/zookeeperAdmin.html#sc_zkMulitServerSetup
 	JavaClassPathZookeeperr353beta = `-cp zookeeper-3.5.3-beta.jar:lib/slf4j-api-1.7.5.jar:lib/slf4j-log4j12-1.7.5.jar:lib/log4j-1.2.17.jar:conf org.apache.zookeeper.server.quorum.QuorumPeerMain`
 )
 
