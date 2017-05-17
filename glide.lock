@@ -1,5 +1,5 @@
-hash: 4dcd43827539e50ac5becec4cdc24a88e9aef8a0e7c8aa6a81d17f21c78f1f45
-updated: 2017-05-17T09:07:03.948089644-07:00
+hash: 5e1d8fbc5be013d480be78b72b4cd9dff05cd113e66e26c9d191645552c9ac01
+updated: 2017-05-17T10:26:42.08303874-07:00
 imports:
 - name: bitbucket.org/zombiezen/gopdf
   version: 1c63dc69751bc45441c2ce1f56b631c55294b4d5
@@ -91,7 +91,7 @@ imports:
 - name: github.com/gyuho/dataframe
   version: 73de2c550b1177c1640f3dacbbc1af00f913fedb
 - name: github.com/gyuho/linux-inspect
-  version: dea6b03d00cdc1d7849f16195d107a2f5884e218
+  version: 459d0d77e4e21890fcedaa601a19db7b80653a86
   subpackages:
   - df
   - etc
