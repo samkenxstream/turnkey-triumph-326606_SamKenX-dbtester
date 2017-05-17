@@ -100,14 +100,23 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 		plog.Infof("system metrics CSV path: %q", globalFlags.systemMetricsCSV)
 
 		switch req.DatabaseID {
-		case dbtesterpb.DatabaseID_zookeeper__r3_4_9:
+		case dbtesterpb.DatabaseID_etcd__v2_3,
+			dbtesterpb.DatabaseID_etcd__tip:
+			plog.Infof("etcd executable binary path: %q", globalFlags.etcdExec)
+			plog.Infof("etcd data directory: %q", globalFlags.etcdDataDir)
+
+		case dbtesterpb.DatabaseID_zookeeper__r3_4_9,
+			dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha,
+			dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
 			plog.Infof("Zookeeper working directory: %q", globalFlags.zkWorkDir)
 			plog.Infof("Zookeeper data directory: %q", globalFlags.zkDataDir)
 			plog.Infof("Zookeeper configuration path: %q", globalFlags.zkConfig)
 
-		case dbtesterpb.DatabaseID_etcd__v2_3, dbtesterpb.DatabaseID_etcd__tip:
-			plog.Infof("etcd executable binary path: %q", globalFlags.etcdExec)
-			plog.Infof("etcd data directory: %q", globalFlags.etcdDataDir)
+		case dbtesterpb.DatabaseID_consul__v0_7_5,
+			dbtesterpb.DatabaseID_consul__v0_8_0,
+			dbtesterpb.DatabaseID_consul__v0_8_3:
+			plog.Infof("Consul executable binary path: %q", globalFlags.consulExec)
+			plog.Infof("Consul data directory: %q", globalFlags.consulDataDir)
 
 		case dbtesterpb.DatabaseID_zetcd__beta:
 			plog.Infof("zetcd executable binary path: %q", globalFlags.zetcdExec)
@@ -117,9 +126,6 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 			plog.Infof("cetcd executable binary path: %q", globalFlags.cetcdExec)
 			plog.Infof("cetcd data directory: %q", globalFlags.etcdDataDir)
 
-		case dbtesterpb.DatabaseID_consul__v0_7_5:
-			plog.Infof("Consul executable binary path: %q", globalFlags.consulExec)
-			plog.Infof("Consul data directory: %q", globalFlags.consulDataDir)
 		}
 
 		// re-use configurations for next requests
@@ -172,13 +178,15 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 				}()
 			}
 		case dbtesterpb.DatabaseID_zookeeper__r3_4_9,
-			dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha:
+			dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha,
+			dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
 			if err := startZookeeper(&globalFlags, t); err != nil {
 				plog.Errorf("startZookeeper error %v", err)
 				return nil, err
 			}
 		case dbtesterpb.DatabaseID_consul__v0_7_5,
-			dbtesterpb.DatabaseID_consul__v0_8_0:
+			dbtesterpb.DatabaseID_consul__v0_8_0,
+			dbtesterpb.DatabaseID_consul__v0_8_3:
 			if err := startConsul(&globalFlags, t); err != nil {
 				plog.Errorf("startConsul error %v", err)
 				return nil, err
@@ -287,7 +295,15 @@ func measureDatabasSize(flg flags, rdb dbtesterpb.DatabaseID) (int64, error) {
 		return fileinspect.Size(flg.etcdDataDir)
 	case dbtesterpb.DatabaseID_zookeeper__r3_4_9:
 		return fileinspect.Size(flg.zkDataDir)
+	case dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha:
+		return fileinspect.Size(flg.zkDataDir)
+	case dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
+		return fileinspect.Size(flg.zkDataDir)
 	case dbtesterpb.DatabaseID_consul__v0_7_5:
+		return fileinspect.Size(flg.consulDataDir)
+	case dbtesterpb.DatabaseID_consul__v0_8_0:
+		return fileinspect.Size(flg.consulDataDir)
+	case dbtesterpb.DatabaseID_consul__v0_8_3:
 		return fileinspect.Size(flg.consulDataDir)
 	case dbtesterpb.DatabaseID_cetcd__beta:
 		return fileinspect.Size(flg.etcdDataDir)
