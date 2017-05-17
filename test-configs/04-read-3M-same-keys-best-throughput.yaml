@@ -177,7 +177,7 @@ datatbase_id_to_config_client_machine_agent_control:
 datatbase_id_to_config_analyze_machine_initial:
   etcd__tip:
     # if not empty, all test data paths are prefixed
-    path_prefix: 2017Q2-01-etcd-zookeeper-consul/04-read-3M-same-keys-best-throughput/etcd-tip-go1.8.0
+    path_prefix: 2017Q2-01-etcd-zookeeper-consul/04-read-3M-same-keys-best-throughput/etcd-tip-go1.8.1
     client_system_metrics_interpolated_path: client-system-metrics-interpolated.csv
     client_latency_throughput_timeseries_path: client-latency-throughput-timeseries.csv
     client_latency_distribution_all_path: client-latency-distribution-all.csv
@@ -196,7 +196,7 @@ datatbase_id_to_config_analyze_machine_initial:
 
   zookeeper__r3_5_3_beta:
     # if not empty, all test data paths are prefixed
-    path_prefix: 2017Q2-01-etcd-zookeeper-consul/04-read-3M-same-keys-best-throughput/zookeeper-r3.5.2-alpha-java8
+    path_prefix: 2017Q2-01-etcd-zookeeper-consul/04-read-3M-same-keys-best-throughput/zookeeper-r3.5.3-beta-java8
     client_system_metrics_interpolated_path: client-system-metrics-interpolated.csv
     client_latency_throughput_timeseries_path: client-latency-throughput-timeseries.csv
     client_latency_distribution_all_path: client-latency-distribution-all.csv
@@ -215,7 +215,7 @@ datatbase_id_to_config_analyze_machine_initial:
 
   consul__v0_8_3:
     # if not empty, all test data paths are prefixed
-    path_prefix: 2017Q2-01-etcd-zookeeper-consul/04-read-3M-same-keys-best-throughput/consul-v0.7.5-go1.8.0
+    path_prefix: 2017Q2-01-etcd-zookeeper-consul/04-read-3M-same-keys-best-throughput/consul-v0.8.3-go1.8.1
     client_system_metrics_interpolated_path: client-system-metrics-interpolated.csv
     client_latency_throughput_timeseries_path: client-latency-throughput-timeseries.csv
     client_latency_distribution_all_path: client-latency-distribution-all.csv
