@@ -1,4 +1,12 @@
 
+<img src="https://storage.googleapis.com/dbtester-results/2017Q2-02-etcd-zookeeper-consul/2017Q2-01-write-1M-cpu-client-scaling.png" alt="2017Q2-01-write-1M-cpu-client-scaling">
+
+<img src="https://storage.googleapis.com/dbtester-results/2017Q2-02-etcd-zookeeper-consul/2017Q2-02-write-1M-network-traffic-best-throughput.png" alt="2017Q2-02-write-1M-network-traffic-best-throughput">
+
+<img src="https://storage.googleapis.com/dbtester-results/2017Q2-02-etcd-zookeeper-consul/2017Q2-01-write-1M-throughput-client-scaling.png" alt="2017Q2-01-write-1M-throughput-client-scaling">
+
+<img src="https://storage.googleapis.com/dbtester-results/2017Q2-02-etcd-zookeeper-consul/2017Q2-02-write-1M-latency-best-throughput.png" alt="2017Q2-02-write-1M-latency-best-throughput">
+
 
 <br><br><hr>
 ##### Write 1M keys, 256-byte key, 1KB value, Best Throughput (etcd 1K clients with 100 conns, Zookeeper 700, Consul 500 clients)
