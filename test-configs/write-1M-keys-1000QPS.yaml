@@ -30,7 +30,7 @@ config_client_machine_initial:
   # (optional) to automatically upload all files in client machine
   google_cloud_project_name: etcd-development
   # set this in 'control' machine, to automate log uploading in remote 'agent' machines
-  google_cloud_storage_key_path: /home/gyuho/gcloud-key.json
+  google_cloud_storage_key_path: /tmp/gcp-key.json
   google_cloud_storage_bucket_name: dbtester-results
   google_cloud_storage_sub_directory: 2017Q2-01-etcd-zookeeper-consul/03-write-1M-keys-1000QPS
 
