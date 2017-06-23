@@ -9,7 +9,7 @@ nohup dbtester agent --network-interface ens4  --disk-device sda  --agent-port :
 # this starts database stressing, and shuts down the database when done
 nohup dbtester control --database-id etcd__tip --config config.yaml > $HOME/control.log 2>&1 &
 nohup dbtester control --database-id zookeeper__r3_5_3_beta --config config.yaml > $HOME/control.log 2>&1 &
-nohup dbtester control --database-id consul__v0_8_3 --config config.yaml > $HOME/control.log 2>&1 &
+nohup dbtester control --database-id consul__v0_8_4 --config config.yaml > $HOME/control.log 2>&1 &
 
 # analyze; get all data from remote machines
 # and specify 'analyze' configuration file,
