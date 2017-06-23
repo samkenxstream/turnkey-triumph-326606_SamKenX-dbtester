@@ -125,7 +125,10 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 	}
 
 	for databaseID, ctrl := range cfg.DatabaseIDToConfigClientMachineAgentControl {
-		if databaseID != dbtesterpb.DatabaseID_etcd__v3_1.String() && ctrl.ConfigClientMachineBenchmarkOptions.ConnectionNumber != ctrl.ConfigClientMachineBenchmarkOptions.ClientNumber {
+		if databaseID != dbtesterpb.DatabaseID_etcd__v3_1.String() &&
+			databaseID != dbtesterpb.DatabaseID_etcd__v3_2.String() &&
+			databaseID != dbtesterpb.DatabaseID_etcd__tip.String() &&
+			ctrl.ConfigClientMachineBenchmarkOptions.ConnectionNumber != ctrl.ConfigClientMachineBenchmarkOptions.ClientNumber {
 			return nil, fmt.Errorf("%q got connected %d != clients %d", databaseID, ctrl.ConfigClientMachineBenchmarkOptions.ConnectionNumber, ctrl.ConfigClientMachineBenchmarkOptions.ClientNumber)
 		}
 	}
