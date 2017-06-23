@@ -7,7 +7,7 @@
 
 <img src="https://storage.googleapis.com/dbtester-results/2017Q2-01-etcd-zookeeper-consul/2017Q2-01-write-1M-memory-by-key-best-throughput.png" alt="2017Q2-01-write-1M-memory-by-key-best-throughput">
 
-<img src="https://storage.googleapis.com/dbtester-results/2017Q2-01-etcd-zookeeper-consul/2017Q2-01-write-1M-network-traffic-throughput.png" alt="2017Q2-01-write-1M-network-traffic-throughput">
+<img src="https://storage.googleapis.com/dbtester-results/2017Q2-01-etcd-zookeeper-consul/2017Q2-01-write-1M-network-traffic-best-throughput.png" alt="2017Q2-01-write-1M-network-traffic-throughput">
 
 <img src="https://storage.googleapis.com/dbtester-results/2017Q2-01-etcd-zookeeper-consul/2017Q2-01-write-1M-sector-writes-client-scaling.png" alt="2017Q2-01-write-1M-sector-writes-client-scaling">
 

@@ -104,23 +104,13 @@ Logs do not tell much but average latency spikes (e.g. from 70.27517 ms to 10407
 
 
 
+<img src="https://storage.googleapis.com/dbtester-results/2017Q2-02-etcd-zookeeper-consul/2017Q2-01-write-1M-cpu-client-scaling.png" alt="2017Q2-01-write-1M-cpu-client-scaling">
 
-<img src="https://storage.googleapis.com/dbtester-results/2017Q2-01-etcd-zookeeper-consul/2017Q2-01-write-1M-cpu-client-scaling.png" alt="2017Q2-01-write-1M-cpu-client-scaling">
+<img src="https://storage.googleapis.com/dbtester-results/2017Q2-02-etcd-zookeeper-consul/2017Q2-02-write-1M-network-traffic-best-throughput.png" alt="2017Q2-02-write-1M-network-traffic-best-throughput">
 
-<img src="https://storage.googleapis.com/dbtester-results/2017Q2-01-etcd-zookeeper-consul/2017Q2-01-write-1M-latency-best-throughput.png" alt="2017Q2-01-write-1M-latency-best-throughput">
+<img src="https://storage.googleapis.com/dbtester-results/2017Q2-02-etcd-zookeeper-consul/2017Q2-01-write-1M-throughput-client-scaling.png" alt="2017Q2-01-write-1M-throughput-client-scaling">
 
-<img src="https://storage.googleapis.com/dbtester-results/2017Q2-01-etcd-zookeeper-consul/2017Q2-01-write-1M-latency-by-key-best-throughput.png" alt="2017Q2-01-write-1M-latency-by-key-best-throughput">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q2-01-etcd-zookeeper-consul/2017Q2-01-write-1M-memory-by-key-best-throughput.png" alt="2017Q2-01-write-1M-memory-by-key-best-throughput">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q2-01-etcd-zookeeper-consul/2017Q2-01-write-1M-network-traffic-throughput.png" alt="2017Q2-01-write-1M-network-traffic-throughput">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q2-01-etcd-zookeeper-consul/2017Q2-01-write-1M-sector-writes-client-scaling.png" alt="2017Q2-01-write-1M-sector-writes-client-scaling">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q2-01-etcd-zookeeper-consul/2017Q2-01-write-1M-throughput-client-scaling.png" alt="2017Q2-01-write-1M-throughput-client-scaling">
-
-<img src="https://storage.googleapis.com/dbtester-results/2017Q2-01-etcd-zookeeper-consul/2017Q2-01-read-3M-latency-1000-clients.png" alt="2017Q2-01-read-3M-latency-1000-clients">
-
+<img src="https://storage.googleapis.com/dbtester-results/2017Q2-02-etcd-zookeeper-consul/2017Q2-02-write-1M-latency-best-throughput.png" alt="2017Q2-02-write-1M-latency-best-throughput">
 
 
 <br><br><hr>
