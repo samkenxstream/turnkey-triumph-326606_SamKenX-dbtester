@@ -9,7 +9,7 @@ import:
 - package: github.com/cheggaaa/pb
   version: d7e6ca3010b6f084d8056847f55d7f572f180678
 - package: github.com/coreos/etcd
-  version: 1763f7d4d1f865f7650d64a6c29983f7dc2494fb
+  version: 47a8156851b5a59665421661edb7c813f8a7993e
   subpackages:
   - auth/authpb
   - client
@@ -30,7 +30,7 @@ import:
 - package: github.com/dustin/go-humanize
   version: ef638b6c2e62b857442c6443dace9366a48c0ee2
 - package: github.com/gogo/protobuf
-  version: 8d70fb3182befc465c4a1eac8ad4d38ff49778e2
+  version: v0.4
   subpackages:
   - gogoproto
   - proto
@@ -41,22 +41,15 @@ import:
   - jsonpb
   - proto
 - package: github.com/gonum/plot
-  version: 395bf7867dd5a3c85271e0b53fb222d8516d3750
+  version: 51b62dc5319d7fce41240d13e780a93e640b9a38
   subpackages:
-  - palette
   - plotter
   - plotutil
   - vg
-  - vg/draw
-  - vg/fonts
-  - vg/vgeps
-  - vg/vgimg
-  - vg/vgpdf
-  - vg/vgsvg
 - package: github.com/gyuho/dataframe
   version: 73de2c550b1177c1640f3dacbbc1af00f913fedb
 - package: github.com/gyuho/linux-inspect
-  version: 459d0d77e4e21890fcedaa601a19db7b80653a86
+  version: db8def6abe6a96a20aae6ae01664cc3817a27ba0
   subpackages:
   - df
   - etc
@@ -67,7 +60,7 @@ import:
   - schema
   - top
 - package: github.com/hashicorp/consul
-  version: ad40a855bd5003eb5d4c48f791479828d6a9393e
+  version: 42f60b04bba2e4391e9a95a218c873986ebeea6b
   subpackages:
   - api
 - package: github.com/samuel/go-zookeeper
@@ -98,7 +91,7 @@ import:
   subpackages:
   - option
 - package: google.golang.org/grpc
-  version: v1.2.1
+  version: v1.4.2
   subpackages:
   - codes
   - credentials
@@ -109,10 +102,12 @@ import:
   - naming
   - peer
   - transport
+  - health
+  - health/grpc_health_v1
 - package: gopkg.in/yaml.v2
   version: 53feefa2559fb8dfa8d81baad31be332c97d6c77
 - package: github.com/spf13/pflag
-  version: 5ccb023bc27df288a957c5e994cd44fd19619465
+  version: e57e3eeb33f795204c1ca35f56c44f83227c6e66
 - package: golang.org/x/time
   version: a4bde12657593d5e90d0533a3e4fd95e635124cb
   subpackages:

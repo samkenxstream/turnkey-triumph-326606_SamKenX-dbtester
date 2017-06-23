@@ -61,7 +61,7 @@ func startEtcd(fs *flags, t *transporterServer) error {
 			"--listen-peer-urls", peerURLs[t.req.IPIndex],
 			"--initial-advertise-peer-urls", peerURLs[t.req.IPIndex],
 
-			"--initial-cluster-token", "dbtester-etcd-token",
+			"--initial-cluster-token", "mytoken",
 			"--initial-cluster", strings.Join(members, ","),
 			"--initial-cluster-state", "new",
 		}
@@ -80,7 +80,7 @@ func startEtcd(fs *flags, t *transporterServer) error {
 			"--listen-peer-urls", peerURLs[t.req.IPIndex],
 			"--initial-advertise-peer-urls", peerURLs[t.req.IPIndex],
 
-			"--initial-cluster-token", "dbtester-etcd-token",
+			"--initial-cluster-token", "mytoken",
 			"--initial-cluster", strings.Join(members, ","),
 			"--initial-cluster-state", "new",
 		}
@@ -99,7 +99,7 @@ func startEtcd(fs *flags, t *transporterServer) error {
 			"--listen-peer-urls", peerURLs[t.req.IPIndex],
 			"--initial-advertise-peer-urls", peerURLs[t.req.IPIndex],
 
-			"--initial-cluster-token", "dbtester-etcd-token",
+			"--initial-cluster-token", "mytoken",
 			"--initial-cluster", strings.Join(members, ","),
 			"--initial-cluster-state", "new",
 		}
@@ -118,7 +118,7 @@ func startEtcd(fs *flags, t *transporterServer) error {
 			"--listen-peer-urls", peerURLs[t.req.IPIndex],
 			"--initial-advertise-peer-urls", peerURLs[t.req.IPIndex],
 
-			"--initial-cluster-token", "dbtester-etcd-token",
+			"--initial-cluster-token", "mytoken",
 			"--initial-cluster", strings.Join(members, ","),
 			"--initial-cluster-state", "new",
 		}
