@@ -30,7 +30,7 @@ import:
 - package: github.com/dustin/go-humanize
   version: ef638b6c2e62b857442c6443dace9366a48c0ee2
 - package: github.com/gogo/protobuf
-  version: 8d70fb3182befc465c4a1eac8ad4d38ff49778e2
+  version: v0.4
   subpackages:
   - gogoproto
   - proto
@@ -41,18 +41,11 @@ import:
   - jsonpb
   - proto
 - package: github.com/gonum/plot
-  version: 680e9497a1885d45297d69f967da8e1f3c9c80a3
+  version: 51b62dc5319d7fce41240d13e780a93e640b9a38
   subpackages:
-  - palette
   - plotter
   - plotutil
   - vg
-  - vg/draw
-  - vg/fonts
-  - vg/vgeps
-  - vg/vgimg
-  - vg/vgpdf
-  - vg/vgsvg
 - package: github.com/gyuho/dataframe
   version: 73de2c550b1177c1640f3dacbbc1af00f913fedb
 - package: github.com/gyuho/linux-inspect
@@ -114,7 +107,7 @@ import:
 - package: gopkg.in/yaml.v2
   version: 53feefa2559fb8dfa8d81baad31be332c97d6c77
 - package: github.com/spf13/pflag
-  version: 5ccb023bc27df288a957c5e994cd44fd19619465
+  version: e57e3eeb33f795204c1ca35f56c44f83227c6e66
 - package: golang.org/x/time
   version: a4bde12657593d5e90d0533a3e4fd95e635124cb
   subpackages:
