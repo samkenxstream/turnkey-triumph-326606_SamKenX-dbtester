@@ -9,7 +9,7 @@ import:
 - package: github.com/cheggaaa/pb
   version: d7e6ca3010b6f084d8056847f55d7f572f180678
 - package: github.com/coreos/etcd
-  version: 1763f7d4d1f865f7650d64a6c29983f7dc2494fb
+  version: 47a8156851b5a59665421661edb7c813f8a7993e
   subpackages:
   - auth/authpb
   - client
@@ -41,7 +41,7 @@ import:
   - jsonpb
   - proto
 - package: github.com/gonum/plot
-  version: 395bf7867dd5a3c85271e0b53fb222d8516d3750
+  version: 680e9497a1885d45297d69f967da8e1f3c9c80a3
   subpackages:
   - palette
   - plotter
@@ -56,7 +56,7 @@ import:
 - package: github.com/gyuho/dataframe
   version: 73de2c550b1177c1640f3dacbbc1af00f913fedb
 - package: github.com/gyuho/linux-inspect
-  version: 459d0d77e4e21890fcedaa601a19db7b80653a86
+  version: db8def6abe6a96a20aae6ae01664cc3817a27ba0
   subpackages:
   - df
   - etc
@@ -67,7 +67,7 @@ import:
   - schema
   - top
 - package: github.com/hashicorp/consul
-  version: ad40a855bd5003eb5d4c48f791479828d6a9393e
+  version: 42f60b04bba2e4391e9a95a218c873986ebeea6b
   subpackages:
   - api
 - package: github.com/samuel/go-zookeeper
@@ -98,7 +98,7 @@ import:
   subpackages:
   - option
 - package: google.golang.org/grpc
-  version: v1.2.1
+  version: v1.4.2
   subpackages:
   - codes
   - credentials
@@ -109,6 +109,8 @@ import:
   - naming
   - peer
   - transport
+  - health
+  - health/grpc_health_v1
 - package: gopkg.in/yaml.v2
   version: 53feefa2559fb8dfa8d81baad31be332c97d6c77
 - package: github.com/spf13/pflag
