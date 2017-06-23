@@ -81,7 +81,7 @@ func startConsul(fs *flags, t *transporterServer) error {
 			}
 		}
 
-	case dbtesterpb.DatabaseID_consul__v0_8_3:
+	case dbtesterpb.DatabaseID_consul__v0_8_4:
 		switch t.req.IPIndex {
 		case 0: // leader
 			flags = []string{

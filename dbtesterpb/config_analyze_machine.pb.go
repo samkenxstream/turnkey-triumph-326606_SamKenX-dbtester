@@ -28,7 +28,7 @@
 		Flag_Cetcd_Beta
 		Flag_Consul_V0_7_5
 		Flag_Consul_V0_8_0
-		Flag_Consul_V0_8_3
+		Flag_Consul_V0_8_4
 		Flag_Etcd_V2_3
 		Flag_Etcd_V3_1
 		Flag_Etcd_V3_2
