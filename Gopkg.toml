@@ -11,11 +11,11 @@
 
 [[constraint]]
   name = "github.com/gogo/protobuf"
-  revision = "100ba4e885062801d56799d78530b73b178a78f3"
+  revision = "160de10b2537169b5ae3e7e221d28269ef40d311"
 
 [[constraint]]
   name = "github.com/golang/protobuf"
-  revision = "4bd1920723d7b7c925de087aa32e2187708897f7"
+  revision = "1e59b77b52bf8e4b449a57e6f79f21226d571845"
 
 [[constraint]]
   name = "github.com/samuel/go-zookeeper"

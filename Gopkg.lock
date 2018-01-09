@@ -78,7 +78,7 @@
     "proto",
     "protoc-gen-gogo/descriptor"
   ]
-  revision = "100ba4e885062801d56799d78530b73b178a78f3"
+  revision = "160de10b2537169b5ae3e7e221d28269ef40d311"
 
 [[projects]]
   branch = "master"
@@ -97,7 +97,7 @@
     "protoc-gen-go/descriptor",
     "ptypes/any"
   ]
-  revision = "4bd1920723d7b7c925de087aa32e2187708897f7"
+  revision = "1e59b77b52bf8e4b449a57e6f79f21226d571845"
 
 [[projects]]
   branch = "master"
@@ -405,6 +405,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5208748609da1a56c580ead55e6b67b5631a95d168d9572c1cd6c37b791e3f5a"
+  inputs-digest = "37b0bbd62b245e28469686b68faccde5593acb6e719031c70018e2b1cf29e36e"
   solver-name = "gps-cdcl"
   solver-version = 1
