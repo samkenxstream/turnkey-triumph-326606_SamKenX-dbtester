@@ -37,50 +37,6 @@ func startConsul(fs *flags, t *transporterServer) error {
 
 	var flags []string
 	switch t.req.DatabaseID {
-	case dbtesterpb.DatabaseID_consul__v0_7_5:
-		switch t.req.IPIndex {
-		case 0: // leader
-			flags = []string{
-				"agent",
-				"-server",
-				"-data-dir", fs.consulDataDir,
-				"-bind", peerIPs[t.req.IPIndex],
-				"-client", peerIPs[t.req.IPIndex],
-				"-bootstrap-expect", fmt.Sprintf("%d", len(peerIPs)),
-			}
-		default:
-			flags = []string{
-				"agent",
-				"-server",
-				"-data-dir", fs.consulDataDir,
-				"-bind", peerIPs[t.req.IPIndex],
-				"-client", peerIPs[t.req.IPIndex],
-				"-join", peerIPs[0],
-			}
-		}
-
-	case dbtesterpb.DatabaseID_consul__v0_8_0:
-		switch t.req.IPIndex {
-		case 0: // leader
-			flags = []string{
-				"agent",
-				"-server",
-				"-data-dir", fs.consulDataDir,
-				"-bind", peerIPs[t.req.IPIndex],
-				"-client", peerIPs[t.req.IPIndex],
-				"-bootstrap-expect", fmt.Sprintf("%d", len(peerIPs)),
-			}
-		default:
-			flags = []string{
-				"agent",
-				"-server",
-				"-data-dir", fs.consulDataDir,
-				"-bind", peerIPs[t.req.IPIndex],
-				"-client", peerIPs[t.req.IPIndex],
-				"-join", peerIPs[0],
-			}
-		}
-
 	case dbtesterpb.DatabaseID_consul__v0_8_4:
 		switch t.req.IPIndex {
 		case 0: // leader

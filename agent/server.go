@@ -100,7 +100,8 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 		plog.Infof("system metrics CSV path: %q", globalFlags.systemMetricsCSV)
 
 		switch req.DatabaseID {
-		case dbtesterpb.DatabaseID_etcd__v2_3,
+		case dbtesterpb.DatabaseID_etcd__v3_1,
+			dbtesterpb.DatabaseID_etcd__v3_2,
 			dbtesterpb.DatabaseID_etcd__tip:
 			plog.Infof("etcd executable binary path: %q", globalFlags.etcdExec)
 			plog.Infof("etcd data directory: %q", globalFlags.etcdDataDir)
@@ -112,9 +113,7 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 			plog.Infof("Zookeeper data directory: %q", globalFlags.zkDataDir)
 			plog.Infof("Zookeeper configuration path: %q", globalFlags.zkConfig)
 
-		case dbtesterpb.DatabaseID_consul__v0_7_5,
-			dbtesterpb.DatabaseID_consul__v0_8_0,
-			dbtesterpb.DatabaseID_consul__v0_8_4:
+		case dbtesterpb.DatabaseID_consul__v0_8_4:
 			plog.Infof("Consul executable binary path: %q", globalFlags.consulExec)
 			plog.Infof("Consul data directory: %q", globalFlags.consulDataDir)
 
@@ -139,8 +138,7 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 	switch req.Operation {
 	case dbtesterpb.Operation_Start:
 		switch t.req.DatabaseID {
-		case dbtesterpb.DatabaseID_etcd__v2_3,
-			dbtesterpb.DatabaseID_etcd__v3_1,
+		case dbtesterpb.DatabaseID_etcd__v3_1,
 			dbtesterpb.DatabaseID_etcd__v3_2,
 			dbtesterpb.DatabaseID_etcd__tip,
 			dbtesterpb.DatabaseID_zetcd__beta,
@@ -184,9 +182,7 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 				plog.Errorf("startZookeeper error %v", err)
 				return nil, err
 			}
-		case dbtesterpb.DatabaseID_consul__v0_7_5,
-			dbtesterpb.DatabaseID_consul__v0_8_0,
-			dbtesterpb.DatabaseID_consul__v0_8_4:
+		case dbtesterpb.DatabaseID_consul__v0_8_4:
 			if err := startConsul(&globalFlags, t); err != nil {
 				plog.Errorf("startConsul error %v", err)
 				return nil, err
@@ -289,26 +285,18 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 
 func measureDatabasSize(flg flags, rdb dbtesterpb.DatabaseID) (int64, error) {
 	switch rdb {
-	case dbtesterpb.DatabaseID_etcd__v2_3:
+	case dbtesterpb.DatabaseID_etcd__v3_1,
+		dbtesterpb.DatabaseID_etcd__v3_2,
+		dbtesterpb.DatabaseID_etcd__tip,
+		dbtesterpb.DatabaseID_cetcd__beta,
+		dbtesterpb.DatabaseID_zetcd__beta:
 		return fileinspect.Size(flg.etcdDataDir)
-	case dbtesterpb.DatabaseID_etcd__tip:
-		return fileinspect.Size(flg.etcdDataDir)
-	case dbtesterpb.DatabaseID_zookeeper__r3_4_9:
+	case dbtesterpb.DatabaseID_zookeeper__r3_4_9,
+		dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha,
+		dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
 		return fileinspect.Size(flg.zkDataDir)
-	case dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha:
-		return fileinspect.Size(flg.zkDataDir)
-	case dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
-		return fileinspect.Size(flg.zkDataDir)
-	case dbtesterpb.DatabaseID_consul__v0_7_5:
-		return fileinspect.Size(flg.consulDataDir)
-	case dbtesterpb.DatabaseID_consul__v0_8_0:
-		return fileinspect.Size(flg.consulDataDir)
 	case dbtesterpb.DatabaseID_consul__v0_8_4:
 		return fileinspect.Size(flg.consulDataDir)
-	case dbtesterpb.DatabaseID_cetcd__beta:
-		return fileinspect.Size(flg.etcdDataDir)
-	case dbtesterpb.DatabaseID_zetcd__beta:
-		return fileinspect.Size(flg.etcdDataDir)
 	default:
 		return 0, fmt.Errorf("uknown %q", rdb)
 	}
