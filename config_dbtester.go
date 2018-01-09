@@ -194,59 +194,6 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_3.String()] = v
 	}
 
-	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_4_9.String()]; ok {
-		if v.AgentPortToConnect == 0 {
-			v.AgentPortToConnect = defaultAgentPort
-		}
-		if v.DatabasePortToConnect == 0 {
-			v.DatabasePortToConnect = defaultZookeeperClientPort
-		}
-		v.Flag_Zookeeper_R3_4_9.ClientPort = v.DatabasePortToConnect
-		if v.Flag_Zookeeper_R3_4_9.TickTime == 0 {
-			v.Flag_Zookeeper_R3_4_9.TickTime = defaultZookeeperTickTime
-		}
-		if v.Flag_Zookeeper_R3_4_9.InitLimit == 0 {
-			v.Flag_Zookeeper_R3_4_9.InitLimit = defaultZookeeperInitLimit
-		}
-		if v.Flag_Zookeeper_R3_4_9.SyncLimit == 0 {
-			v.Flag_Zookeeper_R3_4_9.SyncLimit = defaultZookeeperSyncLimit
-		}
-		if v.Flag_Zookeeper_R3_4_9.SnapCount == 0 {
-			v.Flag_Zookeeper_R3_4_9.SnapCount = defaultZookeeperSnapCount
-		}
-		if v.Flag_Zookeeper_R3_4_9.MaxClientConnections == 0 {
-			v.Flag_Zookeeper_R3_4_9.MaxClientConnections = defaultZookeeperMaxClientConnections
-		}
-		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_4_9.String()] = v
-	}
-	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha.String()]; ok {
-		if v.AgentPortToConnect == 0 {
-			v.AgentPortToConnect = defaultAgentPort
-		}
-		if v.DatabasePortToConnect == 0 {
-			v.DatabasePortToConnect = defaultZookeeperClientPort
-		}
-		v.Flag_Zookeeper_R3_5_2Alpha.ClientPort = v.DatabasePortToConnect
-		if v.Flag_Zookeeper_R3_5_2Alpha.TickTime == 0 {
-			v.Flag_Zookeeper_R3_5_2Alpha.TickTime = defaultZookeeperTickTime
-		}
-		if v.Flag_Zookeeper_R3_5_2Alpha.TickTime == 0 {
-			v.Flag_Zookeeper_R3_5_2Alpha.TickTime = defaultZookeeperTickTime
-		}
-		if v.Flag_Zookeeper_R3_5_2Alpha.InitLimit == 0 {
-			v.Flag_Zookeeper_R3_5_2Alpha.InitLimit = defaultZookeeperInitLimit
-		}
-		if v.Flag_Zookeeper_R3_5_2Alpha.SyncLimit == 0 {
-			v.Flag_Zookeeper_R3_5_2Alpha.SyncLimit = defaultZookeeperSyncLimit
-		}
-		if v.Flag_Zookeeper_R3_5_2Alpha.SnapCount == 0 {
-			v.Flag_Zookeeper_R3_5_2Alpha.SnapCount = defaultZookeeperSnapCount
-		}
-		if v.Flag_Zookeeper_R3_5_2Alpha.MaxClientConnections == 0 {
-			v.Flag_Zookeeper_R3_5_2Alpha.MaxClientConnections = defaultZookeeperMaxClientConnections
-		}
-		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha.String()] = v
-	}
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta.String()]; ok {
 		if v.AgentPortToConnect == 0 {
 			v.AgentPortToConnect = defaultAgentPort
@@ -378,32 +325,6 @@ func (cfg *Config) ToRequest(databaseID string, op dbtesterpb.Operation, idx int
 			QuotaSizeBytes: gcfg.Flag_Etcd_V3_3.QuotaSizeBytes,
 		}
 
-	case dbtesterpb.DatabaseID_zookeeper__r3_4_9:
-		req.Flag_Zookeeper_R3_4_9 = &dbtesterpb.Flag_Zookeeper_R3_4_9{
-			JavaDJuteMaxBuffer:   gcfg.Flag_Zookeeper_R3_4_9.JavaDJuteMaxBuffer,
-			JavaXms:              gcfg.Flag_Zookeeper_R3_4_9.JavaXms,
-			JavaXmx:              gcfg.Flag_Zookeeper_R3_4_9.JavaXmx,
-			MyID:                 uint32(idx + 1),
-			ClientPort:           gcfg.Flag_Zookeeper_R3_4_9.ClientPort,
-			TickTime:             gcfg.Flag_Zookeeper_R3_4_9.TickTime,
-			InitLimit:            gcfg.Flag_Zookeeper_R3_4_9.InitLimit,
-			SyncLimit:            gcfg.Flag_Zookeeper_R3_4_9.SyncLimit,
-			SnapCount:            gcfg.Flag_Zookeeper_R3_4_9.SnapCount,
-			MaxClientConnections: gcfg.Flag_Zookeeper_R3_4_9.MaxClientConnections,
-		}
-	case dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha:
-		req.Flag_Zookeeper_R3_5_2Alpha = &dbtesterpb.Flag_Zookeeper_R3_5_2Alpha{
-			JavaDJuteMaxBuffer:   gcfg.Flag_Zookeeper_R3_5_2Alpha.JavaDJuteMaxBuffer,
-			JavaXms:              gcfg.Flag_Zookeeper_R3_5_2Alpha.JavaXms,
-			JavaXmx:              gcfg.Flag_Zookeeper_R3_5_2Alpha.JavaXmx,
-			MyID:                 uint32(idx + 1),
-			ClientPort:           gcfg.Flag_Zookeeper_R3_5_2Alpha.ClientPort,
-			TickTime:             gcfg.Flag_Zookeeper_R3_5_2Alpha.TickTime,
-			InitLimit:            gcfg.Flag_Zookeeper_R3_5_2Alpha.InitLimit,
-			SyncLimit:            gcfg.Flag_Zookeeper_R3_5_2Alpha.SyncLimit,
-			SnapCount:            gcfg.Flag_Zookeeper_R3_5_2Alpha.SnapCount,
-			MaxClientConnections: gcfg.Flag_Zookeeper_R3_5_2Alpha.MaxClientConnections,
-		}
 	case dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
 		req.Flag_Zookeeper_R3_5_3Beta = &dbtesterpb.Flag_Zookeeper_R3_5_3Beta{
 			JavaDJuteMaxBuffer:   gcfg.Flag_Zookeeper_R3_5_3Beta.JavaDJuteMaxBuffer,
