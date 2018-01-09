@@ -16,18 +16,18 @@ var _ = fmt.Errorf
 var _ = math.Inf
 
 // See https://github.com/hashicorp/consul for more.
-type Flag_Consul_V0_8_4 struct {
+type Flag_Consul_V1_0_2 struct {
 }
 
-func (m *Flag_Consul_V0_8_4) Reset()                    { *m = Flag_Consul_V0_8_4{} }
-func (m *Flag_Consul_V0_8_4) String() string            { return proto.CompactTextString(m) }
-func (*Flag_Consul_V0_8_4) ProtoMessage()               {}
-func (*Flag_Consul_V0_8_4) Descriptor() ([]byte, []int) { return fileDescriptorFlagConsul, []int{0} }
+func (m *Flag_Consul_V1_0_2) Reset()                    { *m = Flag_Consul_V1_0_2{} }
+func (m *Flag_Consul_V1_0_2) String() string            { return proto.CompactTextString(m) }
+func (*Flag_Consul_V1_0_2) ProtoMessage()               {}
+func (*Flag_Consul_V1_0_2) Descriptor() ([]byte, []int) { return fileDescriptorFlagConsul, []int{0} }
 
 func init() {
-	proto.RegisterType((*Flag_Consul_V0_8_4)(nil), "dbtesterpb.flag__consul__v0_8_4")
+	proto.RegisterType((*Flag_Consul_V1_0_2)(nil), "dbtesterpb.flag__consul__v1_0_2")
 }
-func (m *Flag_Consul_V0_8_4) Marshal() (dAtA []byte, err error) {
+func (m *Flag_Consul_V1_0_2) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalTo(dAtA)
@@ -37,7 +37,7 @@ func (m *Flag_Consul_V0_8_4) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *Flag_Consul_V0_8_4) MarshalTo(dAtA []byte) (int, error) {
+func (m *Flag_Consul_V1_0_2) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
@@ -54,7 +54,7 @@ func encodeVarintFlagConsul(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return offset + 1
 }
-func (m *Flag_Consul_V0_8_4) Size() (n int) {
+func (m *Flag_Consul_V1_0_2) Size() (n int) {
 	var l int
 	_ = l
 	return n
@@ -73,7 +73,7 @@ func sovFlagConsul(x uint64) (n int) {
 func sozFlagConsul(x uint64) (n int) {
 	return sovFlagConsul(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *Flag_Consul_V0_8_4) Unmarshal(dAtA []byte) error {
+func (m *Flag_Consul_V1_0_2) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -96,10 +96,10 @@ func (m *Flag_Consul_V0_8_4) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: flag__consul__v0_8_4: wiretype end group for non-group")
+			return fmt.Errorf("proto: flag__consul__v1_0_2: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: flag__consul__v0_8_4: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: flag__consul__v1_0_2: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -237,8 +237,8 @@ var fileDescriptorFlagConsul = []byte{
 	0x2e, 0xcd, 0xd1, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0xe2, 0x42, 0xc8, 0x4a, 0xe9, 0xa6, 0x67,
 	0x96, 0x64, 0x94, 0x26, 0xe9, 0x25, 0xe7, 0xe7, 0xea, 0xa7, 0xe7, 0xa7, 0xe7, 0xeb, 0x83, 0x95,
 	0x24, 0x95, 0xa6, 0x81, 0x79, 0x60, 0x0e, 0x98, 0x05, 0xd1, 0xaa, 0x24, 0xc6, 0x25, 0x02, 0x36,
-	0x0f, 0x6a, 0x60, 0x7c, 0x7c, 0x99, 0x41, 0xbc, 0x45, 0xbc, 0x89, 0x93, 0xc8, 0x89, 0x87, 0x72,
+	0x0f, 0x6a, 0x60, 0x7c, 0x7c, 0x99, 0x61, 0xbc, 0x41, 0xbc, 0x91, 0x93, 0xc8, 0x89, 0x87, 0x72,
 	0x0c, 0x27, 0x1e, 0xc9, 0x31, 0x5e, 0x78, 0x24, 0xc7, 0xf8, 0xe0, 0x91, 0x1c, 0xe3, 0x8c, 0xc7,
-	0x72, 0x0c, 0x49, 0x6c, 0x60, 0x4d, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0xd2, 0x01, 0x81,
-	0x25, 0x8f, 0x00, 0x00, 0x00,
+	0x72, 0x0c, 0x49, 0x6c, 0x60, 0x4d, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0x25, 0xe5, 0xaa,
+	0xa0, 0x8f, 0x00, 0x00, 0x00,
 }

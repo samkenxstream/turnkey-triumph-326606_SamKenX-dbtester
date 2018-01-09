@@ -223,14 +223,14 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta.String()] = v
 	}
 
-	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_8_4.String()]; ok {
+	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v1_0_2.String()]; ok {
 		if v.AgentPortToConnect == 0 {
 			v.AgentPortToConnect = defaultAgentPort
 		}
 		if v.DatabasePortToConnect == 0 {
 			v.DatabasePortToConnect = defaultConsulClientPort
 		}
-		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_8_4.String()] = v
+		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v1_0_2.String()] = v
 	}
 
 	// need etcd configs since it's backed by etcd
@@ -339,7 +339,7 @@ func (cfg *Config) ToRequest(databaseID string, op dbtesterpb.Operation, idx int
 			MaxClientConnections: gcfg.Flag_Zookeeper_R3_5_3Beta.MaxClientConnections,
 		}
 
-	case dbtesterpb.DatabaseID_consul__v0_8_4:
+	case dbtesterpb.DatabaseID_consul__v1_0_2:
 
 	case dbtesterpb.DatabaseID_zetcd__beta:
 	case dbtesterpb.DatabaseID_cetcd__beta:

@@ -37,7 +37,7 @@ func startConsul(fs *flags, t *transporterServer) error {
 
 	var flags []string
 	switch t.req.DatabaseID {
-	case dbtesterpb.DatabaseID_consul__v0_8_4:
+	case dbtesterpb.DatabaseID_consul__v1_0_2:
 		switch t.req.IPIndex {
 		case 0: // leader
 			flags = []string{

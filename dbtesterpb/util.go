@@ -47,7 +47,7 @@ func GetRGBI(databaseID string, i int) color.Color {
 		return color.RGBA{63, 81, 181, 255} // indigo
 	case "zookeeper__r3_5_3_beta":
 		return color.RGBA{94, 191, 30, 255} // green
-	case "consul__v0_8_4":
+	case "consul__v1_0_2":
 		return color.RGBA{254, 25, 102, 255} // red
 	case "zetcd__beta":
 		return color.RGBA{251, 206, 0, 255} // yellow
@@ -67,7 +67,7 @@ func GetRGBII(databaseID string, i int) color.Color {
 		return color.RGBA{159, 168, 218, 255} // light-indigo
 	case "zookeeper__r3_5_3_beta":
 		return color.RGBA{155, 176, 29, 255} // light-green
-	case "consul__v0_8_4":
+	case "consul__v1_0_2":
 		return color.RGBA{255, 202, 178, 255} // light-red
 	case "zetcd__beta":
 		return color.RGBA{245, 247, 166, 255} // light-yellow
@@ -87,7 +87,7 @@ func GetRGBIII(databaseID string, i int) color.Color {
 		return color.RGBA{26, 35, 126, 255} // deep-indigo
 	case "zookeeper__r3_5_3_beta":
 		return color.RGBA{129, 210, 178, 255} // mid-cyan
-	case "consul__v0_8_4":
+	case "consul__v1_0_2":
 		return color.RGBA{245, 144, 84, 255} // deep-red
 	case "zetcd__beta":
 		return color.RGBA{229, 255, 0, 255} // deep-yellow

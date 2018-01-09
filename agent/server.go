@@ -111,7 +111,7 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 			plog.Infof("Zookeeper data directory: %q", globalFlags.zkDataDir)
 			plog.Infof("Zookeeper configuration path: %q", globalFlags.zkConfig)
 
-		case dbtesterpb.DatabaseID_consul__v0_8_4:
+		case dbtesterpb.DatabaseID_consul__v1_0_2:
 			plog.Infof("Consul executable binary path: %q", globalFlags.consulExec)
 			plog.Infof("Consul data directory: %q", globalFlags.consulDataDir)
 
@@ -178,7 +178,7 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 				plog.Errorf("startZookeeper error %v", err)
 				return nil, err
 			}
-		case dbtesterpb.DatabaseID_consul__v0_8_4:
+		case dbtesterpb.DatabaseID_consul__v1_0_2:
 			if err := startConsul(&globalFlags, t); err != nil {
 				plog.Errorf("startConsul error %v", err)
 				return nil, err
@@ -289,7 +289,7 @@ func measureDatabasSize(flg flags, rdb dbtesterpb.DatabaseID) (int64, error) {
 		return fileinspect.Size(flg.etcdDataDir)
 	case dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
 		return fileinspect.Size(flg.zkDataDir)
-	case dbtesterpb.DatabaseID_consul__v0_8_4:
+	case dbtesterpb.DatabaseID_consul__v1_0_2:
 		return fileinspect.Size(flg.consulDataDir)
 	default:
 		return 0, fmt.Errorf("uknown %q", rdb)

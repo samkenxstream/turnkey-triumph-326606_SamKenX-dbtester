@@ -9,5 +9,5 @@ option (gogoproto.unmarshaler_all) = true;
 option (gogoproto.goproto_getters_all) = false;
 
 // See https://github.com/hashicorp/consul for more.
-message flag__consul__v0_8_4 {
+message flag__consul__v1_0_2 {
 }

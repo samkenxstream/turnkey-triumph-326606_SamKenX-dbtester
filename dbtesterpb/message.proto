@@ -51,7 +51,7 @@ message Request {
 
   flag__zookeeper__r3_5_3_beta flag__zookeeper__r3_5_3_beta = 200;
 
-  flag__consul__v0_8_4 flag__consul__v0_8_4 = 300;
+  flag__consul__v1_0_2 flag__consul__v1_0_2 = 300;
 
   flag__cetcd__beta flag__cetcd__beta = 400;
   flag__zetcd__beta flag__zetcd__beta = 500;
