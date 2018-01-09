@@ -39,8 +39,6 @@ func GetAllDatabaseIDs() []string {
 
 func GetRGBI(databaseID string, i int) color.Color {
 	switch databaseID {
-	case "etcd__v2_3":
-		return color.RGBA{218, 97, 229, 255} // purple
 	case "etcd__v3_1":
 		return color.RGBA{0, 229, 255, 255} // cyan
 	case "etcd__v3_2":
@@ -49,10 +47,6 @@ func GetRGBI(databaseID string, i int) color.Color {
 		return color.RGBA{24, 90, 169, 255} // blue
 	case "zookeeper__r3_5_3_beta":
 		return color.RGBA{94, 191, 30, 255} // green
-	case "consul__v0_7_5":
-		return color.RGBA{198, 53, 53, 255} // red
-	case "consul__v0_8_0":
-		return color.RGBA{212, 88, 102, 255} // red
 	case "consul__v0_8_4":
 		return color.RGBA{254, 25, 102, 255} // red
 	case "zetcd__beta":
@@ -65,8 +59,6 @@ func GetRGBI(databaseID string, i int) color.Color {
 
 func GetRGBII(databaseID string, i int) color.Color {
 	switch databaseID {
-	case "etcd__v2_3":
-		return color.RGBA{229, 212, 231, 255} // light-purple
 	case "etcd__v3_1":
 		return color.RGBA{132, 255, 255, 255} // light-cyan
 	case "etcd__v3_2":
@@ -75,10 +67,6 @@ func GetRGBII(databaseID string, i int) color.Color {
 		return color.RGBA{129, 212, 247, 255} // light-blue
 	case "zookeeper__r3_5_3_beta":
 		return color.RGBA{155, 176, 29, 255} // light-green
-	case "consul__v0_7_5":
-		return color.RGBA{247, 156, 156, 255} // light-red
-	case "consul__v0_8_0":
-		return color.RGBA{238, 148, 178, 255} // light-red
 	case "consul__v0_8_4":
 		return color.RGBA{255, 202, 178, 255} // light-red
 	case "zetcd__beta":
@@ -91,8 +79,6 @@ func GetRGBII(databaseID string, i int) color.Color {
 
 func GetRGBIII(databaseID string, i int) color.Color {
 	switch databaseID {
-	case "etcd__v2_3":
-		return color.RGBA{165, 8, 180, 255} // deep-purple
 	case "etcd__v3_1":
 		return color.RGBA{0, 96, 100, 255} // deep-cyan
 	case "etcd__v3_2":
@@ -101,10 +87,6 @@ func GetRGBIII(databaseID string, i int) color.Color {
 		return color.RGBA{37, 29, 191, 255} // deep-blue
 	case "zookeeper__r3_5_3_beta":
 		return color.RGBA{129, 210, 178, 255} // mid-cyan
-	case "consul__v0_7_5":
-		return color.RGBA{212, 8, 46, 255} // deep-red
-	case "consul__v0_8_0":
-		return color.RGBA{251, 110, 84, 255} // deep-red
 	case "consul__v0_8_4":
 		return color.RGBA{245, 144, 84, 255} // deep-red
 	case "zetcd__beta":

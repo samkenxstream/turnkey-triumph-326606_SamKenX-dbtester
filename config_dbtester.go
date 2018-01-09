@@ -148,18 +148,6 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		defaultZookeeperMaxClientConnections int64 = 5000
 	)
 
-	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v2_3.String()]; ok {
-		if v.AgentPortToConnect == 0 {
-			v.AgentPortToConnect = defaultAgentPort
-		}
-		if v.DatabasePortToConnect == 0 {
-			v.DatabasePortToConnect = defaultEtcdClientPort
-		}
-		if v.Flag_Etcd_V2_3.SnapshotCount == 0 {
-			v.Flag_Etcd_V2_3.SnapshotCount = defaultEtcdSnapshotCount
-		}
-		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v2_3.String()] = v
-	}
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_1.String()]; ok {
 		if v.AgentPortToConnect == 0 {
 			v.AgentPortToConnect = defaultAgentPort
@@ -288,24 +276,6 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta.String()] = v
 	}
 
-	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_7_5.String()]; ok {
-		if v.AgentPortToConnect == 0 {
-			v.AgentPortToConnect = defaultAgentPort
-		}
-		if v.DatabasePortToConnect == 0 {
-			v.DatabasePortToConnect = defaultConsulClientPort
-		}
-		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_7_5.String()] = v
-	}
-	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_8_0.String()]; ok {
-		if v.AgentPortToConnect == 0 {
-			v.AgentPortToConnect = defaultAgentPort
-		}
-		if v.DatabasePortToConnect == 0 {
-			v.DatabasePortToConnect = defaultConsulClientPort
-		}
-		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_8_0.String()] = v
-	}
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_8_4.String()]; ok {
 		if v.AgentPortToConnect == 0 {
 			v.AgentPortToConnect = defaultAgentPort
@@ -318,20 +288,18 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 
 	// need etcd configs since it's backed by etcd
 	if _, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zetcd__beta.String()]; ok {
-		_, ok1 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v2_3.String()]
-		_, ok2 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_1.String()]
-		_, ok3 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_2.String()]
-		_, ok4 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()]
-		if !ok1 && !ok2 && !ok3 && !ok4 {
+		_, ok31 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_1.String()]
+		_, ok32 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_2.String()]
+		_, okTip := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()]
+		if !ok1 && !ok31 && !ok32 && !okTip {
 			return nil, fmt.Errorf("got %q config, but no etcd config is given", dbtesterpb.DatabaseID_zetcd__beta.String())
 		}
 	}
 	if _, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_cetcd__beta.String()]; ok {
-		_, ok1 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v2_3.String()]
-		_, ok2 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_1.String()]
-		_, ok3 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_2.String()]
-		_, ok4 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()]
-		if !ok1 && !ok2 && !ok3 && !ok4 {
+		_, ok31 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_1.String()]
+		_, ok32 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_2.String()]
+		_, okTip := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()]
+		if !ok1 && !ok31 && !ok32 && !okTip {
 			return nil, fmt.Errorf("got %q config, but no etcd config is given", dbtesterpb.DatabaseID_cetcd__beta.String())
 		}
 	}
@@ -382,10 +350,6 @@ func (cfg *Config) ToRequest(databaseID string, op dbtesterpb.Operation, idx int
 	}
 
 	switch req.DatabaseID {
-	case dbtesterpb.DatabaseID_etcd__v2_3:
-		req.Flag_Etcd_V2_3 = &dbtesterpb.Flag_Etcd_V2_3{
-			SnapshotCount: gcfg.Flag_Etcd_V2_3.SnapshotCount,
-		}
 	case dbtesterpb.DatabaseID_etcd__v3_1:
 		if gcfg.Flag_Etcd_V3_1.QuotaSizeBytes > maxEtcdQuotaSize {
 			err = fmt.Errorf("maximum etcd quota is 8 GB (%d), got %d", maxEtcdQuotaSize, gcfg.Flag_Etcd_V3_1.QuotaSizeBytes)
@@ -454,8 +418,6 @@ func (cfg *Config) ToRequest(databaseID string, op dbtesterpb.Operation, idx int
 			MaxClientConnections: gcfg.Flag_Zookeeper_R3_5_3Beta.MaxClientConnections,
 		}
 
-	case dbtesterpb.DatabaseID_consul__v0_7_5:
-	case dbtesterpb.DatabaseID_consul__v0_8_0:
 	case dbtesterpb.DatabaseID_consul__v0_8_4:
 
 	case dbtesterpb.DatabaseID_zetcd__beta:
