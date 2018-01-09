@@ -39,12 +39,12 @@ func GetAllDatabaseIDs() []string {
 
 func GetRGBI(databaseID string, i int) color.Color {
 	switch databaseID {
-	case "etcd__v3_1":
-		return color.RGBA{0, 229, 255, 255} // cyan
-	case "etcd__v3_2":
-		return color.RGBA{63, 81, 181, 255} // indigo
 	case "etcd__tip":
 		return color.RGBA{24, 90, 169, 255} // blue
+	case "etcd__v3_2":
+		return color.RGBA{0, 229, 255, 255} // cyan
+	case "etcd__v3_3":
+		return color.RGBA{63, 81, 181, 255} // indigo
 	case "zookeeper__r3_5_3_beta":
 		return color.RGBA{94, 191, 30, 255} // green
 	case "consul__v0_8_4":
@@ -59,12 +59,12 @@ func GetRGBI(databaseID string, i int) color.Color {
 
 func GetRGBII(databaseID string, i int) color.Color {
 	switch databaseID {
-	case "etcd__v3_1":
-		return color.RGBA{132, 255, 255, 255} // light-cyan
-	case "etcd__v3_2":
-		return color.RGBA{159, 168, 218, 255} // light-indigo
 	case "etcd__tip":
 		return color.RGBA{129, 212, 247, 255} // light-blue
+	case "etcd__v3_2":
+		return color.RGBA{132, 255, 255, 255} // light-cyan
+	case "etcd__v3_3":
+		return color.RGBA{159, 168, 218, 255} // light-indigo
 	case "zookeeper__r3_5_3_beta":
 		return color.RGBA{155, 176, 29, 255} // light-green
 	case "consul__v0_8_4":
@@ -79,12 +79,12 @@ func GetRGBII(databaseID string, i int) color.Color {
 
 func GetRGBIII(databaseID string, i int) color.Color {
 	switch databaseID {
-	case "etcd__v3_1":
-		return color.RGBA{0, 96, 100, 255} // deep-cyan
-	case "etcd__v3_2":
-		return color.RGBA{26, 35, 126, 255} // deep-indigo
 	case "etcd__tip":
 		return color.RGBA{37, 29, 191, 255} // deep-blue
+	case "etcd__v3_2":
+		return color.RGBA{0, 96, 100, 255} // deep-cyan
+	case "etcd__v3_3":
+		return color.RGBA{26, 35, 126, 255} // deep-indigo
 	case "zookeeper__r3_5_3_beta":
 		return color.RGBA{129, 210, 178, 255} // mid-cyan
 	case "consul__v0_8_4":
