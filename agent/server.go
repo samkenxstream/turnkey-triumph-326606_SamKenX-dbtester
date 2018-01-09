@@ -106,9 +106,7 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 			plog.Infof("etcd executable binary path: %q", globalFlags.etcdExec)
 			plog.Infof("etcd data directory: %q", globalFlags.etcdDataDir)
 
-		case dbtesterpb.DatabaseID_zookeeper__r3_4_9,
-			dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha,
-			dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
+		case dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
 			plog.Infof("Zookeeper working directory: %q", globalFlags.zkWorkDir)
 			plog.Infof("Zookeeper data directory: %q", globalFlags.zkDataDir)
 			plog.Infof("Zookeeper configuration path: %q", globalFlags.zkConfig)
@@ -175,9 +173,7 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 					plog.Infof("exiting %q", t.proxyCmd.Path)
 				}()
 			}
-		case dbtesterpb.DatabaseID_zookeeper__r3_4_9,
-			dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha,
-			dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
+		case dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
 			if err := startZookeeper(&globalFlags, t); err != nil {
 				plog.Errorf("startZookeeper error %v", err)
 				return nil, err
@@ -291,9 +287,7 @@ func measureDatabasSize(flg flags, rdb dbtesterpb.DatabaseID) (int64, error) {
 		dbtesterpb.DatabaseID_cetcd__beta,
 		dbtesterpb.DatabaseID_zetcd__beta:
 		return fileinspect.Size(flg.etcdDataDir)
-	case dbtesterpb.DatabaseID_zookeeper__r3_4_9,
-		dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha,
-		dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
+	case dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
 		return fileinspect.Size(flg.zkDataDir)
 	case dbtesterpb.DatabaseID_consul__v0_8_4:
 		return fileinspect.Size(flg.consulDataDir)

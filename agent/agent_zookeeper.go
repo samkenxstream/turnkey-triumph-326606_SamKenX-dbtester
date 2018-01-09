@@ -72,12 +72,6 @@ func init() {
 // UPDATE FOR EACH ZOOKEEPER RELEASES!
 // Search correct paths with 'find ./zookeeper/lib | sort'.
 const (
-	// JavaClassPathZookeeperr349 is the Java class paths of Zookeeper r3.4.9.
-	JavaClassPathZookeeperr349 = `-cp zookeeper-3.4.9.jar:lib/slf4j-api-1.6.1.jar:lib/slf4j-log4j12-1.6.1.jar:lib/log4j-1.2.16.jar:conf org.apache.zookeeper.server.quorum.QuorumPeerMain`
-
-	// JavaClassPathZookeeperr352alpha is the Java class paths of Zookeeper r3.5.2-alpha.
-	JavaClassPathZookeeperr352alpha = `-cp zookeeper-3.5.2-alpha.jar:lib/slf4j-api-1.7.5.jar:lib/slf4j-log4j12-1.7.5.jar:lib/log4j-1.2.17.jar:conf org.apache.zookeeper.server.quorum.QuorumPeerMain`
-
 	// JavaClassPathZookeeperr353beta is the Java class paths of Zookeeper r3.5.3-beta.
 	// http://zookeeper.apache.org/doc/r3.5.3-beta/zookeeperAdmin.html#sc_zkMulitServerSetup
 	JavaClassPathZookeeperr353beta = `-cp zookeeper-3.5.3-beta.jar:lib/slf4j-api-1.7.5.jar:lib/slf4j-log4j12-1.7.5.jar:lib/log4j-1.2.17.jar:conf org.apache.zookeeper.server.quorum.QuorumPeerMain`
@@ -103,22 +97,6 @@ func startZookeeper(fs *flags, t *transporterServer) error {
 
 	ipath := filepath.Join(fs.zkDataDir, "myid")
 	switch t.req.DatabaseID {
-	case dbtesterpb.DatabaseID_zookeeper__r3_4_9:
-		if t.req.Flag_Zookeeper_R3_4_9 == nil {
-			return fmt.Errorf("request 'Flag_Zookeeper_R3_4_9' is nil")
-		}
-		plog.Infof("writing Zookeeper myid file %d to %s", t.req.Flag_Zookeeper_R3_4_9.MyID, ipath)
-		if err := toFile(fmt.Sprintf("%d", t.req.Flag_Zookeeper_R3_4_9.MyID), ipath); err != nil {
-			return err
-		}
-	case dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha:
-		if t.req.Flag_Zookeeper_R3_5_2Alpha == nil {
-			return fmt.Errorf("request 'Flag_Zookeeper_R3_5_2Alpha' is nil")
-		}
-		plog.Infof("writing Zookeeper myid file %d to %s", t.req.Flag_Zookeeper_R3_5_2Alpha.MyID, ipath)
-		if err := toFile(fmt.Sprintf("%d", t.req.Flag_Zookeeper_R3_5_2Alpha.MyID), ipath); err != nil {
-			return err
-		}
 	case dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
 		if t.req.Flag_Zookeeper_R3_5_3Beta == nil {
 			return fmt.Errorf("request 'Flag_Zookeeper_R3_5_3Beta' is nil")
@@ -138,28 +116,6 @@ func startZookeeper(fs *flags, t *transporterServer) error {
 		peers = append(peers, ZookeeperPeer{MyID: i + 1, IP: peerIPs[i]})
 	}
 	switch t.req.DatabaseID {
-	case dbtesterpb.DatabaseID_zookeeper__r3_4_9:
-		cfg = ZookeeperConfig{
-			TickTime:             t.req.Flag_Zookeeper_R3_4_9.TickTime,
-			DataDir:              fs.zkDataDir,
-			ClientPort:           t.req.Flag_Zookeeper_R3_4_9.ClientPort,
-			InitLimit:            t.req.Flag_Zookeeper_R3_4_9.InitLimit,
-			SyncLimit:            t.req.Flag_Zookeeper_R3_4_9.SyncLimit,
-			MaxClientConnections: t.req.Flag_Zookeeper_R3_4_9.MaxClientConnections,
-			Peers:                peers,
-			SnapCount:            t.req.Flag_Zookeeper_R3_4_9.SnapCount,
-		}
-	case dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha:
-		cfg = ZookeeperConfig{
-			TickTime:             t.req.Flag_Zookeeper_R3_5_2Alpha.TickTime,
-			DataDir:              fs.zkDataDir,
-			ClientPort:           t.req.Flag_Zookeeper_R3_5_2Alpha.ClientPort,
-			InitLimit:            t.req.Flag_Zookeeper_R3_5_2Alpha.InitLimit,
-			SyncLimit:            t.req.Flag_Zookeeper_R3_5_2Alpha.SyncLimit,
-			MaxClientConnections: t.req.Flag_Zookeeper_R3_5_2Alpha.MaxClientConnections,
-			Peers:                peers,
-			SnapCount:            t.req.Flag_Zookeeper_R3_5_2Alpha.SnapCount,
-		}
 	case dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
 		cfg = ZookeeperConfig{
 			TickTime:             t.req.Flag_Zookeeper_R3_5_3Beta.TickTime,
@@ -187,56 +143,6 @@ func startZookeeper(fs *flags, t *transporterServer) error {
 
 	var flagString string
 	switch t.req.DatabaseID {
-	case dbtesterpb.DatabaseID_zookeeper__r3_4_9:
-		if t.req.Flag_Zookeeper_R3_4_9.JavaDJuteMaxBuffer != 0 {
-			if len(flagString) > 0 {
-				flagString += " "
-			}
-			flagString += fmt.Sprintf("-Djute.maxbuffer=%d", t.req.Flag_Zookeeper_R3_4_9.JavaDJuteMaxBuffer)
-		}
-		if t.req.Flag_Zookeeper_R3_4_9.JavaDJuteMaxBuffer != 0 {
-			if len(flagString) > 0 {
-				flagString += " "
-			}
-			flagString += fmt.Sprintf("-Xms%s", t.req.Flag_Zookeeper_R3_4_9.JavaXms)
-		}
-		if t.req.Flag_Zookeeper_R3_4_9.JavaDJuteMaxBuffer != 0 {
-			if len(flagString) > 0 {
-				flagString += " "
-			}
-			flagString += fmt.Sprintf("-Xmx%s", t.req.Flag_Zookeeper_R3_4_9.JavaXmx)
-		}
-		// -Djute.maxbuffer=33554432 -Xms50G -Xmx50G
-		if len(flagString) > 0 {
-			flagString += " "
-		}
-		flagString += JavaClassPathZookeeperr349
-
-	case dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha:
-		if t.req.Flag_Zookeeper_R3_5_2Alpha.JavaDJuteMaxBuffer != 0 {
-			if len(flagString) > 0 {
-				flagString += " "
-			}
-			flagString += fmt.Sprintf("-Djute.maxbuffer=%d", t.req.Flag_Zookeeper_R3_5_2Alpha.JavaDJuteMaxBuffer)
-		}
-		if t.req.Flag_Zookeeper_R3_5_2Alpha.JavaDJuteMaxBuffer != 0 {
-			if len(flagString) > 0 {
-				flagString += " "
-			}
-			flagString += fmt.Sprintf("-Xms%s", t.req.Flag_Zookeeper_R3_5_2Alpha.JavaXms)
-		}
-		if t.req.Flag_Zookeeper_R3_5_2Alpha.JavaDJuteMaxBuffer != 0 {
-			if len(flagString) > 0 {
-				flagString += " "
-			}
-			flagString += fmt.Sprintf("-Xmx%s", t.req.Flag_Zookeeper_R3_5_2Alpha.JavaXmx)
-		}
-		// -Djute.maxbuffer=33554432 -Xms50G -Xmx50G
-		if len(flagString) > 0 {
-			flagString += " "
-		}
-		flagString += JavaClassPathZookeeperr352alpha
-
 	case dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
 		if t.req.Flag_Zookeeper_R3_5_3Beta.JavaDJuteMaxBuffer != 0 {
 			if len(flagString) > 0 {
