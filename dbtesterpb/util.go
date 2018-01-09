@@ -18,7 +18,7 @@ import (
 	"image/color"
 	"sort"
 
-	"github.com/gonum/plot/plotutil"
+	"gonum.org/v1/plot/plotutil"
 )
 
 // IsValidDatabaseID returns false if the database id is not supported.

@@ -88,9 +88,9 @@
 
 
 [[constraint]]
-  name = "github.com/gonum/plot"
+  name = "gonum.org/v1/plot"
   source = "https://github.com/gonum/plot"
-  revision = "51b62dc5319d7fce41240d13e780a93e640b9a38"
+  revision = "feab214a240f4312b98ab52baf662b55ff1ee377"
 
 
 [[constraint]]
