@@ -125,9 +125,9 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 	}
 
 	for databaseID, ctrl := range cfg.DatabaseIDToConfigClientMachineAgentControl {
-		if databaseID != dbtesterpb.DatabaseID_etcd__v3_1.String() &&
+		if databaseID != dbtesterpb.DatabaseID_etcd__tip.String() &&
 			databaseID != dbtesterpb.DatabaseID_etcd__v3_2.String() &&
-			databaseID != dbtesterpb.DatabaseID_etcd__tip.String() &&
+			databaseID != dbtesterpb.DatabaseID_etcd__v3_3.String() &&
 			ctrl.ConfigClientMachineBenchmarkOptions.ConnectionNumber != ctrl.ConfigClientMachineBenchmarkOptions.ClientNumber {
 			return nil, fmt.Errorf("%q got connected %d != clients %d", databaseID, ctrl.ConfigClientMachineBenchmarkOptions.ConnectionNumber, ctrl.ConfigClientMachineBenchmarkOptions.ClientNumber)
 		}
@@ -148,32 +148,20 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		defaultZookeeperMaxClientConnections int64 = 5000
 	)
 
-	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v2_3.String()]; ok {
+	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()]; ok {
 		if v.AgentPortToConnect == 0 {
 			v.AgentPortToConnect = defaultAgentPort
 		}
 		if v.DatabasePortToConnect == 0 {
 			v.DatabasePortToConnect = defaultEtcdClientPort
 		}
-		if v.Flag_Etcd_V2_3.SnapshotCount == 0 {
-			v.Flag_Etcd_V2_3.SnapshotCount = defaultEtcdSnapshotCount
+		if v.Flag_Etcd_Tip.SnapshotCount == 0 {
+			v.Flag_Etcd_Tip.SnapshotCount = defaultEtcdSnapshotCount
 		}
-		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v2_3.String()] = v
-	}
-	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_1.String()]; ok {
-		if v.AgentPortToConnect == 0 {
-			v.AgentPortToConnect = defaultAgentPort
+		if v.Flag_Etcd_Tip.QuotaSizeBytes == 0 {
+			v.Flag_Etcd_Tip.QuotaSizeBytes = defaultEtcdQuotaSizeBytes
 		}
-		if v.DatabasePortToConnect == 0 {
-			v.DatabasePortToConnect = defaultEtcdClientPort
-		}
-		if v.Flag_Etcd_V3_1.SnapshotCount == 0 {
-			v.Flag_Etcd_V3_1.SnapshotCount = defaultEtcdSnapshotCount
-		}
-		if v.Flag_Etcd_V3_1.QuotaSizeBytes == 0 {
-			v.Flag_Etcd_V3_1.QuotaSizeBytes = defaultEtcdQuotaSizeBytes
-		}
-		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_1.String()] = v
+		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()] = v
 	}
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_2.String()]; ok {
 		if v.AgentPortToConnect == 0 {
@@ -190,75 +178,22 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		}
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_2.String()] = v
 	}
-	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()]; ok {
+	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_3.String()]; ok {
 		if v.AgentPortToConnect == 0 {
 			v.AgentPortToConnect = defaultAgentPort
 		}
 		if v.DatabasePortToConnect == 0 {
 			v.DatabasePortToConnect = defaultEtcdClientPort
 		}
-		if v.Flag_Etcd_Tip.SnapshotCount == 0 {
-			v.Flag_Etcd_Tip.SnapshotCount = defaultEtcdSnapshotCount
+		if v.Flag_Etcd_V3_3.SnapshotCount == 0 {
+			v.Flag_Etcd_V3_3.SnapshotCount = defaultEtcdSnapshotCount
 		}
-		if v.Flag_Etcd_Tip.QuotaSizeBytes == 0 {
-			v.Flag_Etcd_Tip.QuotaSizeBytes = defaultEtcdQuotaSizeBytes
+		if v.Flag_Etcd_V3_3.QuotaSizeBytes == 0 {
+			v.Flag_Etcd_V3_3.QuotaSizeBytes = defaultEtcdQuotaSizeBytes
 		}
-		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()] = v
+		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_3.String()] = v
 	}
 
-	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_4_9.String()]; ok {
-		if v.AgentPortToConnect == 0 {
-			v.AgentPortToConnect = defaultAgentPort
-		}
-		if v.DatabasePortToConnect == 0 {
-			v.DatabasePortToConnect = defaultZookeeperClientPort
-		}
-		v.Flag_Zookeeper_R3_4_9.ClientPort = v.DatabasePortToConnect
-		if v.Flag_Zookeeper_R3_4_9.TickTime == 0 {
-			v.Flag_Zookeeper_R3_4_9.TickTime = defaultZookeeperTickTime
-		}
-		if v.Flag_Zookeeper_R3_4_9.InitLimit == 0 {
-			v.Flag_Zookeeper_R3_4_9.InitLimit = defaultZookeeperInitLimit
-		}
-		if v.Flag_Zookeeper_R3_4_9.SyncLimit == 0 {
-			v.Flag_Zookeeper_R3_4_9.SyncLimit = defaultZookeeperSyncLimit
-		}
-		if v.Flag_Zookeeper_R3_4_9.SnapCount == 0 {
-			v.Flag_Zookeeper_R3_4_9.SnapCount = defaultZookeeperSnapCount
-		}
-		if v.Flag_Zookeeper_R3_4_9.MaxClientConnections == 0 {
-			v.Flag_Zookeeper_R3_4_9.MaxClientConnections = defaultZookeeperMaxClientConnections
-		}
-		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_4_9.String()] = v
-	}
-	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha.String()]; ok {
-		if v.AgentPortToConnect == 0 {
-			v.AgentPortToConnect = defaultAgentPort
-		}
-		if v.DatabasePortToConnect == 0 {
-			v.DatabasePortToConnect = defaultZookeeperClientPort
-		}
-		v.Flag_Zookeeper_R3_5_2Alpha.ClientPort = v.DatabasePortToConnect
-		if v.Flag_Zookeeper_R3_5_2Alpha.TickTime == 0 {
-			v.Flag_Zookeeper_R3_5_2Alpha.TickTime = defaultZookeeperTickTime
-		}
-		if v.Flag_Zookeeper_R3_5_2Alpha.TickTime == 0 {
-			v.Flag_Zookeeper_R3_5_2Alpha.TickTime = defaultZookeeperTickTime
-		}
-		if v.Flag_Zookeeper_R3_5_2Alpha.InitLimit == 0 {
-			v.Flag_Zookeeper_R3_5_2Alpha.InitLimit = defaultZookeeperInitLimit
-		}
-		if v.Flag_Zookeeper_R3_5_2Alpha.SyncLimit == 0 {
-			v.Flag_Zookeeper_R3_5_2Alpha.SyncLimit = defaultZookeeperSyncLimit
-		}
-		if v.Flag_Zookeeper_R3_5_2Alpha.SnapCount == 0 {
-			v.Flag_Zookeeper_R3_5_2Alpha.SnapCount = defaultZookeeperSnapCount
-		}
-		if v.Flag_Zookeeper_R3_5_2Alpha.MaxClientConnections == 0 {
-			v.Flag_Zookeeper_R3_5_2Alpha.MaxClientConnections = defaultZookeeperMaxClientConnections
-		}
-		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha.String()] = v
-	}
 	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta.String()]; ok {
 		if v.AgentPortToConnect == 0 {
 			v.AgentPortToConnect = defaultAgentPort
@@ -288,50 +223,30 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta.String()] = v
 	}
 
-	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_7_5.String()]; ok {
+	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v1_0_2.String()]; ok {
 		if v.AgentPortToConnect == 0 {
 			v.AgentPortToConnect = defaultAgentPort
 		}
 		if v.DatabasePortToConnect == 0 {
 			v.DatabasePortToConnect = defaultConsulClientPort
 		}
-		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_7_5.String()] = v
-	}
-	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_8_0.String()]; ok {
-		if v.AgentPortToConnect == 0 {
-			v.AgentPortToConnect = defaultAgentPort
-		}
-		if v.DatabasePortToConnect == 0 {
-			v.DatabasePortToConnect = defaultConsulClientPort
-		}
-		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_8_0.String()] = v
-	}
-	if v, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_8_4.String()]; ok {
-		if v.AgentPortToConnect == 0 {
-			v.AgentPortToConnect = defaultAgentPort
-		}
-		if v.DatabasePortToConnect == 0 {
-			v.DatabasePortToConnect = defaultConsulClientPort
-		}
-		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v0_8_4.String()] = v
+		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_consul__v1_0_2.String()] = v
 	}
 
 	// need etcd configs since it's backed by etcd
 	if _, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_zetcd__beta.String()]; ok {
-		_, ok1 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v2_3.String()]
-		_, ok2 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_1.String()]
-		_, ok3 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_2.String()]
-		_, ok4 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()]
-		if !ok1 && !ok2 && !ok3 && !ok4 {
+		_, okTip := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()]
+		_, ok32 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_2.String()]
+		_, ok33 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_3.String()]
+		if !okTip && !ok32 && !ok33 {
 			return nil, fmt.Errorf("got %q config, but no etcd config is given", dbtesterpb.DatabaseID_zetcd__beta.String())
 		}
 	}
 	if _, ok := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_cetcd__beta.String()]; ok {
-		_, ok1 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v2_3.String()]
-		_, ok2 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_1.String()]
-		_, ok3 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_2.String()]
-		_, ok4 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()]
-		if !ok1 && !ok2 && !ok3 && !ok4 {
+		_, okTip := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()]
+		_, ok32 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_2.String()]
+		_, ok33 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_3.String()]
+		if !okTip && !ok32 && !ok33 {
 			return nil, fmt.Errorf("got %q config, but no etcd config is given", dbtesterpb.DatabaseID_cetcd__beta.String())
 		}
 	}
@@ -382,18 +297,14 @@ func (cfg *Config) ToRequest(databaseID string, op dbtesterpb.Operation, idx int
 	}
 
 	switch req.DatabaseID {
-	case dbtesterpb.DatabaseID_etcd__v2_3:
-		req.Flag_Etcd_V2_3 = &dbtesterpb.Flag_Etcd_V2_3{
-			SnapshotCount: gcfg.Flag_Etcd_V2_3.SnapshotCount,
-		}
-	case dbtesterpb.DatabaseID_etcd__v3_1:
-		if gcfg.Flag_Etcd_V3_1.QuotaSizeBytes > maxEtcdQuotaSize {
-			err = fmt.Errorf("maximum etcd quota is 8 GB (%d), got %d", maxEtcdQuotaSize, gcfg.Flag_Etcd_V3_1.QuotaSizeBytes)
+	case dbtesterpb.DatabaseID_etcd__tip:
+		if gcfg.Flag_Etcd_Tip.QuotaSizeBytes > maxEtcdQuotaSize {
+			err = fmt.Errorf("maximum etcd quota is 8 GB (%d), got %d", maxEtcdQuotaSize, gcfg.Flag_Etcd_Tip.QuotaSizeBytes)
 			return
 		}
-		req.Flag_Etcd_V3_1 = &dbtesterpb.Flag_Etcd_V3_1{
-			SnapshotCount:  gcfg.Flag_Etcd_V3_1.SnapshotCount,
-			QuotaSizeBytes: gcfg.Flag_Etcd_V3_1.QuotaSizeBytes,
+		req.Flag_Etcd_Tip = &dbtesterpb.Flag_Etcd_Tip{
+			SnapshotCount:  gcfg.Flag_Etcd_Tip.SnapshotCount,
+			QuotaSizeBytes: gcfg.Flag_Etcd_Tip.QuotaSizeBytes,
 		}
 	case dbtesterpb.DatabaseID_etcd__v3_2:
 		if gcfg.Flag_Etcd_V3_2.QuotaSizeBytes > maxEtcdQuotaSize {
@@ -404,42 +315,16 @@ func (cfg *Config) ToRequest(databaseID string, op dbtesterpb.Operation, idx int
 			SnapshotCount:  gcfg.Flag_Etcd_V3_2.SnapshotCount,
 			QuotaSizeBytes: gcfg.Flag_Etcd_V3_2.QuotaSizeBytes,
 		}
-	case dbtesterpb.DatabaseID_etcd__tip:
-		if gcfg.Flag_Etcd_Tip.QuotaSizeBytes > maxEtcdQuotaSize {
-			err = fmt.Errorf("maximum etcd quota is 8 GB (%d), got %d", maxEtcdQuotaSize, gcfg.Flag_Etcd_Tip.QuotaSizeBytes)
+	case dbtesterpb.DatabaseID_etcd__v3_3:
+		if gcfg.Flag_Etcd_V3_3.QuotaSizeBytes > maxEtcdQuotaSize {
+			err = fmt.Errorf("maximum etcd quota is 8 GB (%d), got %d", maxEtcdQuotaSize, gcfg.Flag_Etcd_V3_3.QuotaSizeBytes)
 			return
 		}
-		req.Flag_Etcd_Tip = &dbtesterpb.Flag_Etcd_Tip{
-			SnapshotCount:  gcfg.Flag_Etcd_Tip.SnapshotCount,
-			QuotaSizeBytes: gcfg.Flag_Etcd_Tip.QuotaSizeBytes,
+		req.Flag_Etcd_V3_3 = &dbtesterpb.Flag_Etcd_V3_3{
+			SnapshotCount:  gcfg.Flag_Etcd_V3_3.SnapshotCount,
+			QuotaSizeBytes: gcfg.Flag_Etcd_V3_3.QuotaSizeBytes,
 		}
 
-	case dbtesterpb.DatabaseID_zookeeper__r3_4_9:
-		req.Flag_Zookeeper_R3_4_9 = &dbtesterpb.Flag_Zookeeper_R3_4_9{
-			JavaDJuteMaxBuffer:   gcfg.Flag_Zookeeper_R3_4_9.JavaDJuteMaxBuffer,
-			JavaXms:              gcfg.Flag_Zookeeper_R3_4_9.JavaXms,
-			JavaXmx:              gcfg.Flag_Zookeeper_R3_4_9.JavaXmx,
-			MyID:                 uint32(idx + 1),
-			ClientPort:           gcfg.Flag_Zookeeper_R3_4_9.ClientPort,
-			TickTime:             gcfg.Flag_Zookeeper_R3_4_9.TickTime,
-			InitLimit:            gcfg.Flag_Zookeeper_R3_4_9.InitLimit,
-			SyncLimit:            gcfg.Flag_Zookeeper_R3_4_9.SyncLimit,
-			SnapCount:            gcfg.Flag_Zookeeper_R3_4_9.SnapCount,
-			MaxClientConnections: gcfg.Flag_Zookeeper_R3_4_9.MaxClientConnections,
-		}
-	case dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha:
-		req.Flag_Zookeeper_R3_5_2Alpha = &dbtesterpb.Flag_Zookeeper_R3_5_2Alpha{
-			JavaDJuteMaxBuffer:   gcfg.Flag_Zookeeper_R3_5_2Alpha.JavaDJuteMaxBuffer,
-			JavaXms:              gcfg.Flag_Zookeeper_R3_5_2Alpha.JavaXms,
-			JavaXmx:              gcfg.Flag_Zookeeper_R3_5_2Alpha.JavaXmx,
-			MyID:                 uint32(idx + 1),
-			ClientPort:           gcfg.Flag_Zookeeper_R3_5_2Alpha.ClientPort,
-			TickTime:             gcfg.Flag_Zookeeper_R3_5_2Alpha.TickTime,
-			InitLimit:            gcfg.Flag_Zookeeper_R3_5_2Alpha.InitLimit,
-			SyncLimit:            gcfg.Flag_Zookeeper_R3_5_2Alpha.SyncLimit,
-			SnapCount:            gcfg.Flag_Zookeeper_R3_5_2Alpha.SnapCount,
-			MaxClientConnections: gcfg.Flag_Zookeeper_R3_5_2Alpha.MaxClientConnections,
-		}
 	case dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta:
 		req.Flag_Zookeeper_R3_5_3Beta = &dbtesterpb.Flag_Zookeeper_R3_5_3Beta{
 			JavaDJuteMaxBuffer:   gcfg.Flag_Zookeeper_R3_5_3Beta.JavaDJuteMaxBuffer,
@@ -454,9 +339,7 @@ func (cfg *Config) ToRequest(databaseID string, op dbtesterpb.Operation, idx int
 			MaxClientConnections: gcfg.Flag_Zookeeper_R3_5_3Beta.MaxClientConnections,
 		}
 
-	case dbtesterpb.DatabaseID_consul__v0_7_5:
-	case dbtesterpb.DatabaseID_consul__v0_8_0:
-	case dbtesterpb.DatabaseID_consul__v0_8_4:
+	case dbtesterpb.DatabaseID_consul__v1_0_2:
 
 	case dbtesterpb.DatabaseID_zetcd__beta:
 	case dbtesterpb.DatabaseID_cetcd__beta:

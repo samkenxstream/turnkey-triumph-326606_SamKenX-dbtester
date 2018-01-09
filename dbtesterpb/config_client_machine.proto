@@ -73,18 +73,13 @@ message ConfigClientMachineAgentControl {
   int64 DatabasePortToConnect = 8 [(gogoproto.moretags) = "yaml:\"database_port_to_connect\""];
   repeated string DatabaseEndpoints = 9 [(gogoproto.moretags) = "yaml:\"database_endpoints\""];
 
-  flag__etcd__v2_3 flag__etcd__v2_3 = 100 [(gogoproto.moretags) = "yaml:\"etcd__v2_3\""];
-  flag__etcd__v3_1 flag__etcd__v3_1 = 101 [(gogoproto.moretags) = "yaml:\"etcd__v3_1\""];
-  flag__etcd__v3_2 flag__etcd__v3_2 = 102 [(gogoproto.moretags) = "yaml:\"etcd__v3_2\""];
-  flag__etcd__tip flag__etcd__tip = 103 [(gogoproto.moretags) = "yaml:\"etcd__tip\""];
+  flag__etcd__tip  flag__etcd__tip  = 100 [(gogoproto.moretags) = "yaml:\"etcd__tip\""];
+  flag__etcd__v3_2 flag__etcd__v3_2 = 101 [(gogoproto.moretags) = "yaml:\"etcd__v3_2\""];
+  flag__etcd__v3_3 flag__etcd__v3_3 = 102 [(gogoproto.moretags) = "yaml:\"etcd__v3_3\""];
 
-  flag__zookeeper__r3_4_9 flag__zookeeper__r3_4_9 = 200 [(gogoproto.moretags) = "yaml:\"zookeeper__r3_4_9\""];
-  flag__zookeeper__r3_5_2_alpha flag__zookeeper__r3_5_2_alpha = 201 [(gogoproto.moretags) = "yaml:\"zookeeper__r3_5_2_alpha\""];
-  flag__zookeeper__r3_5_3_beta flag__zookeeper__r3_5_3_beta = 202 [(gogoproto.moretags) = "yaml:\"zookeeper__r3_5_3_beta\""];
+  flag__zookeeper__r3_5_3_beta flag__zookeeper__r3_5_3_beta = 200 [(gogoproto.moretags) = "yaml:\"zookeeper__r3_5_3_beta\""];
 
-  flag__consul__v0_7_5 flag__consul__v0_7_5 = 300 [(gogoproto.moretags) = "yaml:\"consul__v0_7_5\""];
-  flag__consul__v0_8_0 flag__consul__v0_8_0 = 301 [(gogoproto.moretags) = "yaml:\"consul__v0_8_0\""];
-  flag__consul__v0_8_4 flag__consul__v0_8_4 = 302 [(gogoproto.moretags) = "yaml:\"consul__v0_8_4\""];
+  flag__consul__v1_0_2 flag__consul__v1_0_2 = 300 [(gogoproto.moretags) = "yaml:\"consul__v1_0_2\""];
 
   flag__cetcd__beta flag__cetcd__beta = 400 [(gogoproto.moretags) = "yaml:\"cetcd__beta\""];
   flag__zetcd__beta flag__zetcd__beta = 500 [(gogoproto.moretags) = "yaml:\"zetcd__beta\""];
