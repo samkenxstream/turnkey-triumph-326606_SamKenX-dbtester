@@ -18,6 +18,7 @@
     "storage"
   ]
   revision = "2a6493c7a9214bf56c1003bd97443d505cc7e952"
+  source = "https://github.com/GoogleCloudPlatform/google-cloud-go"
 
 [[projects]]
   branch = "master"
@@ -28,32 +29,24 @@
 [[projects]]
   name = "github.com/cheggaaa/pb"
   packages = ["."]
-  revision = "d7e6ca3010b6f084d8056847f55d7f572f180678"
+  revision = "18d384da9bdc1e5a08fc2a62a494c321d9ae74ea"
+  source = "https://github.com/cheggaaa/pb"
 
 [[projects]]
   name = "github.com/coreos/etcd"
   packages = [
     "auth/authpb",
-    "client",
     "clientv3",
     "etcdserver/api/v3rpc/rpctypes",
     "etcdserver/etcdserverpb",
     "mvcc/mvccpb",
     "pkg/cpuutil",
     "pkg/netutil",
-    "pkg/pathutil",
     "pkg/report",
-    "pkg/srv",
-    "pkg/types",
-    "version"
+    "pkg/types"
   ]
-  revision = "47a8156851b5a59665421661edb7c813f8a7993e"
-
-[[projects]]
-  name = "github.com/coreos/go-semver"
-  packages = ["semver"]
-  revision = "8ab6407b697782a06568d4b7f1db25550ec2e4c6"
-  version = "v0.2.0"
+  revision = "eaf6ae02e47edbea90aa7f0fe6c4d558611e00ab"
+  source = "https://github.com/coreos/etcd"
 
 [[projects]]
   name = "github.com/coreos/go-systemd"
@@ -64,12 +57,14 @@
 [[projects]]
   name = "github.com/coreos/pkg"
   packages = ["capnslog"]
-  revision = "fa29b1d70f0beaddd4c7021607cc3c3be8ce94b8"
+  revision = "97fdf19511ea361ae1c100dd393cc47f8dcfa1e1"
+  source = "https://github.com/coreos/pkg"
 
 [[projects]]
   name = "github.com/dustin/go-humanize"
   packages = ["."]
-  revision = "ef638b6c2e62b857442c6443dace9366a48c0ee2"
+  revision = "bb3d318650d48840a39aa21a027c6630e198e626"
+  source = "https://github.com/dustin/go-humanize"
 
 [[projects]]
   name = "github.com/gogo/protobuf"
@@ -79,6 +74,7 @@
     "protoc-gen-gogo/descriptor"
   ]
   revision = "160de10b2537169b5ae3e7e221d28269ef40d311"
+  source = "https://github.com/gogo/protobuf"
 
 [[projects]]
   branch = "master"
@@ -95,9 +91,13 @@
   packages = [
     "proto",
     "protoc-gen-go/descriptor",
-    "ptypes/any"
+    "ptypes",
+    "ptypes/any",
+    "ptypes/duration",
+    "ptypes/timestamp"
   ]
   revision = "1e59b77b52bf8e4b449a57e6f79f21226d571845"
+  source = "https://github.com/golang/protobuf"
 
 [[projects]]
   branch = "master"
@@ -161,6 +161,7 @@
     "vg/vgsvg"
   ]
   revision = "51b62dc5319d7fce41240d13e780a93e640b9a38"
+  source = "https://github.com/gonum/plot"
 
 [[projects]]
   name = "github.com/googleapis/gax-go"
@@ -171,7 +172,8 @@
 [[projects]]
   name = "github.com/gyuho/dataframe"
   packages = ["."]
-  revision = "73de2c550b1177c1640f3dacbbc1af00f913fedb"
+  revision = "008fc241adc41d4bd5c54b9f6564ef16407c030e"
+  source = "https://github.com/gyuho/dataframe"
 
 [[projects]]
   name = "github.com/gyuho/linux-inspect"
@@ -185,11 +187,13 @@
     "top"
   ]
   revision = "db8def6abe6a96a20aae6ae01664cc3817a27ba0"
+  source = "https://github.com/gyuho/linux-inspect"
 
 [[projects]]
   name = "github.com/hashicorp/consul"
   packages = ["api"]
-  revision = "42f60b04bba2e4391e9a95a218c873986ebeea6b"
+  revision = "b55059fc3d0327c92c41431e57dfd2df3f956b03"
+  source = "https://github.com/hashicorp/consul"
 
 [[projects]]
   branch = "master"
@@ -246,29 +250,26 @@
 [[projects]]
   name = "github.com/olekukonko/tablewriter"
   packages = ["."]
-  revision = "febf2d34b54a69ce7530036c7503b1c9fbfdf0bb"
+  revision = "96aac992fc8b1a4c83841a6c3e7178d20d989625"
+  source = "https://github.com/olekukonko/tablewriter"
 
 [[projects]]
   name = "github.com/samuel/go-zookeeper"
   packages = ["zk"]
-  revision = "1d7be4effb13d2d908342d349d71a284a7542693"
+  revision = "471cd4e61d7a78ece1791fa5faa0345dc8c7d5a5"
+  source = "https://github.com/samuel/go-zookeeper"
 
 [[projects]]
   name = "github.com/spf13/cobra"
   packages = ["."]
-  revision = "9495bc009a56819bdb0ddbc1a373e29c140bc674"
+  revision = "b95ab734e27d33e0d8fbabf71ca990568d4e2020"
+  source = "https://github.com/spf13/cobra"
 
 [[projects]]
   name = "github.com/spf13/pflag"
   packages = ["."]
   revision = "e57e3eeb33f795204c1ca35f56c44f83227c6e66"
   version = "v1.0.0"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/ugorji/go"
-  packages = ["codec"]
-  revision = "ccfe18359b55b97855cee1d3f74e5efbda4869dc"
 
 [[projects]]
   branch = "master"
@@ -295,7 +296,8 @@
     "lex/httplex",
     "trace"
   ]
-  revision = "c8c74377599bd978aee1cf3b9b63a8634051cec2"
+  revision = "434ec0c7fe3742c984919a691b2018a6e9694425"
+  source = "https://github.com/golang/net"
 
 [[projects]]
   name = "golang.org/x/oauth2"
@@ -307,6 +309,13 @@
     "jwt"
   ]
   revision = "30785a2c434e431ef7c507b54617d6a951d5f2b4"
+  source = "https://github.com/golang/oauth2"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/sys"
+  packages = ["unix"]
+  revision = "d38bf781f16e180a1b2ad82697d2f81d7b7ecfac"
 
 [[projects]]
   branch = "master"
@@ -332,7 +341,8 @@
 [[projects]]
   name = "golang.org/x/time"
   packages = ["rate"]
-  revision = "a4bde12657593d5e90d0533a3e4fd95e635124cb"
+  revision = "6dc17368e09b0e8634d71cac8168d853e869a0c7"
+  source = "https://github.com/golang/time"
 
 [[projects]]
   name = "google.golang.org/api"
@@ -348,6 +358,7 @@
     "transport/http"
   ]
   revision = "e5c227fa33ebccc5a430d863efae400431fc0e85"
+  source = "https://github.com/google/google-api-go-client"
 
 [[projects]]
   name = "google.golang.org/appengine"
@@ -380,31 +391,36 @@
   name = "google.golang.org/grpc"
   packages = [
     ".",
+    "balancer",
     "codes",
+    "connectivity",
     "credentials",
-    "grpclb/grpc_lb_v1",
+    "grpclb/grpc_lb_v1/messages",
     "grpclog",
+    "health/grpc_health_v1",
     "internal",
     "keepalive",
     "metadata",
     "naming",
     "peer",
+    "resolver",
     "stats",
     "status",
     "tap",
     "transport"
   ]
-  revision = "b15215fb911b24a5d61d57feec4233d610530464"
-  source = "https://github.com/grpc/grpc-go.git"
+  revision = "5b3c4e850e90a4cf6a20ebd46c8b32a0a3afcb9e"
+  source = "https://github.com/grpc/grpc-go"
 
 [[projects]]
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "53feefa2559fb8dfa8d81baad31be332c97d6c77"
+  revision = "d670f9405373e636a5a2765eea47fac0c9bc91a4"
+  source = "https://github.com/go-yaml/yaml"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "37b0bbd62b245e28469686b68faccde5593acb6e719031c70018e2b1cf29e36e"
+  inputs-digest = "de282f54a00d78e5cc1cdf8a7554929ec7b716676d49647b2d9a83910b24df74"
   solver-name = "gps-cdcl"
   solver-version = 1
