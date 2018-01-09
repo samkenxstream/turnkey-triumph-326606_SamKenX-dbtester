@@ -45,7 +45,7 @@
     "pkg/report",
     "pkg/types"
   ]
-  revision = "eaf6ae02e47edbea90aa7f0fe6c4d558611e00ab"
+  revision = "2dfabfbef6ae5ac3553c7a14ee757ebccbeef538"
   source = "https://github.com/coreos/etcd"
 
 [[projects]]
@@ -186,7 +186,7 @@
     "schema",
     "top"
   ]
-  revision = "db8def6abe6a96a20aae6ae01664cc3817a27ba0"
+  revision = "187ae4baf4c1bed94dfeb338dfc1137cd6dfadc3"
   source = "https://github.com/gyuho/linux-inspect"
 
 [[projects]]
@@ -223,7 +223,7 @@
   name = "github.com/kr/pty"
   packages = ["."]
   revision = "1278f20d9cf7455f0465f3bf74a73d1eeb555c0f"
-  version = "v1.1.0"
+  source = "https://github.com/kr/pty"
 
 [[projects]]
   branch = "master"
@@ -421,6 +421,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "de282f54a00d78e5cc1cdf8a7554929ec7b716676d49647b2d9a83910b24df74"
+  inputs-digest = "057a961c21585211116e57f99b60e5bdd28cfe46411715ec4e13dbcf12ddd876"
   solver-name = "gps-cdcl"
   solver-version = 1

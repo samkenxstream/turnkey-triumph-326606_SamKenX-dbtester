@@ -6,7 +6,7 @@
 [[constraint]]
   name = "github.com/coreos/etcd"
   source = "https://github.com/coreos/etcd"
-  revision = "eaf6ae02e47edbea90aa7f0fe6c4d558611e00ab"
+  revision = "2dfabfbef6ae5ac3553c7a14ee757ebccbeef538"
 
 # v1.7.5
 [[constraint]]
@@ -84,7 +84,7 @@
 [[constraint]]
   name = "github.com/gyuho/linux-inspect"
   source = "https://github.com/gyuho/linux-inspect"
-  revision = "db8def6abe6a96a20aae6ae01664cc3817a27ba0"
+  revision = "187ae4baf4c1bed94dfeb338dfc1137cd6dfadc3"
 
 
 [[constraint]]
