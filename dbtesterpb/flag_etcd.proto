@@ -9,11 +9,6 @@ option (gogoproto.unmarshaler_all) = true;
 option (gogoproto.goproto_getters_all) = false;
 
 // See https://github.com/coreos/etcd/blob/master/etcdmain/help.go for more.
-message flag__etcd__v2_3 {
-  int64 SnapshotCount = 1 [(gogoproto.moretags) = "yaml:\"snapshot_count\""];
-}
-
-// See https://github.com/coreos/etcd/blob/master/etcdmain/help.go for more.
 message flag__etcd__v3_1 {
   int64 SnapshotCount = 1 [(gogoproto.moretags) = "yaml:\"snapshot_count\""];
   int64 QuotaSizeBytes = 2 [(gogoproto.moretags) = "yaml:\"quota_size_bytes\""];

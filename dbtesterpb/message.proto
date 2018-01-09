@@ -45,7 +45,6 @@ message Request {
 
   ConfigClientMachineInitial ConfigClientMachineInitial = 8;
 
-  flag__etcd__v2_3 flag__etcd__v2_3 = 100;
   flag__etcd__v3_1 flag__etcd__v3_1 = 101;
   flag__etcd__v3_2 flag__etcd__v3_2 = 102;
   flag__etcd__tip flag__etcd__tip = 103;
@@ -54,8 +53,6 @@ message Request {
   flag__zookeeper__r3_5_2_alpha flag__zookeeper__r3_5_2_alpha = 201;
   flag__zookeeper__r3_5_3_beta flag__zookeeper__r3_5_3_beta = 202;
 
-  flag__consul__v0_7_5 flag__consul__v0_7_5 = 300;
-  flag__consul__v0_8_0 flag__consul__v0_8_0 = 301;
   flag__consul__v0_8_4 flag__consul__v0_8_4 = 302;
 
   flag__cetcd__beta flag__cetcd__beta = 400;
