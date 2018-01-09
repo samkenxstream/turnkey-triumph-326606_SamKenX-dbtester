@@ -48,45 +48,9 @@ func startEtcd(fs *flags, t *transporterServer) error {
 
 	var flags []string
 	switch t.req.DatabaseID {
-	case dbtesterpb.DatabaseID_etcd__v3_1:
-		flags = []string{
-			"--name", names[t.req.IPIndex],
-			"--data-dir", fs.etcdDataDir,
-			"--quota-backend-bytes", fmt.Sprintf("%d", t.req.Flag_Etcd_Tip.QuotaSizeBytes),
-
-			"--snapshot-count", fmt.Sprintf("%d", t.req.Flag_Etcd_Tip.SnapshotCount),
-
-			"--listen-client-urls", clientURLs[t.req.IPIndex],
-			"--advertise-client-urls", clientURLs[t.req.IPIndex],
-
-			"--listen-peer-urls", peerURLs[t.req.IPIndex],
-			"--initial-advertise-peer-urls", peerURLs[t.req.IPIndex],
-
-			"--initial-cluster-token", "mytoken",
-			"--initial-cluster", strings.Join(members, ","),
-			"--initial-cluster-state", "new",
-		}
-
-	case dbtesterpb.DatabaseID_etcd__v3_2:
-		flags = []string{
-			"--name", names[t.req.IPIndex],
-			"--data-dir", fs.etcdDataDir,
-			"--quota-backend-bytes", fmt.Sprintf("%d", t.req.Flag_Etcd_Tip.QuotaSizeBytes),
-
-			"--snapshot-count", fmt.Sprintf("%d", t.req.Flag_Etcd_Tip.SnapshotCount),
-
-			"--listen-client-urls", clientURLs[t.req.IPIndex],
-			"--advertise-client-urls", clientURLs[t.req.IPIndex],
-
-			"--listen-peer-urls", peerURLs[t.req.IPIndex],
-			"--initial-advertise-peer-urls", peerURLs[t.req.IPIndex],
-
-			"--initial-cluster-token", "mytoken",
-			"--initial-cluster", strings.Join(members, ","),
-			"--initial-cluster-state", "new",
-		}
-
-	case dbtesterpb.DatabaseID_etcd__tip:
+	case dbtesterpb.DatabaseID_etcd__tip,
+		dbtesterpb.DatabaseID_etcd__v3_2,
+		dbtesterpb.DatabaseID_etcd__v3_3:
 		flags = []string{
 			"--name", names[t.req.IPIndex],
 			"--data-dir", fs.etcdDataDir,

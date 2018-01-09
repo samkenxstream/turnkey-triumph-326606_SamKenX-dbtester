@@ -100,9 +100,9 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 		plog.Infof("system metrics CSV path: %q", globalFlags.systemMetricsCSV)
 
 		switch req.DatabaseID {
-		case dbtesterpb.DatabaseID_etcd__v3_1,
+		case dbtesterpb.DatabaseID_etcd__tip,
 			dbtesterpb.DatabaseID_etcd__v3_2,
-			dbtesterpb.DatabaseID_etcd__tip:
+			dbtesterpb.DatabaseID_etcd__v3_3:
 			plog.Infof("etcd executable binary path: %q", globalFlags.etcdExec)
 			plog.Infof("etcd data directory: %q", globalFlags.etcdDataDir)
 
@@ -138,9 +138,9 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 	switch req.Operation {
 	case dbtesterpb.Operation_Start:
 		switch t.req.DatabaseID {
-		case dbtesterpb.DatabaseID_etcd__v3_1,
+		case dbtesterpb.DatabaseID_etcd__tip,
 			dbtesterpb.DatabaseID_etcd__v3_2,
-			dbtesterpb.DatabaseID_etcd__tip,
+			dbtesterpb.DatabaseID_etcd__v3_3,
 			dbtesterpb.DatabaseID_zetcd__beta,
 			dbtesterpb.DatabaseID_cetcd__beta:
 			if err := startEtcd(&globalFlags, t); err != nil {
@@ -285,9 +285,9 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 
 func measureDatabasSize(flg flags, rdb dbtesterpb.DatabaseID) (int64, error) {
 	switch rdb {
-	case dbtesterpb.DatabaseID_etcd__v3_1,
+	case dbtesterpb.DatabaseID_etcd__tip,
 		dbtesterpb.DatabaseID_etcd__v3_2,
-		dbtesterpb.DatabaseID_etcd__tip,
+		dbtesterpb.DatabaseID_etcd__v3_3,
 		dbtesterpb.DatabaseID_cetcd__beta,
 		dbtesterpb.DatabaseID_zetcd__beta:
 		return fileinspect.Size(flg.etcdDataDir)
