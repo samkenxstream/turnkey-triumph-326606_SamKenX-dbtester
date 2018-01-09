@@ -20,7 +20,6 @@ import (
 )
 
 type request struct {
-	etcdv2Op etcdv2Op
 	etcdv3Op clientv3.Op
 	zkOp     zkOp
 	consulOp consulOp
