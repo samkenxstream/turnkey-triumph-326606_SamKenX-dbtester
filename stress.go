@@ -176,7 +176,7 @@ func (cfg *Config) Stress(databaseID string) error {
 		switch gcfg.DatabaseID {
 		case "etcd__tip", "etcd__v3_2", "etcd__v3_3":
 			totalKeysFunc = getTotalKeysEtcdv3
-		case "zookeeper__r3_4_9", "zookeeper__r3_5_2_alpha", "zookeeper__r3_5_3_beta", "zetcd__beta":
+		case "zookeeper__r3_5_3_beta", "zetcd__beta":
 			totalKeysFunc = getTotalKeysZk
 		case "consul__v0_8_4", "cetcd__beta":
 			totalKeysFunc = getTotalKeysConsul
@@ -212,7 +212,7 @@ func (cfg *Config) Stress(databaseID string) error {
 				os.Exit(1)
 			}
 
-		case "zookeeper__r3_4_9", "zookeeper__r3_5_2_alpha", "zookeeper__r3_5_3_beta", "zetcd__beta":
+		case "zookeeper__r3_5_3_beta", "zetcd__beta":
 			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
 			var err error
 			for i := 0; i < 7; i++ {
@@ -271,7 +271,7 @@ func (cfg *Config) Stress(databaseID string) error {
 			_, err = clients[0].Do(context.Background(), clientv3.OpPut(key, value))
 			clients[0].Close()
 
-		case "zookeeper__r3_4_9", "zookeeper__r3_5_2_alpha", "zookeeper__r3_5_3_beta", "zetcd__beta":
+		case "zookeeper__r3_5_3_beta", "zetcd__beta":
 			conns := mustCreateConnsZk(gcfg.DatabaseEndpoints, 1)
 			_, err = conns[0].Create("/"+key, vals.bytes[0], zkCreateFlags, zkCreateACL)
 			conns[0].Close()
@@ -313,7 +313,7 @@ func newReadHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) (rhs []Req
 				clients[i].Close()
 			}
 		}
-	case "zookeeper__r3_4_9", "zookeeper__r3_5_2_alpha", "zookeeper__r3_5_3_beta", "zetcd__beta":
+	case "zookeeper__r3_5_3_beta", "zetcd__beta":
 		conns := mustCreateConnsZk(gcfg.DatabaseEndpoints, gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber)
 		for i := range conns {
 			rhs[i] = newGetZK(conns[i])
@@ -350,7 +350,7 @@ func newWriteHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) (rhs []Re
 				etcdClients[i].Close()
 			}
 		}
-	case "zookeeper__r3_4_9", "zookeeper__r3_5_2_alpha", "zookeeper__r3_5_3_beta", "zetcd__beta":
+	case "zookeeper__r3_5_3_beta", "zetcd__beta":
 		if gcfg.ConfigClientMachineBenchmarkOptions.SameKey {
 			key := sameKey(gcfg.ConfigClientMachineBenchmarkOptions.KeySizeBytes)
 			valueBts := randBytes(gcfg.ConfigClientMachineBenchmarkOptions.ValueSizeBytes)
@@ -418,7 +418,7 @@ func newReadOneshotHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) []R
 				return newGetEtcd3(conns[0])(ctx, req)
 			}
 		}
-	case "zookeeper__r3_4_9", "zookeeper__r3_5_2_alpha", "zookeeper__r3_5_3_beta", "zetcd__beta":
+	case "zookeeper__r3_5_3_beta", "zetcd__beta":
 		for i := range rhs {
 			rhs[i] = func(ctx context.Context, req *request) error {
 				conns := mustCreateConnsZk(gcfg.DatabaseEndpoints, gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber)
@@ -463,7 +463,7 @@ func generateReads(gcfg dbtesterpb.ConfigClientMachineAgentControl, key string, 
 			}
 			inflightReqs <- request{etcdv3Op: clientv3.OpGet(key, opts...)}
 
-		case "zookeeper__r3_4_9", "zookeeper__r3_5_2_alpha", "zookeeper__r3_5_3_beta", "zetcd__beta":
+		case "zookeeper__r3_5_3_beta", "zetcd__beta":
 			op := zkOp{key: key}
 			if gcfg.ConfigClientMachineBenchmarkOptions.StaleRead {
 				op.staleRead = true
@@ -513,7 +513,7 @@ func generateWrites(gcfg dbtesterpb.ConfigClientMachineAgentControl, startIdx in
 		switch gcfg.DatabaseID {
 		case "etcd__tip", "etcd__v3_2", "etcd__v3_3":
 			inflightReqs <- request{etcdv3Op: clientv3.OpPut(k, vs)}
-		case "zookeeper__r3_4_9", "zookeeper__r3_5_2_alpha", "zookeeper__r3_5_3_beta", "zetcd__beta":
+		case "zookeeper__r3_5_3_beta", "zetcd__beta":
 			inflightReqs <- request{zkOp: zkOp{key: "/" + k, value: v}}
 		case "consul__v0_8_4", "cetcd__beta":
 			inflightReqs <- request{consulOp: consulOp{key: k, value: v}}
