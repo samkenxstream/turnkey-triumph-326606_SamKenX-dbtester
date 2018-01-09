@@ -238,7 +238,7 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		_, okTip := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()]
 		_, ok32 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_2.String()]
 		_, ok33 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_3.String()]
-		if !ok1 && !okTip && !ok32 && !ok33 {
+		if !okTip && !ok32 && !ok33 {
 			return nil, fmt.Errorf("got %q config, but no etcd config is given", dbtesterpb.DatabaseID_zetcd__beta.String())
 		}
 	}
@@ -246,7 +246,7 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		_, okTip := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__tip.String()]
 		_, ok32 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_2.String()]
 		_, ok33 := cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__v3_3.String()]
-		if !ok1 && !okTip && !ok32 && !ok33 {
+		if !okTip && !ok32 && !ok33 {
 			return nil, fmt.Errorf("got %q config, but no etcd config is given", dbtesterpb.DatabaseID_cetcd__beta.String())
 		}
 	}
