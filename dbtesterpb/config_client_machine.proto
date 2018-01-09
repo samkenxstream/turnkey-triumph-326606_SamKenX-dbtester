@@ -77,9 +77,7 @@ message ConfigClientMachineAgentControl {
   flag__etcd__v3_2 flag__etcd__v3_2 = 101 [(gogoproto.moretags) = "yaml:\"etcd__v3_2\""];
   flag__etcd__v3_3 flag__etcd__v3_3 = 102 [(gogoproto.moretags) = "yaml:\"etcd__v3_3\""];
 
-  flag__zookeeper__r3_4_9 flag__zookeeper__r3_4_9 = 200 [(gogoproto.moretags) = "yaml:\"zookeeper__r3_4_9\""];
-  flag__zookeeper__r3_5_2_alpha flag__zookeeper__r3_5_2_alpha = 201 [(gogoproto.moretags) = "yaml:\"zookeeper__r3_5_2_alpha\""];
-  flag__zookeeper__r3_5_3_beta flag__zookeeper__r3_5_3_beta = 202 [(gogoproto.moretags) = "yaml:\"zookeeper__r3_5_3_beta\""];
+  flag__zookeeper__r3_5_3_beta flag__zookeeper__r3_5_3_beta = 200 [(gogoproto.moretags) = "yaml:\"zookeeper__r3_5_3_beta\""];
 
   flag__consul__v0_8_4 flag__consul__v0_8_4 = 300 [(gogoproto.moretags) = "yaml:\"consul__v0_8_4\""];
 

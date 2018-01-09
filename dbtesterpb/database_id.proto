@@ -12,16 +12,20 @@ option (gogoproto.goproto_getters_all) = false;
 // of each database. Make sure to make accordingn changes in 'flag_*' whenever an ID
 // is added/removed.
 enum DatabaseID {
+  // https://github.com/coreos/etcd/releases
   etcd__tip  = 0;
   etcd__v3_2 = 1;
   etcd__v3_3 = 2;
 
-  zookeeper__r3_4_9 = 100;
-  zookeeper__r3_5_2_alpha = 101;
-  zookeeper__r3_5_3_beta = 102;
+  // https://zookeeper.apache.org/releases.html
+  zookeeper__r3_5_3_beta = 100;
 
+  // https://github.com/hashicorp/consul/releases
   consul__v0_8_4 = 200;
 
+  // https://github.com/coreos/zetcd/releases
   zetcd__beta = 300;
+
+  // https://github.com/coreos/cetcd/releases
   cetcd__beta = 400;
 }

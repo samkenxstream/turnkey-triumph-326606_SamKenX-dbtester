@@ -31,8 +31,6 @@
 		Flag_Etcd_V3_2
 		Flag_Etcd_V3_3
 		Flag_Zetcd_Beta
-		Flag_Zookeeper_R3_4_9
-		Flag_Zookeeper_R3_5_2Alpha
 		Flag_Zookeeper_R3_5_3Beta
 		Request
 		Response
