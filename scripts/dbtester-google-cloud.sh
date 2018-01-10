@@ -131,10 +131,10 @@ sudo service ntp start
 sudo rm -rf ${HOME}/*
 
 # etcd v3.2.0
-GO_VERSION=1.8.3
+# GO_VERSION=1.8.3
 
 # etcd v3.3.0
-# GO_VERSION=1.9.2
+GO_VERSION=1.9.2
 
 sudo rm -f /usr/local/go/bin/go && sudo rm -rf /usr/local/go && sudo rm -f /bin/go
 
@@ -163,8 +163,8 @@ go version
 GIT_PATH=github.com/coreos/etcd
 
 USER_NAME=coreos
-BRANCH_NAME=release-3.2
-# BRANCH_NAME=release-3.3
+# BRANCH_NAME=release-3.2
+BRANCH_NAME=release-3.3
 
 rm -rf ${GOPATH}/src/${GIT_PATH}
 mkdir -p ${GOPATH}/src/github.com/coreos
@@ -176,7 +176,7 @@ git clone https://github.com/${USER_NAME}/etcd \
 cd ${GOPATH}/src/${GIT_PATH}
 
 # v3.2.0
-git reset --hard 66722b1ada68fcd5227db853ee92003169a975c8
+# git reset --hard 66722b1ada68fcd5227db853ee92003169a975c8
 
 # v3.3.0 RC+
 # git reset --hard 58c402a47bc5ad46fa748ce666257b45b06b1444
@@ -259,7 +259,7 @@ sudo ntpdate time.google.com
 sudo service ntp start
 
 nohup dbtester control \
-  --database-id etcd__v3_2 \
+  --database-id etcd__v3_3 \
   --config config.yaml > ${HOME}/client-control.log 2>&1 &
 
 sleep 10s
