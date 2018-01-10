@@ -1,4 +1,7 @@
 
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/write-3m-avg-latency.png" alt="write-3m-avg-latency">
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/write-3m-avg-latency-by-key.png" alt="write-3m-avg-latency-by-key">
 
 <br><br><hr>
 ##### Write 1M keys, 256-byte key, 1KB value, Best Throughput (etcd 1K clients with 100 conns)
