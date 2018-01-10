@@ -192,6 +192,7 @@ etcd --version
 ETCDCTL_API=3 etcdctl version
 ##################################################
 
+# reinstall Go 1.9+ for context imports
 
 ##################################################
 USER_NAME=coreos
