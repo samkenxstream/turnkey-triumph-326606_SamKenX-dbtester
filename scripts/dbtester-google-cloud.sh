@@ -194,8 +194,8 @@ ETCDCTL_API=3 etcdctl version
 
 
 ##################################################
-USER_NAME=gyuho
-BRANCH_NAME=new-test
+USER_NAME=coreos
+BRANCH_NAME=master
 cd $HOME
 rm -rf ${HOME}/go/src/github.com/coreos/dbtester
 git clone https://github.com/$USER_NAME/dbtester --branch $BRANCH_NAME ${HOME}/go/src/github.com/coreos/dbtester
