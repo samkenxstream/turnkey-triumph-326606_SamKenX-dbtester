@@ -26,7 +26,7 @@ import (
 
 var (
 	DefaultNTP    = "/usr/sbin/ntpdate"
-	DefaultServer = "time.nist.gov"
+	DefaultServer = "time.google.com"
 )
 
 // DefaultSync syncs system time with NTP server.
@@ -39,7 +39,7 @@ var inUseErr = "NTP socket is in use"
 // Sync syncs system time with NTP server.
 //
 //    sudo service ntp stop
-//    sudo ntpdate time.nist.gov
+//    sudo ntpdate time.google.com
 //    sudo service ntp start
 //
 func Sync(ntpPath string, server string) (string, error) {

@@ -92,12 +92,17 @@ sudo apt install -y \
   git \
   apt-transport-https \
   software-properties-common \
-  libssl-dev
+  libssl-dev \
+  ntpdate
 
 sudo apt upgrade -y
 
 sudo apt autoremove
 sudo apt autoclean
+
+sudo service ntp stop
+sudo ntpdate time.google.com
+sudo service ntp start
 
 COMMENT
 
