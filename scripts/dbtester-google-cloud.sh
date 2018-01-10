@@ -105,10 +105,6 @@ sudo ntpdate time.google.com
 sudo service ntp start
 
 COMMENT
-
-curl -L http://metadata.google.internal/computeMetadata/v1/instance/attributes/gcp-key-etcd -H 'Metadata-Flavor:Google' > /tmp/gcp-key-etcd-development.json
-sudo mv /tmp/gcp-key-etcd-development.json /etc/gcp-key-etcd-development.json
-head -10 /etc/gcp-key-etcd-development.json
 ##################################################
 
 
@@ -238,18 +234,26 @@ cat ${HOME}/agent.log
 # (client number, key number, key-value size)
 # starts/shuts down database agents, send stress requests through RPCs
 
+curl -L http://metadata.google.internal/computeMetadata/v1/instance/attributes/gcp-key-etcd -H 'Metadata-Flavor:Google' > /tmp/gcp-key-etcd-development.json
+sudo mv /tmp/gcp-key-etcd-development.json /etc/gcp-key-etcd-development.json
+head -10 /etc/gcp-key-etcd-development.json
+
 # copy the tester configuration from git repository
 cp ${HOME}/go/src/github.com/coreos/dbtester/test-configs/write-1M-keys-best-throughput.yaml ${HOME}/config.yaml
 cat ${HOME}/config.yaml
 
 
 nohup dbtester control \
-  --database-id etcd__v3_2 \
+  --database-id etcd__v3_3 \
   --config config.yaml > ${HOME}/client-control.log 2>&1 &
+
+sleep 10s
+
+tail -f ${HOME}/client-control.log
 
 <<COMMENT
 nohup dbtester control \
-  --database-id etcd__v3_3 \
+  --database-id etcd__v3_2 \
   --config config.yaml > ${HOME}/client-control.log 2>&1 &
 
 nohup dbtester control \
@@ -260,10 +264,6 @@ nohup dbtester control \
   --database-id consul__v1_0_2 \
   --config config.yaml > ${HOME}/client-control.log 2>&1 &
 COMMENT
-
-sleep 10s
-
-tail -f ${HOME}/client-control.log
 ##################################################
 
 
