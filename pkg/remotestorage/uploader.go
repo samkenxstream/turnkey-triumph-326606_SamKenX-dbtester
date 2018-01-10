@@ -78,7 +78,7 @@ func (g *GoogleCloudStorage) UploadFile(bucket, src, dst string, opts ...OpOptio
 
 	bkt := client.Bucket(bucket)
 	if err := bkt.Create(ctx, g.Project, nil); err != nil {
-		if !strings.Contains(err.Error(), "You already own this bucket. Please select another name") {
+		if err.Error() != "googleapi: Error 409: Sorry, that name is not available. Please try a different one., conflict" {
 			return err
 		}
 	}
@@ -122,7 +122,7 @@ func (g *GoogleCloudStorage) UploadDir(bucket, src, dst string, opts ...OpOption
 
 	bkt := client.Bucket(bucket)
 	if err := bkt.Create(ctx, g.Project, nil); err != nil {
-		if !strings.Contains(err.Error(), "You already own this bucket. Please select another name") {
+		if err.Error() != "googleapi: Error 409: Sorry, that name is not available. Please try a different one., conflict" {
 			return err
 		}
 	}
