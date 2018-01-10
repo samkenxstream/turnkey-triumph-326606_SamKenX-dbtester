@@ -295,14 +295,14 @@ cd ${HOME}/go/src/github.com/coreos/dbtester
 go install -v ./cmd/dbtester
 
 
-gsutil -m cp -R gs://dbtester-results/2018Q1-01-etcd .
+gsutil -m cp -R gs://dbtester-results/2018Q1-02-etcd-zookeeper-consul .
 
-cp ./test-configs/write-1M-keys-best-throughput.yaml ./2018Q1-01-etcd/write-1M-keys-best-throughput/
+cp ./test-configs/write-1M-keys-best-throughput.yaml ./2018Q1-02-etcd-zookeeper-consul/write-1M-keys-best-throughput/
 
-dbtester analyze --config 2018Q1-01-etcd/write-1M-keys-best-throughput/write-1M-keys-best-throughput.yaml
+dbtester analyze --config 2018Q1-02-etcd-zookeeper-consul/write-1M-keys-best-throughput/write-1M-keys-best-throughput.yaml
 
-gsutil -m cp -R 2018Q1-01-etcd gs://dbtester-results/
-gsutil -m acl ch -u allUsers:R -r gs://dbtester-results/2018Q1-01-etcd
+gsutil -m cp -R 2018Q1-02-etcd-zookeeper-consul gs://dbtester-results/
+gsutil -m acl ch -u allUsers:R -r gs://dbtester-results/2018Q1-02-etcd-zookeeper-consul
 ##################################################
 
 
