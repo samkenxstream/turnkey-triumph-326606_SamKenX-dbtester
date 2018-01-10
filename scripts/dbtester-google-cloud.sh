@@ -122,6 +122,11 @@ sudo reboot
 ##################################################
 
 
+sudo service ntp stop
+sudo ntpdate time.google.com
+sudo service ntp start
+
+
 ##################################################
 sudo rm -rf ${HOME}/*
 
@@ -198,11 +203,11 @@ ETCDCTL_API=3 etcdctl version
 ##################################################
 USER_NAME=coreos
 BRANCH_NAME=master
-cd $HOME
+cd ${HOME}
 rm -rf ${HOME}/go/src/github.com/coreos/dbtester
 git clone https://github.com/$USER_NAME/dbtester --branch $BRANCH_NAME ${HOME}/go/src/github.com/coreos/dbtester
 
-cd $HOME
+cd ${HOME}
 go install -v ./go/src/github.com/coreos/dbtester/cmd/dbtester
 
 dbtester -h
@@ -215,6 +220,11 @@ dbtester control -h
 # agent on each machine
 # specify network interface, disk device of host machine,
 # this starts the database on host machine, when 'control' signals
+
+
+sudo service ntp stop
+sudo ntpdate time.google.com
+sudo service ntp start
 
 rm -f ${HOME}/agent.log
 nohup dbtester agent \
@@ -243,8 +253,13 @@ cp ${HOME}/go/src/github.com/coreos/dbtester/test-configs/write-1M-keys-best-thr
 cat ${HOME}/config.yaml
 
 
+
+sudo service ntp stop
+sudo ntpdate time.google.com
+sudo service ntp start
+
 nohup dbtester control \
-  --database-id etcd__v3_3 \
+  --database-id etcd__v3_2 \
   --config config.yaml > ${HOME}/client-control.log 2>&1 &
 
 sleep 10s
@@ -254,6 +269,10 @@ tail -f ${HOME}/client-control.log
 <<COMMENT
 nohup dbtester control \
   --database-id etcd__v3_2 \
+  --config config.yaml > ${HOME}/client-control.log 2>&1 &
+
+nohup dbtester control \
+  --database-id etcd__v3_3 \
   --config config.yaml > ${HOME}/client-control.log 2>&1 &
 
 nohup dbtester control \
@@ -272,7 +291,7 @@ COMMENT
 # and specify 'analyze' configuration file,
 # this aggregates data, generates all graphs, texts
 
-cd $HOME/go/src/github.com/coreos/dbtester
+cd ${HOME}/go/src/github.com/coreos/dbtester
 go install -v ./cmd/dbtester
 
 
