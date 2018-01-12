@@ -249,7 +249,7 @@ sudo mv /tmp/gcp-key-etcd-development.json /etc/gcp-key-etcd-development.json
 head -10 /etc/gcp-key-etcd-development.json
 
 # copy the tester configuration from git repository
-cp ${HOME}/go/src/github.com/coreos/dbtester/test-configs/write-too-many-keys.yaml ${HOME}/config.yaml
+cp ${HOME}/go/src/github.com/coreos/dbtester/test-configs/read-3M-same-keys-best-throughput-etcd.yaml ${HOME}/config.yaml
 cat ${HOME}/config.yaml
 
 
@@ -297,9 +297,9 @@ go install -v ./cmd/dbtester
 
 gsutil -m cp -R gs://dbtester-results/2018Q1-01-etcd .
 
-cp ./test-configs/write-too-many-keys.yaml ./2018Q1-01-etcd/write-too-many-keys/
+cp ./test-configs/read-3M-same-keys-best-throughput-etcd.yaml ./2018Q1-01-etcd/read-3M-same-keys-best-throughput-etcd/
 
-dbtester analyze --config 2018Q1-01-etcd/write-too-many-keys/write-too-many-keys.yaml
+dbtester analyze --config 2018Q1-01-etcd/read-3M-same-keys-best-throughput-etcd/read-3M-same-keys-best-throughput-etcd.yaml
 
 gsutil -m cp -R 2018Q1-01-etcd gs://dbtester-results/
 gsutil -m acl ch -u allUsers:R -r gs://dbtester-results/2018Q1-01-etcd
