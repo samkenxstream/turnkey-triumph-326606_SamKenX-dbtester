@@ -233,7 +233,7 @@ nohup dbtester agent \
   --disk-device sda \
   --agent-port :3500 &
 
-sleep 10s
+sleep 7s
 cat ${HOME}/agent.log
 ##################################################
 
@@ -262,7 +262,7 @@ nohup dbtester control \
   --database-id etcd__v3_3 \
   --config config.yaml > ${HOME}/client-control.log 2>&1 &
 
-sleep 10s
+sleep 7s
 
 tail -f ${HOME}/client-control.log
 
@@ -297,9 +297,9 @@ go install -v ./cmd/dbtester
 
 gsutil -m cp -R gs://dbtester-results/2018Q1-01-etcd .
 
-cp ./test-configs/read-3M-same-keys-best-throughput-etcd.yaml ./2018Q1-01-etcd/read-3M-same-keys-best-throughput-etcd/
+cp ./test-configs/read-3M-same-keys-best-throughput-etcd.yaml ./2018Q1-01-etcd/read-3M-same-keys-best-throughput/
 
-dbtester analyze --config 2018Q1-01-etcd/read-3M-same-keys-best-throughput-etcd/read-3M-same-keys-best-throughput-etcd.yaml
+dbtester analyze --config 2018Q1-01-etcd/read-3M-same-keys-best-throughput/read-3M-same-keys-best-throughput-etcd.yaml
 
 gsutil -m cp -R 2018Q1-01-etcd gs://dbtester-results/
 gsutil -m acl ch -u allUsers:R -r gs://dbtester-results/2018Q1-01-etcd

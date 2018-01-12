@@ -259,3 +259,129 @@ etcd__v3_2 errors:
 
 
 
+
+<br><br><hr>
+##### Read 3M same keys, 256-byte key, 1KB value, Best Throughput (etcd 1K clients with 100 conns)
+
+- Google Cloud Compute Engine
+- 4 machines of 16 vCPUs + 60 GB Memory + 300 GB SSD (1 for client)
+- Ubuntu 17.10 (GNU/Linux kernel 4.13.0-25-generic)
+- `ulimit -n` is 120000
+- etcd v3.2.0 (Go 1.8.3)
+- etcd v3.3.0 (Go 1.9.2)
+
+
+```
++---------------------------------------+---------------------+---------------------+
+|                                       | etcd-v3.2.0-go1.8.3 | etcd-v3.3.0-go1.9.2 |
++---------------------------------------+---------------------+---------------------+
+|                         TOTAL-SECONDS |         19.7093 sec |         19.1632 sec |
+|                  TOTAL-REQUEST-NUMBER |           3,000,000 |           3,000,000 |
+|                        MAX-THROUGHPUT |     167,224 req/sec |     171,500 req/sec |
+|                        AVG-THROUGHPUT |     152,212 req/sec |     156,549 req/sec |
+|                        MIN-THROUGHPUT |       7,792 req/sec |      87,028 req/sec |
+|                       FASTEST-LATENCY |           0.5423 ms |           0.5970 ms |
+|                           AVG-LATENCY |           5.3364 ms |           4.8534 ms |
+|                       SLOWEST-LATENCY |         659.9911 ms |         215.0872 ms |
+|                           Latency p10 |         2.132814 ms |         2.028502 ms |
+|                           Latency p25 |         2.851045 ms |         2.705135 ms |
+|                           Latency p50 |         4.488098 ms |         4.167273 ms |
+|                           Latency p75 |         6.742433 ms |         6.396360 ms |
+|                           Latency p90 |         8.985732 ms |         8.496297 ms |
+|                           Latency p95 |        10.723795 ms |        10.039053 ms |
+|                           Latency p99 |        15.161416 ms |        13.638065 ms |
+|                         Latency p99.9 |        33.201151 ms |        20.599315 ms |
+|      SERVER-TOTAL-NETWORK-RX-DATA-SUM |              1.2 GB |              1.2 GB |
+|      SERVER-TOTAL-NETWORK-TX-DATA-SUM |              4.8 GB |              4.5 GB |
+|           CLIENT-TOTAL-NETWORK-RX-SUM |              4.7 GB |              4.4 GB |
+|           CLIENT-TOTAL-NETWORK-TX-SUM |              1.2 GB |              1.2 GB |
+|                  SERVER-MAX-CPU-USAGE |            824.00 % |            908.67 % |
+|               SERVER-MAX-MEMORY-USAGE |               50 MB |               54 MB |
+|                  CLIENT-MAX-CPU-USAGE |           1438.00 % |           1461.00 % |
+|               CLIENT-MAX-MEMORY-USAGE |              171 MB |              167 MB |
+|                    CLIENT-ERROR-COUNT |                   0 |                   0 |
+|  SERVER-AVG-READS-COMPLETED-DELTA-SUM |                   0 |                   0 |
+|    SERVER-AVG-SECTORS-READS-DELTA-SUM |                   0 |                   0 |
+| SERVER-AVG-WRITES-COMPLETED-DELTA-SUM |                  97 |                  30 |
+|  SERVER-AVG-SECTORS-WRITTEN-DELTA-SUM |               1,280 |                 376 |
+|           SERVER-AVG-DISK-SPACE-USAGE |               81 MB |               64 MB |
++---------------------------------------+---------------------+---------------------+
+```
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-LATENCY-MS.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-LATENCY-MS">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-LATENCY-MS-BY-KEY.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-LATENCY-MS-BY-KEY">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-THROUGHPUT.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-THROUGHPUT">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-VOLUNTARY-CTXT-SWITCHES.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-VOLUNTARY-CTXT-SWITCHES">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-NON-VOLUNTARY-CTXT-SWITCHES.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-NON-VOLUNTARY-CTXT-SWITCHES">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-CPU.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-CPU">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/MAX-CPU.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/MAX-CPU">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-VMRSS-MB.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-VMRSS-MB">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-VMRSS-MB-BY-KEY.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-VMRSS-MB-BY-KEY">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-READS-COMPLETED-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-READS-COMPLETED-DELTA">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-SECTORS-READ-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-SECTORS-READ-DELTA">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-WRITES-COMPLETED-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-WRITES-COMPLETED-DELTA">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-SECTORS-WRITTEN-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-SECTORS-WRITTEN-DELTA">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-READ-BYTES-NUM-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-READ-BYTES-NUM-DELTA">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-WRITE-BYTES-NUM-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-WRITE-BYTES-NUM-DELTA">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-RECEIVE-BYTES-NUM-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-RECEIVE-BYTES-NUM-DELTA">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-TRANSMIT-BYTES-NUM-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-TRANSMIT-BYTES-NUM-DELTA">
+
+
+
