@@ -309,79 +309,79 @@ etcd__v3_2 errors:
 ```
 
 
-<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-LATENCY-MS.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-LATENCY-MS">
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-LATENCY-MS.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-LATENCY-MS">
 
 
 
-<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-LATENCY-MS-BY-KEY.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-LATENCY-MS-BY-KEY">
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-LATENCY-MS-BY-KEY.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-LATENCY-MS-BY-KEY">
 
 
 
-<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS">
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS">
 
 
 
-<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-THROUGHPUT.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-THROUGHPUT">
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-THROUGHPUT.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-THROUGHPUT">
 
 
 
-<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-VOLUNTARY-CTXT-SWITCHES.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-VOLUNTARY-CTXT-SWITCHES">
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-VOLUNTARY-CTXT-SWITCHES.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-VOLUNTARY-CTXT-SWITCHES">
 
 
 
-<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-NON-VOLUNTARY-CTXT-SWITCHES.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-NON-VOLUNTARY-CTXT-SWITCHES">
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-NON-VOLUNTARY-CTXT-SWITCHES.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-NON-VOLUNTARY-CTXT-SWITCHES">
 
 
 
-<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-CPU.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-CPU">
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-CPU.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-CPU">
 
 
 
-<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/MAX-CPU.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/MAX-CPU">
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/read-3M-same-keys-best-throughput/MAX-CPU.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/MAX-CPU">
 
 
 
-<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-VMRSS-MB.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-VMRSS-MB">
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-VMRSS-MB.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-VMRSS-MB">
 
 
 
-<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-VMRSS-MB-BY-KEY.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-VMRSS-MB-BY-KEY">
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-VMRSS-MB-BY-KEY.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-VMRSS-MB-BY-KEY">
 
 
 
-<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS">
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS">
 
 
 
-<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-READS-COMPLETED-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-READS-COMPLETED-DELTA">
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-READS-COMPLETED-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-READS-COMPLETED-DELTA">
 
 
 
-<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-SECTORS-READ-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-SECTORS-READ-DELTA">
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-SECTORS-READ-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-SECTORS-READ-DELTA">
 
 
 
-<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-WRITES-COMPLETED-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-WRITES-COMPLETED-DELTA">
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-WRITES-COMPLETED-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-WRITES-COMPLETED-DELTA">
 
 
 
-<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-SECTORS-WRITTEN-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-SECTORS-WRITTEN-DELTA">
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-SECTORS-WRITTEN-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-SECTORS-WRITTEN-DELTA">
 
 
 
-<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-READ-BYTES-NUM-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-READ-BYTES-NUM-DELTA">
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-READ-BYTES-NUM-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-READ-BYTES-NUM-DELTA">
 
 
 
-<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-WRITE-BYTES-NUM-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-WRITE-BYTES-NUM-DELTA">
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-WRITE-BYTES-NUM-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-WRITE-BYTES-NUM-DELTA">
 
 
 
-<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-RECEIVE-BYTES-NUM-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-RECEIVE-BYTES-NUM-DELTA">
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-RECEIVE-BYTES-NUM-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-RECEIVE-BYTES-NUM-DELTA">
 
 
 
-<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd-read-3M-same-keys-best-throughput/AVG-TRANSMIT-BYTES-NUM-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-TRANSMIT-BYTES-NUM-DELTA">
+<img src="https://storage.googleapis.com/dbtester-results/2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-TRANSMIT-BYTES-NUM-DELTA.svg" alt="2018Q1-01-etcd/read-3M-same-keys-best-throughput/AVG-TRANSMIT-BYTES-NUM-DELTA">
 
 
 
