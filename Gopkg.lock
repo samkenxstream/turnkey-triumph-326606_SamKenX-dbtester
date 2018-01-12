@@ -45,7 +45,7 @@
     "pkg/report",
     "pkg/types"
   ]
-  revision = "2dfabfbef6ae5ac3553c7a14ee757ebccbeef538"
+  revision = "6178c450667c1ac804d364f9e7642bbee4a55824"
   source = "https://github.com/coreos/etcd"
 
 [[projects]]
@@ -395,6 +395,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "21abf25cf507cffab0266c5836fb8acc3cb14f96b0f3fba49e0c55b85fedf5e5"
+  inputs-digest = "67dabb882980ef9cf31a0c1c4cc352e722cc9d45da80bad7038d9476751edc1b"
   solver-name = "gps-cdcl"
   solver-version = 1

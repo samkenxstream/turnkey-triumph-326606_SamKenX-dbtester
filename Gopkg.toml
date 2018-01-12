@@ -6,7 +6,7 @@
 [[constraint]]
   name = "github.com/coreos/etcd"
   source = "https://github.com/coreos/etcd"
-  revision = "2dfabfbef6ae5ac3553c7a14ee757ebccbeef538"
+  revision = "6178c450667c1ac804d364f9e7642bbee4a55824"
 
 # v1.7.5
 [[constraint]]
