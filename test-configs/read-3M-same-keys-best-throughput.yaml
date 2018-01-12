@@ -78,7 +78,7 @@ datatbase_id_to_config_client_machine_agent_control:
       step4_upload_logs: true
 
   etcd__v3_3:
-    database_description: etcd v3.3.0 (Go 1.9.3)
+    database_description: etcd v3.3.0 (Go 1.9.2)
     peer_ips:
     - 10.138.0.2
     - 10.138.0.3
