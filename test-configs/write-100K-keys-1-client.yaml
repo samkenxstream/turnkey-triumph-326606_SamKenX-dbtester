@@ -251,77 +251,77 @@ analyze_readme:
 
   images:
   - title: 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-LATENCY-MS
-    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper-write-100K-keys-1-client/AVG-LATENCY-MS.svg
+    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-LATENCY-MS.svg
     type: remote
 
   - title: 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-LATENCY-MS-BY-KEY
-    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper-write-100K-keys-1-client/AVG-LATENCY-MS-BY-KEY.svg
+    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-LATENCY-MS-BY-KEY.svg
     type: remote
 
   - title: 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS
-    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper-write-100K-keys-1-client/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.svg
+    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.svg
     type: remote
 
   - title: 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-THROUGHPUT
-    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper-write-100K-keys-1-client/AVG-THROUGHPUT.svg
+    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-THROUGHPUT.svg
     type: remote
 
   - title: 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-VOLUNTARY-CTXT-SWITCHES
-    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper-write-100K-keys-1-client/AVG-VOLUNTARY-CTXT-SWITCHES.svg
+    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-VOLUNTARY-CTXT-SWITCHES.svg
     type: remote
 
   - title: 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-NON-VOLUNTARY-CTXT-SWITCHES
-    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper-write-100K-keys-1-client/AVG-NON-VOLUNTARY-CTXT-SWITCHES.svg
+    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-NON-VOLUNTARY-CTXT-SWITCHES.svg
     type: remote
 
   - title: 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-CPU
-    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper-write-100K-keys-1-client/AVG-CPU.svg
+    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-CPU.svg
     type: remote
 
   - title: 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/MAX-CPU
-    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper-write-100K-keys-1-client/MAX-CPU.svg
+    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/MAX-CPU.svg
     type: remote
 
   - title: 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-VMRSS-MB
-    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper-write-100K-keys-1-client/AVG-VMRSS-MB.svg
+    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-VMRSS-MB.svg
     type: remote
 
   - title: 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-VMRSS-MB-BY-KEY
-    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper-write-100K-keys-1-client/AVG-VMRSS-MB-BY-KEY.svg
+    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-VMRSS-MB-BY-KEY.svg
     type: remote
 
   - title: 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS
-    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper-write-100K-keys-1-client/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.svg
+    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.svg
     type: remote
 
   - title: 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-READS-COMPLETED-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper-write-100K-keys-1-client/AVG-READS-COMPLETED-DELTA.svg
+    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-READS-COMPLETED-DELTA.svg
     type: remote
 
   - title: 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-SECTORS-READ-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper-write-100K-keys-1-client/AVG-SECTORS-READ-DELTA.svg
+    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-SECTORS-READ-DELTA.svg
     type: remote
 
   - title: 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-WRITES-COMPLETED-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper-write-100K-keys-1-client/AVG-WRITES-COMPLETED-DELTA.svg
+    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-WRITES-COMPLETED-DELTA.svg
     type: remote
 
   - title: 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-SECTORS-WRITTEN-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper-write-100K-keys-1-client/AVG-SECTORS-WRITTEN-DELTA.svg
+    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-SECTORS-WRITTEN-DELTA.svg
     type: remote
 
   - title: 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-READ-BYTES-NUM-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper-write-100K-keys-1-client/AVG-READ-BYTES-NUM-DELTA.svg
+    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-READ-BYTES-NUM-DELTA.svg
     type: remote
 
   - title: 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-WRITE-BYTES-NUM-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper-write-100K-keys-1-client/AVG-WRITE-BYTES-NUM-DELTA.svg
+    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-WRITE-BYTES-NUM-DELTA.svg
     type: remote
 
   - title: 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-RECEIVE-BYTES-NUM-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper-write-100K-keys-1-client/AVG-RECEIVE-BYTES-NUM-DELTA.svg
+    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-RECEIVE-BYTES-NUM-DELTA.svg
     type: remote
 
   - title: 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-TRANSMIT-BYTES-NUM-DELTA
-    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper-write-100K-keys-1-client/AVG-TRANSMIT-BYTES-NUM-DELTA.svg
+    path: https://storage.googleapis.com/dbtester-results/2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/AVG-TRANSMIT-BYTES-NUM-DELTA.svg
     type: remote
