@@ -35,17 +35,17 @@
 [[projects]]
   name = "github.com/coreos/etcd"
   packages = [
-    "auth/authpb",
     "clientv3",
     "etcdserver/api/v3rpc/rpctypes",
     "etcdserver/etcdserverpb",
-    "mvcc/mvccpb",
+    "internal/auth/authpb",
+    "internal/mvcc/mvccpb",
     "pkg/cpuutil",
     "pkg/netutil",
     "pkg/report",
     "pkg/types"
   ]
-  revision = "6178c450667c1ac804d364f9e7642bbee4a55824"
+  revision = "1d99d3886f6cb5fb7ef13100c9587cc01820d38e"
   source = "https://github.com/coreos/etcd"
 
 [[projects]]
@@ -395,6 +395,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "67dabb882980ef9cf31a0c1c4cc352e722cc9d45da80bad7038d9476751edc1b"
+  inputs-digest = "5f3fd3c1bb42b7e13f03ac35628c6743379babd27ebf047e5f1124fcc7f25125"
   solver-name = "gps-cdcl"
   solver-version = 1
