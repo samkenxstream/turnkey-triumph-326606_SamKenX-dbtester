@@ -134,7 +134,7 @@ sudo rm -rf ${HOME}/*
 # GO_VERSION=1.8.3
 
 # etcd v3.3.0
-GO_VERSION=1.9.2
+GO_VERSION=1.9.3
 
 sudo rm -f /usr/local/go/bin/go && sudo rm -rf /usr/local/go && sudo rm -f /bin/go
 
@@ -322,9 +322,9 @@ curl -X PURGE https://camo.githubusercontent.com/a6e057c6a9cff6a8d49f4c5b83a2b47
 plotly
 
 etcd v3.2.0 (Go 1.8.3)
-etcd v3.3.0 (Go 1.9.2)
+etcd v3.3.0 (Go 1.9.3)
 Zookeeper r3.5.3-beta (Java 8)
-Consul v1.0.2 (Go 1.9.2)
+Consul v1.0.2 (Go 1.9.3)
 
 Graph BoxPlot
 Traces

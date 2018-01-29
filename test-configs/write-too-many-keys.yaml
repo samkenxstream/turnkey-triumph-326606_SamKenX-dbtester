@@ -5,7 +5,7 @@ test_description: |
   - Ubuntu 17.10 (GNU/Linux kernel 4.13.0-25-generic)
   - `ulimit -n` is 120000
   - etcd v3.2.0 (Go 1.8.3)
-  - etcd v3.3.0 (Go 1.9.2)
+  - etcd v3.3.0 (Go 1.9.3)
 
 # common control options for all client machines
 config_client_machine_initial:
@@ -71,7 +71,7 @@ datatbase_id_to_config_client_machine_agent_control:
       step4_upload_logs: true
 
   etcd__v3_3:
-    database_description: etcd v3.3.0 (Go 1.9.2)
+    database_description: etcd v3.3.0 (Go 1.9.3)
     peer_ips:
     - 10.138.0.2
     - 10.138.0.3
@@ -132,7 +132,7 @@ datatbase_id_to_config_analyze_machine_initial:
 
   etcd__v3_3:
     # if not empty, all test data paths are prefixed
-    path_prefix: 2018Q1-01-etcd/write-too-many-keys/etcd-v3.3.0-go1.9.2
+    path_prefix: 2018Q1-01-etcd/write-too-many-keys/etcd-v3.3.0-go1.9.3
     client_system_metrics_interpolated_path: client-system-metrics-interpolated.csv
     client_latency_throughput_timeseries_path: client-latency-throughput-timeseries.csv
     client_latency_distribution_all_path: client-latency-distribution-all.csv

@@ -4,14 +4,14 @@ test_description: |
   - 4 machines of 16 vCPUs + 60 GB Memory + 300 GB SSD (1 for client)
   - Ubuntu 17.10 (GNU/Linux kernel 4.13.0-25-generic)
   - `ulimit -n` is 120000
-  - etcd v3.3.0 (Go 1.9.2)
+  - etcd v3.3.0 (Go 1.9.3)
   - Zookeeper r3.5.3-beta
     - Java 8
     - javac 1.8.0_151
     - Java(TM) SE Runtime Environment (build 1.8.0_151-b12)
     - Java HotSpot(TM) 64-Bit Server VM (build 25.151-b12, mixed mode)
     - `/usr/bin/java -Djute.maxbuffer=33554432 -Xms50G -Xmx50G`
-  - Consul v1.0.2 (Go 1.9.2)
+  - Consul v1.0.2 (Go 1.9.3)
 
 # common control options for all client machines
 config_client_machine_initial:
@@ -38,7 +38,7 @@ all_database_id_list: [etcd__v3_3, zookeeper__r3_5_3_beta, consul__v1_0_2]
 
 datatbase_id_to_config_client_machine_agent_control:
   etcd__v3_3:
-    database_description: etcd v3.3.0 (Go 1.9.2)
+    database_description: etcd v3.3.0 (Go 1.9.3)
     peer_ips:
     - 10.138.0.2
     - 10.138.0.3
@@ -142,7 +142,7 @@ datatbase_id_to_config_client_machine_agent_control:
       step4_upload_logs: true
 
   consul__v1_0_2:
-    database_description: Consul v1.0.2 (Go 1.9.2)
+    database_description: Consul v1.0.2 (Go 1.9.3)
     peer_ips:
     - 10.138.0.2
     - 10.138.0.3
@@ -178,7 +178,7 @@ datatbase_id_to_config_client_machine_agent_control:
 datatbase_id_to_config_analyze_machine_initial:
   etcd__v3_3:
     # if not empty, all test data paths are prefixed
-    path_prefix: 2018Q1-02-etcd-zookeeper-consul/write-1M-keys-best-throughput/etcd-v3.3.0-go1.9.2
+    path_prefix: 2018Q1-02-etcd-zookeeper-consul/write-1M-keys-best-throughput/etcd-v3.3.0-go1.9.3
     client_system_metrics_interpolated_path: client-system-metrics-interpolated.csv
     client_latency_throughput_timeseries_path: client-latency-throughput-timeseries.csv
     client_latency_distribution_all_path: client-latency-distribution-all.csv
@@ -216,7 +216,7 @@ datatbase_id_to_config_analyze_machine_initial:
 
   consul__v1_0_2:
     # if not empty, all test data paths are prefixed
-    path_prefix: 2018Q1-02-etcd-zookeeper-consul/write-1M-keys-best-throughput/consul-v1.0.2-go1.9.2
+    path_prefix: 2018Q1-02-etcd-zookeeper-consul/write-1M-keys-best-throughput/consul-v1.0.2-go1.9.3
     client_system_metrics_interpolated_path: client-system-metrics-interpolated.csv
     client_latency_throughput_timeseries_path: client-latency-throughput-timeseries.csv
     client_latency_distribution_all_path: client-latency-distribution-all.csv
