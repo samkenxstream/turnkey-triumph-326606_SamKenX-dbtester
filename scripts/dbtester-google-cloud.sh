@@ -297,9 +297,9 @@ go install -v ./cmd/dbtester
 
 gsutil -m cp -R gs://dbtester-results/2018Q1-04-etcd-zookeeper .
 
-cp ./test-configs/write-100K-keys-1-client.yaml ./2018Q1-04-etcd-zookeeper/read-3M-same-keys-best-throughput/
+cp ./test-configs/write-100K-keys-1-client.yaml ./2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/
 
-dbtester analyze --config 2018Q1-04-etcd-zookeeper/read-3M-same-keys-best-throughput/write-100K-keys-1-client.yaml
+dbtester analyze --config 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/write-100K-keys-1-client.yaml
 
 gsutil -m cp -R 2018Q1-04-etcd-zookeeper gs://dbtester-results/
 gsutil -m acl ch -u allUsers:R -r gs://dbtester-results/2018Q1-04-etcd-zookeeper
