@@ -164,7 +164,7 @@ GIT_PATH=github.com/coreos/etcd
 
 USER_NAME=coreos
 # BRANCH_NAME=release-3.2
-BRANCH_NAME=release-3.3
+BRANCH_NAME=master
 
 rm -rf ${GOPATH}/src/${GIT_PATH}
 mkdir -p ${GOPATH}/src/github.com/coreos
@@ -249,7 +249,7 @@ sudo mv /tmp/gcp-key-etcd-development.json /etc/gcp-key-etcd-development.json
 head -10 /etc/gcp-key-etcd-development.json
 
 # copy the tester configuration from git repository
-cp ${HOME}/go/src/github.com/coreos/dbtester/test-configs/read-3M-same-keys-best-throughput-etcd.yaml ${HOME}/config.yaml
+cp ${HOME}/go/src/github.com/coreos/dbtester/test-configs/write-100K-keys-1-client.yaml ${HOME}/config.yaml
 cat ${HOME}/config.yaml
 
 
@@ -295,14 +295,14 @@ cd ${HOME}/go/src/github.com/coreos/dbtester
 go install -v ./cmd/dbtester
 
 
-gsutil -m cp -R gs://dbtester-results/2018Q1-01-etcd .
+gsutil -m cp -R gs://dbtester-results/2018Q1-04-etcd-zookeeper .
 
-cp ./test-configs/read-3M-same-keys-best-throughput-etcd.yaml ./2018Q1-01-etcd/read-3M-same-keys-best-throughput/
+cp ./test-configs/write-100K-keys-1-client.yaml ./2018Q1-04-etcd-zookeeper/read-3M-same-keys-best-throughput/
 
-dbtester analyze --config 2018Q1-01-etcd/read-3M-same-keys-best-throughput/read-3M-same-keys-best-throughput-etcd.yaml
+dbtester analyze --config 2018Q1-04-etcd-zookeeper/read-3M-same-keys-best-throughput/write-100K-keys-1-client.yaml
 
-gsutil -m cp -R 2018Q1-01-etcd gs://dbtester-results/
-gsutil -m acl ch -u allUsers:R -r gs://dbtester-results/2018Q1-01-etcd
+gsutil -m cp -R 2018Q1-04-etcd-zookeeper gs://dbtester-results/
+gsutil -m acl ch -u allUsers:R -r gs://dbtester-results/2018Q1-04-etcd-zookeeper
 ##################################################
 
 
