@@ -156,11 +156,11 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 		if v.DatabasePortToConnect == 0 {
 			v.DatabasePortToConnect = defaultEtcdClientPort
 		}
-		if v.Flag_Etcd_Tip.SnapshotCount == 0 {
-			v.Flag_Etcd_Tip.SnapshotCount = defaultEtcdSnapshotCount
+		if v.Flag_Etcd_Other.SnapshotCount == 0 {
+			v.Flag_Etcd_Other.SnapshotCount = defaultEtcdSnapshotCount
 		}
-		if v.Flag_Etcd_Tip.QuotaSizeBytes == 0 {
-			v.Flag_Etcd_Tip.QuotaSizeBytes = defaultEtcdQuotaSizeBytes
+		if v.Flag_Etcd_Other.QuotaSizeBytes == 0 {
+			v.Flag_Etcd_Other.QuotaSizeBytes = defaultEtcdQuotaSizeBytes
 		}
 		cfg.DatabaseIDToConfigClientMachineAgentControl[dbtesterpb.DatabaseID_etcd__other.String()] = v
 	}
@@ -316,13 +316,13 @@ func (cfg *Config) ToRequest(databaseID string, op dbtesterpb.Operation, idx int
 
 	switch req.DatabaseID {
 	case dbtesterpb.DatabaseID_etcd__other:
-		if gcfg.Flag_Etcd_Tip.QuotaSizeBytes > maxEtcdQuotaSize {
-			err = fmt.Errorf("maximum etcd quota is 8 GB (%d), got %d", maxEtcdQuotaSize, gcfg.Flag_Etcd_Tip.QuotaSizeBytes)
+		if gcfg.Flag_Etcd_Other.QuotaSizeBytes > maxEtcdQuotaSize {
+			err = fmt.Errorf("maximum etcd quota is 8 GB (%d), got %d", maxEtcdQuotaSize, gcfg.Flag_Etcd_Other.QuotaSizeBytes)
 			return
 		}
 		req.Flag_Etcd_Other = &dbtesterpb.Flag_Etcd_Other{
-			SnapshotCount:  gcfg.Flag_Etcd_Tip.SnapshotCount,
-			QuotaSizeBytes: gcfg.Flag_Etcd_Tip.QuotaSizeBytes,
+			SnapshotCount:  gcfg.Flag_Etcd_Other.SnapshotCount,
+			QuotaSizeBytes: gcfg.Flag_Etcd_Other.QuotaSizeBytes,
 		}
 	case dbtesterpb.DatabaseID_etcd__tip:
 		if gcfg.Flag_Etcd_Tip.QuotaSizeBytes > maxEtcdQuotaSize {

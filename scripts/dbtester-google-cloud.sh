@@ -467,7 +467,7 @@ sudo ntpdate time.google.com
 sudo service ntp start
 
 nohup dbtester control \
-  --database-id etcd__v3_3 \
+  --database-id etcd__v3_2 \
   --config config.yaml > ${HOME}/client-control.log 2>&1 &
 
 sleep 7s
