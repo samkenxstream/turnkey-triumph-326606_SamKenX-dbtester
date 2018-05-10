@@ -17,7 +17,7 @@ cd ${GOPATH}/src/${GIT_PATH}
 
 git reset --hard HEAD
 
-./build
+make build
 
 ${GOPATH}/src/${GIT_PATH}/bin/etcd --version
 ${GOPATH}/src/${GIT_PATH}/bin/etcdctl --version

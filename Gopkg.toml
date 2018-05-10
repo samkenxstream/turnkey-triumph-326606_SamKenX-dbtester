@@ -45,7 +45,7 @@
 [[constraint]]
   name = "github.com/dustin/go-humanize"
   source = "https://github.com/dustin/go-humanize"
-  revision = "bb3d318650d48840a39aa21a027c6630e198e626"
+  revision = "02af3965c54e8cacf948b97fef38925c4120652c"
 
 [[constraint]]
   name = "github.com/spf13/cobra"
@@ -55,7 +55,7 @@
 [[constraint]]
   name = "github.com/olekukonko/tablewriter"
   source = "https://github.com/olekukonko/tablewriter"
-  revision = "96aac992fc8b1a4c83841a6c3e7178d20d989625"
+  revision = "d4647c9c7a84d847478d890b816b7d8b62b0b279"
 
 [[constraint]]
   name = "github.com/cheggaaa/pb"
@@ -84,13 +84,13 @@
 [[constraint]]
   name = "github.com/gyuho/linux-inspect"
   source = "https://github.com/gyuho/linux-inspect"
-  revision = "187ae4baf4c1bed94dfeb338dfc1137cd6dfadc3"
+  revision = "997067d2074a699295cf069e19e745e14db9bcf3"
 
 
 [[constraint]]
   name = "gonum.org/v1/plot"
   source = "https://github.com/gonum/plot"
-  revision = "feab214a240f4312b98ab52baf662b55ff1ee377"
+  revision = "8e90bd1840aacc281e54298e39ac0ae2be794419"
 
 
 [[constraint]]
