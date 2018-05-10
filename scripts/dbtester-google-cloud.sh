@@ -256,6 +256,21 @@ gcloud compute instances list
 10.138.0.3
 10.138.0.4
 10.138.0.5
+
+10.138.0.6
+10.138.0.7
+10.138.0.8
+10.138.0.9
+
+10.138.0.10
+10.138.0.11
+10.138.0.12
+10.138.0.13
+
+10.138.0.14
+10.138.0.15
+10.138.0.16
+10.138.0.17
 COMMENT
 
 <<COMMENT
@@ -280,8 +295,8 @@ sudo apt install -y \
 
 sudo apt upgrade -y
 
-sudo apt autoremove
-sudo apt autoclean
+sudo apt autoremove -y
+sudo apt autoclean -y
 
 sudo service ntp stop
 sudo ntpdate time.google.com
@@ -311,14 +326,12 @@ sudo service ntp start
 
 
 ##################################################
-sudo rm -rf ${HOME}/*
-
-# etcd v3.2.0
-# GO_VERSION=1.8.3
-
-# etcd v3.3.0
+GO_VERSION=1.8.7
 GO_VERSION=1.9.6
+GO_VERSION=1.10.2
 
+
+sudo rm -rf ${HOME}/*
 sudo rm -f /usr/local/go/bin/go && sudo rm -rf /usr/local/go && sudo rm -f /bin/go
 
 GOOGLE_URL=https://storage.googleapis.com/golang
@@ -343,17 +356,20 @@ go version
 
 
 ##################################################
-GIT_PATH=github.com/coreos/etcd
+USER_NAME=coreos
+BRANCH_NAME=release-3.2
 
 USER_NAME=coreos
-
-BRANCH_NAME=release-3.2
 BRANCH_NAME=release-3.3
+
+USER_NAME=coreos
 BRANCH_NAME=master
 
 USER_NAME=gyuho
 BRANCH_NAME=new-balancer-april-2018
 
+
+GIT_PATH=github.com/coreos/etcd
 rm -rf ${GOPATH}/src/${GIT_PATH}
 mkdir -p ${GOPATH}/src/github.com/coreos
 
@@ -390,6 +406,11 @@ ETCDCTL_API=3 etcdctl version
 ##################################################
 USER_NAME=coreos
 BRANCH_NAME=master
+
+USER_NAME=gyuho
+BRANCH_NAME=new-balancer-april-2018
+
+
 cd ${HOME}
 rm -rf ${HOME}/go/src/github.com/coreos/dbtester
 git clone https://github.com/$USER_NAME/dbtester --branch $BRANCH_NAME ${HOME}/go/src/github.com/coreos/dbtester
@@ -505,6 +526,7 @@ gsutil -m acl ch -u allUsers:R -r gs://dbtester-results/2018Q2-01-etcd-client-ba
 ########################
 etcd v3.2.0 (1,000 clients)
 etcd v3.3.0 (1,000 clients)
+
 Zookeeper r3.5.3-beta (500 clients)
 Consul v1.0.2 (500 clients)
 ########################

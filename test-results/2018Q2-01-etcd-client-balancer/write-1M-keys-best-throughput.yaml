@@ -2,7 +2,7 @@ test_title: Write 1M keys, 256-byte key, 1KB value, Best Throughput (etcd 1K cli
 test_description: |
   - Google Cloud Compute Engine
   - 4 machines of 16 vCPUs + 60 GB Memory + 300 GB SSD (1 for client)
-  - Ubuntu 17.10 (GNU/Linux kernel 4.13.0-25-generic)
+  - Ubuntu 17.10 (GNU/Linux kernel 4.13.0-41-generic)
   - `ulimit -n` is 120000
   - etcd v3.2.20 (Go 1.8.7)
   - etcd v3.3.5 (Go 1.9.6)
@@ -51,7 +51,6 @@ datatbase_id_to_config_client_machine_agent_control:
     benchmark_options:
       type: write
       request_number: 1000000
-      # connection_number: 1000 # for best throughput
       connection_number: 100 # for best throughput
       client_number: 1000 # for best throughput
       # if specified, overwrite 'connection_number', 'connection_number'
@@ -91,7 +90,6 @@ datatbase_id_to_config_client_machine_agent_control:
     benchmark_options:
       type: write
       request_number: 1000000
-      # connection_number: 1000 # for best throughput
       connection_number: 100 # for best throughput
       client_number: 1000 # for best throughput
       # if specified, overwrite 'connection_number', 'connection_number'
@@ -131,7 +129,6 @@ datatbase_id_to_config_client_machine_agent_control:
     benchmark_options:
       type: write
       request_number: 1000000
-      # connection_number: 1000 # for best throughput
       connection_number: 100 # for best throughput
       client_number: 1000 # for best throughput
       # if specified, overwrite 'connection_number', 'connection_number'
@@ -171,7 +168,6 @@ datatbase_id_to_config_client_machine_agent_control:
     benchmark_options:
       type: write
       request_number: 1000000
-      # connection_number: 1000 # for best throughput
       connection_number: 100 # for best throughput
       client_number: 1000 # for best throughput
       # if specified, overwrite 'connection_number', 'connection_number'
