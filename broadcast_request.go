@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/coreos/dbtester/dbtesterpb"
+
 	"google.golang.org/grpc"
 )
 

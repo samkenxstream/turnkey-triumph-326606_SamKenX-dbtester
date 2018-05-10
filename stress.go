@@ -174,7 +174,7 @@ func (cfg *Config) Stress(databaseID string) error {
 		plog.Println("checking total keys on", gcfg.DatabaseEndpoints)
 		var totalKeysFunc func([]string) map[string]int64
 		switch gcfg.DatabaseID {
-		case "etcd__tip", "etcd__v3_2", "etcd__v3_3":
+		case "etcd__other", "etcd__tip", "etcd__v3_2", "etcd__v3_3":
 			totalKeysFunc = getTotalKeysEtcdv3
 		case "zookeeper__r3_5_3_beta", "zetcd__beta":
 			totalKeysFunc = getTotalKeysZk
@@ -192,7 +192,7 @@ func (cfg *Config) Stress(databaseID string) error {
 		key, value := sameKey(gcfg.ConfigClientMachineBenchmarkOptions.KeySizeBytes), vals.strings[0]
 
 		switch gcfg.DatabaseID {
-		case "etcd__tip", "etcd__v3_2", "etcd__v3_3":
+		case "etcd__other", "etcd__tip", "etcd__v3_2", "etcd__v3_3":
 			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
 			var err error
 			for i := 0; i < 7; i++ {
@@ -263,7 +263,7 @@ func (cfg *Config) Stress(databaseID string) error {
 		plog.Infof("writing key for read-oneshot [key: %q | database: %q]", key, gcfg.DatabaseID)
 		var err error
 		switch gcfg.DatabaseID {
-		case "etcd__tip", "etcd__v3_2", "etcd__v3_3":
+		case "etcd__other", "etcd__tip", "etcd__v3_2", "etcd__v3_3":
 			clients := mustCreateClientsEtcdv3(gcfg.DatabaseEndpoints, etcdv3ClientCfg{
 				totalConns:   1,
 				totalClients: 1,
@@ -300,7 +300,7 @@ func (cfg *Config) Stress(databaseID string) error {
 func newReadHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) (rhs []ReqHandler, done func()) {
 	rhs = make([]ReqHandler, gcfg.ConfigClientMachineBenchmarkOptions.ClientNumber)
 	switch gcfg.DatabaseID {
-	case "etcd__tip", "etcd__v3_2", "etcd__v3_3":
+	case "etcd__other", "etcd__tip", "etcd__v3_2", "etcd__v3_3":
 		clients := mustCreateClientsEtcdv3(gcfg.DatabaseEndpoints, etcdv3ClientCfg{
 			totalConns:   gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber,
 			totalClients: gcfg.ConfigClientMachineBenchmarkOptions.ClientNumber,
@@ -337,7 +337,7 @@ func newReadHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) (rhs []Req
 func newWriteHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) (rhs []ReqHandler, done func()) {
 	rhs = make([]ReqHandler, gcfg.ConfigClientMachineBenchmarkOptions.ClientNumber)
 	switch gcfg.DatabaseID {
-	case "etcd__tip", "etcd__v3_2", "etcd__v3_3":
+	case "etcd__other", "etcd__tip", "etcd__v3_2", "etcd__v3_3":
 		etcdClients := mustCreateClientsEtcdv3(gcfg.DatabaseEndpoints, etcdv3ClientCfg{
 			totalConns:   gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber,
 			totalClients: gcfg.ConfigClientMachineBenchmarkOptions.ClientNumber,
@@ -407,7 +407,7 @@ func newWriteHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) (rhs []Re
 func newReadOneshotHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) []ReqHandler {
 	rhs := make([]ReqHandler, gcfg.ConfigClientMachineBenchmarkOptions.ClientNumber)
 	switch gcfg.DatabaseID {
-	case "etcd__tip", "etcd__v3_2", "etcd__v3_3":
+	case "etcd__other", "etcd__tip", "etcd__v3_2", "etcd__v3_3":
 		for i := range rhs {
 			rhs[i] = func(ctx context.Context, req *request) error {
 				conns := mustCreateClientsEtcdv3(gcfg.DatabaseEndpoints, etcdv3ClientCfg{
@@ -456,7 +456,7 @@ func generateReads(gcfg dbtesterpb.ConfigClientMachineAgentControl, key string, 
 		}
 
 		switch gcfg.DatabaseID {
-		case "etcd__tip", "etcd__v3_2", "etcd__v3_3":
+		case "etcd__other", "etcd__tip", "etcd__v3_2", "etcd__v3_3":
 			opts := []clientv3.OpOption{clientv3.WithRange("")}
 			if gcfg.ConfigClientMachineBenchmarkOptions.StaleRead {
 				opts = append(opts, clientv3.WithSerializable())
@@ -511,7 +511,7 @@ func generateWrites(gcfg dbtesterpb.ConfigClientMachineAgentControl, startIdx in
 		}
 
 		switch gcfg.DatabaseID {
-		case "etcd__tip", "etcd__v3_2", "etcd__v3_3":
+		case "etcd__other", "etcd__tip", "etcd__v3_2", "etcd__v3_3":
 			inflightReqs <- request{etcdv3Op: clientv3.OpPut(k, vs)}
 		case "zookeeper__r3_5_3_beta", "zetcd__beta":
 			inflightReqs <- request{zkOp: zkOp{key: "/" + k, value: v}}
