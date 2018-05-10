@@ -6,6 +6,8 @@ test_description: |
   - `ulimit -n` is 120000
   - etcd v3.2.20 (Go 1.8.7)
   - etcd v3.3.5 (Go 1.9.6)
+  - etcd v3.4 67b1ff672 (Go 1.10.2)
+  - etcd v3.4 new balancer (Go 1.10.2)
 
 # common control options for all client machines
 config_client_machine_initial:
@@ -28,7 +30,7 @@ config_client_machine_initial:
   google_cloud_storage_bucket_name: dbtester-results
   google_cloud_storage_sub_directory: 2018Q2-01-etcd-client-balancer/write-1M-keys-best-throughput
 
-all_database_id_list: [etcd__v3_2, etcd__v3_3]
+all_database_id_list: [etcd__v3_2, etcd__v3_3, etcd__tip, etcd__other]
 
 datatbase_id_to_config_client_machine_agent_control:
   etcd__v3_2:
@@ -40,7 +42,7 @@ datatbase_id_to_config_client_machine_agent_control:
     database_port_to_connect: 2379
     agent_port_to_connect: 3500
 
-    etcd__v3_3:
+    etcd__v3_2:
       # --snapshot-count
       snap_count: 100000
       # --quota-backend-bytes; 8 GB
@@ -111,6 +113,86 @@ datatbase_id_to_config_client_machine_agent_control:
       step3_stop_database: true
       step4_upload_logs: true
 
+  etcd__tip:
+    database_description: etcd v3.4-67b1ff672 (Go 1.10.2)
+    peer_ips:
+    - 10.138.0.2
+    - 10.138.0.3
+    - 10.138.0.4
+    database_port_to_connect: 2379
+    agent_port_to_connect: 3500
+
+    etcd__tip:
+      # --snapshot-count
+      snap_count: 100000
+      # --quota-backend-bytes; 8 GB
+      quota_size_bytes: 8000000000
+
+    benchmark_options:
+      type: write
+      request_number: 1000000
+      # connection_number: 1000 # for best throughput
+      connection_number: 100 # for best throughput
+      client_number: 1000 # for best throughput
+      # if specified, overwrite 'connection_number', 'connection_number'
+      connection_client_numbers: []
+
+      # 0, to not rate limit
+      rate_limit_requests_per_second: 0
+
+      # for 'write', 'read'
+      same_key: false
+      key_size_bytes: 256
+      value_size_bytes: 1024
+
+      stale_read: false
+
+    benchmark_steps:
+      step1_start_database: true
+      step2_stress_database: true
+      step3_stop_database: true
+      step4_upload_logs: true
+
+  etcd__other:
+    database_description: etcd v3.4-new-balancer (Go 1.10.2)
+    peer_ips:
+    - 10.138.0.2
+    - 10.138.0.3
+    - 10.138.0.4
+    database_port_to_connect: 2379
+    agent_port_to_connect: 3500
+
+    etcd__other:
+      # --snapshot-count
+      snap_count: 100000
+      # --quota-backend-bytes; 8 GB
+      quota_size_bytes: 8000000000
+
+    benchmark_options:
+      type: write
+      request_number: 1000000
+      # connection_number: 1000 # for best throughput
+      connection_number: 100 # for best throughput
+      client_number: 1000 # for best throughput
+      # if specified, overwrite 'connection_number', 'connection_number'
+      connection_client_numbers: []
+
+      # 0, to not rate limit
+      rate_limit_requests_per_second: 0
+
+      # for 'write', 'read'
+      same_key: false
+      key_size_bytes: 256
+      value_size_bytes: 1024
+
+      stale_read: false
+
+    benchmark_steps:
+      step1_start_database: true
+      step2_stress_database: true
+      step3_stop_database: true
+      step4_upload_logs: true
+
 
 datatbase_id_to_config_analyze_machine_initial:
   etcd__v3_2:
@@ -135,6 +217,44 @@ datatbase_id_to_config_analyze_machine_initial:
   etcd__v3_3:
     # if not empty, all test data paths are prefixed
     path_prefix: 2018Q2-01-etcd-client-balancer/write-1M-keys-best-throughput/etcd-v3.3.5-go1.9.6
+    client_system_metrics_interpolated_path: client-system-metrics-interpolated.csv
+    client_latency_throughput_timeseries_path: client-latency-throughput-timeseries.csv
+    client_latency_distribution_all_path: client-latency-distribution-all.csv
+    client_latency_distribution_percentile_path: client-latency-distribution-percentile.csv
+    client_latency_distribution_summary_path: client-latency-distribution-summary.csv
+    client_latency_by_key_number_path: client-latency-by-key-number.csv
+    server_disk_space_usage_summary_path: server-disk-space-usage-summary.csv
+    server_memory_by_key_number_path: server-memory-by-key-number.csv
+    server_read_bytes_delta_by_key_number_path: server-read-bytes-delta-by-key-number.csv
+    server_write_bytes_delta_by_key_number_path: server-write-bytes-delta-by-key-number.csv
+    server_system_metrics_interpolated_path_list:
+    - 1-server-system-metrics-interpolated.csv
+    - 2-server-system-metrics-interpolated.csv
+    - 3-server-system-metrics-interpolated.csv
+    all_aggregated_output_path: all-aggregated.csv
+
+  etcd__tip:
+    # if not empty, all test data paths are prefixed
+    path_prefix: 2018Q2-01-etcd-client-balancer/write-1M-keys-best-throughput/etcd-v3.4-67b1ff672-go1.10.2
+    client_system_metrics_interpolated_path: client-system-metrics-interpolated.csv
+    client_latency_throughput_timeseries_path: client-latency-throughput-timeseries.csv
+    client_latency_distribution_all_path: client-latency-distribution-all.csv
+    client_latency_distribution_percentile_path: client-latency-distribution-percentile.csv
+    client_latency_distribution_summary_path: client-latency-distribution-summary.csv
+    client_latency_by_key_number_path: client-latency-by-key-number.csv
+    server_disk_space_usage_summary_path: server-disk-space-usage-summary.csv
+    server_memory_by_key_number_path: server-memory-by-key-number.csv
+    server_read_bytes_delta_by_key_number_path: server-read-bytes-delta-by-key-number.csv
+    server_write_bytes_delta_by_key_number_path: server-write-bytes-delta-by-key-number.csv
+    server_system_metrics_interpolated_path_list:
+    - 1-server-system-metrics-interpolated.csv
+    - 2-server-system-metrics-interpolated.csv
+    - 3-server-system-metrics-interpolated.csv
+    all_aggregated_output_path: all-aggregated.csv
+
+  etcd__other:
+    # if not empty, all test data paths are prefixed
+    path_prefix: 2018Q2-01-etcd-client-balancer/write-1M-keys-best-throughput/etcd-v3.4-new-balancer-go1.10.2
     client_system_metrics_interpolated_path: client-system-metrics-interpolated.csv
     client_latency_throughput_timeseries_path: client-latency-throughput-timeseries.csv
     client_latency_distribution_all_path: client-latency-distribution-all.csv
