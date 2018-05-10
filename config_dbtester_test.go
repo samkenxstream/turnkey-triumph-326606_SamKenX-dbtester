@@ -32,13 +32,13 @@ func TestConfig(t *testing.T) {
 - 4 machines of 16 vCPUs + 60 GB Memory + 300 GB SSD (1 for client)
 - Ubuntu 16.10
 - etcd tip (Go 1.8.0)
-- Zookeeper r3.5.2-alpha
+- Zookeeper r3.5.3-beta
   - Java 8
   - javac 1.8.0_121
   - Java(TM) SE Runtime Environment (build 1.8.0_121-b13)
   - Java HotSpot(TM) 64-Bit Server VM (build 25.121-b13, mixed mode)
   - ` + "`/usr/bin/java -Djute.maxbuffer=33554432 -Xms50G -Xmx50G`" + `
-- Consul v0.7.5 (Go 1.8.0)
+- Consul v1.0.2 (Go 1.8.0)
 `,
 		ConfigClientMachineInitial: dbtesterpb.ConfigClientMachineInitial{
 			PathPrefix:                              "/home/gyuho",
@@ -57,7 +57,7 @@ func TestConfig(t *testing.T) {
 			GoogleCloudStorageBucketName:            "dbtester-results",
 			GoogleCloudStorageSubDirectory:          "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable",
 		},
-		AllDatabaseIDList: []string{"etcd__tip", "zookeeper__r3_5_2_alpha", "consul__v0_7_5"},
+		AllDatabaseIDList: []string{"etcd__tip", "zookeeper__r3_5_3_beta", "consul__v1_0_2"},
 		DatabaseIDToConfigClientMachineAgentControl: map[string]dbtesterpb.ConfigClientMachineAgentControl{
 			"etcd__tip": {
 				DatabaseID:            "etcd__tip",
@@ -92,17 +92,17 @@ func TestConfig(t *testing.T) {
 					Step4UploadLogs:     true,
 				},
 			},
-			"zookeeper__r3_5_2_alpha": {
-				DatabaseID:            "zookeeper__r3_5_2_alpha",
-				DatabaseTag:           "zookeeper-r3.5.2-alpha-java8",
-				DatabaseDescription:   "Zookeeper r3.5.2-alpha (Java 8)",
+			"zookeeper__r3_5_3_beta": {
+				DatabaseID:            "zookeeper__r3_5_3_beta",
+				DatabaseTag:           "zookeeper-r3.5.3-beta-java8",
+				DatabaseDescription:   "Zookeeper r3.5.3-beta (Java 8)",
 				PeerIPs:               []string{"10.240.0.21", "10.240.0.22", "10.240.0.23"},
 				PeerIPsString:         "10.240.0.21___10.240.0.22___10.240.0.23",
 				DatabasePortToConnect: 2181,
 				DatabaseEndpoints:     []string{"10.240.0.21:2181", "10.240.0.22:2181", "10.240.0.23:2181"},
 				AgentPortToConnect:    3500,
 				AgentEndpoints:        []string{"10.240.0.21:3500", "10.240.0.22:3500", "10.240.0.23:3500"},
-				Flag_Zookeeper_R3_5_2Alpha: &dbtesterpb.Flag_Zookeeper_R3_5_2Alpha{
+				Flag_Zookeeper_R3_5_3Beta: &dbtesterpb.Flag_Zookeeper_R3_5_3Beta{
 					JavaDJuteMaxBuffer:   33554432,
 					JavaXms:              "50G",
 					JavaXmx:              "50G",
@@ -132,10 +132,10 @@ func TestConfig(t *testing.T) {
 					Step4UploadLogs:     true,
 				},
 			},
-			"consul__v0_7_5": {
-				DatabaseID:            "consul__v0_7_5",
-				DatabaseTag:           "consul-v0.7.5-go1.8.0",
-				DatabaseDescription:   "Consul v0.7.5 (Go 1.8.0)",
+			"consul__v1_0_2": {
+				DatabaseID:            "consul__v1_0_2",
+				DatabaseTag:           "consul-v1.0.2-go1.8.0",
+				DatabaseDescription:   "Consul v1.0.2 (Go 1.8.0)",
 				PeerIPs:               []string{"10.240.0.27", "10.240.0.28", "10.240.0.29"},
 				PeerIPsString:         "10.240.0.27___10.240.0.28___10.240.0.29",
 				DatabasePortToConnect: 8500,
@@ -186,51 +186,51 @@ func TestConfig(t *testing.T) {
 				},
 				AllAggregatedOutputPath: "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/etcd-tip-go1.8.0-all-aggregated.csv",
 			},
-			"zookeeper__r3_5_2_alpha": {
-				DatabaseID:          "zookeeper__r3_5_2_alpha",
-				DatabaseTag:         "zookeeper-r3.5.2-alpha-java8",
-				DatabaseDescription: "Zookeeper r3.5.2-alpha (Java 8)",
-				PathPrefix:          "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.2-alpha-java8",
+			"zookeeper__r3_5_3_beta": {
+				DatabaseID:          "zookeeper__r3_5_3_beta",
+				DatabaseTag:         "zookeeper-r3.5.3-beta-java8",
+				DatabaseDescription: "Zookeeper r3.5.3-beta (Java 8)",
+				PathPrefix:          "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.3-beta-java8",
 
-				ClientSystemMetricsInterpolatedPath:     "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.2-alpha-java8-client-system-metrics-interpolated.csv",
-				ClientLatencyThroughputTimeseriesPath:   "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.2-alpha-java8-client-latency-throughput-timeseries.csv",
-				ClientLatencyDistributionAllPath:        "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.2-alpha-java8-client-latency-distribution-all.csv",
-				ClientLatencyDistributionPercentilePath: "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.2-alpha-java8-client-latency-distribution-percentile.csv",
-				ClientLatencyDistributionSummaryPath:    "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.2-alpha-java8-client-latency-distribution-summary.csv",
-				ClientLatencyByKeyNumberPath:            "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.2-alpha-java8-client-latency-by-key-number.csv",
-				ServerMemoryByKeyNumberPath:             "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.2-alpha-java8-server-memory-by-key-number.csv",
-				ServerReadBytesDeltaByKeyNumberPath:     "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.2-alpha-java8-server-read-bytes-delta-by-key-number.csv",
-				ServerWriteBytesDeltaByKeyNumberPath:    "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.2-alpha-java8-server-write-bytes-delta-by-key-number.csv",
-				ServerDiskSpaceUsageSummaryPath:         "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.2-alpha-java8-server-disk-space-usage-summary.csv",
+				ClientSystemMetricsInterpolatedPath:     "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.3-beta-java8-client-system-metrics-interpolated.csv",
+				ClientLatencyThroughputTimeseriesPath:   "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.3-beta-java8-client-latency-throughput-timeseries.csv",
+				ClientLatencyDistributionAllPath:        "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.3-beta-java8-client-latency-distribution-all.csv",
+				ClientLatencyDistributionPercentilePath: "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.3-beta-java8-client-latency-distribution-percentile.csv",
+				ClientLatencyDistributionSummaryPath:    "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.3-beta-java8-client-latency-distribution-summary.csv",
+				ClientLatencyByKeyNumberPath:            "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.3-beta-java8-client-latency-by-key-number.csv",
+				ServerMemoryByKeyNumberPath:             "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.3-beta-java8-server-memory-by-key-number.csv",
+				ServerReadBytesDeltaByKeyNumberPath:     "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.3-beta-java8-server-read-bytes-delta-by-key-number.csv",
+				ServerWriteBytesDeltaByKeyNumberPath:    "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.3-beta-java8-server-write-bytes-delta-by-key-number.csv",
+				ServerDiskSpaceUsageSummaryPath:         "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.3-beta-java8-server-disk-space-usage-summary.csv",
 				ServerSystemMetricsInterpolatedPathList: []string{
-					"2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.2-alpha-java8-1-server-system-metrics-interpolated.csv",
-					"2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.2-alpha-java8-2-server-system-metrics-interpolated.csv",
-					"2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.2-alpha-java8-3-server-system-metrics-interpolated.csv",
+					"2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.3-beta-java8-1-server-system-metrics-interpolated.csv",
+					"2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.3-beta-java8-2-server-system-metrics-interpolated.csv",
+					"2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.3-beta-java8-3-server-system-metrics-interpolated.csv",
 				},
-				AllAggregatedOutputPath: "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.2-alpha-java8-all-aggregated.csv",
+				AllAggregatedOutputPath: "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/zookeeper-r3.5.3-beta-java8-all-aggregated.csv",
 			},
-			"consul__v0_7_5": {
-				DatabaseID:          "consul__v0_7_5",
-				DatabaseTag:         "consul-v0.7.5-go1.8.0",
-				DatabaseDescription: "Consul v0.7.5 (Go 1.8.0)",
-				PathPrefix:          "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.5-go1.8.0",
+			"consul__v1_0_2": {
+				DatabaseID:          "consul__v1_0_2",
+				DatabaseTag:         "consul-v1.0.2-go1.8.0",
+				DatabaseDescription: "Consul v1.0.2 (Go 1.8.0)",
+				PathPrefix:          "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v1.0.2-go1.8.0",
 
-				ClientSystemMetricsInterpolatedPath:     "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.5-go1.8.0-client-system-metrics-interpolated.csv",
-				ClientLatencyThroughputTimeseriesPath:   "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.5-go1.8.0-client-latency-throughput-timeseries.csv",
-				ClientLatencyDistributionAllPath:        "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.5-go1.8.0-client-latency-distribution-all.csv",
-				ClientLatencyDistributionPercentilePath: "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.5-go1.8.0-client-latency-distribution-percentile.csv",
-				ClientLatencyDistributionSummaryPath:    "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.5-go1.8.0-client-latency-distribution-summary.csv",
-				ClientLatencyByKeyNumberPath:            "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.5-go1.8.0-client-latency-by-key-number.csv",
-				ServerMemoryByKeyNumberPath:             "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.5-go1.8.0-server-memory-by-key-number.csv",
-				ServerReadBytesDeltaByKeyNumberPath:     "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.5-go1.8.0-server-read-bytes-delta-by-key-number.csv",
-				ServerWriteBytesDeltaByKeyNumberPath:    "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.5-go1.8.0-server-write-bytes-delta-by-key-number.csv",
-				ServerDiskSpaceUsageSummaryPath:         "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.5-go1.8.0-server-disk-space-usage-summary.csv",
+				ClientSystemMetricsInterpolatedPath:     "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v1.0.2-go1.8.0-client-system-metrics-interpolated.csv",
+				ClientLatencyThroughputTimeseriesPath:   "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v1.0.2-go1.8.0-client-latency-throughput-timeseries.csv",
+				ClientLatencyDistributionAllPath:        "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v1.0.2-go1.8.0-client-latency-distribution-all.csv",
+				ClientLatencyDistributionPercentilePath: "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v1.0.2-go1.8.0-client-latency-distribution-percentile.csv",
+				ClientLatencyDistributionSummaryPath:    "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v1.0.2-go1.8.0-client-latency-distribution-summary.csv",
+				ClientLatencyByKeyNumberPath:            "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v1.0.2-go1.8.0-client-latency-by-key-number.csv",
+				ServerMemoryByKeyNumberPath:             "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v1.0.2-go1.8.0-server-memory-by-key-number.csv",
+				ServerReadBytesDeltaByKeyNumberPath:     "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v1.0.2-go1.8.0-server-read-bytes-delta-by-key-number.csv",
+				ServerWriteBytesDeltaByKeyNumberPath:    "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v1.0.2-go1.8.0-server-write-bytes-delta-by-key-number.csv",
+				ServerDiskSpaceUsageSummaryPath:         "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v1.0.2-go1.8.0-server-disk-space-usage-summary.csv",
 				ServerSystemMetricsInterpolatedPathList: []string{
-					"2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.5-go1.8.0-1-server-system-metrics-interpolated.csv",
-					"2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.5-go1.8.0-2-server-system-metrics-interpolated.csv",
-					"2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.5-go1.8.0-3-server-system-metrics-interpolated.csv",
+					"2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v1.0.2-go1.8.0-1-server-system-metrics-interpolated.csv",
+					"2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v1.0.2-go1.8.0-2-server-system-metrics-interpolated.csv",
+					"2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v1.0.2-go1.8.0-3-server-system-metrics-interpolated.csv",
 				},
-				AllAggregatedOutputPath: "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v0.7.5-go1.8.0-all-aggregated.csv",
+				AllAggregatedOutputPath: "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable/consul-v1.0.2-go1.8.0-all-aggregated.csv",
 			},
 		},
 		ConfigAnalyzeMachineAllAggregatedOutput: dbtesterpb.ConfigAnalyzeMachineAllAggregatedOutput{
@@ -523,15 +523,15 @@ func TestConfig(t *testing.T) {
 		t.Fatalf("configuration expected\n%+v\n, got\n%+v\n", expected1, req1)
 	}
 
-	req2, err := cfg.ToRequest("zookeeper__r3_5_2_alpha", dbtesterpb.Operation_Start, 2)
+	req2, err := cfg.ToRequest("zookeeper__r3_5_3_beta", dbtesterpb.Operation_Start, 2)
 	if err != nil {
 		t.Fatal(err)
 	}
 	expected2 := &dbtesterpb.Request{
 		Operation:           dbtesterpb.Operation_Start,
 		TriggerLogUpload:    true,
-		DatabaseID:          dbtesterpb.DatabaseID_zookeeper__r3_5_2_alpha,
-		DatabaseTag:         "zookeeper-r3.5.2-alpha-java8",
+		DatabaseID:          dbtesterpb.DatabaseID_zookeeper__r3_5_3_beta,
+		DatabaseTag:         "zookeeper-r3.5.3-beta-java8",
 		PeerIPsString:       "10.240.0.21___10.240.0.22___10.240.0.23",
 		IPIndex:             2,
 		CurrentClientNumber: 0,
@@ -541,7 +541,7 @@ func TestConfig(t *testing.T) {
 			GoogleCloudStorageBucketName:   "dbtester-results",
 			GoogleCloudStorageSubDirectory: "2017Q1-01-etcd-zookeeper-consul/01-write-1M-keys-client-variable",
 		},
-		Flag_Zookeeper_R3_5_2Alpha: &dbtesterpb.Flag_Zookeeper_R3_5_2Alpha{
+		Flag_Zookeeper_R3_5_3Beta: &dbtesterpb.Flag_Zookeeper_R3_5_3Beta{
 			JavaDJuteMaxBuffer:   33554432,
 			JavaXms:              "50G",
 			JavaXmx:              "50G",

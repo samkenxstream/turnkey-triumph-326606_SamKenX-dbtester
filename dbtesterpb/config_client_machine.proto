@@ -73,9 +73,10 @@ message ConfigClientMachineAgentControl {
   int64 DatabasePortToConnect = 8 [(gogoproto.moretags) = "yaml:\"database_port_to_connect\""];
   repeated string DatabaseEndpoints = 9 [(gogoproto.moretags) = "yaml:\"database_endpoints\""];
 
-  flag__etcd__tip  flag__etcd__tip  = 100 [(gogoproto.moretags) = "yaml:\"etcd__tip\""];
-  flag__etcd__v3_2 flag__etcd__v3_2 = 101 [(gogoproto.moretags) = "yaml:\"etcd__v3_2\""];
-  flag__etcd__v3_3 flag__etcd__v3_3 = 102 [(gogoproto.moretags) = "yaml:\"etcd__v3_3\""];
+  flag__etcd__other flag__etcd__other = 100 [(gogoproto.moretags) = "yaml:\"etcd__other\""];
+  flag__etcd__tip   flag__etcd__tip   = 101 [(gogoproto.moretags) = "yaml:\"etcd__tip\""];
+  flag__etcd__v3_2  flag__etcd__v3_2  = 102 [(gogoproto.moretags) = "yaml:\"etcd__v3_2\""];
+  flag__etcd__v3_3  flag__etcd__v3_3  = 103 [(gogoproto.moretags) = "yaml:\"etcd__v3_3\""];
 
   flag__zookeeper__r3_5_3_beta flag__zookeeper__r3_5_3_beta = 200 [(gogoproto.moretags) = "yaml:\"zookeeper__r3_5_3_beta\""];
 
