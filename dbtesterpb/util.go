@@ -39,6 +39,8 @@ func GetAllDatabaseIDs() []string {
 
 func GetRGBI(databaseID string, i int) color.Color {
 	switch databaseID {
+	case "etcd__other":
+		return color.RGBA{94, 191, 30, 255} // green
 	case "etcd__tip":
 		return color.RGBA{24, 90, 169, 255} // blue
 	case "etcd__v3_2":
@@ -59,6 +61,8 @@ func GetRGBI(databaseID string, i int) color.Color {
 
 func GetRGBII(databaseID string, i int) color.Color {
 	switch databaseID {
+	case "etcd__other":
+		return color.RGBA{155, 176, 29, 255} // light-green
 	case "etcd__tip":
 		return color.RGBA{129, 212, 247, 255} // light-blue
 	case "etcd__v3_2":
@@ -79,6 +83,8 @@ func GetRGBII(databaseID string, i int) color.Color {
 
 func GetRGBIII(databaseID string, i int) color.Color {
 	switch databaseID {
+	case "etcd__other":
+		return color.RGBA{129, 210, 178, 255} // mid-cyan
 	case "etcd__tip":
 		return color.RGBA{37, 29, 191, 255} // deep-blue
 	case "etcd__v3_2":

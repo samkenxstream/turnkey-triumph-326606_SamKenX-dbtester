@@ -45,9 +45,10 @@ message Request {
 
   ConfigClientMachineInitial ConfigClientMachineInitial = 8;
 
-  flag__etcd__tip  flag__etcd__tip  = 100;
-  flag__etcd__v3_2 flag__etcd__v3_2 = 101;
-  flag__etcd__v3_3 flag__etcd__v3_3 = 102;
+  flag__etcd__other  flag__etcd__other  = 100;
+  flag__etcd__tip    flag__etcd__tip    = 101;
+  flag__etcd__v3_2   flag__etcd__v3_2   = 102;
+  flag__etcd__v3_3   flag__etcd__v3_3   = 103;
 
   flag__zookeeper__r3_5_3_beta flag__zookeeper__r3_5_3_beta = 200;
 

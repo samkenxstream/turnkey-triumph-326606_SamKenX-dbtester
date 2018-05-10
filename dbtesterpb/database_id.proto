@@ -13,9 +13,10 @@ option (gogoproto.goproto_getters_all) = false;
 // is added/removed.
 enum DatabaseID {
   // https://github.com/coreos/etcd/releases
-  etcd__tip  = 0;
-  etcd__v3_2 = 1;
-  etcd__v3_3 = 2;
+  etcd__other = 0;
+  etcd__tip   = 1;
+  etcd__v3_2  = 2;
+  etcd__v3_3  = 3;
 
   // https://zookeeper.apache.org/releases.html
   zookeeper__r3_5_3_beta = 100;

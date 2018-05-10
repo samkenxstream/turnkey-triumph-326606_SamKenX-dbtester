@@ -27,6 +27,7 @@
 		ConfigClientMachineAgentControl
 		Flag_Cetcd_Beta
 		Flag_Consul_V1_0_2
+		Flag_Etcd_Other
 		Flag_Etcd_Tip
 		Flag_Etcd_V3_2
 		Flag_Etcd_V3_3
