@@ -4,7 +4,14 @@ set -e
 GIT_PATH=github.com/coreos/etcd
 
 USER_NAME=coreos
+BRANCH_NAME=release-3.2
+BRANCH_NAME=release-3.3
 BRANCH_NAME=master
+
+<<COMMENT
+USER_NAME=gyuho
+BRANCH_NAME=new-balancer-april-2018
+COMMENT
 
 rm -rf ${GOPATH}/src/${GIT_PATH}
 mkdir -p ${GOPATH}/src/github.com/coreos
@@ -15,7 +22,9 @@ git clone https://github.com/${USER_NAME}/etcd \
 
 cd ${GOPATH}/src/${GIT_PATH}
 
-git reset --hard HEAD
+<<COMMENT
+git reset --hard 67b1ff6724637f0a00f693471ddb17b5adde38cf
+COMMENT
 
 make build
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-GO_VERSION=1.8.3
+GO_VERSION=1.8.7
 
 sudo rm -f /usr/local/go/bin/go && sudo rm -rf /usr/local/go && sudo rm -f /bin/go
 

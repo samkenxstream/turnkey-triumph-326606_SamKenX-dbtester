@@ -5,7 +5,7 @@ set -e
 # create compute instances
 
 gcloud compute instances create \
-  bench-agent-1 \
+  bench-agent-a-1 \
   --custom-cpu=16 \
   --custom-memory=60 \
   --image-family=ubuntu-1710 \
@@ -18,7 +18,7 @@ gcloud compute instances create \
   --restart-on-failure
 
 gcloud compute instances create \
-  bench-agent-2 \
+  bench-agent-a-2 \
   --custom-cpu=16 \
   --custom-memory=60 \
   --image-family=ubuntu-1710 \
@@ -31,7 +31,7 @@ gcloud compute instances create \
   --restart-on-failure
 
 gcloud compute instances create \
-  bench-agent-3 \
+  bench-agent-a-3 \
   --custom-cpu=16 \
   --custom-memory=60 \
   --image-family=ubuntu-1710 \
@@ -45,7 +45,175 @@ gcloud compute instances create \
 
 export GCP_KEY_PATH=/etc/gcp-key-etcd-development.json
 gcloud compute instances create \
-  bench-tester \
+  bench-tester-a \
+  --custom-cpu=16 \
+  --custom-memory=60 \
+  --image-family=ubuntu-1710 \
+  --image-project=ubuntu-os-cloud \
+  --boot-disk-size=300 \
+  --boot-disk-type="pd-ssd" \
+  --network dbtester \
+  --zone us-west1-a \
+  --maintenance-policy=MIGRATE \
+  --restart-on-failure \
+  --metadata-from-file gcp-key-etcd=${GCP_KEY_PATH}
+
+
+
+gcloud compute instances create \
+  bench-agent-b-1 \
+  --custom-cpu=16 \
+  --custom-memory=60 \
+  --image-family=ubuntu-1710 \
+  --image-project=ubuntu-os-cloud \
+  --boot-disk-size=300 \
+  --boot-disk-type="pd-ssd" \
+  --network dbtester \
+  --zone us-west1-a \
+  --maintenance-policy=MIGRATE \
+  --restart-on-failure
+
+gcloud compute instances create \
+  bench-agent-b-2 \
+  --custom-cpu=16 \
+  --custom-memory=60 \
+  --image-family=ubuntu-1710 \
+  --image-project=ubuntu-os-cloud \
+  --boot-disk-size=300 \
+  --boot-disk-type="pd-ssd" \
+  --network dbtester \
+  --zone us-west1-a \
+  --maintenance-policy=MIGRATE \
+  --restart-on-failure
+
+gcloud compute instances create \
+  bench-agent-b-3 \
+  --custom-cpu=16 \
+  --custom-memory=60 \
+  --image-family=ubuntu-1710 \
+  --image-project=ubuntu-os-cloud \
+  --boot-disk-size=300 \
+  --boot-disk-type="pd-ssd" \
+  --network dbtester \
+  --zone us-west1-a \
+  --maintenance-policy=MIGRATE \
+  --restart-on-failure
+
+export GCP_KEY_PATH=/etc/gcp-key-etcd-development.json
+gcloud compute instances create \
+  bench-tester-b \
+  --custom-cpu=16 \
+  --custom-memory=60 \
+  --image-family=ubuntu-1710 \
+  --image-project=ubuntu-os-cloud \
+  --boot-disk-size=300 \
+  --boot-disk-type="pd-ssd" \
+  --network dbtester \
+  --zone us-west1-a \
+  --maintenance-policy=MIGRATE \
+  --restart-on-failure \
+  --metadata-from-file gcp-key-etcd=${GCP_KEY_PATH}
+
+
+
+gcloud compute instances create \
+  bench-agent-c-1 \
+  --custom-cpu=16 \
+  --custom-memory=60 \
+  --image-family=ubuntu-1710 \
+  --image-project=ubuntu-os-cloud \
+  --boot-disk-size=300 \
+  --boot-disk-type="pd-ssd" \
+  --network dbtester \
+  --zone us-west1-a \
+  --maintenance-policy=MIGRATE \
+  --restart-on-failure
+
+gcloud compute instances create \
+  bench-agent-c-2 \
+  --custom-cpu=16 \
+  --custom-memory=60 \
+  --image-family=ubuntu-1710 \
+  --image-project=ubuntu-os-cloud \
+  --boot-disk-size=300 \
+  --boot-disk-type="pd-ssd" \
+  --network dbtester \
+  --zone us-west1-a \
+  --maintenance-policy=MIGRATE \
+  --restart-on-failure
+
+gcloud compute instances create \
+  bench-agent-c-3 \
+  --custom-cpu=16 \
+  --custom-memory=60 \
+  --image-family=ubuntu-1710 \
+  --image-project=ubuntu-os-cloud \
+  --boot-disk-size=300 \
+  --boot-disk-type="pd-ssd" \
+  --network dbtester \
+  --zone us-west1-a \
+  --maintenance-policy=MIGRATE \
+  --restart-on-failure
+
+export GCP_KEY_PATH=/etc/gcp-key-etcd-development.json
+gcloud compute instances create \
+  bench-tester-c \
+  --custom-cpu=16 \
+  --custom-memory=60 \
+  --image-family=ubuntu-1710 \
+  --image-project=ubuntu-os-cloud \
+  --boot-disk-size=300 \
+  --boot-disk-type="pd-ssd" \
+  --network dbtester \
+  --zone us-west1-a \
+  --maintenance-policy=MIGRATE \
+  --restart-on-failure \
+  --metadata-from-file gcp-key-etcd=${GCP_KEY_PATH}
+
+
+
+gcloud compute instances create \
+  bench-agent-d-1 \
+  --custom-cpu=16 \
+  --custom-memory=60 \
+  --image-family=ubuntu-1710 \
+  --image-project=ubuntu-os-cloud \
+  --boot-disk-size=300 \
+  --boot-disk-type="pd-ssd" \
+  --network dbtester \
+  --zone us-west1-a \
+  --maintenance-policy=MIGRATE \
+  --restart-on-failure
+
+gcloud compute instances create \
+  bench-agent-d-2 \
+  --custom-cpu=16 \
+  --custom-memory=60 \
+  --image-family=ubuntu-1710 \
+  --image-project=ubuntu-os-cloud \
+  --boot-disk-size=300 \
+  --boot-disk-type="pd-ssd" \
+  --network dbtester \
+  --zone us-west1-a \
+  --maintenance-policy=MIGRATE \
+  --restart-on-failure
+
+gcloud compute instances create \
+  bench-agent-d-3 \
+  --custom-cpu=16 \
+  --custom-memory=60 \
+  --image-family=ubuntu-1710 \
+  --image-project=ubuntu-os-cloud \
+  --boot-disk-size=300 \
+  --boot-disk-type="pd-ssd" \
+  --network dbtester \
+  --zone us-west1-a \
+  --maintenance-policy=MIGRATE \
+  --restart-on-failure
+
+export GCP_KEY_PATH=/etc/gcp-key-etcd-development.json
+gcloud compute instances create \
+  bench-tester-d \
   --custom-cpu=16 \
   --custom-memory=60 \
   --image-family=ubuntu-1710 \
@@ -61,10 +229,25 @@ gcloud compute instances create \
 
 
 ##################################################
-gcloud compute ssh --zone=us-west1-a bench-agent-1
-gcloud compute ssh --zone=us-west1-a bench-agent-2
-gcloud compute ssh --zone=us-west1-a bench-agent-3
-gcloud compute ssh --zone=us-west1-a bench-tester
+gcloud compute ssh --zone=us-west1-a bench-agent-a-1
+gcloud compute ssh --zone=us-west1-a bench-agent-a-2
+gcloud compute ssh --zone=us-west1-a bench-agent-a-3
+gcloud compute ssh --zone=us-west1-a bench-tester-a
+
+gcloud compute ssh --zone=us-west1-a bench-agent-b-1
+gcloud compute ssh --zone=us-west1-a bench-agent-b-2
+gcloud compute ssh --zone=us-west1-a bench-agent-b-3
+gcloud compute ssh --zone=us-west1-a bench-tester-b
+
+gcloud compute ssh --zone=us-west1-a bench-agent-c-1
+gcloud compute ssh --zone=us-west1-a bench-agent-c-2
+gcloud compute ssh --zone=us-west1-a bench-agent-c-3
+gcloud compute ssh --zone=us-west1-a bench-tester-c
+
+gcloud compute ssh --zone=us-west1-a bench-agent-d-1
+gcloud compute ssh --zone=us-west1-a bench-agent-d-2
+gcloud compute ssh --zone=us-west1-a bench-agent-d-3
+gcloud compute ssh --zone=us-west1-a bench-tester-d
 
 gcloud compute instances list
 
