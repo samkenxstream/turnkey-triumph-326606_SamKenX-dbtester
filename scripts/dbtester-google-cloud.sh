@@ -346,8 +346,13 @@ go version
 GIT_PATH=github.com/coreos/etcd
 
 USER_NAME=coreos
-# BRANCH_NAME=release-3.2
+
+BRANCH_NAME=release-3.2
+BRANCH_NAME=release-3.3
 BRANCH_NAME=master
+
+USER_NAME=gyuho
+BRANCH_NAME=new-balancer-april-2018
 
 rm -rf ${GOPATH}/src/${GIT_PATH}
 mkdir -p ${GOPATH}/src/github.com/coreos
@@ -358,11 +363,10 @@ git clone https://github.com/${USER_NAME}/etcd \
 
 cd ${GOPATH}/src/${GIT_PATH}
 
-# v3.2.0
-# git reset --hard 66722b1ada68fcd5227db853ee92003169a975c8
 
-# v3.3.0 RC+
-# git reset --hard 58c402a47bc5ad46fa748ce666257b45b06b1444
+git reset --hard HEAD
+git reset --hard 67b1ff6724637f0a00f693471ddb17b5adde38cf
+
 
 GO_BUILD_FLAGS="-v" ./build
 
@@ -432,7 +436,7 @@ sudo mv /tmp/gcp-key-etcd-development.json /etc/gcp-key-etcd-development.json
 head -10 /etc/gcp-key-etcd-development.json
 
 # copy the tester configuration from git repository
-cp ${HOME}/go/src/github.com/coreos/dbtester/test-configs/write-100K-keys-1-client.yaml ${HOME}/config.yaml
+cp ${HOME}/go/src/github.com/coreos/dbtester/test-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput.yaml ${HOME}/config.yaml
 cat ${HOME}/config.yaml
 
 
@@ -459,6 +463,14 @@ nohup dbtester control \
   --config config.yaml > ${HOME}/client-control.log 2>&1 &
 
 nohup dbtester control \
+  --database-id etcd__tip \
+  --config config.yaml > ${HOME}/client-control.log 2>&1 &
+
+nohup dbtester control \
+  --database-id etcd__other \
+  --config config.yaml > ${HOME}/client-control.log 2>&1 &
+
+nohup dbtester control \
   --database-id zookeeper__r3_5_3_beta \
   --config config.yaml > ${HOME}/client-control.log 2>&1 &
 
@@ -478,14 +490,14 @@ cd ${HOME}/go/src/github.com/coreos/dbtester
 go install -v ./cmd/dbtester
 
 
-gsutil -m cp -R gs://dbtester-results/2018Q1-04-etcd-zookeeper .
+gsutil -m cp -R gs://dbtester-results/2018Q2-01-etcd-client-balancer .
 
-cp ./test-configs/write-100K-keys-1-client.yaml ./2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/
+cp ./test-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput.yaml ./2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/
 
-dbtester analyze --config 2018Q1-04-etcd-zookeeper/write-100K-keys-1-client/write-100K-keys-1-client.yaml
+dbtester analyze --config 2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/read-3M-same-keys-best-throughput.yaml
 
-gsutil -m cp -R 2018Q1-04-etcd-zookeeper gs://dbtester-results/
-gsutil -m acl ch -u allUsers:R -r gs://dbtester-results/2018Q1-04-etcd-zookeeper
+gsutil -m cp -R 2018Q2-01-etcd-client-balancer gs://dbtester-results/
+gsutil -m acl ch -u allUsers:R -r gs://dbtester-results/2018Q2-01-etcd-client-balancer
 ##################################################
 
 
