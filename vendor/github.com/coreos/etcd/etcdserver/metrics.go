@@ -17,8 +17,8 @@ package etcdserver
 import (
 	"time"
 
-	"github.com/coreos/etcd/internal/version"
 	"github.com/coreos/etcd/pkg/runtime"
+	"github.com/coreos/etcd/version"
 
 	"github.com/prometheus/client_golang/prometheus"
 )
@@ -29,6 +29,12 @@ var (
 		Subsystem: "server",
 		Name:      "has_leader",
 		Help:      "Whether or not a leader exists. 1 is existence, 0 is not.",
+	})
+	isLeader = prometheus.NewGauge(prometheus.GaugeOpts{
+		Namespace: "etcd",
+		Subsystem: "server",
+		Name:      "is_leader",
+		Help:      "Whether or not this member is a leader. 1 if is, 0 otherwise.",
 	})
 	leaderChanges = prometheus.NewCounter(prometheus.CounterOpts{
 		Namespace: "etcd",
@@ -77,6 +83,7 @@ var (
 
 func init() {
 	prometheus.MustRegister(hasLeader)
+	prometheus.MustRegister(isLeader)
 	prometheus.MustRegister(leaderChanges)
 	prometheus.MustRegister(proposalsCommitted)
 	prometheus.MustRegister(proposalsApplied)

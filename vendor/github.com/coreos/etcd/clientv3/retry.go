@@ -91,18 +91,18 @@ func (c *Client) newRetryWrapper() retryRPCFunc {
 			if err := readyWait(rpcCtx, c.ctx, c.balancer.ConnectNotify()); err != nil {
 				return err
 			}
-			pinned := c.balancer.pinned()
+			pinned := c.balancer.Pinned()
 			err := f(rpcCtx)
 			if err == nil {
 				return nil
 			}
-			logger.Lvl(4).Infof("clientv3/retry: error %q on pinned endpoint %q", err.Error(), pinned)
+			lg.Lvl(4).Infof("clientv3/retry: error %q on pinned endpoint %q", err.Error(), pinned)
 
 			if s, ok := status.FromError(err); ok && (s.Code() == codes.Unavailable || s.Code() == codes.DeadlineExceeded || s.Code() == codes.Internal) {
 				// mark this before endpoint switch is triggered
-				c.balancer.hostPortError(pinned, err)
-				c.balancer.next()
-				logger.Lvl(4).Infof("clientv3/retry: switching from %q due to error %q", pinned, err.Error())
+				c.balancer.HostPortError(pinned, err)
+				c.balancer.Next()
+				lg.Lvl(4).Infof("clientv3/retry: switching from %q due to error %q", pinned, err.Error())
 			}
 
 			if isStop(err) {
@@ -115,17 +115,17 @@ func (c *Client) newRetryWrapper() retryRPCFunc {
 func (c *Client) newAuthRetryWrapper(retryf retryRPCFunc) retryRPCFunc {
 	return func(rpcCtx context.Context, f rpcFunc, rp retryPolicy) error {
 		for {
-			pinned := c.balancer.pinned()
+			pinned := c.balancer.Pinned()
 			err := retryf(rpcCtx, f, rp)
 			if err == nil {
 				return nil
 			}
-			logger.Lvl(4).Infof("clientv3/auth-retry: error %q on pinned endpoint %q", err.Error(), pinned)
+			lg.Lvl(4).Infof("clientv3/auth-retry: error %q on pinned endpoint %q", err.Error(), pinned)
 			// always stop retry on etcd errors other than invalid auth token
 			if rpctypes.Error(err) == rpctypes.ErrInvalidAuthToken {
 				gterr := c.getToken(rpcCtx)
 				if gterr != nil {
-					logger.Lvl(4).Infof("clientv3/auth-retry: cannot retry due to error %q(%q) on pinned endpoint %q", err.Error(), gterr.Error(), pinned)
+					lg.Lvl(4).Infof("clientv3/auth-retry: cannot retry due to error %q(%q) on pinned endpoint %q", err.Error(), gterr.Error(), pinned)
 					return err // return the original error for simplicity
 				}
 				continue

@@ -35,17 +35,21 @@
 [[projects]]
   name = "github.com/coreos/etcd"
   packages = [
+    "auth/authpb",
     "clientv3",
+    "clientv3/balancer",
     "etcdserver/api/v3rpc/rpctypes",
     "etcdserver/etcdserverpb",
-    "internal/auth/authpb",
-    "internal/mvcc/mvccpb",
+    "mvcc/mvccpb",
     "pkg/cpuutil",
+    "pkg/logutil",
     "pkg/netutil",
     "pkg/report",
-    "pkg/types"
+    "pkg/types",
+    "raft",
+    "raft/raftpb"
   ]
-  revision = "1d99d3886f6cb5fb7ef13100c9587cc01820d38e"
+  revision = "67b1ff6724637f0a00f693471ddb17b5adde38cf"
   source = "https://github.com/coreos/etcd"
 
 [[projects]]
@@ -205,6 +209,31 @@
   packages = ["."]
   revision = "e57e3eeb33f795204c1ca35f56c44f83227c6e66"
   version = "v1.0.0"
+
+[[projects]]
+  name = "go.uber.org/atomic"
+  packages = ["."]
+  revision = "1ea20fb1cbb1cc08cbd0d913a96dead89aa18289"
+  version = "v1.3.2"
+
+[[projects]]
+  name = "go.uber.org/multierr"
+  packages = ["."]
+  revision = "3c4937480c32f4c13a875a1829af76c98ca3d40a"
+  version = "v1.1.0"
+
+[[projects]]
+  name = "go.uber.org/zap"
+  packages = [
+    ".",
+    "buffer",
+    "internal/bufferpool",
+    "internal/color",
+    "internal/exit",
+    "zapcore"
+  ]
+  revision = "eeedf312bc6c57391d84767a4cd413f02a917974"
+  version = "v1.8.0"
 
 [[projects]]
   branch = "master"
@@ -394,6 +423,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "69cdc0d9c700a95cfecff8f95f783cc922720cd16666ffe7279cb702a812fa58"
+  inputs-digest = "be4c2e85b5fe6d0b1af6016e555dcbaa6c76b9f4d5744747a1e2984512298b3a"
   solver-name = "gps-cdcl"
   solver-version = 1
