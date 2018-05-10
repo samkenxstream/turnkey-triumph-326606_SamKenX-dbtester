@@ -65,6 +65,7 @@ func startEtcd(fs *flags, t *transporterServer) error {
 			"--initial-cluster-token", "mytoken",
 			"--initial-cluster", strings.Join(members, ","),
 			"--initial-cluster-state", "new",
+			"--logger", "zap",
 		}
 
 	case dbtesterpb.DatabaseID_etcd__v3_2:
