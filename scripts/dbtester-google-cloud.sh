@@ -379,10 +379,10 @@ git clone https://github.com/${USER_NAME}/etcd \
 
 cd ${GOPATH}/src/${GIT_PATH}
 
-
+<<COMMENT
 git reset --hard HEAD
 git reset --hard 67b1ff6724637f0a00f693471ddb17b5adde38cf
-
+COMMENT
 
 GO_BUILD_FLAGS="-v" ./build
 
@@ -404,11 +404,11 @@ ETCDCTL_API=3 etcdctl version
 # reinstall Go 1.9+ for context imports
 
 ##################################################
-USER_NAME=coreos
-BRANCH_NAME=master
-
 USER_NAME=gyuho
 BRANCH_NAME=new-balancer-april-2018
+
+USER_NAME=coreos
+BRANCH_NAME=master
 
 
 cd ${HOME}
