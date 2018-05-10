@@ -48,6 +48,26 @@ func startEtcd(fs *flags, t *transporterServer) error {
 
 	var flags []string
 	switch t.req.DatabaseID {
+	case dbtesterpb.DatabaseID_etcd__other:
+		flags = []string{
+			"--name", names[t.req.IPIndex],
+			"--data-dir", fs.etcdDataDir,
+			"--quota-backend-bytes", fmt.Sprintf("%d", t.req.Flag_Etcd_Other.QuotaSizeBytes),
+
+			"--snapshot-count", fmt.Sprintf("%d", t.req.Flag_Etcd_Other.SnapshotCount),
+
+			"--listen-client-urls", clientURLs[t.req.IPIndex],
+			"--advertise-client-urls", clientURLs[t.req.IPIndex],
+
+			"--listen-peer-urls", peerURLs[t.req.IPIndex],
+			"--initial-advertise-peer-urls", peerURLs[t.req.IPIndex],
+
+			"--initial-cluster-token", "mytoken",
+			"--initial-cluster", strings.Join(members, ","),
+			"--initial-cluster-state", "new",
+			"--logger", "zap",
+		}
+
 	case dbtesterpb.DatabaseID_etcd__tip:
 		flags = []string{
 			"--name", names[t.req.IPIndex],
