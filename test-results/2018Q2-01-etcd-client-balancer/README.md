@@ -1,6 +1,135 @@
 
 
 <br><br><hr>
+##### Read 3M same keys, 256-byte key, 1KB value, Best Throughput (etcd 1K clients with 100 conns)
+
+- Google Cloud Compute Engine
+- 4 machines of 16 vCPUs + 60 GB Memory + 300 GB SSD (1 for client)
+- Ubuntu 17.10 (GNU/Linux kernel 4.13.0-41-generic)
+- `ulimit -n` is 120000
+- etcd v3.2.20 (Go 1.8.7)
+- etcd v3.3.5 (Go 1.9.6)
+- etcd v3.4 67b1ff672 (Go 1.10.2)
+- etcd v3.4 new balancer (Go 1.10.2)
+
+
+```
++---------------------------------------+----------------------+---------------------+------------------------------+---------------------------------+
+|                                       | etcd-v3.2.20-go1.8.7 | etcd-v3.3.5-go1.9.6 | etcd-v3.4-67b1ff672-go1.10.2 | etcd-v3.4-balancer0511-go1.10.2 |
++---------------------------------------+----------------------+---------------------+------------------------------+---------------------------------+
+|                         TOTAL-SECONDS |          18.1562 sec |         18.3415 sec |                  18.0028 sec |                     17.8095 sec |
+|                  TOTAL-REQUEST-NUMBER |            3,000,000 |           3,000,000 |                    3,000,000 |                       3,000,000 |
+|                        MAX-THROUGHPUT |      176,854 req/sec |     176,783 req/sec |              179,961 req/sec |                 187,593 req/sec |
+|                        AVG-THROUGHPUT |      165,233 req/sec |     163,563 req/sec |              166,640 req/sec |                 168,449 req/sec |
+|                        MIN-THROUGHPUT |       62,416 req/sec |      15,304 req/sec |               64,844 req/sec |                  42,215 req/sec |
+|                       FASTEST-LATENCY |            0.4388 ms |           0.4826 ms |                    0.4670 ms |                       0.4871 ms |
+|                           AVG-LATENCY |            4.2135 ms |           4.3606 ms |                    4.4632 ms |                       4.5614 ms |
+|                       SLOWEST-LATENCY |           61.7597 ms |         215.6992 ms |                   38.3503 ms |                      39.4441 ms |
+|                           Latency p10 |          1.661360 ms |         1.752339 ms |                  1.763714 ms |                     1.892650 ms |
+|                           Latency p25 |          2.307997 ms |         2.379004 ms |                  2.416912 ms |                     2.545477 ms |
+|                           Latency p50 |          3.593472 ms |         3.651454 ms |                  3.811588 ms |                     3.966304 ms |
+|                           Latency p75 |          5.587801 ms |         5.735338 ms |                  5.994316 ms |                     6.080458 ms |
+|                           Latency p90 |          7.469498 ms |         7.795259 ms |                  7.904383 ms |                     7.884734 ms |
+|                           Latency p95 |          8.925745 ms |         9.357837 ms |                  9.325560 ms |                     9.214828 ms |
+|                           Latency p99 |         12.104650 ms |        13.055879 ms |                 12.643542 ms |                    12.341674 ms |
+|                         Latency p99.9 |         18.393202 ms |        19.234115 ms |                 18.204708 ms |                    20.965550 ms |
+|      SERVER-TOTAL-NETWORK-RX-DATA-SUM |               1.2 GB |              1.2 GB |                       1.2 GB |                          1.2 GB |
+|      SERVER-TOTAL-NETWORK-TX-DATA-SUM |               4.5 GB |              4.5 GB |                       4.5 GB |                          4.5 GB |
+|           CLIENT-TOTAL-NETWORK-RX-SUM |               4.4 GB |              4.7 GB |                       4.4 GB |                          4.4 GB |
+|           CLIENT-TOTAL-NETWORK-TX-SUM |               1.1 GB |              1.2 GB |                       1.2 GB |                          1.2 GB |
+|                  SERVER-MAX-CPU-USAGE |             941.00 % |            914.67 % |                     913.67 % |                        860.00 % |
+|               SERVER-MAX-MEMORY-USAGE |                52 MB |               54 MB |                        59 MB |                           57 MB |
+|                  CLIENT-MAX-CPU-USAGE |            1456.00 % |           1477.00 % |                    1461.00 % |                       1438.00 % |
+|               CLIENT-MAX-MEMORY-USAGE |               166 MB |              185 MB |                       171 MB |                          160 MB |
+|                    CLIENT-ERROR-COUNT |                    0 |                   0 |                            0 |                               0 |
+|  SERVER-AVG-READS-COMPLETED-DELTA-SUM |                   27 |                  16 |                            0 |                               0 |
+|    SERVER-AVG-SECTORS-READS-DELTA-SUM |                    0 |                   0 |                            0 |                               0 |
+| SERVER-AVG-WRITES-COMPLETED-DELTA-SUM |                   30 |                 120 |                           91 |                             115 |
+|  SERVER-AVG-SECTORS-WRITTEN-DELTA-SUM |                  400 |               1,280 |                        1,016 |                           1,288 |
+|           SERVER-AVG-DISK-SPACE-USAGE |                81 MB |               64 MB |                        64 MB |                           64 MB |
++---------------------------------------+----------------------+---------------------+------------------------------+---------------------------------+
+```
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-LATENCY-MS.svg" alt="2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-LATENCY-MS">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-LATENCY-MS-BY-KEY.svg" alt="2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-LATENCY-MS-BY-KEY">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.svg" alt="2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-LATENCY-MS-BY-KEY-ERROR-POINTS">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-THROUGHPUT.svg" alt="2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-THROUGHPUT">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-VOLUNTARY-CTXT-SWITCHES.svg" alt="2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-VOLUNTARY-CTXT-SWITCHES">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-NON-VOLUNTARY-CTXT-SWITCHES.svg" alt="2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-NON-VOLUNTARY-CTXT-SWITCHES">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-CPU.svg" alt="2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-CPU">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/MAX-CPU.svg" alt="2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/MAX-CPU">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-VMRSS-MB.svg" alt="2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-VMRSS-MB">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-VMRSS-MB-BY-KEY.svg" alt="2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-VMRSS-MB-BY-KEY">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.svg" alt="2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-VMRSS-MB-BY-KEY-ERROR-POINTS">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-READS-COMPLETED-DELTA.svg" alt="2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-READS-COMPLETED-DELTA">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-SECTORS-READ-DELTA.svg" alt="2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-SECTORS-READ-DELTA">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-WRITES-COMPLETED-DELTA.svg" alt="2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-WRITES-COMPLETED-DELTA">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-SECTORS-WRITTEN-DELTA.svg" alt="2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-SECTORS-WRITTEN-DELTA">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-READ-BYTES-NUM-DELTA.svg" alt="2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-READ-BYTES-NUM-DELTA">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-WRITE-BYTES-NUM-DELTA.svg" alt="2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-WRITE-BYTES-NUM-DELTA">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-RECEIVE-BYTES-NUM-DELTA.svg" alt="2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-RECEIVE-BYTES-NUM-DELTA">
+
+
+
+<img src="https://storage.googleapis.com/dbtester-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-TRANSMIT-BYTES-NUM-DELTA.svg" alt="2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/AVG-TRANSMIT-BYTES-NUM-DELTA">
+
+
+
+
+
+<br><br><hr>
 ##### Write 1M keys, 256-byte key, 1KB value, Best Throughput (etcd 1K clients with 100 conns)
 
 - Google Cloud Compute Engine
