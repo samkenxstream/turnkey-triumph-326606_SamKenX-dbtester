@@ -326,8 +326,6 @@ sudo service ntp start
 
 
 ##################################################
-GO_VERSION=1.8.7
-GO_VERSION=1.9.6
 GO_VERSION=1.10.2
 
 
@@ -357,16 +355,7 @@ go version
 
 ##################################################
 USER_NAME=coreos
-BRANCH_NAME=release-3.2
-
-USER_NAME=coreos
 BRANCH_NAME=master
-
-USER_NAME=coreos
-BRANCH_NAME=release-3.3
-
-USER_NAME=gyuho
-BRANCH_NAME=new-balancer-april-2018
 
 
 GIT_PATH=github.com/coreos/etcd
@@ -404,8 +393,8 @@ ETCDCTL_API=3 etcdctl version
 # reinstall Go 1.9+ for context imports
 
 ##################################################
-USER_NAME=gyuho
-BRANCH_NAME=test
+USER_NAME=coreos
+BRANCH_NAME=master
 
 
 cd ${HOME}
@@ -466,7 +455,7 @@ sudo ntpdate time.google.com
 sudo service ntp start
 
 nohup dbtester control \
-  --database-id etcd__other \
+  --database-id etcd__tip \
   --config config.yaml > ${HOME}/client-control.log 2>&1 &
 
 sleep 7s
