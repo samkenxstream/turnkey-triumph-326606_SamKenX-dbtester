@@ -38,11 +38,18 @@ func newPutEtcd3(conn clientv3.KV) ReqHandler {
 var dialTotal int
 
 func mustCreateConnEtcdv3(endpoints []string) *clientv3.Client {
-	endpoint := endpoints[dialTotal%len(endpoints)]
-	dialTotal++
+	// For parity with consul:
+	// endpoint := endpoints[dialTotal%len(endpoints)]
+	// dialTotal++
+	// cfg := clientv3.Config{
+	// 	Endpoints: []string{endpoint},
+	// }
+
+	// let etcd client v3 balancer handle round robin
 	cfg := clientv3.Config{
-		Endpoints: []string{endpoint},
+		Endpoints: endpoints,
 	}
+
 	client, err := clientv3.New(cfg)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "dial error: %v\n", err)

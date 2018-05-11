@@ -146,36 +146,36 @@
 +---------------------------------------+----------------------+---------------------+------------------------------+---------------------------------+
 |                                       | etcd-v3.2.20-go1.8.7 | etcd-v3.3.5-go1.9.6 | etcd-v3.4-67b1ff672-go1.10.2 | etcd-v3.4-balancer0511-go1.10.2 |
 +---------------------------------------+----------------------+---------------------+------------------------------+---------------------------------+
-|                         TOTAL-SECONDS |          27.9457 sec |         27.8376 sec |                  29.8214 sec |                     31.7905 sec |
+|                         TOTAL-SECONDS |          27.9457 sec |         27.8376 sec |                  29.8214 sec |                     28.7298 sec |
 |                  TOTAL-REQUEST-NUMBER |            1,000,000 |           1,000,000 |                    1,000,000 |                       1,000,000 |
-|                        MAX-THROUGHPUT |       37,870 req/sec |      38,399 req/sec |               35,302 req/sec |                  34,293 req/sec |
-|                        AVG-THROUGHPUT |       35,783 req/sec |      35,922 req/sec |               33,532 req/sec |                  31,455 req/sec |
-|                        MIN-THROUGHPUT |       33,308 req/sec |      30,366 req/sec |                4,518 req/sec |                  25,404 req/sec |
-|                       FASTEST-LATENCY |            5.0600 ms |           5.0021 ms |                    6.6801 ms |                       6.5805 ms |
-|                           AVG-LATENCY |           27.8413 ms |          27.7460 ms |                   29.7391 ms |                      31.7049 ms |
-|                       SLOWEST-LATENCY |          137.2510 ms |         123.4449 ms |                  137.3843 ms |                     122.6154 ms |
-|                           Latency p10 |         12.288933 ms |        11.079009 ms |                 13.443536 ms |                    14.645595 ms |
-|                           Latency p25 |         15.050926 ms |        13.415975 ms |                 16.699900 ms |                    17.839535 ms |
-|                           Latency p50 |         21.019031 ms |        20.939641 ms |                 23.205842 ms |                    25.704132 ms |
-|                           Latency p75 |         35.016191 ms |        35.073160 ms |                 36.362920 ms |                    41.522521 ms |
-|                           Latency p90 |         55.658405 ms |        59.034597 ms |                 58.360949 ms |                    60.267800 ms |
-|                           Latency p95 |         63.626096 ms |        66.795356 ms |                 67.065177 ms |                    67.282624 ms |
-|                           Latency p99 |         82.812214 ms |        86.663292 ms |                 81.502701 ms |                    81.240145 ms |
-|                         Latency p99.9 |        110.040242 ms |       109.186148 ms |                108.321180 ms |                   101.836643 ms |
-|      SERVER-TOTAL-NETWORK-RX-DATA-SUM |               4.9 GB |              4.8 GB |                       5.1 GB |                          4.9 GB |
-|      SERVER-TOTAL-NETWORK-TX-DATA-SUM |               3.7 GB |              3.6 GB |                       3.8 GB |                          3.7 GB |
-|           CLIENT-TOTAL-NETWORK-RX-SUM |               4.7 GB |              4.9 GB |                       258 MB |                          254 MB |
-|           CLIENT-TOTAL-NETWORK-TX-SUM |               2.7 GB |              2.7 GB |                       1.5 GB |                          1.5 GB |
-|                  SERVER-MAX-CPU-USAGE |             487.33 % |            475.67 % |                     490.00 % |                        496.67 % |
+|                        MAX-THROUGHPUT |       37,870 req/sec |      38,399 req/sec |               35,302 req/sec |                  37,574 req/sec |
+|                        AVG-THROUGHPUT |       35,783 req/sec |      35,922 req/sec |               33,532 req/sec |                  34,807 req/sec |
+|                        MIN-THROUGHPUT |       33,308 req/sec |      30,366 req/sec |                4,518 req/sec |                   1,353 req/sec |
+|                       FASTEST-LATENCY |            5.0600 ms |           5.0021 ms |                    6.6801 ms |                       1.5290 ms |
+|                           AVG-LATENCY |           27.8413 ms |          27.7460 ms |                   29.7391 ms |                      28.6681 ms |
+|                       SLOWEST-LATENCY |          137.2510 ms |         123.4449 ms |                  137.3843 ms |                     122.6241 ms |
+|                           Latency p10 |         12.288933 ms |        11.079009 ms |                 13.443536 ms |                    11.773927 ms |
+|                           Latency p25 |         15.050926 ms |        13.415975 ms |                 16.699900 ms |                    16.379649 ms |
+|                           Latency p50 |         21.019031 ms |        20.939641 ms |                 23.205842 ms |                    23.166898 ms |
+|                           Latency p75 |         35.016191 ms |        35.073160 ms |                 36.362920 ms |                    39.052418 ms |
+|                           Latency p90 |         55.658405 ms |        59.034597 ms |                 58.360949 ms |                    53.821186 ms |
+|                           Latency p95 |         63.626096 ms |        66.795356 ms |                 67.065177 ms |                    60.028769 ms |
+|                           Latency p99 |         82.812214 ms |        86.663292 ms |                 81.502701 ms |                    74.864572 ms |
+|                         Latency p99.9 |        110.040242 ms |       109.186148 ms |                108.321180 ms |                   102.394398 ms |
+|      SERVER-TOTAL-NETWORK-RX-DATA-SUM |               4.9 GB |              4.8 GB |                       5.1 GB |                          5.3 GB |
+|      SERVER-TOTAL-NETWORK-TX-DATA-SUM |               3.7 GB |              3.6 GB |                       3.8 GB |                          4.0 GB |
+|           CLIENT-TOTAL-NETWORK-RX-SUM |               4.7 GB |              4.9 GB |                       258 MB |                          329 MB |
+|           CLIENT-TOTAL-NETWORK-TX-SUM |               2.7 GB |              2.7 GB |                       1.5 GB |                          1.6 GB |
+|                  SERVER-MAX-CPU-USAGE |             487.33 % |            475.67 % |                     490.00 % |                        540.00 % |
 |               SERVER-MAX-MEMORY-USAGE |               1.1 GB |              1.1 GB |                       1.1 GB |                          1.2 GB |
-|                  CLIENT-MAX-CPU-USAGE |            1456.00 % |           1477.00 % |                     630.00 % |                        562.00 % |
-|               CLIENT-MAX-MEMORY-USAGE |               166 MB |              185 MB |                        88 MB |                           90 MB |
+|                  CLIENT-MAX-CPU-USAGE |            1456.00 % |           1477.00 % |                     630.00 % |                        673.00 % |
+|               CLIENT-MAX-MEMORY-USAGE |               166 MB |              185 MB |                        88 MB |                          104 MB |
 |                    CLIENT-ERROR-COUNT |                    0 |                   0 |                            0 |                               0 |
-|  SERVER-AVG-READS-COMPLETED-DELTA-SUM |                   44 |                  26 |                            3 |                               1 |
+|  SERVER-AVG-READS-COMPLETED-DELTA-SUM |                   44 |                  26 |                            3 |                               0 |
 |    SERVER-AVG-SECTORS-READS-DELTA-SUM |                    0 |                   0 |                            0 |                               0 |
-| SERVER-AVG-WRITES-COMPLETED-DELTA-SUM |              103,627 |             101,928 |                      104,389 |                          99,307 |
-|  SERVER-AVG-SECTORS-WRITTEN-DELTA-SUM |           20,009,512 |          20,008,880 |                   20,716,200 |                      20,157,016 |
-|           SERVER-AVG-DISK-SPACE-USAGE |               2.6 GB |              2.6 GB |                       2.7 GB |                          2.8 GB |
+| SERVER-AVG-WRITES-COMPLETED-DELTA-SUM |              103,627 |             101,928 |                      104,389 |                         113,568 |
+|  SERVER-AVG-SECTORS-WRITTEN-DELTA-SUM |           20,009,512 |          20,008,880 |                   20,716,200 |                      20,831,256 |
+|           SERVER-AVG-DISK-SPACE-USAGE |               2.6 GB |              2.6 GB |                       2.7 GB |                          2.6 GB |
 +---------------------------------------+----------------------+---------------------+------------------------------+---------------------------------+
 ```
 

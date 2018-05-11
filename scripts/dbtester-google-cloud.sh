@@ -404,8 +404,8 @@ ETCDCTL_API=3 etcdctl version
 # reinstall Go 1.9+ for context imports
 
 ##################################################
-USER_NAME=coreos
-BRANCH_NAME=master
+USER_NAME=gyuho
+BRANCH_NAME=test
 
 
 cd ${HOME}
@@ -443,6 +443,8 @@ cat ${HOME}/agent.log
 ##################################################
 
 
+
+
 ##################################################
 # control on tester machine
 # specify 'control' configuration file
@@ -454,7 +456,7 @@ sudo mv /tmp/gcp-key-etcd-development.json /etc/gcp-key-etcd-development.json
 head -10 /etc/gcp-key-etcd-development.json
 
 # copy the tester configuration from git repository
-cp ${HOME}/go/src/github.com/coreos/dbtester/test-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput.yaml ${HOME}/config.yaml
+cp ${HOME}/go/src/github.com/coreos/dbtester/test-results/2018Q2-01-etcd-client-balancer/write-1M-keys-best-throughput.yaml ${HOME}/config.yaml
 cat ${HOME}/config.yaml
 
 
