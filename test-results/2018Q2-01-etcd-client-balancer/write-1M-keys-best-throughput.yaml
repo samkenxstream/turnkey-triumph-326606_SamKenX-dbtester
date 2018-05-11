@@ -151,7 +151,7 @@ datatbase_id_to_config_client_machine_agent_control:
       step4_upload_logs: true
 
   etcd__other:
-    database_description: etcd v3.4-new-balancer (Go 1.10.2)
+    database_description: etcd v3.4-balancer0511 (Go 1.10.2)
     peer_ips:
     - 10.138.0.14
     - 10.138.0.15
@@ -250,7 +250,7 @@ datatbase_id_to_config_analyze_machine_initial:
 
   etcd__other:
     # if not empty, all test data paths are prefixed
-    path_prefix: 2018Q2-01-etcd-client-balancer/write-1M-keys-best-throughput/etcd-v3.4-new-balancer-go1.10.2
+    path_prefix: 2018Q2-01-etcd-client-balancer/write-1M-keys-best-throughput/etcd-v3.4-balancer0511-go1.10.2
     client_system_metrics_interpolated_path: client-system-metrics-interpolated.csv
     client_latency_throughput_timeseries_path: client-latency-throughput-timeseries.csv
     client_latency_distribution_all_path: client-latency-distribution-all.csv
