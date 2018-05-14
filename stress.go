@@ -345,11 +345,14 @@ func newWriteHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) (rhs []Re
 		for i := range etcdClients {
 			rhs[i] = newPutEtcd3(etcdClients[i])
 		}
+
+		// TODO: this "done" function may decrease throughput at the end
 		done = func() {
 			for i := range etcdClients {
 				etcdClients[i].Close()
 			}
 		}
+
 	case "zookeeper__r3_5_3_beta", "zetcd__beta":
 		if gcfg.ConfigClientMachineBenchmarkOptions.SameKey {
 			key := sameKey(gcfg.ConfigClientMachineBenchmarkOptions.KeySizeBytes)
