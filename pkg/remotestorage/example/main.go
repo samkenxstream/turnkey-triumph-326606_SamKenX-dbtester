@@ -19,6 +19,8 @@ import (
 	"log"
 
 	"github.com/coreos/dbtester/pkg/remotestorage"
+
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -26,7 +28,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	u, err := remotestorage.NewGoogleCloudStorage(zap.Example(), kbs, "etcd-development")
+	u, err := remotestorage.NewGoogleCloudStorage(zap.NewExample(), kbs, "etcd-development")
 	if err != nil {
 		log.Fatal(err)
 	}
