@@ -68,6 +68,7 @@ func startEtcd(fs *flags, t *transporterServer) error {
 			"--initial-cluster", strings.Join(members, ","),
 			"--initial-cluster-state", "new",
 			"--logger", "zap",
+			"--log-outputs", "stderr",
 		}
 
 	case dbtesterpb.DatabaseID_etcd__tip:
@@ -88,6 +89,7 @@ func startEtcd(fs *flags, t *transporterServer) error {
 			"--initial-cluster", strings.Join(members, ","),
 			"--initial-cluster-state", "new",
 			"--logger", "zap",
+			"--log-outputs", "stderr",
 		}
 
 	case dbtesterpb.DatabaseID_etcd__v3_2:
