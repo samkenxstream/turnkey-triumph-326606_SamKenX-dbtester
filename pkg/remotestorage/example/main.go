@@ -26,7 +26,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	u, err := remotestorage.NewGoogleCloudStorage(kbs, "etcd-development")
+	u, err := remotestorage.NewGoogleCloudStorage(zap.Example(), kbs, "etcd-development")
 	if err != nil {
 		log.Fatal(err)
 	}

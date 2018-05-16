@@ -21,6 +21,7 @@ import (
 
 	"github.com/gyuho/linux-inspect/inspect"
 	"github.com/gyuho/linux-inspect/top"
+	"go.uber.org/zap"
 )
 
 // startMetrics starts collecting metrics.
@@ -28,9 +29,14 @@ func startMetrics(fs *flags, t *transporterServer) (err error) {
 	if fs == nil || t == nil || t.cmd == nil {
 		return fmt.Errorf("cannot find process to track (%+v, %+v)", fs, t)
 	}
-	plog.Infof("starting collecting metrics [database %q | PID: %d | disk device: %q | network interface: %q]",
-		t.req.DatabaseID, t.pid, fs.diskDevice, fs.networkInterface)
 
+	t.lg.Info(
+		"starting collecting system metrics",
+		zap.String("database", t.req.DatabaseID.String()),
+		zap.String("disk-device", fs.diskDevice),
+		zap.String("network-device", fs.networkInterface),
+		zap.Int64("pid", t.pid),
+	)
 	if err = os.RemoveAll(fs.systemMetricsCSV); err != nil {
 		return err
 	}
@@ -60,35 +66,35 @@ func startMetrics(fs *flags, t *transporterServer) (err error) {
 			select {
 			case <-time.After(time.Second):
 				if err := t.metricsCSV.Add(); err != nil {
-					plog.Errorf("inspect.CSV.Add error (%v)", err)
+					t.lg.Warn("inspect.CSV.Add error", zap.Error(err))
 					continue
 				}
 
 			case <-t.uploadSig:
-				plog.Infof("upload signal received; saving CSV at %q", t.metricsCSV.FilePath)
-
+				t.lg.Info("upload requested, saving CSV", zap.String("path", t.metricsCSV.FilePath))
 				if err := t.metricsCSV.Save(); err != nil {
-					plog.Errorf("inspect.CSV.Save(%q) error %v", t.metricsCSV.FilePath, err)
+					t.lg.Warn("failed to save CSV", zap.Error(err))
 				} else {
-					plog.Infof("CSV saved at %q", t.metricsCSV.FilePath)
+					t.lg.Info("saved CSV", zap.String("path", t.metricsCSV.FilePath))
 				}
 
 				interpolated, err := t.metricsCSV.Interpolate()
 				if err != nil {
-					plog.Fatalf("inspect.CSV.Interpolate(%q) failed with %v", t.metricsCSV.FilePath, err)
+					t.lg.Fatal("failed to inspect.CSV.Interpolate", zap.Error(err))
 				}
 				interpolated.FilePath = fs.systemMetricsCSVInterpolated
+
 				if err := interpolated.Save(); err != nil {
-					plog.Errorf("inspect.CSV.Save(%q) error %v", interpolated.FilePath, err)
+					t.lg.Warn("failed to save CSV", zap.Error(err))
 				} else {
-					plog.Infof("CSV saved at %q", interpolated.FilePath)
+					t.lg.Info("saved CSV", zap.String("path", interpolated.FilePath))
 				}
 
 				close(t.csvReady)
 				return
 
 			case sig := <-t.notifier:
-				plog.Infof("signal received %q", sig.String())
+				t.lg.Info("received a signal", zap.String("signal", sig.String()))
 				return
 			}
 		}

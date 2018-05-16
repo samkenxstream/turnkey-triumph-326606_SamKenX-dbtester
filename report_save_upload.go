@@ -23,6 +23,7 @@ import (
 
 	"github.com/coreos/dbtester/dbtesterpb"
 	"github.com/coreos/dbtester/pkg/remotestorage"
+
 	"github.com/coreos/etcd/pkg/report"
 	humanize "github.com/dustin/go-humanize"
 	"github.com/gyuho/dataframe"
@@ -77,37 +78,37 @@ func (cfg *Config) saveDataLatencyDistributionSummary(st report.Stats) {
 	c1 := dataframe.NewColumn("TOTAL-SECONDS")
 	c1.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", st.Total.Seconds())))
 	if err := fr.AddColumn(c1); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 
 	c2 := dataframe.NewColumn("REQUESTS-PER-SECOND")
 	c2.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", st.RPS)))
 	if err := fr.AddColumn(c2); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 
 	c3 := dataframe.NewColumn("SLOWEST-LATENCY-MS")
 	c3.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*st.Slowest)))
 	if err := fr.AddColumn(c3); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 
 	c4 := dataframe.NewColumn("FASTEST-LATENCY-MS")
 	c4.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*st.Fastest)))
 	if err := fr.AddColumn(c4); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 
 	c5 := dataframe.NewColumn("AVERAGE-LATENCY-MS")
 	c5.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*st.Average)))
 	if err := fr.AddColumn(c5); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 
 	c6 := dataframe.NewColumn("STDDEV-LATENCY-MS")
 	c6.PushBack(dataframe.NewStringValue(fmt.Sprintf("%4.4f", 1000*st.Stddev)))
 	if err := fr.AddColumn(c6); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 
 	if len(st.ErrorDist) > 0 {
@@ -115,19 +116,19 @@ func (cfg *Config) saveDataLatencyDistributionSummary(st report.Stats) {
 			errcol := dataframe.NewColumn(fmt.Sprintf("ERROR: %q", errName))
 			errcol.PushBack(dataframe.NewStringValue(errN))
 			if err := fr.AddColumn(errcol); err != nil {
-				plog.Fatal(err)
+				panic(err)
 			}
 		}
 	} else {
 		errcol := dataframe.NewColumn("ERROR")
 		errcol.PushBack(dataframe.NewStringValue("0"))
 		if err := fr.AddColumn(errcol); err != nil {
-			plog.Fatal(err)
+			panic(err)
 		}
 	}
 
 	if err := fr.CSVHorizontal(cfg.ConfigClientMachineInitial.ClientLatencyDistributionSummaryPath); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 }
 
@@ -147,13 +148,13 @@ func (cfg *Config) saveDataLatencyDistributionPercentile(st report.Stats) {
 
 	fr := dataframe.New()
 	if err := fr.AddColumn(c1); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := fr.AddColumn(c2); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := fr.CSV(cfg.ConfigClientMachineInitial.ClientLatencyDistributionPercentilePath); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 }
 
@@ -200,13 +201,13 @@ func (cfg *Config) saveDataLatencyDistributionAll(st report.Stats) {
 	}
 	fr := dataframe.New()
 	if err := fr.AddColumn(c1); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := fr.AddColumn(c2); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := fr.CSV(cfg.ConfigClientMachineInitial.ClientLatencyDistributionAllPath); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 }
 
@@ -235,26 +236,26 @@ func (cfg *Config) saveDataLatencyThroughputTimeseries(gcfg dbtesterpb.ConfigCli
 
 	fr := dataframe.New()
 	if err := fr.AddColumn(c1); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := fr.AddColumn(c2); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := fr.AddColumn(c3); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := fr.AddColumn(c4); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := fr.AddColumn(c5); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := fr.AddColumn(c6); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 
 	if err := fr.CSV(cfg.ConfigClientMachineInitial.ClientLatencyThroughputTimeseriesPath); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 
 	// aggregate latency by the number of keys
@@ -272,20 +273,20 @@ func (cfg *Config) saveDataLatencyThroughputTimeseries(gcfg dbtesterpb.ConfigCli
 
 	frr := dataframe.New()
 	if err := frr.AddColumn(ctt1); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := frr.AddColumn(ctt2); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := frr.AddColumn(ctt3); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := frr.AddColumn(ctt4); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 
 	if err := frr.CSV(cfg.ConfigClientMachineInitial.ClientLatencyByKeyNumberPath); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 }
 
@@ -305,7 +306,7 @@ func (cfg *Config) UploadToGoogle(databaseID string, targetPath string) error {
 	if !exist(targetPath) {
 		return fmt.Errorf("%q does not exist", targetPath)
 	}
-	u, err := remotestorage.NewGoogleCloudStorage([]byte(cfg.ConfigClientMachineInitial.GoogleCloudStorageKey), cfg.ConfigClientMachineInitial.GoogleCloudProjectName)
+	u, err := remotestorage.NewGoogleCloudStorage(cfg.lg, []byte(cfg.ConfigClientMachineInitial.GoogleCloudStorageKey), cfg.ConfigClientMachineInitial.GoogleCloudProjectName)
 	if err != nil {
 		return err
 	}
@@ -320,7 +321,7 @@ func (cfg *Config) UploadToGoogle(databaseID string, targetPath string) error {
 	var uerr error
 	for k := 0; k < 30; k++ {
 		if uerr = u.UploadFile(cfg.ConfigClientMachineInitial.GoogleCloudStorageBucketName, srcPath, dstPath); uerr != nil {
-			plog.Printf("#%d: error %v while uploading %q", k, uerr, targetPath)
+			cfg.lg.Sugar().Infof("#%d: error %v while uploading %q", k, uerr, targetPath)
 			time.Sleep(2 * time.Second)
 			continue
 		}

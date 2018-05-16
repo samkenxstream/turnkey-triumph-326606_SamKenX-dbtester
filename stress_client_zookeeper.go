@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/samuel/go-zookeeper/zk"
+	"go.uber.org/zap"
 	"golang.org/x/net/context"
 )
 
@@ -41,7 +42,7 @@ func mustCreateConnsZk(endpoints []string, total int64) []*zk.Conn {
 		dialTotal++
 		conn, _, err := zk.Connect([]string{endpoint}, time.Second)
 		if err != nil {
-			plog.Fatal(err)
+			panic(err)
 		}
 		zks[i] = conn
 	}
@@ -88,11 +89,11 @@ func newGetZK(conn *zk.Conn) ReqHandler {
 	}
 }
 
-func getTotalKeysZk(endpoints []string) map[string]int64 {
+func getTotalKeysZk(lg *zap.Logger, endpoints []string) map[string]int64 {
 	rs := make(map[string]int64)
 	stats, ok := zk.FLWSrvr(endpoints, 5*time.Second)
 	if !ok {
-		plog.Printf("getTotalKeysZk failed with %+v", stats)
+		lg.Sugar().Infof("getTotalKeysZk failed with %+v", stats)
 		for _, ep := range endpoints {
 			rs[ep] = 0
 		}

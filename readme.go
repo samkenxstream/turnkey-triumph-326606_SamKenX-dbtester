@@ -22,7 +22,7 @@ import (
 
 // WriteREADME writes README.
 func (cfg *Config) WriteREADME(summary string) error {
-	plog.Printf("writing README at %q", cfg.ConfigAnalyzeMachineREADME.OutputPath)
+	cfg.lg.Sugar().Infof("writing README at %q", cfg.ConfigAnalyzeMachineREADME.OutputPath)
 
 	buf := new(bytes.Buffer)
 	buf.WriteString("\n\n")

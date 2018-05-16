@@ -21,6 +21,7 @@ import (
 
 	"github.com/coreos/dbtester/dbtesterpb"
 
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
 
@@ -44,11 +45,14 @@ func (cfg *Config) BroadcaseRequest(databaseID string, op dbtesterpb.Operation) 
 		ep := gcfg.AgentEndpoints[i]
 
 		go func(i int, ep string, req *dbtesterpb.Request) {
-			plog.Infof("sending message [index: %d | operation: %q | database: %q | endpoint: %q]", i, op, req.DatabaseID, ep)
-
+			cfg.lg.Info("sending message",
+				zap.Int("index", i),
+				zap.String("endpoint", ep),
+				zap.String("operation", op.String()),
+				zap.String("database", req.DatabaseID.String()),
+			)
 			conn, err := grpc.Dial(ep, grpc.WithInsecure())
 			if err != nil {
-				plog.Errorf("grpc.Dial connecting error (%v) [index: %d | endpoint: %q]", err, i, ep)
 				errc <- fmt.Errorf("%v (%q)", err, ep)
 				return
 			}
@@ -61,12 +65,17 @@ func (cfg *Config) BroadcaseRequest(databaseID string, op dbtesterpb.Operation) 
 			resp, err := cli.Transfer(ctx, req)
 			cancel()
 			if err != nil {
-				plog.Errorf("cli.Transfer error (%v) [index: %d | endpoint: %q]", err, i, ep)
 				errc <- fmt.Errorf("%v (%q)", err, ep)
 				return
 			}
+			cfg.lg.Info("received response",
+				zap.Int("index", i),
+				zap.String("endpoint", ep),
+				zap.String("operation", op.String()),
+				zap.String("database", req.DatabaseID.String()),
+				zap.String("response", fmt.Sprintf("%+v", resp)),
+			)
 
-			plog.Infof("got response [index: %d | endpoint: %q | response: %+v]", i, ep, resp)
 			donec <- result{idx: i, r: *resp}
 		}(i, ep, req)
 

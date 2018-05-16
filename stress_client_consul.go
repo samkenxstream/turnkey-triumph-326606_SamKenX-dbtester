@@ -16,6 +16,7 @@ package dbtester
 
 import (
 	consulapi "github.com/hashicorp/consul/api"
+	"go.uber.org/zap"
 	"golang.org/x/net/context"
 )
 
@@ -35,7 +36,7 @@ func mustCreateConnsConsul(endpoints []string, total int64) []*consulapi.KV {
 		dcfg.Address = endpoint // x.x.x.x:8500
 		cli, err := consulapi.NewClient(dcfg)
 		if err != nil {
-			plog.Fatal(err)
+			panic(err)
 		}
 
 		css[i] = cli.KV()
@@ -67,7 +68,7 @@ func newGetConsul(conn *consulapi.KV) ReqHandler {
 	}
 }
 
-func getTotalKeysConsul(endpoints []string) map[string]int64 {
+func getTotalKeysConsul(lg *zap.Logger, endpoints []string) map[string]int64 {
 	rs := make(map[string]int64)
 	for _, ep := range endpoints {
 		rs[ep] = 0 // not supported in consul

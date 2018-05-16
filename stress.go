@@ -27,6 +27,7 @@ import (
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/pkg/report"
 	consulapi "github.com/hashicorp/consul/api"
+	"go.uber.org/zap"
 	"golang.org/x/net/context"
 	"golang.org/x/time/rate"
 )
@@ -58,11 +59,11 @@ func (cfg *Config) Stress(databaseID string) error {
 
 	switch gcfg.ConfigClientMachineBenchmarkOptions.Type {
 	case "write":
-		plog.Println("write generateReport is started...")
+		cfg.lg.Info("write generateReport is started...")
 
 		// fixed number of client numbers
 		if len(gcfg.ConfigClientMachineBenchmarkOptions.ConnectionClientNumbers) == 0 {
-			h, done := newWriteHandlers(gcfg)
+			h, done := newWriteHandlers(cfg.lg, gcfg)
 			reqGen := func(inflightReqs chan<- request) { generateWrites(gcfg, 0, vals, inflightReqs) }
 			cfg.generateReport(gcfg, h, done, reqGen)
 
@@ -81,13 +82,13 @@ func (cfg *Config) Stress(databaseID string) error {
 				ncfg.DatabaseIDToConfigClientMachineAgentControl[databaseID] = copied
 
 				go func() {
-					plog.Infof("signaling agent with client number %d", copied.ConfigClientMachineBenchmarkOptions.ClientNumber)
+					cfg.lg.Sugar().Infof("signaling agent with client number %d", copied.ConfigClientMachineBenchmarkOptions.ClientNumber)
 					if _, err := (&ncfg).BroadcaseRequest(databaseID, dbtesterpb.Operation_Heartbeat); err != nil {
-						plog.Panic(err)
+						panic(err)
 					}
 				}()
 
-				h, done := newWriteHandlers(copied)
+				h, done := newWriteHandlers(cfg.lg, copied)
 				reqGen := func(inflightReqs chan<- request) { generateWrites(copied, reqCompleted, vals, inflightReqs) }
 				b := newBenchmark(copied.ConfigClientMachineBenchmarkOptions.RequestNumber, copied.ConfigClientMachineBenchmarkOptions.ClientNumber, h, done, reqGen)
 
@@ -96,15 +97,15 @@ func (cfg *Config) Stress(databaseID string) error {
 				b.startRequests()
 				b.waitRequestsEnd()
 
-				plog.Print("finishing reports...")
+				cfg.lg.Info("finishing reports...")
 				now := time.Now()
 				b.finishReports()
-				plog.Printf("finished reports... took %v", time.Since(now))
+				cfg.lg.Sugar().Infof("finished reports... took %v", time.Since(now))
 
 				reqCompleted += rs[i]
 				stats = append(stats, b.stats)
 			}
-			plog.Info("combining all reports")
+			cfg.lg.Info("combining all reports")
 
 			combined := report.Stats{ErrorDist: make(map[string]int)}
 			combinedClientNumber := make([]int64, 0, gcfg.ConfigClientMachineBenchmarkOptions.RequestNumber)
@@ -150,7 +151,7 @@ func (cfg *Config) Stress(databaseID string) error {
 
 			combined.Average = combined.AvgTotal / float64(len(combined.Lats))
 			combined.RPS = float64(len(combined.Lats)) / combined.Total.Seconds()
-			plog.Printf("got total %d data points and total %f seconds (RPS %f)", len(combined.Lats), combined.Total.Seconds(), combined.RPS)
+			cfg.lg.Sugar().Infof("got total %d data points and total %f seconds (RPS %f)", len(combined.Lats), combined.Total.Seconds(), combined.RPS)
 
 			for i := range combined.Lats {
 				dev := combined.Lats[i] - combined.Average
@@ -164,15 +165,15 @@ func (cfg *Config) Stress(databaseID string) error {
 				combined.Slowest = combined.Lats[len(combined.Lats)-1]
 			}
 
-			plog.Info("combined all reports")
+			cfg.lg.Info("combined all reports")
 			printStats(combined)
 			cfg.saveAllStats(gcfg, combined, combinedClientNumber)
 		}
 
-		plog.Println("write generateReport is finished...")
+		cfg.lg.Info("write generateReport is finished...")
 
-		plog.Println("checking total keys on", gcfg.DatabaseEndpoints)
-		var totalKeysFunc func([]string) map[string]int64
+		cfg.lg.Info("checking total keys on", zap.Strings("endpoints", gcfg.DatabaseEndpoints))
+		var totalKeysFunc func(*zap.Logger, []string) map[string]int64
 		switch gcfg.DatabaseID {
 		case "etcd__other", "etcd__tip", "etcd__v3_2", "etcd__v3_3":
 			totalKeysFunc = getTotalKeysEtcdv3
@@ -181,10 +182,10 @@ func (cfg *Config) Stress(databaseID string) error {
 		case "consul__v1_0_2", "cetcd__beta":
 			totalKeysFunc = getTotalKeysConsul
 		default:
-			plog.Panicf("%q is unknown database ID", gcfg.DatabaseID)
+			cfg.lg.Fatal("unknown database ID", zap.String("database", gcfg.DatabaseID))
 		}
-		for k, v := range totalKeysFunc(gcfg.DatabaseEndpoints) {
-			plog.Infof("expected write total results [expected_total: %d | database: %q | endpoint: %q | number_of_keys: %d]",
+		for k, v := range totalKeysFunc(cfg.lg, gcfg.DatabaseEndpoints) {
+			cfg.lg.Sugar().Infof("expected write total results [expected_total: %d | database: %q | endpoint: %q | number_of_keys: %d]",
 				gcfg.ConfigClientMachineBenchmarkOptions.RequestNumber, gcfg.DatabaseID, k, v)
 		}
 
@@ -193,7 +194,7 @@ func (cfg *Config) Stress(databaseID string) error {
 
 		switch gcfg.DatabaseID {
 		case "etcd__other", "etcd__tip", "etcd__v3_2", "etcd__v3_3":
-			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
+			cfg.lg.Sugar().Infof("write started [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
 			var err error
 			for i := 0; i < 7; i++ {
 				clients := mustCreateClientsEtcdv3(gcfg.DatabaseEndpoints, etcdv3ClientCfg{
@@ -204,16 +205,16 @@ func (cfg *Config) Stress(databaseID string) error {
 				if err != nil {
 					continue
 				}
-				plog.Infof("write done [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
+				cfg.lg.Sugar().Infof("write done [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
 				break
 			}
 			if err != nil {
-				plog.Errorf("write error [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
+				cfg.lg.Sugar().Fatalf("write error [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
 				os.Exit(1)
 			}
 
 		case "zookeeper__r3_5_3_beta", "zetcd__beta":
-			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
+			cfg.lg.Sugar().Infof("write started [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
 			var err error
 			for i := 0; i < 7; i++ {
 				conns := mustCreateConnsZk(gcfg.DatabaseEndpoints, gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber)
@@ -224,16 +225,16 @@ func (cfg *Config) Stress(databaseID string) error {
 				for j := range conns {
 					conns[j].Close()
 				}
-				plog.Infof("write done [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
+				cfg.lg.Sugar().Infof("write done [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
 				break
 			}
 			if err != nil {
-				plog.Errorf("write error [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
+				cfg.lg.Sugar().Fatalf("write error [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
 				os.Exit(1)
 			}
 
 		case "consul__v1_0_2", "cetcd__beta":
-			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
+			cfg.lg.Sugar().Infof("write started [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
 			var err error
 			for i := 0; i < 7; i++ {
 				clients := mustCreateConnsConsul(gcfg.DatabaseEndpoints, gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber)
@@ -241,26 +242,26 @@ func (cfg *Config) Stress(databaseID string) error {
 				if err != nil {
 					continue
 				}
-				plog.Infof("write done [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
+				cfg.lg.Sugar().Infof("write done [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
 				break
 			}
 			if err != nil {
-				plog.Errorf("write done [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
+				cfg.lg.Sugar().Fatalf("write done [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
 				os.Exit(1)
 			}
 
 		default:
-			plog.Panicf("%q is unknown database ID", gcfg.DatabaseID)
+			panic(fmt.Sprintf("%q is unknown database ID", gcfg.DatabaseID))
 		}
 
 		h, done := newReadHandlers(gcfg)
 		reqGen := func(inflightReqs chan<- request) { generateReads(gcfg, key, inflightReqs) }
 		cfg.generateReport(gcfg, h, done, reqGen)
-		plog.Println("read generateReport is finished...")
+		cfg.lg.Info("read generateReport is finished...")
 
 	case "read-oneshot":
 		key, value := sameKey(gcfg.ConfigClientMachineBenchmarkOptions.KeySizeBytes), vals.strings[0]
-		plog.Infof("writing key for read-oneshot [key: %q | database: %q]", key, gcfg.DatabaseID)
+		cfg.lg.Sugar().Infof("writing key for read-oneshot [key: %q | database: %q]", key, gcfg.DatabaseID)
 		var err error
 		switch gcfg.DatabaseID {
 		case "etcd__other", "etcd__tip", "etcd__v3_2", "etcd__v3_3":
@@ -281,17 +282,17 @@ func (cfg *Config) Stress(databaseID string) error {
 			_, err = clients[0].Put(&consulapi.KVPair{Key: key, Value: vals.bytes[0]}, nil)
 
 		default:
-			plog.Panicf("%q is unknown database ID", gcfg.DatabaseID)
+			panic(fmt.Sprintf("%q is unknown database ID", gcfg.DatabaseID))
 		}
 		if err != nil {
-			plog.Errorf("write error on read-oneshot (%v)", err)
+			cfg.lg.Sugar().Fatalf("write error on read-oneshot (%v)", err)
 			os.Exit(1)
 		}
 
-		h := newReadOneshotHandlers(gcfg)
+		h := newReadOneshotHandlers(cfg.lg, gcfg)
 		reqGen := func(inflightReqs chan<- request) { generateReads(gcfg, key, inflightReqs) }
 		cfg.generateReport(gcfg, h, nil, reqGen)
-		plog.Println("read-oneshot generateReport is finished...")
+		cfg.lg.Info("read-oneshot generateReport is finished...")
 	}
 
 	return nil
@@ -313,6 +314,7 @@ func newReadHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) (rhs []Req
 				clients[i].Close()
 			}
 		}
+
 	case "zookeeper__r3_5_3_beta", "zetcd__beta":
 		conns := mustCreateConnsZk(gcfg.DatabaseEndpoints, gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber)
 		for i := range conns {
@@ -323,18 +325,20 @@ func newReadHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) (rhs []Req
 				conns[i].Close()
 			}
 		}
+
 	case "consul__v1_0_2", "cetcd__beta":
 		conns := mustCreateConnsConsul(gcfg.DatabaseEndpoints, gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber)
 		for i := range conns {
 			rhs[i] = newGetConsul(conns[i])
 		}
+
 	default:
-		plog.Panicf("%q is unknown database ID", gcfg.DatabaseID)
+		panic(fmt.Sprintf("%q is unknown database ID", gcfg.DatabaseID))
 	}
 	return rhs, done
 }
 
-func newWriteHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) (rhs []ReqHandler, done func()) {
+func newWriteHandlers(lg *zap.Logger, gcfg dbtesterpb.ConfigClientMachineAgentControl) (rhs []ReqHandler, done func()) {
 	rhs = make([]ReqHandler, gcfg.ConfigClientMachineBenchmarkOptions.ClientNumber)
 	switch gcfg.DatabaseID {
 	case "etcd__other", "etcd__tip", "etcd__v3_2", "etcd__v3_3":
@@ -346,10 +350,12 @@ func newWriteHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) (rhs []Re
 			rhs[i] = newPutEtcd3(etcdClients[i])
 		}
 
-		// TODO: this "done" function may decrease throughput at the end
 		done = func() {
+			// this "done" function may decrease throughput at the end
 			for i := range etcdClients {
-				etcdClients[i].Close()
+				go func(idx int) {
+					etcdClients[idx].Close()
+				}(i)
 			}
 		}
 
@@ -357,7 +363,7 @@ func newWriteHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) (rhs []Re
 		if gcfg.ConfigClientMachineBenchmarkOptions.SameKey {
 			key := sameKey(gcfg.ConfigClientMachineBenchmarkOptions.KeySizeBytes)
 			valueBts := randBytes(gcfg.ConfigClientMachineBenchmarkOptions.ValueSizeBytes)
-			plog.Infof("write started [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
+			lg.Sugar().Infof("write started [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
 			var err error
 			for i := 0; i < 7; i++ {
 				conns := mustCreateConnsZk(gcfg.DatabaseEndpoints, gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber)
@@ -368,11 +374,11 @@ func newWriteHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) (rhs []Re
 				for j := range conns {
 					conns[j].Close()
 				}
-				plog.Infof("write done [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
+				lg.Sugar().Infof("write done [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
 				break
 			}
 			if err != nil {
-				plog.Errorf("write error [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
+				lg.Sugar().Fatalf("write error [request: PUT | key: %q | database: %q]", key, gcfg.DatabaseID)
 				os.Exit(1)
 			}
 		}
@@ -387,27 +393,31 @@ func newWriteHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) (rhs []Re
 		}
 		done = func() {
 			for i := range conns {
-				conns[i].Close()
+				go func(idx int) {
+					conns[idx].Close()
+				}(i)
 			}
 		}
+
 	case "consul__v1_0_2", "cetcd__beta":
 		conns := mustCreateConnsConsul(gcfg.DatabaseEndpoints, gcfg.ConfigClientMachineBenchmarkOptions.ConnectionNumber)
 		for i := range conns {
 			rhs[i] = newPutConsul(conns[i])
 		}
+
 	default:
-		plog.Panicf("%q is unknown database ID", gcfg.DatabaseID)
+		lg.Sugar().Fatalf("%q is unknown database ID", gcfg.DatabaseID)
 	}
 
 	for k := range rhs {
 		if rhs[k] == nil {
-			plog.Panicf("%d-th write handler is nil (out of %d)", k, len(rhs))
+			lg.Sugar().Fatalf("%d-th write handler is nil (out of %d)", k, len(rhs))
 		}
 	}
 	return
 }
 
-func newReadOneshotHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) []ReqHandler {
+func newReadOneshotHandlers(lg *zap.Logger, gcfg dbtesterpb.ConfigClientMachineAgentControl) []ReqHandler {
 	rhs := make([]ReqHandler, gcfg.ConfigClientMachineBenchmarkOptions.ClientNumber)
 	switch gcfg.DatabaseID {
 	case "etcd__other", "etcd__tip", "etcd__v3_2", "etcd__v3_3":
@@ -421,6 +431,7 @@ func newReadOneshotHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) []R
 				return newGetEtcd3(conns[0])(ctx, req)
 			}
 		}
+
 	case "zookeeper__r3_5_3_beta", "zetcd__beta":
 		for i := range rhs {
 			rhs[i] = func(ctx context.Context, req *request) error {
@@ -429,6 +440,7 @@ func newReadOneshotHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) []R
 				return newGetZK(conns[0])(ctx, req)
 			}
 		}
+
 	case "consul__v1_0_2", "cetcd__beta":
 		for i := range rhs {
 			rhs[i] = func(ctx context.Context, req *request) error {
@@ -437,7 +449,7 @@ func newReadOneshotHandlers(gcfg dbtesterpb.ConfigClientMachineAgentControl) []R
 			}
 		}
 	default:
-		plog.Panicf("%q is unknown database ID", gcfg.DatabaseID)
+		lg.Sugar().Fatalf("%q is unknown database ID", gcfg.DatabaseID)
 	}
 	return rhs
 }
@@ -480,7 +492,7 @@ func generateReads(gcfg dbtesterpb.ConfigClientMachineAgentControl, key string, 
 			}
 			inflightReqs <- request{consulOp: op}
 		default:
-			plog.Panicf("%q is unknown database ID", gcfg.DatabaseID)
+			panic(fmt.Sprintf("%q is unknown database ID", gcfg.DatabaseID))
 		}
 	}
 }
@@ -516,12 +528,15 @@ func generateWrites(gcfg dbtesterpb.ConfigClientMachineAgentControl, startIdx in
 		switch gcfg.DatabaseID {
 		case "etcd__other", "etcd__tip", "etcd__v3_2", "etcd__v3_3":
 			inflightReqs <- request{etcdv3Op: clientv3.OpPut(k, vs)}
+
 		case "zookeeper__r3_5_3_beta", "zetcd__beta":
 			inflightReqs <- request{zkOp: zkOp{key: "/" + k, value: v}}
+
 		case "consul__v1_0_2", "cetcd__beta":
 			inflightReqs <- request{consulOp: consulOp{key: k, value: v}}
+
 		default:
-			plog.Panicf("%q is unknown database ID", gcfg.DatabaseID)
+			panic(fmt.Sprintf("%q is unknown database ID", gcfg.DatabaseID))
 		}
 	}
 }

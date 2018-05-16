@@ -21,6 +21,8 @@ import (
 	"strings"
 
 	"github.com/coreos/dbtester/dbtesterpb"
+
+	"go.uber.org/zap"
 )
 
 // startConsul starts Consul.
@@ -70,14 +72,14 @@ func startConsul(fs *flags, t *transporterServer) error {
 	cmd.Stderr = t.databaseLogFile
 	cs := fmt.Sprintf("%s %s", cmd.Path, flagString)
 
-	plog.Infof("starting database %q", cs)
+	t.lg.Info("starting database", zap.String("command", cs))
 	if err := cmd.Start(); err != nil {
 		return err
 	}
 	t.cmd = cmd
 	t.cmdWait = make(chan struct{})
 	t.pid = int64(cmd.Process.Pid)
+	t.lg.Info("started database", zap.String("command", cs), zap.Int64("pid", t.pid))
 
-	plog.Infof("started database %q (PID: %d)", cs, t.pid)
 	return nil
 }

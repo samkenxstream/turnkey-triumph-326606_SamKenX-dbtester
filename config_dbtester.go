@@ -22,6 +22,7 @@ import (
 
 	"github.com/coreos/dbtester/dbtesterpb"
 
+	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
 
@@ -37,6 +38,8 @@ func MakeTag(desc string) string {
 
 // Config configures dbtester control clients.
 type Config struct {
+	lg *zap.Logger
+
 	TestTitle       string `yaml:"test_title"`
 	TestDescription string `yaml:"test_description"`
 
@@ -62,6 +65,12 @@ func ReadConfig(fpath string, analyze bool) (*Config, error) {
 	if err = yaml.Unmarshal(bts, &cfg); err != nil {
 		return nil, err
 	}
+
+	lg, lerr := zap.NewProduction()
+	if lerr != nil {
+		return nil, lerr
+	}
+	cfg.lg = lg
 
 	for _, id := range cfg.AllDatabaseIDList {
 		if !dbtesterpb.IsValidDatabaseID(id) {

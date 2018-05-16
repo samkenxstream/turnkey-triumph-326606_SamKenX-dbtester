@@ -30,6 +30,7 @@ import (
 	"github.com/gyuho/linux-inspect/inspect"
 	"github.com/gyuho/linux-inspect/top"
 	"github.com/spf13/cobra"
+	"go.uber.org/zap"
 )
 
 // Command implements 'control' command.
@@ -47,11 +48,11 @@ var networkInterface string
 func init() {
 	dn, err := df.GetDevice("/")
 	if err != nil {
-		plog.Warningf("cannot get disk device mounted at '/' (%v)", err)
+		lg.Warn("cannot get disk device mounted at '/'", zap.Error(err))
 	}
 	nm, err := netutil.GetDefaultInterfaces()
 	if err != nil {
-		plog.Warningf("cannot detect default network interface (%v)", err)
+		lg.Warn("cannot detect default network interface", zap.Error(err))
 	}
 	var nt string
 	for k := range nm {
@@ -91,7 +92,13 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 	}
 
 	pid := int64(os.Getpid())
-	plog.Infof("starting collecting system metrics at %q [disk device: %q | network interface: %q | PID: %d]", cfg.ConfigClientMachineInitial.ClientSystemMetricsPath, diskDevice, networkInterface, pid)
+	lg.Info(
+		"starting collecting system metrics",
+		zap.String("system-metrics-path", cfg.ConfigClientMachineInitial.ClientSystemMetricsPath),
+		zap.String("disk-device", diskDevice),
+		zap.String("network-device", networkInterface),
+		zap.Int64("pid", pid),
+	)
 	if err = os.RemoveAll(cfg.ConfigClientMachineInitial.ClientSystemMetricsPath); err != nil {
 		return err
 	}
@@ -119,44 +126,47 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 			select {
 			case <-time.After(time.Second):
 				if err := metricsCSV.Add(); err != nil {
-					plog.Errorf("inspect.CSV.Add error (%v)", err)
+					lg.Warn("inspect.CSV.Add error", zap.Error(err))
 					continue
 				}
 
 			case <-donec:
-				plog.Infof("finishing collecting system metrics; saving CSV at %q", cfg.ConfigClientMachineInitial.ClientSystemMetricsPath)
+				lg.Info("finishing collecting system metrics; saving CSV", zap.String("path", cfg.ConfigClientMachineInitial.ClientSystemMetricsPath))
 
 				if err := metricsCSV.Save(); err != nil {
-					plog.Errorf("inspect.CSV.Save(%q) error %v", metricsCSV.FilePath, err)
+					lg.Warn("inspect.CSV.Save failed", zap.String("path", metricsCSV.FilePath), zap.Error(err))
 				} else {
-					plog.Infof("CSV saved at %q", metricsCSV.FilePath)
+					lg.Info("saved CSV", zap.String("path", metricsCSV.FilePath))
 				}
 
 				interpolated, err := metricsCSV.Interpolate()
 				if err != nil {
-					plog.Fatalf("inspect.CSV.Interpolate(%q) failed with %v", metricsCSV.FilePath, err)
+					lg.Fatal("inspect.CSV.Interpolate failed", zap.String("path", metricsCSV.FilePath), zap.Error(err))
 				}
 				interpolated.FilePath = cfg.ConfigClientMachineInitial.ClientSystemMetricsInterpolatedPath
 				if err := interpolated.Save(); err != nil {
-					plog.Errorf("inspect.CSV.Save(%q) error %v", interpolated.FilePath, err)
+					lg.Warn("inspect.CSV.Save failed", zap.String("path", interpolated.FilePath), zap.Error(err))
 				} else {
-					plog.Infof("CSV saved at %q", interpolated.FilePath)
+					lg.Info("saved CSV", zap.String("path", interpolated.FilePath))
 				}
 
 				close(sysdonec)
-				plog.Infof("finished collecting system metrics")
+
+				lg.Info("finished collecting system metrics")
 				return
 			}
 		}
 	}()
 
 	no, nerr := ntp.DefaultSync()
-	plog.Infof("npt update output: %q", no)
-	plog.Infof("npt update error: %v", nerr)
+	lg.Info("npt update output", zap.String("output", no))
+	if nerr != nil {
+		lg.Warn("ntp update failed", zap.Error(nerr))
+	}
 
 	println()
 	if gcfg.ConfigClientMachineBenchmarkSteps.Step1StartDatabase {
-		plog.Info("step 1: starting databases...")
+		lg.Info("step 1: starting databases...")
 		if _, err = cfg.BroadcaseRequest(databaseID, dbtesterpb.Operation_Start); err != nil {
 			return err
 		}
@@ -166,7 +176,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 		println()
 		time.Sleep(5 * time.Second)
 		println()
-		plog.Info("step 2: starting tests...")
+		lg.Info("step 2: starting tests...")
 		if err = cfg.Stress(databaseID); err != nil {
 			return err
 		}
@@ -176,25 +186,25 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 		println()
 		time.Sleep(5 * time.Second)
 		println()
-		plog.Info("step 3: stopping tests...")
+		lg.Info("step 3: stopping tests...")
 		var idxToResp map[int]dbtesterpb.Response
 		for i := 0; i < 5; i++ {
 			idxToResp, err = cfg.BroadcaseRequest(databaseID, dbtesterpb.Operation_Stop)
 			if err != nil {
-				plog.Warningf("#%d: STOP failed at %v", i, err)
+				lg.Warn("STOP failed", zap.Int("i", i), zap.Error(err))
 				time.Sleep(300 * time.Millisecond)
 				continue
 			}
 			break
 		}
 		for idx := range gcfg.AgentEndpoints {
-			plog.Infof("stop response: %+v", idxToResp[idx])
+			lg.Info("stop response", zap.String("response", fmt.Sprintf("%+v", idxToResp[idx])))
 		}
 
 		println()
 		time.Sleep(time.Second)
 		println()
-		plog.Info("step 3: saving responses...")
+		lg.Info("step 3: saving responses...")
 		if err = cfg.SaveDiskSpaceUsageSummary(databaseID, idxToResp); err != nil {
 			return err
 		}
@@ -207,7 +217,7 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 		println()
 		time.Sleep(3 * time.Second)
 		println()
-		plog.Info("step 4: uploading logs...")
+		lg.Info("step 4: uploading logs...")
 		if err = cfg.UploadToGoogle(databaseID, cfg.ConfigClientMachineInitial.LogPath); err != nil {
 			return err
 		}
@@ -237,6 +247,6 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	plog.Info("all done!")
+	lg.Info("all done!")
 	return nil
 }

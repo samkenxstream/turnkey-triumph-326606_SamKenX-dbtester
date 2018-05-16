@@ -24,6 +24,8 @@ import (
 	"strings"
 
 	"github.com/coreos/dbtester/dbtesterpb"
+
+	"go.uber.org/zap"
 )
 
 var (
@@ -101,10 +103,15 @@ func startZookeeper(fs *flags, t *transporterServer) error {
 		if t.req.Flag_Zookeeper_R3_5_3Beta == nil {
 			return fmt.Errorf("request 'Flag_Zookeeper_R3_5_3Beta' is nil")
 		}
-		plog.Infof("writing Zookeeper myid file %d to %s", t.req.Flag_Zookeeper_R3_5_3Beta.MyID, ipath)
+		t.lg.Info(
+			"writing Zookeeper myid file",
+			zap.Int("myid", int(t.req.Flag_Zookeeper_R3_5_3Beta.MyID)),
+			zap.String("path", ipath),
+		)
 		if err := toFile(fmt.Sprintf("%d", t.req.Flag_Zookeeper_R3_5_3Beta.MyID), ipath); err != nil {
 			return err
 		}
+
 	default:
 		return fmt.Errorf("database ID %q is not supported", t.req.DatabaseID)
 	}
@@ -136,7 +143,7 @@ func startZookeeper(fs *flags, t *transporterServer) error {
 		return err
 	}
 	zctxt := buf.String()
-	plog.Infof("writing Zookeeper config file %q (config %q)", fs.zkConfig, zctxt)
+	t.lg.Info("writing Zookeeper config file", zap.String("path", fs.zkConfig))
 	if err := toFile(zctxt, fs.zkConfig); err != nil {
 		return err
 	}
@@ -178,14 +185,14 @@ func startZookeeper(fs *flags, t *transporterServer) error {
 	cmd.Stderr = t.databaseLogFile
 	cs := fmt.Sprintf("%s %s", cmd.Path, strings.Join(args[1:], " "))
 
-	plog.Infof("starting database %q", cs)
+	t.lg.Info("starting database", zap.String("command", cs))
 	if err := cmd.Start(); err != nil {
 		return err
 	}
 	t.cmd = cmd
 	t.cmdWait = make(chan struct{})
 	t.pid = int64(cmd.Process.Pid)
+	t.lg.Info("started database", zap.String("command", cs), zap.Int64("pid", t.pid))
 
-	plog.Infof("started database %q (PID: %d)", cs, t.pid)
 	return nil
 }

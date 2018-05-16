@@ -74,7 +74,7 @@ func do(configPath string) error {
 		testgroup := cfg.DatabaseIDToConfigClientMachineAgentControl[databaseID]
 		testdata := cfg.DatabaseIDToConfigAnalyzeMachineInitial[databaseID]
 
-		plog.Printf("reading system metrics data for %s", databaseID)
+		lg.Sugar().Info("reading system metrics data for %s", databaseID)
 		ad, err := readSystemMetricsAll(testdata.ServerSystemMetricsInterpolatedPathList...)
 		if err != nil {
 			return err
@@ -516,7 +516,7 @@ func do(configPath string) error {
 		}
 	}
 
-	plog.Printf("saving summary data to %q", cfg.ConfigAnalyzeMachineAllAggregatedOutput.AllAggregatedOutputPathCSV)
+	lg.Sugar().Info("saving summary data to %q", cfg.ConfigAnalyzeMachineAllAggregatedOutput.AllAggregatedOutputPathCSV)
 	aggRowsForSummaryCSV := [][]string{
 		row00Header,
 		row01TotalSeconds,
@@ -574,7 +574,7 @@ func do(configPath string) error {
 		return err
 	}
 
-	plog.Printf("saving summary data to %q", cfg.ConfigAnalyzeMachineAllAggregatedOutput.AllAggregatedOutputPathTXT)
+	lg.Sugar().Info("saving summary data to %q", cfg.ConfigAnalyzeMachineAllAggregatedOutput.AllAggregatedOutputPathTXT)
 	aggRowsForSummaryTXT := [][]string{
 		row00Header,
 		row01TotalSeconds,
@@ -640,7 +640,7 @@ func do(configPath string) error {
 	}
 
 	// KEYS, MIN-LATENCY-MS, AVG-LATENCY-MS, MAX-LATENCY-MS
-	plog.Info("combining all latency data by keys")
+	lg.Sugar().Info("combining all latency data by keys")
 	allLatencyFrame := dataframe.New()
 	for _, databaseID := range cfg.AllDatabaseIDList {
 		testdata := cfg.DatabaseIDToConfigAnalyzeMachineInitial[databaseID]
@@ -686,7 +686,7 @@ func do(configPath string) error {
 		}
 	}
 	// KEYS, MIN-VMRSS-MB, AVG-VMRSS-MB, MAX-VMRSS-MB
-	plog.Info("combining all server memory usage by keys")
+	lg.Sugar().Info("combining all server memory usage by keys")
 	allMemoryFrame := dataframe.New()
 	for _, databaseID := range cfg.AllDatabaseIDList {
 		testdata := cfg.DatabaseIDToConfigAnalyzeMachineInitial[databaseID]
@@ -732,7 +732,7 @@ func do(configPath string) error {
 		}
 	}
 	// KEYS, AVG-READ-BYTES-NUM-DELTA, AVG-READ-BYTES
-	plog.Info("combining all server read bytes delta by keys")
+	lg.Sugar().Info("combining all server read bytes delta by keys")
 	allReadBytesDeltaFrame := dataframe.New()
 	for _, databaseID := range cfg.AllDatabaseIDList {
 		testdata := cfg.DatabaseIDToConfigAnalyzeMachineInitial[databaseID]
@@ -769,7 +769,7 @@ func do(configPath string) error {
 		}
 	}
 	// KEYS, AVG-WRITE-BYTES-NUM-DELTA, AVG-WRITE-BYTES
-	plog.Info("combining all server write bytes delta by keys")
+	lg.Sugar().Info("combining all server write bytes delta by keys")
 	allWriteBytesDeltaFrame := dataframe.New()
 	for _, databaseID := range cfg.AllDatabaseIDList {
 		testdata := cfg.DatabaseIDToConfigAnalyzeMachineInitial[databaseID]
@@ -815,7 +815,7 @@ func do(configPath string) error {
 		}
 		allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.svg")
 		allLatencyFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY.png")
-		plog.Printf("plotting %v", allLatencyFrameCfg.OutputPathList)
+		lg.Sugar().Info("plotting %v", allLatencyFrameCfg.OutputPathList)
 		var pairs []pair
 		allCols := allLatencyFrame.Columns()
 		for i := 0; i < len(allCols)-3; i += 4 {
@@ -851,7 +851,7 @@ func do(configPath string) error {
 		}
 		allLatencyFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.svg")
 		allLatencyFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-LATENCY-MS-BY-KEY-ERROR-POINTS.png")
-		plog.Printf("plotting %v", allLatencyFrameCfg.OutputPathList)
+		lg.Sugar().Info("plotting %v", allLatencyFrameCfg.OutputPathList)
 		var triplets []triplet
 		allCols := allLatencyFrame.Columns()
 		for i := 0; i < len(allCols)-3; i += 4 {
@@ -894,7 +894,7 @@ func do(configPath string) error {
 		}
 		allMemoryFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.svg")
 		allMemoryFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY.png")
-		plog.Printf("plotting %v", allMemoryFrameCfg.OutputPathList)
+		lg.Sugar().Info("plotting %v", allMemoryFrameCfg.OutputPathList)
 		var pairs []pair
 		allCols := allMemoryFrame.Columns()
 		for i := 0; i < len(allCols)-3; i += 4 {
@@ -930,7 +930,7 @@ func do(configPath string) error {
 		}
 		allMemoryFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.svg")
 		allMemoryFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-VMRSS-MB-BY-KEY-ERROR-POINTS.png")
-		plog.Printf("plotting %v", allMemoryFrameCfg.OutputPathList)
+		lg.Sugar().Info("plotting %v", allMemoryFrameCfg.OutputPathList)
 		var triplets []triplet
 		allCols := allMemoryFrame.Columns()
 		for i := 0; i < len(allCols)-3; i += 4 {
@@ -973,7 +973,7 @@ func do(configPath string) error {
 		}
 		allReadBytesDeltaFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-READ-BYTES-NUM-DELTA-BY-KEY.svg")
 		allReadBytesDeltaFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-READ-BYTES-NUM-DELTA-BY-KEY.png")
-		plog.Printf("plotting %v", allReadBytesDeltaFrameCfg.OutputPathList)
+		lg.Sugar().Info("plotting %v", allReadBytesDeltaFrameCfg.OutputPathList)
 		var pairs []pair
 		allCols := allReadBytesDeltaFrame.Columns()
 		for i := 0; i < len(allCols)-2; i += 3 {
@@ -999,7 +999,7 @@ func do(configPath string) error {
 		}
 		allWriteBytesDeltaFrameCfg.OutputPathList[0] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-WRITE-BYTES-NUM-DELTA-BY-KEY.svg")
 		allWriteBytesDeltaFrameCfg.OutputPathList[1] = filepath.Join(filepath.Dir(cfg.AnalyzePlotList[0].OutputPathList[0]), "AVG-WRITE-BYTES-NUM-DELTA-BY-KEY.png")
-		plog.Printf("plotting %v", allWriteBytesDeltaFrameCfg.OutputPathList)
+		lg.Sugar().Info("plotting %v", allWriteBytesDeltaFrameCfg.OutputPathList)
 		var pairs []pair
 		allCols := allWriteBytesDeltaFrame.Columns()
 		for i := 0; i < len(allCols)-2; i += 3 {
@@ -1017,9 +1017,9 @@ func do(configPath string) error {
 		}
 	}
 
-	plog.Println("combining data for plotting")
+	lg.Info("combining data for plotting")
 	for _, plotConfig := range cfg.AnalyzePlotList {
-		plog.Printf("plotting %q", plotConfig.Column)
+		lg.Sugar().Info("plotting %q", plotConfig.Column)
 		var clientNumColumns []dataframe.Column
 		var pairs []pair
 		var dataColumns []dataframe.Column
@@ -1046,7 +1046,7 @@ func do(configPath string) error {
 			return err
 		}
 
-		plog.Printf("saving data for %q of all database", plotConfig.Column)
+		lg.Sugar().Info("saving data for %q of all database", plotConfig.Column)
 		nf1, err := dataframe.NewFromColumns(nil, dataColumns...)
 		if err != nil {
 			return err
@@ -1055,7 +1055,7 @@ func do(configPath string) error {
 			return err
 		}
 
-		plog.Printf("saving data for %q of all database (by client number)", plotConfig.Column)
+		lg.Sugar().Info("saving data for %q of all database (by client number)", plotConfig.Column)
 		nf2 := dataframe.New()
 		for i := range clientNumColumns {
 			if clientNumColumns[i].Count() != dataColumns[i].Count() {
@@ -1078,7 +1078,7 @@ func do(configPath string) error {
 		}
 
 		if len(cfg.DatabaseIDToConfigClientMachineAgentControl[cfg.AllDatabaseIDList[0]].ConfigClientMachineBenchmarkOptions.ConnectionClientNumbers) > 0 {
-			plog.Printf("aggregating data for %q of all database (by client number)", plotConfig.Column)
+			lg.Sugar().Info("aggregating data for %q of all database (by client number)", plotConfig.Column)
 			nf3 := dataframe.New()
 			var firstKeys []int
 			for i := range clientNumColumns {

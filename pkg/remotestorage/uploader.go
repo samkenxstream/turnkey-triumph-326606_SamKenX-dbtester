@@ -21,10 +21,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"cloud.google.com/go/storage"
+	"go.uber.org/zap"
 	"golang.org/x/oauth2/google"
 	"golang.org/x/oauth2/jwt"
-
-	"cloud.google.com/go/storage"
 	"google.golang.org/api/option"
 )
 
@@ -39,13 +39,14 @@ type Uploader interface {
 
 // GoogleCloudStorage wraps Google Cloud Storage API.
 type GoogleCloudStorage struct {
+	lg      *zap.Logger
 	JSONKey []byte
 	Project string
 	Config  *jwt.Config
 }
 
 // NewGoogleCloudStorage creates a new uploader.
-func NewGoogleCloudStorage(key []byte, project string) (Uploader, error) {
+func NewGoogleCloudStorage(lg *zap.Logger, key []byte, project string) (Uploader, error) {
 	conf, err := google.JWTConfigFromJSON(
 		key,
 		storage.ScopeFullControl,
@@ -54,6 +55,7 @@ func NewGoogleCloudStorage(key []byte, project string) (Uploader, error) {
 		return nil, err
 	}
 	return &GoogleCloudStorage{
+		lg:      lg,
 		JSONKey: key,
 		Project: project,
 		Config:  conf,
@@ -88,7 +90,7 @@ func (g *GoogleCloudStorage) UploadFile(bucket, src, dst string, opts ...OpOptio
 		wc.ContentType = ret.ContentType
 	}
 
-	plog.Printf("uploading %q ---> %q", src, dst)
+	g.lg.Info("uploading", zap.String("source", src), zap.String("destination", dst))
 	bts, err := ioutil.ReadFile(src)
 	if err != nil {
 		return fmt.Errorf("ioutil.ReadFile(%s) %v", src, err)
@@ -99,7 +101,7 @@ func (g *GoogleCloudStorage) UploadFile(bucket, src, dst string, opts ...OpOptio
 	if err := wc.Close(); err != nil {
 		return err
 	}
-	plog.Printf("finished uploading %q", src)
+	g.lg.Info("uploaded", zap.String("source", src), zap.String("destination", dst))
 
 	return nil
 }
@@ -137,7 +139,7 @@ func (g *GoogleCloudStorage) UploadDir(bucket, src, dst string, opts ...OpOption
 		go func(fpath string) {
 			targetPath := filepath.Join(dst, strings.Replace(fpath, src, "", -1))
 
-			plog.Printf("uploading %q ---> %q", fpath, targetPath)
+			g.lg.Info("uploading", zap.String("source", fpath), zap.String("destination", targetPath))
 			wc := client.Bucket(bucket).Object(targetPath).NewWriter(context.Background())
 			if ret.ContentType != "" {
 				wc.ContentType = ret.ContentType
@@ -155,7 +157,7 @@ func (g *GoogleCloudStorage) UploadDir(bucket, src, dst string, opts ...OpOption
 				errc <- err
 				return
 			}
-			plog.Printf("uploaded %q ---> %q", fpath, targetPath)
+			g.lg.Info("uploaded", zap.String("source", fpath), zap.String("destination", targetPath))
 
 			donec <- struct{}{}
 		}(fpath)
@@ -171,6 +173,6 @@ func (g *GoogleCloudStorage) UploadDir(bucket, src, dst string, opts ...OpOption
 		cnt++
 	}
 
-	plog.Printf("finished uploading %q", src)
+	g.lg.Info("finished uploading", zap.String("source", src))
 	return nil
 }

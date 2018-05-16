@@ -15,15 +15,16 @@
 package agent
 
 import (
+	"fmt"
 	"net"
 	"os"
 	"path/filepath"
 
 	"github.com/coreos/dbtester/dbtesterpb"
 	"github.com/coreos/dbtester/pkg/ntp"
+	"go.uber.org/zap"
 
 	"github.com/coreos/etcd/pkg/netutil"
-	"github.com/coreos/pkg/capnslog"
 	"github.com/gyuho/linux-inspect/df"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
@@ -58,11 +59,11 @@ var globalFlags flags
 func init() {
 	dn, err := df.GetDevice("/")
 	if err != nil {
-		plog.Warningf("cannot get disk device mounted at '/' (%v)", err)
+		fmt.Printf("cannot get disk device mounted at '/' (%v)\n", err)
 	}
 	nm, err := netutil.GetDefaultInterfaces()
 	if err != nil {
-		plog.Warningf("cannot detect default network interface (%v)", err)
+		fmt.Printf("cannot detect default network interface (%v)\n", err)
 	}
 	var nt string
 	for k := range nm {
@@ -102,19 +103,32 @@ var Command = &cobra.Command{
 
 func commandFunc(cmd *cobra.Command, args []string) error {
 	no, nerr := ntp.DefaultSync()
-	plog.Infof("npt update output: %q", no)
-	plog.Infof("npt update error: %v", nerr)
-
-	f, err := openToAppend(globalFlags.agentLog)
-	if err != nil {
-		return err
+	fmt.Printf("npt update output: %q\n", no)
+	if nerr != nil {
+		fmt.Printf("npt update error: %v\n", nerr)
 	}
-	defer f.Close()
-	capnslog.SetFormatter(capnslog.NewPrettyFormatter(f, false))
+
+	lcfg := zap.Config{
+		Level:       zap.NewAtomicLevelAt(zap.InfoLevel),
+		Development: false,
+		Sampling: &zap.SamplingConfig{
+			Initial:    100,
+			Thereafter: 100,
+		},
+		Encoding:      "json",
+		EncoderConfig: zap.NewProductionEncoderConfig(),
+
+		OutputPaths:      []string{globalFlags.agentLog},
+		ErrorOutputPaths: []string{globalFlags.agentLog},
+	}
+	lg, lerr := lcfg.Build()
+	if lerr != nil {
+		return lerr
+	}
 
 	var (
 		grpcServer = grpc.NewServer()
-		sender     = NewServer()
+		sender     = NewServer(lg)
 	)
 	ln, err := net.Listen("tcp", globalFlags.grpcPort)
 	if err != nil {
@@ -122,6 +136,6 @@ func commandFunc(cmd *cobra.Command, args []string) error {
 	}
 	dbtesterpb.RegisterTransporterServer(grpcServer, sender)
 
-	plog.Infof("agent started with gRPC %s (log path %q)", globalFlags.grpcPort, globalFlags.agentLog)
+	lg.Info("agent started", zap.String("grpc-server-port", globalFlags.grpcPort), zap.String("agent-log", globalFlags.agentLog))
 	return grpcServer.Serve(ln)
 }

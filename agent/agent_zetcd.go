@@ -20,6 +20,8 @@ import (
 	"strings"
 
 	"github.com/coreos/dbtester/dbtesterpb"
+
+	"go.uber.org/zap"
 )
 
 // startZetcd starts zetcd. This assumes that etcd is already started.
@@ -54,14 +56,14 @@ func startZetcd(fs *flags, t *transporterServer) error {
 	cmd.Stderr = t.proxyDatabaseLogfile
 	cs := fmt.Sprintf("%s %s", cmd.Path, flagString)
 
-	plog.Infof("starting database %q", cs)
+	t.lg.Info("starting database", zap.String("command", cs))
 	if err := cmd.Start(); err != nil {
 		return err
 	}
 	t.proxyCmd = cmd
 	t.proxyCmdWait = make(chan struct{})
 	t.proxyPid = int64(cmd.Process.Pid)
+	t.lg.Info("started database", zap.String("command", cs), zap.Int64("pid", t.proxyPid))
 
-	plog.Infof("started database %q (PID: %d)", cs, t.pid)
 	return nil
 }

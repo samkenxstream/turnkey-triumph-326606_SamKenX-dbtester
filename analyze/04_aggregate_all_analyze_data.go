@@ -521,49 +521,49 @@ func (data *analyzeData) aggregateAll(memoryByKeyPath string, readBytesDeltaByKe
 
 	fr1 := dataframe.New()
 	if err := fr1.AddColumn(ckk1); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := fr1.AddColumn(ckk2); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := fr1.AddColumn(ckk3); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := fr1.AddColumn(ckk4); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := fr1.CSV(memoryByKeyPath); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 
 	// aggregate read bytes by number of keys
 	fr2 := dataframe.New()
 	if err := fr2.AddColumn(ckk1); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := fr2.AddColumn(ckk5); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := fr2.AddColumn(ckk6); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := fr2.CSV(readBytesDeltaByKeyPath); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 
 	// aggregate write bytes by number of keys
 	fr3 := dataframe.New()
 	if err := fr3.AddColumn(ckk1); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := fr3.AddColumn(ckk7); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := fr3.AddColumn(ckk8); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 	if err := fr3.CSV(writeBytesDeltaByKeyPath); err != nil {
-		plog.Fatal(err)
+		panic(err)
 	}
 
 	return nil

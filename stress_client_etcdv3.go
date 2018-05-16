@@ -23,6 +23,7 @@ import (
 	"strings"
 
 	"github.com/coreos/etcd/clientv3"
+	"go.uber.org/zap"
 	"golang.org/x/net/context"
 )
 
@@ -83,17 +84,17 @@ func newGetEtcd3(conn clientv3.KV) ReqHandler {
 	}
 }
 
-func getTotalKeysEtcdv3(endpoints []string) map[string]int64 {
+func getTotalKeysEtcdv3(lg *zap.Logger, endpoints []string) map[string]int64 {
 	rs := make(map[string]int64)
 	for _, ep := range endpoints {
 		if !strings.HasPrefix(ep, "http://") {
 			ep = "http://" + ep
 		}
 
-		plog.Println("GET", ep+"/metrics")
+		lg.Info("GET", zap.String("path", ep+"/metrics"))
 		resp, err := http.Get(ep + "/metrics")
 		if err != nil {
-			plog.Println(err)
+			lg.Warn("failed to get /metrics", zap.Error(err))
 			rs[ep] = 0
 		}
 		scanner := bufio.NewScanner(resp.Body)
@@ -118,6 +119,6 @@ func getTotalKeysEtcdv3(endpoints []string) map[string]int64 {
 		gracefulClose(resp)
 	}
 
-	plog.Println("getTotalKeysEtcdv3", rs)
+	lg.Info("getTotalKeysEtcdv3", zap.String("response", fmt.Sprintf("%+v", rs)))
 	return rs
 }
