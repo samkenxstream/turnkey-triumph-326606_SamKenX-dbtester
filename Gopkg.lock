@@ -62,7 +62,6 @@
   name = "github.com/coreos/pkg"
   packages = ["capnslog"]
   revision = "97fdf19511ea361ae1c100dd393cc47f8dcfa1e1"
-  source = "https://github.com/coreos/pkg"
 
 [[projects]]
   name = "github.com/dustin/go-humanize"
@@ -423,6 +422,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "be4c2e85b5fe6d0b1af6016e555dcbaa6c76b9f4d5744747a1e2984512298b3a"
+  inputs-digest = "103549dcb40677e6dc68f43d0c5340f498564e154165af4590795fc4940f15cd"
   solver-name = "gps-cdcl"
   solver-version = 1
