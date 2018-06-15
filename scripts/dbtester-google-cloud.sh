@@ -445,7 +445,8 @@ sudo mv /tmp/gcp-key-etcd-development.json /etc/gcp-key-etcd-development.json
 head -10 /etc/gcp-key-etcd-development.json
 
 # copy the tester configuration from git repository
-cp ${HOME}/go/src/github.com/coreos/dbtester/test-results/2018Q2-02-etcd-client-balancer/write-1M-keys-best-throughput.yaml ${HOME}/config.yaml
+cp ${HOME}/go/src/github.com/coreos/dbtester/test-results/2018Q2-02-etcd-client-balancer/read-3M-same-keys-best-throughput.yaml ${HOME}/config.yaml
+# cp ${HOME}/go/src/github.com/coreos/dbtester/test-results/2018Q2-02-etcd-client-balancer/write-1M-keys-best-throughput.yaml ${HOME}/config.yaml
 cat ${HOME}/config.yaml
 
 
@@ -455,7 +456,7 @@ sudo ntpdate time.google.com
 sudo service ntp start
 
 nohup dbtester control \
-  --database-id etcd__tip \
+  --database-id etcd__other \
   --config config.yaml > ${HOME}/client-control.log 2>&1 &
 
 sleep 7s
