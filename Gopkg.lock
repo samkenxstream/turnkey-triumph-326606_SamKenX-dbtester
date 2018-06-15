@@ -45,11 +45,12 @@
     "pkg/logutil",
     "pkg/netutil",
     "pkg/report",
+    "pkg/systemd",
     "pkg/types",
     "raft",
     "raft/raftpb"
   ]
-  revision = "67b1ff6724637f0a00f693471ddb17b5adde38cf"
+  revision = "b241e383fde587fb5b5f5f9188589f4a7e467ccc"
   source = "https://github.com/coreos/etcd"
 
 [[projects]]
@@ -422,6 +423,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "103549dcb40677e6dc68f43d0c5340f498564e154165af4590795fc4940f15cd"
+  inputs-digest = "359a18695d247c68e0bfc25e394013eb702e10cbfb10caf5a616f23c8298fe64"
   solver-name = "gps-cdcl"
   solver-version = 1

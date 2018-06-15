@@ -6,7 +6,7 @@
 [[constraint]]
   name = "github.com/coreos/etcd"
   source = "https://github.com/coreos/etcd"
-  revision = "67b1ff6724637f0a00f693471ddb17b5adde38cf"
+  revision = "b241e383fde587fb5b5f5f9188589f4a7e467ccc"
 
 # v1.7.5
 [[constraint]]
@@ -141,7 +141,7 @@
 [[override]]
   name = "github.com/grpc-ecosystem/grpc-gateway"
   source = "https://github.com/grpc-ecosystem/grpc-gateway"
-  revision = "8cc3a55af3bcf171a1c23a90c4df9cf591706104"
+  revision = "92583770e3f01b09a0d3e9bdf64321d8bebd48f2"
 
 
 ################################
