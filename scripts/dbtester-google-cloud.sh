@@ -326,7 +326,7 @@ sudo service ntp start
 
 
 ##################################################
-GO_VERSION=1.10.2
+GO_VERSION=1.10.3
 
 
 sudo rm -rf ${HOME}/*
@@ -445,7 +445,7 @@ sudo mv /tmp/gcp-key-etcd-development.json /etc/gcp-key-etcd-development.json
 head -10 /etc/gcp-key-etcd-development.json
 
 # copy the tester configuration from git repository
-cp ${HOME}/go/src/github.com/coreos/dbtester/test-results/2018Q2-01-etcd-client-balancer/write-1M-keys-best-throughput.yaml ${HOME}/config.yaml
+cp ${HOME}/go/src/github.com/coreos/dbtester/test-results/2018Q2-02-etcd-client-balancer/write-1M-keys-best-throughput.yaml ${HOME}/config.yaml
 cat ${HOME}/config.yaml
 
 
@@ -499,16 +499,16 @@ cd ${HOME}/go/src/github.com/coreos/dbtester
 go install -v ./cmd/dbtester
 
 
-gsutil -m cp -R gs://dbtester-results/2018Q2-01-etcd-client-balancer .
+gsutil -m cp -R gs://dbtester-results/2018Q2-02-etcd-client-balancer .
 
-cp ./test-results/2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput.yaml ./2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/
-dbtester analyze --config 2018Q2-01-etcd-client-balancer/read-3M-same-keys-best-throughput/read-3M-same-keys-best-throughput.yaml
+cp ./test-results/2018Q2-02-etcd-client-balancer/read-3M-same-keys-best-throughput.yaml ./2018Q2-02-etcd-client-balancer/read-3M-same-keys-best-throughput/
+dbtester analyze --config 2018Q2-02-etcd-client-balancer/read-3M-same-keys-best-throughput/read-3M-same-keys-best-throughput.yaml
 
-cp ./test-results/2018Q2-01-etcd-client-balancer/write-1M-keys-best-throughput.yaml ./2018Q2-01-etcd-client-balancer/write-1M-keys-best-throughput/
-dbtester analyze --config 2018Q2-01-etcd-client-balancer/write-1M-keys-best-throughput/write-1M-keys-best-throughput.yaml
+cp ./test-results/2018Q2-02-etcd-client-balancer/write-1M-keys-best-throughput.yaml ./2018Q2-02-etcd-client-balancer/write-1M-keys-best-throughput/
+dbtester analyze --config 2018Q2-02-etcd-client-balancer/write-1M-keys-best-throughput/write-1M-keys-best-throughput.yaml
 
-gsutil -m cp -R 2018Q2-01-etcd-client-balancer gs://dbtester-results/
-gsutil -m acl ch -u allUsers:R -r gs://dbtester-results/2018Q2-01-etcd-client-balancer
+gsutil -m cp -R 2018Q2-02-etcd-client-balancer gs://dbtester-results/
+gsutil -m acl ch -u allUsers:R -r gs://dbtester-results/2018Q2-02-etcd-client-balancer
 ##################################################
 
 

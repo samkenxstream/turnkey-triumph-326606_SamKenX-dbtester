@@ -2,7 +2,7 @@ test_title: Write 1M keys, 256-byte key, 1KB value, Best Throughput (etcd 1K cli
 test_description: |
   - Google Cloud Compute Engine
   - 4 machines of 16 vCPUs + 60 GB Memory + 300 GB SSD (1 for client)
-  - Ubuntu 17.10 (GNU/Linux kernel 4.13.0-41-generic)
+  - Ubuntu 17.10 (GNU/Linux kernel 4.13.0-45-generic)
   - `ulimit -n` is 120000
   - etcd v3.4 b241e383 (Go 1.10.3)
   - etcd v3.4 new balancer (Go 1.10.3)
