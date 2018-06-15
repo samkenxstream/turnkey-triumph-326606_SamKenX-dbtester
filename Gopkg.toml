@@ -12,7 +12,7 @@
 [[constraint]]
   name = "google.golang.org/grpc"
   source = "https://github.com/grpc/grpc-go"
-  revision = "5b3c4e850e90a4cf6a20ebd46c8b32a0a3afcb9e"
+  revision = "7a6a684ca69eb4cae85ad0a484f2e531598c047b"
 
 
 [[constraint]]

@@ -394,9 +394,14 @@
   packages = [
     ".",
     "balancer",
+    "balancer/base",
+    "balancer/roundrobin",
+    "channelz",
     "codes",
     "connectivity",
     "credentials",
+    "encoding",
+    "encoding/proto",
     "grpclb/grpc_lb_v1/messages",
     "grpclog",
     "health/grpc_health_v1",
@@ -406,12 +411,14 @@
     "naming",
     "peer",
     "resolver",
+    "resolver/dns",
+    "resolver/passthrough",
     "stats",
     "status",
     "tap",
     "transport"
   ]
-  revision = "5b3c4e850e90a4cf6a20ebd46c8b32a0a3afcb9e"
+  revision = "7a6a684ca69eb4cae85ad0a484f2e531598c047b"
   source = "https://github.com/grpc/grpc-go"
 
 [[projects]]
@@ -423,6 +430,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "359a18695d247c68e0bfc25e394013eb702e10cbfb10caf5a616f23c8298fe64"
+  inputs-digest = "f37f5d03bc73604d19ad1c629ca401a4f3abe7003f4577e5794319c36c2c881a"
   solver-name = "gps-cdcl"
   solver-version = 1
