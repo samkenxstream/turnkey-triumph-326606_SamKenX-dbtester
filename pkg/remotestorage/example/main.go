@@ -18,7 +18,7 @@ import (
 	"io/ioutil"
 	"log"
 
-	"github.com/coreos/dbtester/pkg/remotestorage"
+	"github.com/etcd-io/dbtester/pkg/remotestorage"
 
 	"go.uber.org/zap"
 )

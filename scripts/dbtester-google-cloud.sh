@@ -398,11 +398,11 @@ BRANCH_NAME=master
 
 
 cd ${HOME}
-rm -rf ${HOME}/go/src/github.com/coreos/dbtester
-git clone https://github.com/$USER_NAME/dbtester --branch $BRANCH_NAME ${HOME}/go/src/github.com/coreos/dbtester
+rm -rf ${HOME}/go/src/github.com/etcd-io/dbtester
+git clone https://github.com/$USER_NAME/dbtester --branch $BRANCH_NAME ${HOME}/go/src/github.com/etcd-io/dbtester
 
 cd ${HOME}
-go install -v ./go/src/github.com/coreos/dbtester/cmd/dbtester
+go install -v ./go/src/github.com/etcd-io/dbtester/cmd/dbtester
 
 dbtester -h
 dbtester agent -h
@@ -445,8 +445,8 @@ sudo mv /tmp/gcp-key-etcd-development.json /etc/gcp-key-etcd-development.json
 head -10 /etc/gcp-key-etcd-development.json
 
 # copy the tester configuration from git repository
-cp ${HOME}/go/src/github.com/coreos/dbtester/test-results/2018Q2-02-etcd-client-balancer/read-3M-same-keys-best-throughput.yaml ${HOME}/config.yaml
-# cp ${HOME}/go/src/github.com/coreos/dbtester/test-results/2018Q2-02-etcd-client-balancer/write-1M-keys-best-throughput.yaml ${HOME}/config.yaml
+cp ${HOME}/go/src/github.com/etcd-io/dbtester/test-results/2018Q2-02-etcd-client-balancer/read-3M-same-keys-best-throughput.yaml ${HOME}/config.yaml
+# cp ${HOME}/go/src/github.com/etcd-io/dbtester/test-results/2018Q2-02-etcd-client-balancer/write-1M-keys-best-throughput.yaml ${HOME}/config.yaml
 cat ${HOME}/config.yaml
 
 
@@ -496,7 +496,7 @@ COMMENT
 # and specify 'analyze' configuration file,
 # this aggregates data, generates all graphs, texts
 
-cd ${HOME}/go/src/github.com/coreos/dbtester
+cd ${HOME}/go/src/github.com/etcd-io/dbtester
 go install -v ./cmd/dbtester
 
 

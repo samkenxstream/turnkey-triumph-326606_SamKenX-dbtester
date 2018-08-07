@@ -20,8 +20,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/coreos/dbtester/dbtesterpb"
-	"github.com/coreos/dbtester/pkg/ntp"
+	"github.com/etcd-io/dbtester/dbtesterpb"
+	"github.com/etcd-io/dbtester/pkg/ntp"
 	"go.uber.org/zap"
 
 	"github.com/coreos/etcd/pkg/netutil"

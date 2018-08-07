@@ -24,8 +24,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/coreos/dbtester"
-	"github.com/coreos/dbtester/dbtesterpb"
+	"github.com/etcd-io/dbtester"
+	"github.com/etcd-io/dbtester/dbtesterpb"
 	humanize "github.com/dustin/go-humanize"
 	"github.com/gyuho/dataframe"
 	"github.com/olekukonko/tablewriter"

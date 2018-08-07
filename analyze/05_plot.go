@@ -17,7 +17,7 @@ package analyze
 import (
 	"fmt"
 
-	"github.com/coreos/dbtester/dbtesterpb"
+	"github.com/etcd-io/dbtester/dbtesterpb"
 
 	"github.com/gyuho/dataframe"
 	"gonum.org/v1/plot"

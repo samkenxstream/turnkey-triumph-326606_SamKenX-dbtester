@@ -23,7 +23,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/coreos/dbtester/dbtesterpb"
+	"github.com/etcd-io/dbtester/dbtesterpb"
 
 	"go.uber.org/zap"
 )

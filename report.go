@@ -20,7 +20,7 @@ import (
 	"time"
 
 	"github.com/cheggaaa/pb"
-	"github.com/coreos/dbtester/dbtesterpb"
+	"github.com/etcd-io/dbtester/dbtesterpb"
 	"github.com/coreos/etcd/pkg/report"
 	"golang.org/x/net/context"
 )

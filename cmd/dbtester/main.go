@@ -28,9 +28,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/coreos/dbtester/agent"
-	"github.com/coreos/dbtester/analyze"
-	"github.com/coreos/dbtester/control"
+	"github.com/etcd-io/dbtester/agent"
+	"github.com/etcd-io/dbtester/analyze"
+	"github.com/etcd-io/dbtester/control"
 	"github.com/spf13/cobra"
 )
 

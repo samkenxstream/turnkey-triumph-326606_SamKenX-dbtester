@@ -22,8 +22,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/coreos/dbtester/dbtesterpb"
-	"github.com/coreos/dbtester/pkg/fileinspect"
+	"github.com/etcd-io/dbtester/dbtesterpb"
+	"github.com/etcd-io/dbtester/pkg/fileinspect"
 
 	"github.com/gyuho/linux-inspect/inspect"
 	"go.uber.org/zap"
@@ -229,7 +229,7 @@ func (t *transporterServer) Transfer(ctx context.Context, req *dbtesterpb.Reques
 		t.lg.Info("waiting a few more seconds before stopping", zap.String("executable-path", t.cmd.Path))
 		time.Sleep(3 * time.Second)
 
-		// TODO: https://github.com/coreos/dbtester/issues/330
+		// TODO: https://github.com/etcd-io/dbtester/issues/330
 		t.lg.Info("sending", zap.String("syscall", syscall.SIGINT.String()), zap.Int64("pid", t.pid), zap.String("executable-path", t.cmd.Path))
 		if err := t.cmd.Process.Signal(syscall.SIGINT); err != nil {
 			t.lg.Warn("syscall.SIGINT failed", zap.Error(err))

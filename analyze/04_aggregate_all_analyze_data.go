@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/coreos/dbtester"
+	"github.com/etcd-io/dbtester"
 	humanize "github.com/dustin/go-humanize"
 	"github.com/gyuho/dataframe"
 )

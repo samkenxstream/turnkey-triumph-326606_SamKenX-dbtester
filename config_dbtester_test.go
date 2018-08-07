@@ -18,7 +18,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/coreos/dbtester/dbtesterpb"
+	"github.com/etcd-io/dbtester/dbtesterpb"
 )
 
 func TestConfig(t *testing.T) {

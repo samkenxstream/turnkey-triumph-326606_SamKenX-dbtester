@@ -21,9 +21,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/coreos/dbtester"
-	"github.com/coreos/dbtester/dbtesterpb"
-	"github.com/coreos/dbtester/pkg/ntp"
+	"github.com/etcd-io/dbtester"
+	"github.com/etcd-io/dbtester/dbtesterpb"
+	"github.com/etcd-io/dbtester/pkg/ntp"
 
 	"github.com/coreos/etcd/pkg/netutil"
 	"github.com/gyuho/linux-inspect/df"

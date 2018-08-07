@@ -21,8 +21,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/coreos/dbtester/dbtesterpb"
-	"github.com/coreos/dbtester/pkg/remotestorage"
+	"github.com/etcd-io/dbtester/dbtesterpb"
+	"github.com/etcd-io/dbtester/pkg/remotestorage"
 
 	"github.com/coreos/etcd/pkg/report"
 	humanize "github.com/dustin/go-humanize"

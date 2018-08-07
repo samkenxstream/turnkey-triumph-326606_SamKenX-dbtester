@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/coreos/dbtester/dbtesterpb"
+	"github.com/etcd-io/dbtester/dbtesterpb"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"

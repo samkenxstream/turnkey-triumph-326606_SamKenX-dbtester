@@ -1,6 +1,6 @@
 # dbtester
 
-[![Build Status](https://img.shields.io/travis/coreos/dbtester.svg?style=flat-square)](https://travis-ci.org/coreos/dbtester) [![Godoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](https://godoc.org/github.com/coreos/dbtester)
+[![Build Status](https://img.shields.io/travis/etcd-io/dbtester.svg?style=flat-square)](https://travis-ci.org/etcd-io/dbtester) [![Godoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](https://godoc.org/github.com/etcd-io/dbtester)
 
 Distributed database benchmark tester: etcd, Zookeeper, Consul, zetcd, cetcd
 
@@ -8,7 +8,7 @@ Distributed database benchmark tester: etcd, Zookeeper, Consul, zetcd, cetcd
 <br><br><hr>
 ##### Performance Analysis
 
-- Latest test results can be found at https://github.com/coreos/dbtester/tree/master/test-results
+- Latest test results can be found at https://github.com/etcd-io/dbtester/tree/master/test-results
 - Exploring Performance of etcd, Zookeeper and Consul Consistent Key-value Datastores (February 17, 2017)
   - https://coreos.com/blog/performance-of-etcd.html
 
@@ -19,19 +19,19 @@ Distributed database benchmark tester: etcd, Zookeeper, Consul, zetcd, cetcd
 ![dbtester system architecture](./dbtester.png)
 
 - Database Agent
-  - https://github.com/coreos/dbtester/tree/master/agent
+  - https://github.com/etcd-io/dbtester/tree/master/agent
 - Database Client
-  - https://github.com/coreos/dbtester/tree/master/control
+  - https://github.com/etcd-io/dbtester/tree/master/control
 - System Metrics
   - https://github.com/gyuho/linux-inspect
 - Test Data Analysis
-  - https://github.com/coreos/dbtester/tree/master/analyze
+  - https://github.com/etcd-io/dbtester/tree/master/analyze
   - https://github.com/gyuho/dataframe
   - https://github.com/gonum/plot
 
 For etcd, we recommend [etcd benchmark tool](https://github.com/coreos/etcd/tree/master/tools/benchmark).
 
-All logs and results can be found at https://github.com/coreos/dbtester/tree/master/test-results or https://console.cloud.google.com/storage/browser/dbtester-results/?authuser=0&project=etcd-development.
+All logs and results can be found at https://github.com/etcd-io/dbtester/tree/master/test-results or https://console.cloud.google.com/storage/browser/dbtester-results/?authuser=0&project=etcd-development.
 
 
 <br><br><hr>
