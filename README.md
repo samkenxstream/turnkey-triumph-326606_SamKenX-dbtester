@@ -1,6 +1,6 @@
 # dbtester
 
-[![Build Status](https://img.shields.io/travis/etcd-io/dbtester.svg?style=flat-square)](https://travis-ci.org/etcd-io/dbtester) [![Godoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](https://godoc.org/github.com/etcd-io/dbtester)
+[![Build Status](https://img.shields.io/travis/etcd-io/dbtester.svg?style=flat-square)](https://travis-ci.com/etcd-io/dbtester) [![Godoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](https://godoc.org/github.com/etcd-io/dbtester)
 
 Distributed database benchmark tester: etcd, Zookeeper, Consul, zetcd, cetcd
 
