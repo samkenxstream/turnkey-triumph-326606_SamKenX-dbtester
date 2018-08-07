@@ -19,6 +19,7 @@ import (
 	"strings"
 
 	"github.com/etcd-io/dbtester"
+
 	humanize "github.com/dustin/go-humanize"
 	"github.com/gyuho/dataframe"
 )
