@@ -4,6 +4,7 @@
 
 Distributed database benchmark tester: etcd, Zookeeper, Consul, zetcd, cetcd
 
+It includes github.com/golang/freetype, which is based in part on the work of the FreeType Team.
 
 <br><br><hr>
 ##### Performance Analysis
